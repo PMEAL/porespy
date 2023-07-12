@@ -67,10 +67,12 @@ def drainage(im, pc, inlets=None, bins=25, return_size=False, return_sequence=Fa
     Ps = np.unique(pc_dig[im])
 
     # Initialize empty arrays to accumulate results of each loop
-    inv_pc = np.zeros_like(im, dtype=float)
-    inv_size = np.zeros_like(im, dtype=float)
-    inv_seq = np.zeros_like(im, dtype=int)
     seeds = np.zeros_like(im, dtype=bool)
+    inv_pc = np.zeros_like(im, dtype=float)
+    if return_size:
+        inv_size = np.zeros_like(im, dtype=float)
+    if return_sequence:
+        inv_seq = np.zeros_like(im, dtype=int)
 
     count = 0
     for p in tqdm(Ps, **settings.tqdm):
@@ -87,20 +89,22 @@ def drainage(im, pc, inlets=None, bins=25, return_size=False, return_sequence=Fa
         # Extract the local size of sphere to insert at each new location
         radii = dt[coords].astype(int)
         # Insert spheres at new locations of given radii
-        inv_pc = _insert_disks_at_points(im=inv_pc, coords=coords,
-                                         radii=radii, v=bins[count])
+        inv_pc = _insert_disks_npoint_nradii_1value_parallel(
+            im=inv_pc, coords=coords, radii=radii, v=bins[count])
         if return_size:
-            inv_size = _insert_disks_at_points(im=inv_size, coords=coords,
-                                               radii=radii, v=radii)
+            inv_size = _insert_disks_npoints_nradii_nvalues_serial(
+                im=inv_size, coords=coords, radii=radii, vals=radii)
         if return_sequence:
-            inv_seq = _insert_disks_at_points(im=inv_seq, coords=coords,
-                                              radii=radii, v=count+1)
+            inv_seq = _insert_disks_npoint_nradii_1value_parallel(
+                im=inv_seq, coords=coords, radii=radii, v=count+1)
         count += 1
 
     # Set uninvaded voxels to inf
     inv_pc[(inv_pc == 0)*im] = np.inf
-    inv_size[(inv_pc == 0)*im] = -1
-    inv_seq[(inv_pc == 0)*im] = -1
+    if return_size:
+        inv_size[(inv_pc == 0)*im] = -1
+    if return_sequence:
+        inv_seq[(inv_pc == 0)*im] = -1
 
     # Initialize results object
     results = Results()
@@ -115,7 +119,13 @@ def drainage(im, pc, inlets=None, bins=25, return_size=False, return_sequence=Fa
 
 
 @njit(parallel=True)
-def _insert_disks_at_points(im, coords, radii, v, overwrite=False):  # pragma: no cover
+def _insert_disks_npoint_nradii_1value_parallel(
+    im,
+    coords,
+    radii,
+    v,
+    overwrite=False
+):  # pragma: no cover
     if im.ndim == 2:
         xlim, ylim = im.shape
         for row in prange(len(coords[0])):
@@ -139,7 +149,54 @@ def _insert_disks_at_points(im, coords, radii, v, overwrite=False):  # pragma: n
                     for b, y in enumerate(range(j-r, j+r+1)):
                         if (y >= 0) and (y < ylim):
                             if zlim > 1:  # For a truly 3D image
-                                for c, z in enumerate(range(k-1, k+r+1)):
+                                for c, z in enumerate(range(k-r, k+r+1)):
+                                    if (z >= 0) and (z < zlim):
+                                        R = ((a - r)**2 + (b - r)**2 + (c - r)**2)**0.5
+                                        if R <= r:
+                                            if overwrite or (im[x, y, z] == 0):
+                                                im[x, y, z] = v
+                            else:  # For 3D image with singleton 3rd dimension
+                                R = ((a - r)**2 + (b - r)**2)**0.5
+                                if R <= r:
+                                    if overwrite or (im[x, y, 0] == 0):
+                                        im[x, y, 0] = v
+    return im
+
+
+@njit
+def _insert_disks_npoints_nradii_nvalues_serial(
+    im,
+    coords,
+    radii,
+    vals,
+    overwrite=False
+):  # pragma: no cover
+    if im.ndim == 2:
+        xlim, ylim = im.shape
+        for row in range(len(coords[0])):
+            i, j = coords[0][row], coords[1][row]
+            r = radii[row]
+            v = vals[row]
+            for a, x in enumerate(range(i-r, i+r+1)):
+                if (x >= 0) and (x < xlim):
+                    for b, y in enumerate(range(j-r, j+r+1)):
+                        if (y >= 0) and (y < ylim):
+                            R = ((a - r)**2 + (b - r)**2)**0.5
+                            if R <= r:
+                                if overwrite or (im[x, y] == 0):
+                                    im[x, y] = v
+    else:
+        xlim, ylim, zlim = im.shape
+        for row in range(len(coords[0])):
+            i, j, k = coords[0][row], coords[1][row], coords[2][row]
+            r = radii[row]
+            v = vals[row]
+            for a, x in enumerate(range(i-r, i+r+1)):
+                if (x >= 0) and (x < xlim):
+                    for b, y in enumerate(range(j-r, j+r+1)):
+                        if (y >= 0) and (y < ylim):
+                            if zlim > 1:  # For a truly 3D image
+                                for c, z in enumerate(range(k-r, k+r+1)):
                                     if (z >= 0) and (z < zlim):
                                         R = ((a - r)**2 + (b - r)**2 + (c - r)**2)**0.5
                                         if R <= r:
@@ -162,7 +219,7 @@ if __name__ == "__main__":
 
     # %%
     np.random.seed(6)
-    im = ps.generators.blobs(shape=[300, 300, 300], porosity=0.7, blobiness=1.5, seed=0)
+    im = ps.generators.blobs(shape=[200, 200, 200], porosity=0.7, blobiness=1.5, seed=0)
     inlets = np.zeros_like(im)
     inlets[0, ...] = True
     dt = edt(im)
@@ -173,17 +230,17 @@ if __name__ == "__main__":
     g = 9.81
 
     pc = -2*sigma*np.cos(np.radians(theta))/(dt*voxel_size)
-    drn = drainage(im=im, pc=pc, inlets=inlets, bins=50)
-    pc_curve = ps.metrics.pc_map_to_pc_curve(drn.im_pc, im=im)
-    plt.step(pc_curve.pc, pc_curve.snwp, where='post')
+    drn1 = drainage(im=im, pc=pc, inlets=inlets, bins=50, return_size=True, return_sequence=True)
+    pc_curve1 = ps.metrics.pc_map_to_pc_curve(drn1.im_pc, im=im)
+    plt.step(pc_curve1.pc, pc_curve1.snwp, where='post')
 
     a = np.arange(0, im.shape[0])
     b = np.reshape(a, [im.shape[0], 1, 1])
     c = np.tile(b, (1, im.shape[1], im.shape[1]))
     pc = pc + delta_rho*g*(c*voxel_size)
-    drn = drainage(im=im, pc=pc, inlets=inlets, bins=50)
-    pc_curve = ps.metrics.pc_map_to_pc_curve(drn.im_pc, im=im)
-    plt.step(pc_curve.pc, pc_curve.snwp, where='post')
+    drn2 = drainage(im=im, pc=pc, inlets=inlets, bins=50)
+    pc_curve2 = ps.metrics.pc_map_to_pc_curve(drn2.im_pc, im=im)
+    plt.step(pc_curve2.pc, pc_curve2.snwp, where='post')
 
 
 
