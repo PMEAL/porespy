@@ -9,10 +9,49 @@ tqdm = get_tqdm()
 
 __all__ = [
     'drainage',
+    'elevation_map',
 ]
 
 
-def drainage(im, pc, inlets=None, bins=25, return_size=False, return_sequence=False):
+def elevation_map(im_or_shape, voxel_size=1, axis=0):
+    r"""
+    Generate a image of distances from given axis
+
+    Parameters
+    ----------
+    im_or_shape : ndarray or list
+        This dictates the shape of the output image. If an image is supplied, then
+        it's shape is used. Otherwise, the shape should be supplied as a N-D long
+        list of the shape for each axis (i.e. `[200, 200]` or `[300, 300, 300]`).
+    voxel_size : scalar, optional, default is 1
+        The size of the voxels in physical units (i.e. `100e-6` would be 100 um per
+        voxel side). If not given that 1 is used, so the returned image is in units
+        of voxels.
+    axis : int, optional, default is 0
+        The direction along which the height is calculated.  The default is 0, which
+        is the 'x-axis'.
+
+    Returns
+    -------
+    elevation : ndarray
+        A numpy array of the specified shape with the values in each voxel indicating
+        the height of that voxel from the beginning of the specified axis.
+
+    """
+    if len(im_or_shape) <= 3:
+        im = np.zeros(*im_or_shape, dtype=bool)
+    else:
+        im = im_or_shape
+    im = np.swapaxes(im, 0, axis)
+    a = np.arange(0, im.shape[0])
+    b = np.reshape(a, [im.shape[0], 1, 1])
+    c = np.tile(b, (1, *im.shape[1:]))
+    c = c*voxel_size
+    h = np.swapaxes(c, 0, axis)
+    return h
+
+
+def drainage(im, pc, inlets=None, bins=25):
     r"""
     Simulate drainage using image-based sphere insertion, optionally including
     gravity
@@ -50,7 +89,7 @@ def drainage(im, pc, inlets=None, bins=25, return_size=False, return_sequence=Fa
 
     """
     im = np.array(im, dtype=bool)
-    dt = edt(im)
+    dt = np.around(edt(im), decimals=0).astype(int)
     pc[~im] = np.inf
 
     if inlets is None:
@@ -69,10 +108,6 @@ def drainage(im, pc, inlets=None, bins=25, return_size=False, return_sequence=Fa
     # Initialize empty arrays to accumulate results of each loop
     seeds = np.zeros_like(im, dtype=bool)
     inv_pc = np.zeros_like(im, dtype=float)
-    if return_size:
-        inv_size = np.zeros_like(im, dtype=float)
-    if return_sequence:
-        inv_seq = np.zeros_like(im, dtype=int)
 
     count = 0
     for p in tqdm(Ps, **settings.tqdm):
@@ -87,39 +122,25 @@ def drainage(im, pc, inlets=None, bins=25, return_size=False, return_sequence=Fa
         # Add new locations to list of invaded locations
         seeds += new_seeds
         # Extract the local size of sphere to insert at each new location
-        radii = dt[coords].astype(int)
+        radii = dt[coords]
         # Insert spheres at new locations of given radii
-        inv_pc = _insert_disks_npoint_nradii_1value_parallel(
+        inv_pc = _insert_disks_npoints_nradii_1value_parallel(
             im=inv_pc, coords=coords, radii=radii, v=bins[count])
-        if return_size:
-            inv_size = _insert_disks_npoints_nradii_nvalues_serial(
-                im=inv_size, coords=coords, radii=radii, vals=radii)
-        if return_sequence:
-            inv_seq = _insert_disks_npoint_nradii_1value_parallel(
-                im=inv_seq, coords=coords, radii=radii, v=count+1)
         count += 1
 
     # Set uninvaded voxels to inf
     inv_pc[(inv_pc == 0)*im] = np.inf
-    if return_size:
-        inv_size[(inv_pc == 0)*im] = -1
-    if return_sequence:
-        inv_seq[(inv_pc == 0)*im] = -1
 
-    # Initialize results object
+    # Initialize results object and attached arrays
     results = Results()
     satn = pc_to_satn(pc=inv_pc, im=im)
     results.im_snwp = satn
     results.im_pc = inv_pc
-    if return_size:
-        results.im_size = inv_size
-    if return_sequence:
-        results.im_sequence = inv_seq
     return results
 
 
 @njit(parallel=True)
-def _insert_disks_npoint_nradii_1value_parallel(
+def _insert_disks_npoints_nradii_1value_parallel(
     im,
     coords,
     radii,
@@ -148,65 +169,12 @@ def _insert_disks_npoint_nradii_1value_parallel(
                 if (x >= 0) and (x < xlim):
                     for b, y in enumerate(range(j-r, j+r+1)):
                         if (y >= 0) and (y < ylim):
-                            if zlim > 1:  # For a truly 3D image
-                                for c, z in enumerate(range(k-r, k+r+1)):
-                                    if (z >= 0) and (z < zlim):
-                                        R = ((a - r)**2 + (b - r)**2 + (c - r)**2)**0.5
-                                        if R <= r:
-                                            if overwrite or (im[x, y, z] == 0):
-                                                im[x, y, z] = v
-                            else:  # For 3D image with singleton 3rd dimension
-                                R = ((a - r)**2 + (b - r)**2)**0.5
-                                if R <= r:
-                                    if overwrite or (im[x, y, 0] == 0):
-                                        im[x, y, 0] = v
-    return im
-
-
-@njit
-def _insert_disks_npoints_nradii_nvalues_serial(
-    im,
-    coords,
-    radii,
-    vals,
-    overwrite=False
-):  # pragma: no cover
-    if im.ndim == 2:
-        xlim, ylim = im.shape
-        for row in range(len(coords[0])):
-            i, j = coords[0][row], coords[1][row]
-            r = radii[row]
-            v = vals[row]
-            for a, x in enumerate(range(i-r, i+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(j-r, j+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            R = ((a - r)**2 + (b - r)**2)**0.5
-                            if R <= r:
-                                if overwrite or (im[x, y] == 0):
-                                    im[x, y] = v
-    else:
-        xlim, ylim, zlim = im.shape
-        for row in range(len(coords[0])):
-            i, j, k = coords[0][row], coords[1][row], coords[2][row]
-            r = radii[row]
-            v = vals[row]
-            for a, x in enumerate(range(i-r, i+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(j-r, j+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            if zlim > 1:  # For a truly 3D image
-                                for c, z in enumerate(range(k-r, k+r+1)):
-                                    if (z >= 0) and (z < zlim):
-                                        R = ((a - r)**2 + (b - r)**2 + (c - r)**2)**0.5
-                                        if R <= r:
-                                            if overwrite or (im[x, y, z] == 0):
-                                                im[x, y, z] = v
-                            else:  # For 3D image with singleton 3rd dimension
-                                R = ((a - r)**2 + (b - r)**2)**0.5
-                                if R <= r:
-                                    if overwrite or (im[x, y, 0] == 0):
-                                        im[x, y, 0] = v
+                            for c, z in enumerate(range(k-r, k+r+1)):
+                                if (z >= 0) and (z < zlim):
+                                    R = ((a - r)**2 + (b - r)**2 + (c - r)**2)**0.5
+                                    if R <= r:
+                                        if overwrite or (im[x, y, z] == 0):
+                                            im[x, y, z] = v
     return im
 
 
@@ -218,7 +186,6 @@ if __name__ == "__main__":
     from edt import edt
 
     # %%
-    np.random.seed(6)
     im = ps.generators.blobs(shape=[200, 200, 200], porosity=0.7, blobiness=1.5, seed=0)
     inlets = np.zeros_like(im)
     inlets[0, ...] = True
@@ -230,28 +197,16 @@ if __name__ == "__main__":
     g = 9.81
 
     pc = -2*sigma*np.cos(np.radians(theta))/(dt*voxel_size)
-    drn1 = drainage(im=im, pc=pc, inlets=inlets, bins=50, return_size=True, return_sequence=True)
+    drn1 = drainage(im=im, pc=pc, inlets=inlets, bins=50)
     pc_curve1 = ps.metrics.pc_map_to_pc_curve(drn1.im_pc, im=im)
-    plt.step(pc_curve1.pc, pc_curve1.snwp, where='post')
 
-    a = np.arange(0, im.shape[0])
-    b = np.reshape(a, [im.shape[0], 1, 1])
-    c = np.tile(b, (1, im.shape[1], im.shape[1]))
-    pc = pc + delta_rho*g*(c*voxel_size)
+    h = elevation_map(im, voxel_size=voxel_size)
+    pc = pc + delta_rho*g*h
     drn2 = drainage(im=im, pc=pc, inlets=inlets, bins=50)
     pc_curve2 = ps.metrics.pc_map_to_pc_curve(drn2.im_pc, im=im)
-    plt.step(pc_curve2.pc, pc_curve2.snwp, where='post')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    fix, ax = plt.subplots()
+    ax.step(np.log10(pc_curve1.pc), pc_curve1.snwp, where='post')
+    ax.step(np.log10(pc_curve2.pc), pc_curve2.snwp, where='post')
+    ax.set_xlabel('log(Capillary Pressure [Pa])')
+    ax.set_ylabel('Non-wetting Phase Saturation')
