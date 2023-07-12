@@ -66,7 +66,8 @@ setup(
         'porespy.dns',
         'porespy.simulations',
         'porespy.visualization',
-        'porespy.io'
+        'porespy.io',
+        'porespy.beta',
     ],
     install_requires=[
         'dask',
