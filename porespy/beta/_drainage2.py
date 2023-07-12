@@ -1,13 +1,9 @@
 import numpy as np
 from edt import edt
-import numba
-from porespy.filters import trim_disconnected_blobs, find_trapped_regions
-from porespy.filters import find_disconnected_voxels
-from porespy.filters import pc_to_satn, satn_to_seq, seq_to_satn
+from numba import njit, prange
+from porespy.filters import trim_disconnected_blobs, pc_to_satn
 from porespy import settings
-from porespy.tools import _insert_disks_at_points
-from porespy.tools import get_tqdm
-from porespy.tools import Results
+from porespy.tools import get_tqdm, Results
 tqdm = get_tqdm()
 
 
@@ -91,14 +87,14 @@ def drainage(im, pc, inlets=None, bins=25, return_size=False, return_sequence=Fa
         # Extract the local size of sphere to insert at each new location
         radii = dt[coords].astype(int)
         # Insert spheres at new locations of given radii
-        inv_pc = _insert_disks_at_points(im=inv_pc, coords=np.vstack(coords),
-                                         radii=radii, v=bins[count], smooth=True)
+        inv_pc = _insert_disks_at_points(im=inv_pc, coords=coords,
+                                         radii=radii, v=bins[count])
         if return_size:
-            inv_size = _insert_disks_at_points(im=inv_size, coords=np.vstack(coords),
-                                               radii=radii, v=radii, smooth=True)
+            inv_size = _insert_disks_at_points(im=inv_size, coords=coords,
+                                               radii=radii, v=radii)
         if return_sequence:
-            inv_seq = _insert_disks_at_points(im=inv_seq, coords=np.vstack(coords),
-                                              radii=radii, v=count+1, smooth=True)
+            inv_seq = _insert_disks_at_points(im=inv_seq, coords=coords,
+                                              radii=radii, v=count+1)
         count += 1
 
     # Set uninvaded voxels to inf
@@ -118,6 +114,45 @@ def drainage(im, pc, inlets=None, bins=25, return_size=False, return_sequence=Fa
     return results
 
 
+@njit(parallel=True)
+def _insert_disks_at_points(im, coords, radii, v, overwrite=False):  # pragma: no cover
+    if im.ndim == 2:
+        xlim, ylim = im.shape
+        for row in prange(len(coords[0])):
+            i, j = coords[0][row], coords[1][row]
+            r = radii[row]
+            for a, x in enumerate(range(i-r, i+r+1)):
+                if (x >= 0) and (x < xlim):
+                    for b, y in enumerate(range(j-r, j+r+1)):
+                        if (y >= 0) and (y < ylim):
+                            R = ((a - r)**2 + (b - r)**2)**0.5
+                            if R <= r:
+                                if overwrite or (im[x, y] == 0):
+                                    im[x, y] = v
+    else:
+        xlim, ylim, zlim = im.shape
+        for row in prange(len(coords[0])):
+            i, j, k = coords[0][row], coords[1][row], coords[2][row]
+            r = radii[row]
+            for a, x in enumerate(range(i-r, i+r+1)):
+                if (x >= 0) and (x < xlim):
+                    for b, y in enumerate(range(j-r, j+r+1)):
+                        if (y >= 0) and (y < ylim):
+                            if zlim > 1:  # For a truly 3D image
+                                for c, z in enumerate(range(k-1, k+r+1)):
+                                    if (z >= 0) and (z < zlim):
+                                        R = ((a - r)**2 + (b - r)**2 + (c - r)**2)**0.5
+                                        if R <= r:
+                                            if overwrite or (im[x, y, z] == 0):
+                                                im[x, y, z] = v
+                            else:  # For 3D image with singleton 3rd dimension
+                                R = ((a - r)**2 + (b - r)**2)**0.5
+                                if R <= r:
+                                    if overwrite or (im[x, y, 0] == 0):
+                                        im[x, y, 0] = v
+    return im
+
+
 if __name__ == "__main__":
     import numpy as np
     import porespy as ps
@@ -127,7 +162,7 @@ if __name__ == "__main__":
 
     # %%
     np.random.seed(6)
-    im = ps.generators.blobs(shape=[200, 200, 200], porosity=0.7, blobiness=1.5, seed=0)
+    im = ps.generators.blobs(shape=[300, 300, 300], porosity=0.7, blobiness=1.5, seed=0)
     inlets = np.zeros_like(im)
     inlets[0, ...] = True
     dt = edt(im)
