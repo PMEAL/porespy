@@ -145,7 +145,8 @@ def _insert_disks_npoints_nradii_1value_parallel(
     coords,
     radii,
     v,
-    overwrite=False
+    overwrite=False,
+    smooth=False,
 ):  # pragma: no cover
     if im.ndim == 2:
         xlim, ylim = im.shape
@@ -157,7 +158,7 @@ def _insert_disks_npoints_nradii_1value_parallel(
                     for b, y in enumerate(range(j-r, j+r+1)):
                         if (y >= 0) and (y < ylim):
                             R = ((a - r)**2 + (b - r)**2)**0.5
-                            if R <= r:
+                            if (R <= r)*(~smooth) or (R < r)*(smooth):
                                 if overwrite or (im[x, y] == 0):
                                     im[x, y] = v
     else:
@@ -172,7 +173,7 @@ def _insert_disks_npoints_nradii_1value_parallel(
                             for c, z in enumerate(range(k-r, k+r+1)):
                                 if (z >= 0) and (z < zlim):
                                     R = ((a - r)**2 + (b - r)**2 + (c - r)**2)**0.5
-                                    if R <= r:
+                                    if (R <= r)*(~smooth) or (R < r)*(smooth):
                                         if overwrite or (im[x, y, z] == 0):
                                             im[x, y, z] = v
     return im
