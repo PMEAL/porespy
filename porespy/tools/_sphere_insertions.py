@@ -8,7 +8,10 @@ __all__ = [
     '_make_ball',
     '_make_balls',
     '_insert_disk_at_points',
+    '_insert_disk_at_points_parallel',
     '_insert_disks_at_points',
+    '_insert_disks_at_points_legacy',
+    '_insert_disks_at_points_parallel',
 ]
 
 
@@ -167,8 +170,8 @@ def _insert_disk_at_points(im, coords, r, v,
 
 
 @njit(parallel=True)
-def _insert_disk_at_points_parallel(im, coords, r, v,
-                           smooth=True, overwrite=False):  # pragma: no cover
+def _insert_disk_at_points_parallel(im, coords, r, v, smooth=True,
+                                    overwrite=False):  # pragma: no cover
     r"""
     Insert spheres (or disks) into the given ND-image at given locations
 
@@ -401,7 +404,6 @@ def _make_balls(r, smooth=True):  # pragma: no cover
 
 
 if __name__ == "__main__":
-    import matplotlib.pyplot as plt
     import numpy as np
     from porespy.tools import tic, toc
 
@@ -412,26 +414,32 @@ if __name__ == "__main__":
 
     im2 = np.zeros_like(im)
     # Call function once to trigger jit before timing
-    im2 = _insert_disk_at_points(im=im2, coords=np.vstack(coords), r=10, v=1, smooth=True)
+    im2 = _insert_disk_at_points(im=im2, coords=np.vstack(coords),
+                                 r=10, v=1, smooth=True)
     im2 = np.zeros_like(im)
     tic()
-    im2 = _insert_disk_at_points(im=im2, coords=np.vstack(coords), r=10, v=1, smooth=True)
+    im2 = _insert_disk_at_points(im=im2, coords=np.vstack(coords),
+                                 r=10, v=1, smooth=True)
     t = toc(quiet=True)
     print(f"Single radii, serial: {t}")
 
     im2 = np.zeros_like(im)
-    im2 = _insert_disk_at_points_parallel(im=im2, coords=np.vstack(coords), r=10, v=1, smooth=True)
+    im2 = _insert_disk_at_points_parallel(im=im2, coords=np.vstack(coords),
+                                          r=10, v=1, smooth=True)
     im2 = np.zeros_like(im)
     tic()
-    im2 = _insert_disk_at_points_parallel(im=im2, coords=np.vstack(coords), r=10, v=1, smooth=True)
+    im2 = _insert_disk_at_points_parallel(im=im2, coords=np.vstack(coords),
+                                          r=10, v=1, smooth=True)
     t = toc(quiet=True)
     print(f"Single radii, parallel: {t}")
 
     im3 = np.zeros_like(im)
-    im3 = _insert_disks_at_points_legacy(im=im3, coords=np.vstack(coords), radii=rs, v=1)
+    im3 = _insert_disks_at_points_legacy(im=im3, coords=np.vstack(coords),
+                                         radii=rs, v=1)
     im3 = np.zeros_like(im)
     tic()
-    im3 = _insert_disks_at_points_legacy(im=im3, coords=np.vstack(coords), radii=rs, v=1)
+    im3 = _insert_disks_at_points_legacy(im=im3, coords=np.vstack(coords),
+                                         radii=rs, v=1)
     t = toc(quiet=True)
     print(f"Multiple radii, legacy: {t}")
 
@@ -444,9 +452,11 @@ if __name__ == "__main__":
     print(f"Multiple radii, new: {t}")
 
     im4 = np.zeros_like(im)
-    im4 = _insert_disks_at_points_parallel(im=im4, coords=np.vstack(coords), radii=rs, v=1)
+    im4 = _insert_disks_at_points_parallel(im=im4, coords=np.vstack(coords),
+                                           radii=rs, v=1)
     im4 = np.zeros_like(im)
     tic()
-    im4 = _insert_disks_at_points_parallel(im=im4, coords=np.vstack(coords), radii=rs, v=1)
+    im4 = _insert_disks_at_points_parallel(im=im4, coords=np.vstack(coords),
+                                           radii=rs, v=1)
     t = toc(quiet=True)
     print(f"Multiple radii, parallel: {t}")
