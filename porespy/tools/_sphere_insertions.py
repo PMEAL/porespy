@@ -66,7 +66,7 @@ def _make_balls(r, smooth=True):  # pragma: no cover
     return balls
 
 
-@njit(parallel=False)
+@njit
 def _insert_disk_at_points(im, coords, r, v,
                            smooth=True, overwrite=False):  # pragma: no cover
     r"""
@@ -97,19 +97,18 @@ def _insert_disk_at_points(im, coords, r, v,
     npts = len(coords[0])
     if im.ndim == 2:
         xlim, ylim = im.shape
-        s = _make_disk(r, smooth)
         for i in range(npts):
             pt = coords[:, i]
             for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
                 if (x >= 0) and (x < xlim):
                     for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
                         if (y >= 0) and (y < ylim):
-                            if s[a, b] == 1:
+                            R = ((a - r)**2 + (b - r)**2)**0.5
+                            if (R <= r)*(~smooth) or (R < r)*(smooth):
                                 if overwrite or (im[x, y] == 0):
                                     im[x, y] = v
     elif im.ndim == 3:
         xlim, ylim, zlim = im.shape
-        s = _make_ball(r, smooth)
         for i in range(npts):
             pt = coords[:, i]
             for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
@@ -118,13 +117,22 @@ def _insert_disk_at_points(im, coords, r, v,
                         if (y >= 0) and (y < ylim):
                             for c, z in enumerate(range(pt[2]-r, pt[2]+r+1)):
                                 if (z >= 0) and (z < zlim):
-                                    if (s[a, b, c] == 1):
+                                    R = ((a - r)**2 + (b - r)**2 + (c - r)**2)**0.5
+                                    if (R <= r)*(~smooth) or (R < r)*(smooth):
                                         if overwrite or (im[x, y, z] == 0):
                                             im[x, y, z] = v
     return im
 
 
-@njit(parallel=False)
+@njit
+def _insert_disks_at_points_parallel(im, coords, radii, v, smooth=True,
+                                     overwrite=False):  # pragma: no cover
+    for r in radii:
+        im = _insert_disk_at_points(im=im, coords=coords, r=r, v=v,
+                                    smooth=smooth, overwrite=overwrite)
+
+
+@njit
 def _insert_disks_at_points(im, coords, radii, v, smooth=True,
                             overwrite=False):  # pragma: no cover
     r"""
@@ -158,20 +166,19 @@ def _insert_disks_at_points(im, coords, radii, v, smooth=True,
         xlim, ylim = im.shape
         for i in range(npts):
             r = radii[i]
-            s = _make_disk(r, smooth)
             pt = coords[:, i]
             for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
                 if (x >= 0) and (x < xlim):
                     for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
                         if (y >= 0) and (y < ylim):
-                            if s[a, b] == 1:
+                            R = ((a - r)**2 + (b - r)**2)**0.5
+                            if (R <= r)*(~smooth) or (R < r)*(smooth):
                                 if overwrite or (im[x, y] == 0):
                                     im[x, y] = v
     elif im.ndim == 3:
         xlim, ylim, zlim = im.shape
         for i in range(npts):
             r = radii[i]
-            s = _make_ball(r, smooth)
             pt = coords[:, i]
             for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
                 if (x >= 0) and (x < xlim):
@@ -179,7 +186,8 @@ def _insert_disks_at_points(im, coords, radii, v, smooth=True,
                         if (y >= 0) and (y < ylim):
                             for c, z in enumerate(range(pt[2]-r, pt[2]+r+1)):
                                 if (z >= 0) and (z < zlim):
-                                    if s[a, b, c] == 1:
+                                    R = ((a - r)**2 + (b - r)**2 + (c - r)**2)**0.5
+                                    if (R <= r)*(~smooth) or (R < r)*(smooth):
                                         if overwrite or (im[x, y, z] == 0):
                                             im[x, y, z] = v
     return im
@@ -244,3 +252,19 @@ def _make_ball(r, smooth=True):  # pragma: no cover
                 if ((i - r)**2 + (j - r)**2 + (k - r)**2)**0.5 <= thresh:
                     s[i, j, k] = 1
     return s
+
+
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    im = np.random.rand(300, 300) > 0.999
+    coords = np.where(im)
+    im = _insert_disk_at_points(im=im, coords=np.vstack(coords), r=10, v=1, smooth=True)
+    plt.imshow(im)
+
+
+
+
+
+
