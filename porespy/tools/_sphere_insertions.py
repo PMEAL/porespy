@@ -10,7 +10,7 @@ __all__ = [
     '_insert_disk_at_points',
     '_insert_disk_at_points_parallel',
     '_insert_disks_at_points',
-    '_insert_disks_at_points_legacy',
+    '_insert_disks_at_points_serial',
     '_insert_disks_at_points_parallel',
 ]
 
@@ -51,8 +51,8 @@ def _insert_disks_at_points_parallel(im, coords, radii, v, smooth=True,
 
 
 @njit
-def _insert_disks_at_points(im, coords, radii, v, smooth=True,
-                            overwrite=False):  # pragma: no cover
+def _insert_disks_at_points_serial(im, coords, radii, v, smooth=True,
+                                   overwrite=False):  # pragma: no cover
     r"""
     Insert spheres (or disks) of specified radii into an ND-image at given locations.
 
@@ -228,8 +228,8 @@ def _insert_disk_at_points_parallel(im, coords, r, v, smooth=True,
 
 
 @njit(parallel=False)
-def _insert_disks_at_points_legacy(im, coords, radii, v, smooth=True,
-                                   overwrite=False):  # pragma: no cover
+def _insert_disks_at_points(im, coords, radii, v, smooth=True,
+                            overwrite=False):  # pragma: no cover
     r"""
     Insert spheres (or disks) of specified radii into an ND-image at given locations.
 
@@ -434,20 +434,20 @@ if __name__ == "__main__":
     print(f"Single radii, parallel: {t}")
 
     im3 = np.zeros_like(im)
-    im3 = _insert_disks_at_points_legacy(im=im3, coords=np.vstack(coords),
+    im3 = _insert_disks_at_points(im=im3, coords=np.vstack(coords),
                                          radii=rs, v=1)
     im3 = np.zeros_like(im)
     tic()
-    im3 = _insert_disks_at_points_legacy(im=im3, coords=np.vstack(coords),
+    im3 = _insert_disks_at_points(im=im3, coords=np.vstack(coords),
                                          radii=rs, v=1)
     t = toc(quiet=True)
     print(f"Multiple radii, legacy: {t}")
 
     im3 = np.zeros_like(im)
-    im3 = _insert_disks_at_points(im=im3, coords=np.vstack(coords), radii=rs, v=1)
+    im3 = _insert_disks_at_points_serial(im=im3, coords=np.vstack(coords), radii=rs, v=1)
     im3 = np.zeros_like(im)
     tic()
-    im3 = _insert_disks_at_points(im=im3, coords=np.vstack(coords), radii=rs, v=1)
+    im3 = _insert_disks_at_points_serial(im=im3, coords=np.vstack(coords), radii=rs, v=1)
     t = toc(quiet=True)
     print(f"Multiple radii, new: {t}")
 
