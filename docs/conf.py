@@ -44,6 +44,7 @@ extensions = [
     'sphinx_copybutton',
     'sphinx_design',
     'myst_nb',
+    'ablog',
 ]
 
 myst_enable_extensions = [
@@ -66,7 +67,7 @@ globaltoc_maxdepth = 2
 templates_path = ['_templates']
 # The master toctree document.
 master_doc = 'index'
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'posts/*/.ipynb_checkpoints/*']
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
@@ -124,6 +125,8 @@ html_theme_options = {
 }
 
 html_sidebars = {
+   "blog": ['ablog/recentposts.html', 'ablog/archives.html', ],
+   "blog/**": ["ablog/postcard.html", 'ablog/archives.html', ],
 }
 
 
@@ -133,3 +136,17 @@ html_sidebars = {
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'PoreSpydoc'
+
+#------------------------------------------------------------------------#
+# Options for ABlog                                                      #
+#------------------------------------------------------------------------#
+blog_baseurl = "https://porespy.org"
+blog_title = "PoreSpy"
+blog_path = "blog"
+blog_post_pattern = "blog/*/*"
+blog_feed_fulltext = True
+blog_feed_subtitle = "News, Updates, and Demos"
+fontawesome_included = True
+post_redirect_refresh = 1
+post_auto_image = 1
+post_auto_excerpt = 2

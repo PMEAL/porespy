@@ -53,6 +53,7 @@ PoreSpy consists of the following modules:
    basic_usage
    modules/index
    _examples/index
+   blog
 
 
 Gallery
