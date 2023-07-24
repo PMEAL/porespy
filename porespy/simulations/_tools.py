@@ -19,7 +19,7 @@ def flux(c, axis, k=None):
         The axis along which the flux is computed
     k : ndarray
         The conductivity field
-    
+
     Returns
     -------
     J : ndarray
@@ -41,7 +41,7 @@ def flux(c, axis, k=None):
 def tau_from_cmap(c, im, axis):
     """
     Computes the tortuosity factor from a concentration field.
-    
+
     Parameters
     ----------
     c : ndarray
@@ -50,7 +50,7 @@ def tau_from_cmap(c, im, axis):
         The binary image of the porous medium
     axis : int
         The axis along which tortuosity is computed
-    
+
     Returns
     -------
     tau : float
