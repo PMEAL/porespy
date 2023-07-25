@@ -170,12 +170,12 @@ using {im.shape[0]//3} as chunk size.")
     y_gD = [calc_g(y_image[y_slice[0, 0]:y_slice[0, 1],
                            y_slice[1, 0]:y_slice[1, 1],
                            y_slice[2, 0]:y_slice[2, 1],],
-                           axis=0, result=1) for y_slice in y_slices]
+                           axis=1, result=1) for y_slice in y_slices]
 
     z_gD = [calc_g(z_image[z_slice[0, 0]:z_slice[0, 1],
                            z_slice[1, 0]:z_slice[1, 1],
                            z_slice[2, 0]:z_slice[2, 1],],
-                           axis=0, result=1) for z_slice in z_slices]
+                           axis=2, result=1) for z_slice in z_slices]
 
     # order of throat creation
     all_values = [z_gD, y_gD, x_gD]
@@ -184,6 +184,7 @@ using {im.shape[0]//3} as chunk size.")
 
     all_gD = [result for result in all_results[::2]]
     all_tau_unfiltered = [result for result in all_results[1::2]]
+    
     all_tau = [result.tortuosity if type(result)!=int
                else result for result in all_tau_unfiltered]
     t4 = time.perf_counter()- t0
@@ -284,12 +285,12 @@ using {im.shape[0]//3} as chunk size.")
     y_gD = [calc_g(y_image[y_slice[0, 0]:y_slice[0, 1],
                            y_slice[1, 0]:y_slice[1, 1],
                            y_slice[2, 0]:y_slice[2, 1],],
-                           axis=0, result=1) for y_slice in y_slices]
+                           axis=1, result=1) for y_slice in y_slices]
 
     z_gD = [calc_g(z_image[z_slice[0, 0]:z_slice[0, 1],
                            z_slice[1, 0]:z_slice[1, 1],
                            z_slice[2, 0]:z_slice[2, 1],],
-                           axis=0, result=1) for z_slice in z_slices]
+                           axis=2, result=1) for z_slice in z_slices]
 
     # order of throat creation
     all_values = [z_gD, y_gD, x_gD]
@@ -298,6 +299,7 @@ using {im.shape[0]//3} as chunk size.")
 
     all_gD = [result for result in all_results[::2]]
     all_tau_unfiltered = [result for result in all_results[1::2]]
+
     all_porosity = [result.effective_porosity if type(result)!=int
                     else result for result in all_tau_unfiltered]
     all_tau = [result.tortuosity if type(result)!=int
