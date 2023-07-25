@@ -9,7 +9,7 @@ __all__ = ["flux", "tau_from_cmap"]
 
 def flux(c, axis, k=None):
     """
-    Computes the layer-by-layer flux in a given direction.
+    Computes the layer-by-layer diffusive flux in a given direction.
 
     Parameters
     ----------
