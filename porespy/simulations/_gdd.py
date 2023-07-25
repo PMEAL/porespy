@@ -184,7 +184,7 @@ using {im.shape[0]//3} as chunk size.")
 
     all_gD = [result for result in all_results[::2]]
     all_tau_unfiltered = [result for result in all_results[1::2]]
-    
+
     all_tau = [result.tortuosity if type(result)!=int
                else result for result in all_tau_unfiltered]
     t4 = time.perf_counter()- t0
