@@ -31,8 +31,8 @@ def calc_g(image, axis, result=0):
     except Exception:
         return (99, 0)
 
-    A = np.prod(image.shape)/image.shape[axis]
     L = image.shape[axis]
+    A = np.prod(image.shape)/image.shape[axis]
 
     if result == 0:
 
@@ -42,7 +42,7 @@ def calc_g(image, axis, result=0):
         return ((results.effective_porosity * A) / (results.tortuosity * L), results)
 
 
-def network_calc(image, chunk_size, network, phase, bc, dimensions):
+def network_calc(image, chunk_size, network, phase, bc, axis):
     r'''Calculates the resistor network tortuosity.
 
     Parameters
@@ -53,8 +53,8 @@ def network_calc(image, chunk_size, network, phase, bc, dimensions):
         Contains the size of a chunk in each direction.
     bc : tuple
         Contains the first and second boundary conditions.
-    dimensions : tuple
-        Contains the order of axes to calculate on.
+    axis : int
+        The axis to calculate on.
 
     Returns
     -------
@@ -67,8 +67,8 @@ def network_calc(image, chunk_size, network, phase, bc, dimensions):
     fd.run()
 
     rate_inlet = fd.rate(pores=network.pores(bc[0]))[0]
-    L = image.shape[dimensions[0]] - chunk_size[dimensions[0]]
-    A = image.shape[dimensions[1]] * image.shape[dimensions[2]]
+    L = image.shape[axis] - chunk_size[axis]
+    A = np.prod(image.shape) / image.shape[axis]
     d_eff = rate_inlet * L / (A * (1 - 0))
 
     e = image.sum() / image.size
@@ -203,7 +203,7 @@ using {im.shape[0]//3} as chunk size.")
                  network=net,
                  phase=air,
                  bc=['left', 'right'],
-                 dimensions=[1, 0, 2]),
+                 axis=1),
 
     # y direction
     network_calc(image=im,
@@ -211,7 +211,7 @@ using {im.shape[0]//3} as chunk size.")
                  network=net,
                  phase=air,
                  bc=['front', 'back'],
-                 dimensions=[2, 1, 0]),
+                 axis=2),
 
     # z direction
     network_calc(image=im,
@@ -219,7 +219,7 @@ using {im.shape[0]//3} as chunk size.")
                  network=net,
                  phase=air,
                  bc=['top', 'bottom'],
-                 dimensions=[0, 1, 2])]
+                 axis=0)]
 
     t5 = time.perf_counter()- t0
 
@@ -235,7 +235,7 @@ def chunks_to_dataframe(im, scale_factor=3,):
         The binary image to analyze with ``True`` indicating phase of interest
 
     chunk_shape : list
-        Contains the number of chunks to be made in the x,y,z directions.
+        Contains the number of chunks to be made in the x, y, z directions.
 
     Returns
     -------
