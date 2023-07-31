@@ -2874,12 +2874,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/openpnm/algorithms/_invasion_percolation.py:358: NumbaDeprecationWarning: The &#39;nopython&#39; keyword argument was not supplied to the &#39;numba.jit&#39; decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
-  def _find_trapped_pores(inv_seq, indices, indptr, outlets):  # pragma: no cover
-</pre></div>
-</div>
-</div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">cylinders</span></code> function works either by providing the number of cylinders or the target porosity. If the number of cylinders is given, the function tries to fit in that many cylinders in a bounding box defined by its shape.</p>
 <p>When providing porosity, the function works by estimating the number of cylinders needed to be inserted into the domain by estimating cylinder length, and exploiting the fact that, when inserting any potentially overlapping objects randomly into a volume v_total (which has units of pixels and is equal to dimx x dimy x dimz, for example), such that the total volume of objects added to the volume is v_added (and includes any volume that was inserted but overlapped with already occupied space), the resulting porosity will be equal to:</p>
@@ -3005,7 +2999,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/79ca701cc60d57fd03d6311a8c1c88b658a1bf3f52069ccd83333791818219d8.png" src="../../../_images/79ca701cc60d57fd03d6311a8c1c88b658a1bf3f52069ccd83333791818219d8.png" />
+<img alt="../../../_images/4fa98a786f0a92a36cdcc052e319b8e97515f3141a90c65b9295a18e37f83401.png" src="../../../_images/4fa98a786f0a92a36cdcc052e319b8e97515f3141a90c65b9295a18e37f83401.png" />
 </div>
 </div>
 <p>Lastly, this block shows that more iterations improves proximity to goal porosity.</p>
@@ -3042,11 +3036,14 @@
 <span class="g g-Whitespace">   </span><span class="mi">1371</span> <span class="n">n_fibers_added</span> <span class="o">+=</span> <span class="n">n_fibers</span>
 <span class="g g-Whitespace">   </span><span class="mi">1372</span> <span class="c1"># Update parameters for next iteration</span>
 
-<span class="nn">File ~/work/porespy/porespy/porespy/generators/_imgen.py:1223,</span> in <span class="ni">_cylinders</span><span class="nt">(shape, r, ncylinders, phi_max, theta_max, length, verbose, seed)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1221</span>             <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-<span class="g g-Whitespace">   </span><span class="mi">1222</span> <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-<span class="ne">-&gt; </span><span class="mi">1223</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">r</span>
-<span class="g g-Whitespace">   </span><span class="mi">1224</span> <span class="k">return</span> <span class="o">~</span><span class="n">dt</span>
+<span class="nn">File ~/work/porespy/porespy/porespy/generators/_imgen.py:1208,</span> in <span class="ni">_cylinders</span><span class="nt">(shape, r, ncylinders, phi_max, theta_max, length, verbose, seed)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1206</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">shape</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">L</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1207</span> <span class="c1"># Chose a random phi and theta within given ranges</span>
+<span class="ne">-&gt; </span><span class="mi">1208</span> <span class="n">phi</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">())</span> <span class="o">*</span> <span class="n">phi_max</span> <span class="o">/</span> <span class="mi">90</span>
+<span class="g g-Whitespace">   </span><span class="mi">1209</span> <span class="n">theta</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">())</span> <span class="o">*</span> <span class="n">theta_max</span> <span class="o">/</span> <span class="mi">90</span>
+<span class="g g-Whitespace">   </span><span class="mi">1210</span> <span class="n">X0</span> <span class="o">=</span> <span class="n">R</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span>
+<span class="g g-Whitespace">   </span><span class="mi">1211</span>                    <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span>
+<span class="g g-Whitespace">   </span><span class="mi">1212</span>                    <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)])</span>
 
 <span class="ne">KeyboardInterrupt</span>: 
 </pre></div>

@@ -2872,12 +2872,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/openpnm/algorithms/_invasion_percolation.py:358: NumbaDeprecationWarning: The &#39;nopython&#39; keyword argument was not supplied to the &#39;numba.jit&#39; decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
-  def _find_trapped_pores(inv_seq, indices, indptr, outlets):  # pragma: no cover
-</pre></div>
-</div>
-</div>
 </div>
 <p>First generate an anisotropic image using the <code class="docutils literal notranslate"><span class="pre">blobs</span></code> generator:</p>
 <div class="cell docutils container">
@@ -2888,7 +2882,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/ab07a9c45a0ec28e29ec4b5ada21ae6dd68448eb2493a048622de25165e7ba62.png" src="../../../_images/ab07a9c45a0ec28e29ec4b5ada21ae6dd68448eb2493a048622de25165e7ba62.png" />
+<img alt="../../../_images/a642e2ecfe9348e9b5f24162881e8feb1153782c0a6bcbf4f16d8f6a3858dd72.png" src="../../../_images/a642e2ecfe9348e9b5f24162881e8feb1153782c0a6bcbf4f16d8f6a3858dd72.png" />
 </div>
 </div>
 <p>Next apply the <code class="docutils literal notranslate"><span class="pre">distance_transform_lin</span></code> function along the 0 axis.</p>
@@ -2900,7 +2894,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/3b21eadde3db485a8b1acf93169f8ee5dfd013c8591db152c5dc34409bce1688.png" src="../../../_images/3b21eadde3db485a8b1acf93169f8ee5dfd013c8591db152c5dc34409bce1688.png" />
+<img alt="../../../_images/a8421b48e8fbafe25985a57756e01fe3de96c43b7928f003f39ff559a53c9e95.png" src="../../../_images/a8421b48e8fbafe25985a57756e01fe3de96c43b7928f003f39ff559a53c9e95.png" />
 </div>
 </div>
 <p>The greyscale values of the above image are worth a comment. They indicated the length of a path that can be drawn from each voxel to the nearest solid voxel, in the specified direction.  Or in terms of Torquato’s definition, each greyscale value represents a random starting point (A) and moving along this line until solid is encountered represents the end of the line (B), providing the path length A <span class="math notranslate nohighlight">\(\rightarrow\)</span> B.  The ‘counter associated with the distance between A and B is then incremented’, which corresponds to the binning the greyscale values in the above image. In other words, the above representation includes ALL possible starting points on each path, so provides the largest possible data set.</p>
@@ -2923,7 +2917,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/e85fe3fee21590e3b9928ac27a746b7ff021124fc6a19fa72978038c51a05df2.png" src="../../../_images/e85fe3fee21590e3b9928ac27a746b7ff021124fc6a19fa72978038c51a05df2.png" />
+<img alt="../../../_images/4eed802a91ec7b9291caa63d1352007db765a0ce65945be4eea5bd4d72b95c6d.png" src="../../../_images/4eed802a91ec7b9291caa63d1352007db765a0ce65945be4eea5bd4d72b95c6d.png" />
 </div>
 </div>
 <p>Since the image is anisotropic, the process will yeild a different result in the perpendicular direction, so repeating the above with <code class="docutils literal notranslate"><span class="pre">axis=1</span></code> instead of the default <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>.</p>
@@ -2935,7 +2929,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/f984179a540329b99403b53c776946e8c278a2f2c4ac3421018b46ed3e0f5cb0.png" src="../../../_images/f984179a540329b99403b53c776946e8c278a2f2c4ac3421018b46ed3e0f5cb0.png" />
+<img alt="../../../_images/11fc266ace41afaaf78b7b800510da056587f76d86d71cf30f21304a55eb165d.png" src="../../../_images/11fc266ace41afaaf78b7b800510da056587f76d86d71cf30f21304a55eb165d.png" />
 </div>
 </div>
 <p>Overlaying this result wit the previous one:</p>
@@ -2948,7 +2942,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/2929e1eea76c2e4dfee442ba46b12882e04e3d0537dd0c1ca45454a9701a8ef0.png" src="../../../_images/2929e1eea76c2e4dfee442ba46b12882e04e3d0537dd0c1ca45454a9701a8ef0.png" />
+<img alt="../../../_images/1e46088cf0d0cd5e8cc4609c38e2d206cba5ba1ef44eba11505946284aa5d3a5.png" src="../../../_images/1e46088cf0d0cd5e8cc4609c38e2d206cba5ba1ef44eba11505946284aa5d3a5.png" />
 </div>
 </div>
 <p>The anisotropy of the image is clearly visible with the first axis possessing longer lineal-path values.</p>

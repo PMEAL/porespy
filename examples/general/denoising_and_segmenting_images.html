@@ -2904,12 +2904,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/openpnm/algorithms/_invasion_percolation.py:358: NumbaDeprecationWarning: The &#39;nopython&#39; keyword argument was not supplied to the &#39;numba.jit&#39; decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
-  def _find_trapped_pores(inv_seq, indices, indptr, outlets):  # pragma: no cover
-</pre></div>
-</div>
-</div>
 </div>
 <p>Let’s generate a fake image and add some noise that is ‘easy’ to deal with:</p>
 <div class="cell docutils container">
@@ -2923,7 +2917,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/764d73bf1eb9e8b9ea26513eeae243ded4d793e5863892163aad6e9f3e49ba9d.png" src="../../_images/764d73bf1eb9e8b9ea26513eeae243ded4d793e5863892163aad6e9f3e49ba9d.png" />
+<img alt="../../_images/1ab21ea59ef94dd848a94adac716c8115739b7b35083e4ff414b78a66c68ce0c.png" src="../../_images/1ab21ea59ef94dd848a94adac716c8115739b7b35083e4ff414b78a66c68ce0c.png" />
 </div>
 </div>
 <p>The above image now contains some noise in each phase, which is more realistic, though as we will see it not close to reality.  Let’s look at a histogram of this image:</p>
@@ -2935,7 +2929,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/db5852e534732e92ff8f0c1114a97a1cda00f96042eab4e183957e90050265cf.png" src="../../_images/db5852e534732e92ff8f0c1114a97a1cda00f96042eab4e183957e90050265cf.png" />
+<img alt="../../_images/fcc787d0aa0252d52b9fe45cce24204001c9c238a5ca084abfd368f0d595d6ab.png" src="../../_images/fcc787d0aa0252d52b9fe45cce24204001c9c238a5ca084abfd368f0d595d6ab.png" />
 </div>
 </div>
 <p>We can see above that all pixels with a value less than 0.5 belong to the dark phase, while the other pixels belong to the light phase.  A simple global threshold can reproduce the original image perfectly:</p>
@@ -2947,7 +2941,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/843fa1d837dbee893d8cc4f025eadaa8dd9bb8672edac1ce60e2153fded25d79.png" src="../../_images/843fa1d837dbee893d8cc4f025eadaa8dd9bb8672edac1ce60e2153fded25d79.png" />
+<img alt="../../_images/a9597a2884d11184527d1c3dcd0a9d3bbdb999576e2f7ea9ce705edfa1adc258.png" src="../../_images/a9597a2884d11184527d1c3dcd0a9d3bbdb999576e2f7ea9ce705edfa1adc258.png" />
 </div>
 </div>
 <p>Now let’s look at a more realistic noise distribution, though still artificially generated:</p>
@@ -2962,7 +2956,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/cc9b8482c4aaf68e0d7626e61cb75f4841246fdbf551cac0c80f6c521f275ed8.png" src="../../_images/cc9b8482c4aaf68e0d7626e61cb75f4841246fdbf551cac0c80f6c521f275ed8.png" />
+<img alt="../../_images/ae04469317063912b33f6ac47e0d2d1dbe302049779591b6eb79b602e29d2051.png" src="../../_images/ae04469317063912b33f6ac47e0d2d1dbe302049779591b6eb79b602e29d2051.png" />
 </div>
 </div>
 <p>Now we can see that the noise is much less separated, and in fact the tails of the distributions just touch each other in the middle.  Let’s see how the simple threshold we used above would work now:</p>
@@ -2974,7 +2968,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/8fd46fc22dc2a02c693bf39d4e39ca6cdc2f409d2cd1417cabd4c936dfbe0e8e.png" src="../../_images/8fd46fc22dc2a02c693bf39d4e39ca6cdc2f409d2cd1417cabd4c936dfbe0e8e.png" />
+<img alt="../../_images/dbb5b7254549668cd445e014ab5aa48d812ead607a50125ab78cd3944b16b185.png" src="../../_images/dbb5b7254549668cd445e014ab5aa48d812ead607a50125ab78cd3944b16b185.png" />
 </div>
 </div>
 <p>Now there are a few pixels in the dark phase which have been identified as bright and vice-versa. Let’s take this further but putting more extreme, but more realistic noise:</p>
@@ -2990,7 +2984,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f53d8afafbbea9d3d0962bb28c5394a3a6648850abdd6d25889c51c5d4e41c2b.png" src="../../_images/f53d8afafbbea9d3d0962bb28c5394a3a6648850abdd6d25889c51c5d4e41c2b.png" />
+<img alt="../../_images/70ec3397f58f2183bca4ba9205dc258457085dc530660695a368354cfe84e13c.png" src="../../_images/70ec3397f58f2183bca4ba9205dc258457085dc530660695a368354cfe84e13c.png" />
 </div>
 </div>
 <p>In the above case our eyes can differentiate the light and dark phases pretty well, but the histogram is fully merged into one, and the global threshold produces a very problematic result. Just to show this is not an exageration, below is an actual slice of a tomogram taken of an electrospun flow-battery electrode:</p>
