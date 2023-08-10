@@ -31,8 +31,10 @@ def calc_g(image, axis):
         results = simulations.tortuosity_fd(im=image, axis=axis)
 
     except Exception:
-        # RETURN DEFINED VARIABLES, NOT JUST RANDOM NUMBERS
-        return (0, 99)
+        # a is diffusive conductance, b is tortuosity
+        a, b = (0, 99)
+
+        return (a, b)
 
     L = image.shape[axis]
     A = np.prod(image.shape)/image.shape[axis]
@@ -178,8 +180,6 @@ using {im.shape[0]//3} as chunk size.")
 
     # order of throat creation
     all_values = [z_gD, y_gD, x_gD]
-    
-    # all_results = np.array(dask.compute(all_values), dtype=object).flatten()
 
     if use_dask:
         all_results = np.array(dask.compute(all_values), dtype=object).flatten()
@@ -191,8 +191,8 @@ using {im.shape[0]//3} as chunk size.")
             all_results.append(item.compute())
 
         all_results = np.array(all_results).flatten()
-    
 
+    # THIS DOESNT WORK FOR SOME REASON
     # all_gD = all_results[::2]
     # all_tau_unfiltered = all_results[1::2]
 
@@ -201,11 +201,7 @@ using {im.shape[0]//3} as chunk size.")
 
     all_tau = [result.tortuosity if type(result)!=int
                else result for result in all_tau_unfiltered]
-    
-    # print(all_results)
-    # print(all_gD)
-    # print(all_tau_unfiltered)
-    # print(all_tau)
+
     t4 = time.perf_counter()- t0
 
     # creates opnepnm network to calculate image tortuosity
@@ -250,7 +246,7 @@ using {im.shape[0]//3} as chunk size.")
     return output
 
 
-def chunks_to_dataframe(im, scale_factor=3,):
+def chunks_to_dataframe(im, scale_factor=3, use_dask=True):
     r'''Calculates the resistor network tortuosity.
 
     Parameters
@@ -316,10 +312,21 @@ using {im.shape[0]//3} as chunk size.")
                            z_slice[2, 0]:z_slice[2, 1],],
                            axis=2) for z_slice in z_slices]
 
+
+
     # order of throat creation
     all_values = [z_gD, y_gD, x_gD]
 
-    all_results = np.array(dask.compute(all_values), dtype=object).flatten()
+    if use_dask:
+        all_results = np.array(dask.compute(all_values), dtype=object).flatten()
+
+    else:
+        all_values = np.array(all_values).flatten()
+        all_results = []
+        for item in all_values:
+            all_results.append(item.compute())
+
+        all_results = np.array(all_results).flatten()
 
     all_gD = [result for result in all_results[::2]]
     all_tau_unfiltered = [result for result in all_results[1::2]]
