@@ -312,8 +312,6 @@ using {im.shape[0]//3} as chunk size.")
                            z_slice[2, 0]:z_slice[2, 1],],
                            axis=2) for z_slice in z_slices]
 
-
-
     # order of throat creation
     all_values = [z_gD, y_gD, x_gD]
 
