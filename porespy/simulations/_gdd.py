@@ -1,5 +1,6 @@
 import time
 from porespy import simulations, tools, settings
+from porespy.tools import Results
 import numpy as np
 import openpnm as op
 from pandas import DataFrame
@@ -12,7 +13,7 @@ settings.loglevel=50
 
 
 @dask.delayed
-def calc_g(image, axis, result=0):
+def calc_g(image, axis):
     r'''Calculates diffusive conductance of an image.
 
     Parameters
@@ -22,24 +23,21 @@ def calc_g(image, axis, result=0):
     axis : int
         0 for x-axis, 1 for y-axis, 2 for z-axis.
     result: int
-        0 for diffusive conductance, 1 for tortuosity.
+        0 for diffusive conductance, 1 for both diffusive conductance
+        and results object from Porespy.
     '''
     try:
         # if tortuosity_fd fails, throat is closed off from whichever axis was specified
         results = simulations.tortuosity_fd(im=image, axis=axis)
 
     except Exception:
-        return (99, 0)
+        # RETURN DEFINED VARIABLES, NOT JUST RANDOM NUMBERS
+        return (0, 99)
 
     L = image.shape[axis]
     A = np.prod(image.shape)/image.shape[axis]
 
-    if result == 0:
-
-        return ((results.effective_porosity * A) / (results.tortuosity * L))
-
-    else:
-        return ((results.effective_porosity * A) / (results.tortuosity * L), results)
+    return ((results.effective_porosity * A) / (results.tortuosity * L), results)
 
 
 def network_calc(image, chunk_size, network, phase, bc, axis):
@@ -105,7 +103,7 @@ def chunking(spacing, divs):
     return np.array(slices, dtype=int)
 
 
-def tortuosity_gdd(im, scale_factor=3,):
+def tortuosity_gdd(im, scale_factor=3, use_dask=True):
     r'''Calculates the resistor network tortuosity.
 
     Parameters
@@ -122,8 +120,9 @@ def tortuosity_gdd(im, scale_factor=3,):
         Contains tau values for three directions, time stamps, tau values for each chunk
     '''
     t0 = time.perf_counter()
+
     dt = edt.edt(im)
-    print(f'Max distance transform found: {round(dt.max(), 3)}')
+    print(f'Max distance transform found: {np.round(dt.max(), 3)}')
 
     # determining the number of chunks in each direction, minimum of 3 is required
     if np.all(im.shape//(scale_factor*dt.max())>np.array([3, 3, 3])):
@@ -165,28 +164,48 @@ using {im.shape[0]//3} as chunk size.")
     x_gD = [calc_g(x_image[x_slice[0, 0]:x_slice[0, 1],
                            x_slice[1, 0]:x_slice[1, 1],
                            x_slice[2, 0]:x_slice[2, 1],],
-                           axis=0, result=1) for x_slice in x_slices]
+                           axis=0) for x_slice in x_slices]
 
     y_gD = [calc_g(y_image[y_slice[0, 0]:y_slice[0, 1],
                            y_slice[1, 0]:y_slice[1, 1],
                            y_slice[2, 0]:y_slice[2, 1],],
-                           axis=1, result=1) for y_slice in y_slices]
+                           axis=1) for y_slice in y_slices]
 
     z_gD = [calc_g(z_image[z_slice[0, 0]:z_slice[0, 1],
                            z_slice[1, 0]:z_slice[1, 1],
                            z_slice[2, 0]:z_slice[2, 1],],
-                           axis=2, result=1) for z_slice in z_slices]
+                           axis=2) for z_slice in z_slices]
 
     # order of throat creation
     all_values = [z_gD, y_gD, x_gD]
+    
+    # all_results = np.array(dask.compute(all_values), dtype=object).flatten()
 
-    all_results = np.array(dask.compute(all_values), dtype=object).flatten()
+    if use_dask:
+        all_results = np.array(dask.compute(all_values), dtype=object).flatten()
+
+    else:
+        all_values = np.array(all_values).flatten()
+        all_results = []
+        for item in all_values:
+            all_results.append(item.compute())
+
+        all_results = np.array(all_results).flatten()
+    
+
+    # all_gD = all_results[::2]
+    # all_tau_unfiltered = all_results[1::2]
 
     all_gD = [result for result in all_results[::2]]
     all_tau_unfiltered = [result for result in all_results[1::2]]
 
     all_tau = [result.tortuosity if type(result)!=int
                else result for result in all_tau_unfiltered]
+    
+    # print(all_results)
+    # print(all_gD)
+    # print(all_tau_unfiltered)
+    # print(all_tau)
     t4 = time.perf_counter()- t0
 
     # creates opnepnm network to calculate image tortuosity
@@ -223,7 +242,12 @@ using {im.shape[0]//3} as chunk size.")
 
     t5 = time.perf_counter()- t0
 
-    return [throat_tau[0], throat_tau[1], throat_tau[2], t1, t2, t3, t4, t5, all_tau]
+    output = Results()
+    output.__setitem__('tau', throat_tau)
+    output.__setitem__('time_stamps', [t1, t2, t3, t4, t5])
+    output.__setitem__('all_tau', all_tau)
+
+    return output
 
 
 def chunks_to_dataframe(im, scale_factor=3,):
@@ -244,7 +268,7 @@ def chunks_to_dataframe(im, scale_factor=3,):
 
     '''
     dt = edt.edt(im)
-    print(f'Max distance transform found: {round(dt.max(), 3)}')
+    print(f'Max distance transform found: {np.round(dt.max(), 3)}')
 
     # determining the number of chunks in each direction, minimum of 3 is required
     if np.all(im.shape//(scale_factor*dt.max())>np.array([3, 3, 3])):
@@ -280,17 +304,17 @@ using {im.shape[0]//3} as chunk size.")
     x_gD = [calc_g(x_image[x_slice[0, 0]:x_slice[0, 1],
                            x_slice[1, 0]:x_slice[1, 1],
                            x_slice[2, 0]:x_slice[2, 1],],
-                           axis=0, result=1) for x_slice in x_slices]
+                           axis=0) for x_slice in x_slices]
 
     y_gD = [calc_g(y_image[y_slice[0, 0]:y_slice[0, 1],
                            y_slice[1, 0]:y_slice[1, 1],
                            y_slice[2, 0]:y_slice[2, 1],],
-                           axis=1, result=1) for y_slice in y_slices]
+                           axis=1) for y_slice in y_slices]
 
     z_gD = [calc_g(z_image[z_slice[0, 0]:z_slice[0, 1],
                            z_slice[1, 0]:z_slice[1, 1],
                            z_slice[2, 0]:z_slice[2, 1],],
-                           axis=2, result=1) for z_slice in z_slices]
+                           axis=2) for z_slice in z_slices]
 
     # order of throat creation
     all_values = [z_gD, y_gD, x_gD]
@@ -320,10 +344,10 @@ if __name__ =="__main__":
     import numpy as np
     np.random.seed(1)
     im = ps.generators.blobs(shape=[100, 100, 100], porosity=0.7)
-    res = ps.simulations.tortuosity_gdd(im=im, scale_factor=3)
+    res = ps.simulations.tortuosity_gdd(im=im, scale_factor=3, use_dask=True)
     print(res)
 
-    np.random.seed(2)
-    im = ps.generators.blobs(shape=[100, 100, 100], porosity=0.7)
-    df = ps.simulations.chunks_to_dataframe(im=im, scale_factor=3)
-    print(df)
+    # np.random.seed(2)
+    # im = ps.generators.blobs(shape=[100, 100, 100], porosity=0.7)
+    # df = ps.simulations.chunks_to_dataframe(im=im, scale_factor=3)
+    # print(df)
