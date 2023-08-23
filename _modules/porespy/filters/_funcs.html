@@ -1409,7 +1409,7 @@
 <span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">inlets</span><span class="p">)</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inlets</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">inlets</span><span class="p">)</span>
         <span class="n">inlets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
         <span class="n">inlets</span><span class="p">[</span><span class="n">temp</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1707,7 +1707,7 @@
         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="c1"># Determine the value for im_arg</span>
-    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">im_arg</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">im_arg</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">im_arg</span> <span class="o">=</span> <span class="p">[</span><span class="n">im_arg</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">im_arg</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -1724,7 +1724,7 @@
     <span class="k">if</span> <span class="n">overlap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">overlap</span> <span class="o">=</span> <span class="n">overlap</span> <span class="o">*</span> <span class="p">(</span><span class="n">divs</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">strel_arg</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">strel_arg</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">strel_arg</span> <span class="o">=</span> <span class="p">[</span><span class="n">strel_arg</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">strel_arg</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
