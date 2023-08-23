@@ -1218,7 +1218,7 @@ def trim_disconnected_blobs(im, inlets, strel=None):
     to view online example.
 
     """
-    if type(inlets) == tuple:
+    if isinstance(inlets, tuple):
         temp = np.copy(inlets)
         inlets = np.zeros_like(im, dtype=bool)
         inlets[temp] = True
@@ -1516,7 +1516,7 @@ def chunked_func(func,
         return func(**kwargs)
 
     # Determine the value for im_arg
-    if type(im_arg) == str:
+    if isinstance(im_arg, str):
         im_arg = [im_arg]
     for item in im_arg:
         if item in kwargs.keys():
@@ -1533,7 +1533,7 @@ def chunked_func(func,
     if overlap is not None:
         overlap = overlap * (divs > 1)
     else:
-        if type(strel_arg) == str:
+        if isinstance(strel_arg, str):
             strel_arg = [strel_arg]
         for item in strel_arg:
             if item in kwargs.keys():
