@@ -2927,7 +2927,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/9433dfd899f6ac8c27276a2bfdfd6c4d5255d0b7ce1345e3a7d5c5ea816aa407.png" src="../../_images/9433dfd899f6ac8c27276a2bfdfd6c4d5255d0b7ce1345e3a7d5c5ea816aa407.png" />
+<img alt="../../_images/76c662aa81a7c773d08e4230a0b7e803f4d1494b478d415045db07e865dcbd26.png" src="../../_images/76c662aa81a7c773d08e4230a0b7e803f4d1494b478d415045db07e865dcbd26.png" />
 </div>
 </div>
 <p>The above image now contains some noise in each phase, which is more realistic, though as we will see it not close to reality.  Let’s look at a histogram of this image:</p>
@@ -2939,7 +2939,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5dc2fbb52a1cd015ffb2fd96d71f211b407b6b88c32f815a75f855cdd6d2b0e3.png" src="../../_images/5dc2fbb52a1cd015ffb2fd96d71f211b407b6b88c32f815a75f855cdd6d2b0e3.png" />
+<img alt="../../_images/71b882734c1d3ad76f43f6900b2abea4612dd6ac5f90ac20b7eaac813d7aa80c.png" src="../../_images/71b882734c1d3ad76f43f6900b2abea4612dd6ac5f90ac20b7eaac813d7aa80c.png" />
 </div>
 </div>
 <p>We can see above that all pixels with a value less than 0.5 belong to the dark phase, while the other pixels belong to the light phase.  A simple global threshold can reproduce the original image perfectly:</p>
@@ -2951,7 +2951,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7e499f4f16f0ae6dbf044c776a00de6436f15b26b2b59b98b15ca58fd3103274.png" src="../../_images/7e499f4f16f0ae6dbf044c776a00de6436f15b26b2b59b98b15ca58fd3103274.png" />
+<img alt="../../_images/7ddf528dd6f8f7cbafddeabd4db5d7480c6a2bc27da70cdb877733ef4355b138.png" src="../../_images/7ddf528dd6f8f7cbafddeabd4db5d7480c6a2bc27da70cdb877733ef4355b138.png" />
 </div>
 </div>
 <p>Now let’s look at a more realistic noise distribution, though still artificially generated:</p>
@@ -2966,7 +2966,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/00054dbf2ff07039e91ddd0e3d86ac462a39fa442d60ddb49809802a6f94bbc6.png" src="../../_images/00054dbf2ff07039e91ddd0e3d86ac462a39fa442d60ddb49809802a6f94bbc6.png" />
+<img alt="../../_images/888d3c5a3b675879e7770405a57296e39596648da2ff5ceb6cd6acfa1522ef59.png" src="../../_images/888d3c5a3b675879e7770405a57296e39596648da2ff5ceb6cd6acfa1522ef59.png" />
 </div>
 </div>
 <p>Now we can see that the noise is much less separated, and in fact the tails of the distributions just touch each other in the middle.  Let’s see how the simple threshold we used above would work now:</p>
@@ -2978,7 +2978,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/2f4c0ea874fb8749cd951ada85fa3824f2a7b1c60c2ede2bd743f17fa9be7507.png" src="../../_images/2f4c0ea874fb8749cd951ada85fa3824f2a7b1c60c2ede2bd743f17fa9be7507.png" />
+<img alt="../../_images/7893d0cf5bf4dd86697359717de8ad788b800dd475d031533c2eceb2a1333194.png" src="../../_images/7893d0cf5bf4dd86697359717de8ad788b800dd475d031533c2eceb2a1333194.png" />
 </div>
 </div>
 <p>Now there are a few pixels in the dark phase which have been identified as bright and vice-versa. Let’s take this further but putting more extreme, but more realistic noise:</p>
@@ -2994,7 +2994,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/406fdd9c45532b3375fa940cabcba860899f2c055c9f824dbea3eec8a720279a.png" src="../../_images/406fdd9c45532b3375fa940cabcba860899f2c055c9f824dbea3eec8a720279a.png" />
+<img alt="../../_images/46e31906d96ed57c0ffe1d465bf9893ceb7c818d20f74ea524511ef4863e9d75.png" src="../../_images/46e31906d96ed57c0ffe1d465bf9893ceb7c818d20f74ea524511ef4863e9d75.png" />
 </div>
 </div>
 <p>In the above case our eyes can differentiate the light and dark phases pretty well, but the histogram is fully merged into one, and the global threshold produces a very problematic result. Just to show this is not an exageration, below is an actual slice of a tomogram taken of an electrospun flow-battery electrode:</p>
