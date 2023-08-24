@@ -1238,6 +1238,11 @@
        Image-based invasion percoalation
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../simulations/tutorials/using_tortuosity_gdd.html">
+       Determining tortuosity using geometric domain decomposition
+      </a>
+     </li>
     </ul>
    </li>
   </ul>
@@ -2514,6 +2519,11 @@
    Image-based invasion percoalation
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/tutorials/using_tortuosity_gdd.html">
+   Determining tortuosity using geometric domain decomposition
+  </a>
+ </li>
 </ul>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
@@ -2916,7 +2926,23 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/1ec1d650007d465bceae3cbdbd0bdd4ff2bd2718003b9b25d108a5acec3844fa.png" src="../../../_images/1ec1d650007d465bceae3cbdbd0bdd4ff2bd2718003b9b25d108a5acec3844fa.png" />
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">im2d</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">])</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">im3d</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">])</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">]);</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im2d</span><span class="p">);</span>
+
+<span class="nn">File ~/work/porespy/porespy/porespy/generators/_imgen.py:1119,</span> in <span class="ni">blobs</span><span class="nt">(shape, porosity, blobiness, divs, seed)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1117</span> <span class="n">im</span> <span class="o">=</span> <span class="n">norm_to_uniform</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="g g-Whitespace">   </span><span class="mi">1118</span> <span class="k">if</span> <span class="n">porosity</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1119</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&lt;</span> <span class="n">porosity</span>
+<span class="g g-Whitespace">   </span><span class="mi">1120</span> <span class="k">return</span> <span class="n">im</span>
+
+<span class="ne">KeyboardInterrupt</span>: 
+</pre></div>
+</div>
 </div>
 </div>
 </section>
@@ -2939,8 +2965,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/5ed990ccea707160de7ab4fa95bde67b36412a1629b09cbfc5241f956a822697.png" src="../../../_images/5ed990ccea707160de7ab4fa95bde67b36412a1629b09cbfc5241f956a822697.png" />
-</div>
+<img alt="../../../_images/89d795806bea8a2f022c78fd42a2a2b367f68f5c58b7b3212434947cd8b60dcf.svg" src="../../../_images/89d795806bea8a2f022c78fd42a2a2b367f68f5c58b7b3212434947cd8b60dcf.svg" /></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">conn</span></code> options for 3D images are 6 and 26 for similarly square and diagonal neighbours. Apparent floating solids in the visualized 2D slice may actually be attached to solid in adjacent 2D slice and therefore may not actually be considered to be a floating solid.</p>
 <div class="cell docutils container">
@@ -2959,8 +2984,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/3102e2d23c7a300e097eae49d0b6a20ca05eca09a26a4531b3f8085ff40c2afb.png" src="../../../_images/3102e2d23c7a300e097eae49d0b6a20ca05eca09a26a4531b3f8085ff40c2afb.png" />
-</div>
+<img alt="../../../_images/91b70550a01d0d179d6dea6743a0df6e2e70ef8ac076fdb5056ff52cbdb2cd6d.svg" src="../../../_images/91b70550a01d0d179d6dea6743a0df6e2e70ef8ac076fdb5056ff52cbdb2cd6d.svg" /></div>
 </div>
 </section>
 </section>
