@@ -34,18 +34,20 @@ class SimulationsTest():
         np.testing.assert_approx_equal(drn2.im_pc[im].max(), 0.14622522289864)
 
     def test_gdd(self):
+        from porespy import beta
         np.random.seed(1)
         im = ps.generators.blobs(shape=[100, 100, 100], porosity=0.7)
-        res = ps.simulations.tortuosity_gdd(im=im, scale_factor=3)
+        res = beta.tortuosity_gdd(im=im, scale_factor=3)
 
         np.testing.assert_approx_equal(res.tau[0], 1.3940746215566113, significant=5)
         np.testing.assert_approx_equal(res.tau[1], 1.4540191053977147, significant=5)
         np.testing.assert_approx_equal(res.tau[2], 1.4319705063316652, significant=5)
 
     def test_gdd_dataframe(self):
+        from porespy import beta
         np.random.seed(2)
         im = ps.generators.blobs(shape=[100, 100, 100], porosity=0.7)
-        df = ps.simulations.chunks_to_dataframe(im=im, scale_factor=3)
+        df = beta.chunks_to_dataframe(im=im, scale_factor=3)
         assert len(df.iloc[:, 0]) == 54
         assert df.columns[0] == 'Throat Number'
         assert df.columns[1] == 'Tortuosity'
