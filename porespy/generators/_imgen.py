@@ -11,7 +11,7 @@ from deprecated import deprecated
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border, ps_round
 from porespy.tools import extract_subsection
 from porespy.tools import insert_sphere
-from porespy.tools import _insert_disk_at_points
+from porespy.tools import _insert_disk_at_points, _insert_disk_at_points_parallel
 from porespy import settings
 from typing import List
 
@@ -1216,12 +1216,12 @@ def _cylinders(
             upper = ~np.any(np.vstack(crds).T >= shape + L, axis=1)
             valid = upper * lower
             if np.any(valid):
-                im[crds[0][valid] - L, crds[1][valid] - L, crds[2][valid] - L] = 1
+                coords = np.vstack(crds).T[valid] - L
+                _insert_disk_at_points_parallel(im, coords=coords.T, r=r, v=1,
+                                                smooth=True, overwrite=False)
                 n += 1
                 pbar.update()
-    im = np.array(im, dtype=bool)
-    dt = edt(~im) < r
-    return ~dt
+    return ~im
 
 
 def cylinders(
@@ -1365,9 +1365,10 @@ def cylinders(
         n_fibers_total = n_pixels_to_add / vol_fiber
         n_fibers = int(np.ceil(frac * n_fibers_total) - n_fibers_added)
         if n_fibers > 0:
-            im = im & _cylinders(shape, r, n_fibers,
-                                 phi_max, theta_max, length,
-                                 verbose=False)
+            tmp = _cylinders(shape, r, n_fibers,
+                             phi_max, theta_max, length,
+                             verbose=False)
+            im = im * tmp
         n_fibers_added += n_fibers
         # Update parameters for next iteration
         porosity = ps.metrics.porosity(im)
