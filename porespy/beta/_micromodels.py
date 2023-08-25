@@ -11,6 +11,7 @@ import scipy.stats as spst
 
 __all__ = [
     'rectangular_pillars',
+    'random_cylindrical_pillars',
 ]
 
 
@@ -242,6 +243,18 @@ def random_cylindrical_pillars(
     f=0.45,
     a=1500,
 ):
+    r"""
+    A 2D micromodel with cylindrical pillars of random radius
+
+    Parameter
+    ---------
+    shape : array_like
+        The X, Y size of the desired image in pixels
+    f : scalar
+        A factor to control the relative size of the pillars
+    a : scalar
+        The minimum area for each triangle in the mesh
+    """
     from nanomesh import Mesher2D
     from porespy.generators import borders, spheres_from_coords
 
@@ -284,16 +297,8 @@ if __name__ == '__main__':
     import porespy as ps
     import matplotlib.pyplot as plt
 
-    # im = ~ps.generators.lattice_spheres([1501, 1501], r=1, offset=0, spacing=100)
-    # im = im.astype(int)
-    # inds = np.where(im)
-    # im[inds] = np.random.randint(2, 50, len(inds[0]))
-    # im = points_to_spheres(im)
-    # plt.imshow(im)
-
     f = spst.norm(loc=47, scale=16.8)
-    # f = spst.lognorm(loc=np.log10(47.0), s=np.log10(16.8))
-    # Inspect the distribution
+
     if 0:
         plt.hist(f.rvs(10000))
 
@@ -308,7 +313,14 @@ if __name__ == '__main__':
             return_edges=True,
             return_centers=True,
         )
+
     fig, ax = plt.subplots()
-    # ax.imshow(im + edges*1.0 + centers*2.0, interpolation='none')
+    ax.imshow(im + edges*1.0 + centers*2.0, interpolation='none')
+    ax.imshow(im, interpolation='none')
+    ax.axis(False);
+
+    # %%
+    im = random_cylindrical_pillars(shape=[1500, 1500], f=0.45, a=500,)
+    fig, ax = plt.subplots()
     ax.imshow(im, interpolation='none')
     ax.axis(False);
