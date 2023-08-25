@@ -2,6 +2,11 @@ import numpy as np
 from scipy.signal import fftconvolve
 
 
+__all__ = [
+    "fftmorphology",
+]
+
+
 def fftmorphology(im, strel, mode='opening'):
     r"""
     Perform morphological operations on binary images using fft approach for

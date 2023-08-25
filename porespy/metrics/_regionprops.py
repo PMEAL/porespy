@@ -14,6 +14,13 @@ from pandas import DataFrame
 from edt import edt
 
 
+__all__ = [
+    "regionprops_3D",
+    "props_to_DataFrame",
+    "prop_to_image",
+]
+
+
 logger = logging.getLogger(__name__)
 
 

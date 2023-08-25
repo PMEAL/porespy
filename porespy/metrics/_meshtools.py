@@ -9,6 +9,15 @@ from porespy.tools import get_tqdm
 from porespy import settings
 
 
+__all__ = [
+    "mesh_surface_area",
+    "mesh_volume",
+    "region_interface_areas",
+    "region_surface_areas",
+    "region_volumes",
+]
+
+
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 
@@ -54,7 +63,7 @@ def region_volumes(regions, mode='marching_cubes'):
         if mode == 'marching_cubes':
             vols[i] = mesh_volume(region)
         elif mode.startswith('voxel'):
-            vols[i] = region.sum()
+            vols[i] = region.sum(dtype=np.int64)
     return vols
 
 

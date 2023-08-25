@@ -1,8 +1,12 @@
-import pytest
 import numpy as np
 import openpnm as op
+import pytest
+
 import porespy as ps
+import porespy.beta
+
 ps.settings.tqdm['disable'] = True
+ps.settings.loglevel = 40
 
 
 class DNSTest():
@@ -27,6 +31,26 @@ class DNSTest():
         im = ps.generators.blobs(shape=[200, 200], porosity=0.05)
         with pytest.raises(Exception):
             _ = ps.simulations.tortuosity_fd(im=im, axis=1)
+
+    def test_flux(self):
+        im = ps.generators.blobs(shape=[15, 20, 25], porosity=0.85, blobiness=1.5)
+        for axis in range(3):
+            out = ps.simulations.tortuosity_fd(im, axis=axis)
+            c = out["concentration"]
+            J = ps.beta.flux(c, axis=axis, k=im)
+            normal_axes = tuple(i for i in range(im.ndim) if i != axis)
+            rate = J.sum(axis=normal_axes)
+            # Flux should be constant along the axis for different layers
+            np.testing.assert_allclose(rate, rate[0], rtol=1e-5)
+
+    def test_tau_from_cmap(self):
+        im = ps.generators.blobs(shape=[15, 20, 25], porosity=0.85, blobiness=1.5)
+        for axis in range(3):
+            out = ps.simulations.tortuosity_fd(im, axis=axis)
+            c = out["concentration"]
+            tau_fd = out["tortuosity"]
+            tau = ps.beta.tau_from_cmap(c, im, axis=axis)
+            np.testing.assert_allclose(tau, tau_fd, rtol=1e-5)
 
 
 if __name__ == '__main__':
