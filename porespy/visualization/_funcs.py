@@ -12,7 +12,30 @@ __all__ = [
     'satn_to_movie',
     'satn_to_panels',
     'prep_for_imshow',
+    'annotate_heatmap',
 ]
+
+
+def annotate_heatmap(heatmap, ax, mask=None, fontdict={}):
+    im = heatmap
+    font_kws = {
+        'size': 10,
+    }
+    font_kws.update(fontdict)
+    if mask is None:
+        mask = np.ones_like(im, dtype=bool)
+    if im.dtype == bool:
+        im = np.array(im, dtype=int)
+    c_lo, c_hi = np.amin(im[mask]), np.amax(im[mask])
+    c_norm = (im - c_lo)/(c_hi - c_lo)
+    for i in range(im.shape[0]):
+        for j in range(im.shape[1]):
+            if mask[i, j]:
+                ax.text(j+0.5, i+0.5, im[i, j],
+                        ha='center', va='center',
+                        color='k' if (0.1 <= c_norm[i, j] <= 0.9) else 'w',
+                        **font_kws)
+    return ax
 
 
 def set_mpl_style():  # pragma: no cover
