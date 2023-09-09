@@ -16,7 +16,20 @@ __all__ = [
 ]
 
 
-def annotate_heatmap(heatmap, ax, mask=None, fontdict={}):
+def annotate_heatmap(heatmap, ax=None, mask=None, fontdict={}):
+    r"""
+    Overlays text representation of pixel values within a 2D image
+
+    Parameters
+    ----------
+    heatmap : ndarray
+        A 2D array of numerical values
+    ax : matplotlib axis handle
+        The handle of the
+    """
+    if ax is None:
+        fig, ax = plt.subplots()
+        ax.pcolormesh(heatmap)
     im = heatmap
     font_kws = {
         'size': 10,
