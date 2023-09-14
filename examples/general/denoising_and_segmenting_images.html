@@ -2927,7 +2927,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/76c662aa81a7c773d08e4230a0b7e803f4d1494b478d415045db07e865dcbd26.png" src="../../_images/76c662aa81a7c773d08e4230a0b7e803f4d1494b478d415045db07e865dcbd26.png" />
+<img alt="../../_images/5587954e3edde441f85c693489fd6bff4af8ad60c3b4249addc449f6767be69f.png" src="../../_images/5587954e3edde441f85c693489fd6bff4af8ad60c3b4249addc449f6767be69f.png" />
 </div>
 </div>
 <p>The above image now contains some noise in each phase, which is more realistic, though as we will see it not close to reality.  Let’s look at a histogram of this image:</p>
@@ -2939,7 +2939,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/71b882734c1d3ad76f43f6900b2abea4612dd6ac5f90ac20b7eaac813d7aa80c.png" src="../../_images/71b882734c1d3ad76f43f6900b2abea4612dd6ac5f90ac20b7eaac813d7aa80c.png" />
+<img alt="../../_images/444a3db1c9a02913d2a29e91c07a5df9d1287db3dd6e3a712448f2e46cde289f.png" src="../../_images/444a3db1c9a02913d2a29e91c07a5df9d1287db3dd6e3a712448f2e46cde289f.png" />
 </div>
 </div>
 <p>We can see above that all pixels with a value less than 0.5 belong to the dark phase, while the other pixels belong to the light phase.  A simple global threshold can reproduce the original image perfectly:</p>
@@ -2951,7 +2951,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7ddf528dd6f8f7cbafddeabd4db5d7480c6a2bc27da70cdb877733ef4355b138.png" src="../../_images/7ddf528dd6f8f7cbafddeabd4db5d7480c6a2bc27da70cdb877733ef4355b138.png" />
+<img alt="../../_images/a9fc92713eaae665c04d6a084654a142ed8b5b94ab2ea73140ababfd50f7a2fc.png" src="../../_images/a9fc92713eaae665c04d6a084654a142ed8b5b94ab2ea73140ababfd50f7a2fc.png" />
 </div>
 </div>
 <p>Now let’s look at a more realistic noise distribution, though still artificially generated:</p>
@@ -2966,7 +2966,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/888d3c5a3b675879e7770405a57296e39596648da2ff5ceb6cd6acfa1522ef59.png" src="../../_images/888d3c5a3b675879e7770405a57296e39596648da2ff5ceb6cd6acfa1522ef59.png" />
+<img alt="../../_images/971a4b5f2ee260fe824e59efb5f69ffefcb1218185f67042152ff0659440a79f.png" src="../../_images/971a4b5f2ee260fe824e59efb5f69ffefcb1218185f67042152ff0659440a79f.png" />
 </div>
 </div>
 <p>Now we can see that the noise is much less separated, and in fact the tails of the distributions just touch each other in the middle.  Let’s see how the simple threshold we used above would work now:</p>
@@ -2978,7 +2978,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7893d0cf5bf4dd86697359717de8ad788b800dd475d031533c2eceb2a1333194.png" src="../../_images/7893d0cf5bf4dd86697359717de8ad788b800dd475d031533c2eceb2a1333194.png" />
+<img alt="../../_images/243bc7901ee6adeada756b3241cc806aee12f3164bea32f9ef98f4c0fdcdc753.png" src="../../_images/243bc7901ee6adeada756b3241cc806aee12f3164bea32f9ef98f4c0fdcdc753.png" />
 </div>
 </div>
 <p>Now there are a few pixels in the dark phase which have been identified as bright and vice-versa. Let’s take this further but putting more extreme, but more realistic noise:</p>
@@ -2994,7 +2994,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/46e31906d96ed57c0ffe1d465bf9893ceb7c818d20f74ea524511ef4863e9d75.png" src="../../_images/46e31906d96ed57c0ffe1d465bf9893ceb7c818d20f74ea524511ef4863e9d75.png" />
+<img alt="../../_images/4e87a01d01718e82107df186b0048084b747cacf4717b82d2d50511b8ab7a66b.png" src="../../_images/4e87a01d01718e82107df186b0048084b747cacf4717b82d2d50511b8ab7a66b.png" />
 </div>
 </div>
 <p>In the above case our eyes can differentiate the light and dark phases pretty well, but the histogram is fully merged into one, and the global threshold produces a very problematic result. Just to show this is not an exageration, below is an actual slice of a tomogram taken of an electrospun flow-battery electrode:</p>
@@ -3017,13 +3017,13 @@
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">/</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/imageio/v2.py:522,</span> in <span class="ni">volread</span><span class="nt">(uri, format, **kwargs)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/imageio/v2.py:522,</span> in <span class="ni">volread</span><span class="nt">(uri, format, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">520</span> <span class="n">imopen_args</span> <span class="o">=</span> <span class="n">decypher_format_arg</span><span class="p">(</span><span class="nb">format</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">521</span> <span class="n">imopen_args</span><span class="p">[</span><span class="s2">&quot;legacy_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="ne">--&gt; </span><span class="mi">522</span> <span class="k">with</span> <span class="n">imopen</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="s2">&quot;rv&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">imopen_args</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">523</span>     <span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/imageio/core/imopen.py:113,</span> in <span class="ni">imopen</span><span class="nt">(uri, io_mode, plugin, extension, format_hint, legacy_mode, **kwargs)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/imageio/core/imopen.py:113,</span> in <span class="ni">imopen</span><span class="nt">(uri, io_mode, plugin, extension, format_hint, legacy_mode, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">111</span>     <span class="n">request</span><span class="o">.</span><span class="n">format_hint</span> <span class="o">=</span> <span class="n">format_hint</span>
 <span class="g g-Whitespace">    </span><span class="mi">112</span> <span class="k">else</span><span class="p">:</span>
 <span class="ne">--&gt; </span><span class="mi">113</span>     <span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">io_mode</span><span class="p">,</span> <span class="n">format_hint</span><span class="o">=</span><span class="n">format_hint</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
@@ -3031,14 +3031,14 @@
 <span class="g g-Whitespace">    </span><span class="mi">117</span> <span class="c1"># fast-path based on plugin</span>
 <span class="g g-Whitespace">    </span><span class="mi">118</span> <span class="c1"># (except in legacy mode)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/imageio/core/request.py:247,</span> in <span class="ni">Request.__init__</span><span class="nt">(self, uri, mode, extension, format_hint, **kwargs)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/imageio/core/request.py:247,</span> in <span class="ni">Request.__init__</span><span class="nt">(self, uri, mode, extension, format_hint, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">244</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Request.Mode: </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">246</span> <span class="c1"># Parse what was given</span>
 <span class="ne">--&gt; </span><span class="mi">247</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">249</span> <span class="c1"># Set extension</span>
 <span class="g g-Whitespace">    </span><span class="mi">250</span> <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/imageio/core/request.py:407,</span> in <span class="ni">Request._parse_uri</span><span class="nt">(self, uri)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/imageio/core/request.py:407,</span> in <span class="ni">Request._parse_uri</span><span class="nt">(self, uri)</span>
 <span class="g g-Whitespace">    </span><span class="mi">404</span> <span class="k">if</span> <span class="n">is_read_request</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">405</span>     <span class="c1"># Reading: check that the file exists (but is allowed a dir)</span>
 <span class="g g-Whitespace">    </span><span class="mi">406</span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>

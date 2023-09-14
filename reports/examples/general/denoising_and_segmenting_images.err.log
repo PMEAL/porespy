@@ -1,17 +1,17 @@
 Traceback (most recent call last):
-  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+  File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
     executenb(
-  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/nbclient/client.py", line 1305, in execute
+  File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/nbclient/client.py", line 1305, in execute
     return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
-  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/jupyter_core/utils/__init__.py", line 166, in wrapped
+  File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/jupyter_core/utils/__init__.py", line 166, in wrapped
     return loop.run_until_complete(inner)
-  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
+  File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
     return future.result()
-  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/nbclient/client.py", line 705, in async_execute
+  File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/nbclient/client.py", line 705, in async_execute
     await self.async_execute_cell(
-  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/nbclient/client.py", line 1058, in async_execute_cell
+  File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/nbclient/client.py", line 1058, in async_execute_cell
     await self._check_raise_for_error(cell, cell_index, exec_reply)
-  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/nbclient/client.py", line 914, in _check_raise_for_error
+  File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/nbclient/client.py", line 914, in _check_raise_for_error
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
@@ -31,13 +31,13 @@ Cell [0;32mIn[8], line 1[0m
 [1;32m      2[0m im [38;5;241m=[39m (im [38;5;241m-[39m im[38;5;241m.[39mmin())[38;5;241m/[39m(im[38;5;241m.[39mmax() [38;5;241m-[39m im[38;5;241m.[39mmin())
 [1;32m      3[0m fig, ax [38;5;241m=[39m subplots([38;5;241m1[39m, [38;5;241m3[39m, figsize[38;5;241m=[39m[[38;5;241m15[39m, [38;5;241m5[39m])
 
-File [0;32m/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/imageio/v2.py:522[0m, in [0;36mvolread[0;34m(uri, format, **kwargs)[0m
+File [0;32m/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/imageio/v2.py:522[0m, in [0;36mvolread[0;34m(uri, format, **kwargs)[0m
 [1;32m    520[0m imopen_args [38;5;241m=[39m decypher_format_arg([38;5;28mformat[39m)
 [1;32m    521[0m imopen_args[[38;5;124m"[39m[38;5;124mlegacy_mode[39m[38;5;124m"[39m] [38;5;241m=[39m [38;5;28;01mTrue[39;00m
 [0;32m--> 522[0m [38;5;28;01mwith[39;00m [43mimopen[49m[43m([49m[43muri[49m[43m,[49m[43m [49m[38;5;124;43m"[39;49m[38;5;124;43mrv[39;49m[38;5;124;43m"[39;49m[43m,[49m[43m [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43mimopen_args[49m[43m)[49m [38;5;28;01mas[39;00m file:
 [1;32m    523[0m     [38;5;28;01mreturn[39;00m file[38;5;241m.[39mread(index[38;5;241m=[39m[38;5;241m0[39m, [38;5;241m*[39m[38;5;241m*[39mkwargs)
 
-File [0;32m/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/imageio/core/imopen.py:113[0m, in [0;36mimopen[0;34m(uri, io_mode, plugin, extension, format_hint, legacy_mode, **kwargs)[0m
+File [0;32m/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/imageio/core/imopen.py:113[0m, in [0;36mimopen[0;34m(uri, io_mode, plugin, extension, format_hint, legacy_mode, **kwargs)[0m
 [1;32m    111[0m     request[38;5;241m.[39mformat_hint [38;5;241m=[39m format_hint
 [1;32m    112[0m [38;5;28;01melse[39;00m:
 [0;32m--> 113[0m     request [38;5;241m=[39m [43mRequest[49m[43m([49m[43muri[49m[43m,[49m[43m [49m[43mio_mode[49m[43m,[49m[43m [49m[43mformat_hint[49m[38;5;241;43m=[39;49m[43mformat_hint[49m[43m,[49m[43m [49m[43mextension[49m[38;5;241;43m=[39;49m[43mextension[49m[43m)[49m
@@ -45,14 +45,14 @@ File [0;32m/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/i
 [1;32m    117[0m [38;5;66;03m# fast-path based on plugin[39;00m
 [1;32m    118[0m [38;5;66;03m# (except in legacy mode)[39;00m
 
-File [0;32m/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/imageio/core/request.py:247[0m, in [0;36mRequest.__init__[0;34m(self, uri, mode, extension, format_hint, **kwargs)[0m
+File [0;32m/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/imageio/core/request.py:247[0m, in [0;36mRequest.__init__[0;34m(self, uri, mode, extension, format_hint, **kwargs)[0m
 [1;32m    244[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([38;5;124mf[39m[38;5;124m"[39m[38;5;124mInvalid Request.Mode: [39m[38;5;132;01m{[39;00mmode[38;5;132;01m}[39;00m[38;5;124m"[39m)
 [1;32m    246[0m [38;5;66;03m# Parse what was given[39;00m
 [0;32m--> 247[0m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_parse_uri[49m[43m([49m[43muri[49m[43m)[49m
 [1;32m    249[0m [38;5;66;03m# Set extension[39;00m
 [1;32m    250[0m [38;5;28;01mif[39;00m extension [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
 
-File [0;32m/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/imageio/core/request.py:407[0m, in [0;36mRequest._parse_uri[0;34m(self, uri)[0m
+File [0;32m/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/imageio/core/request.py:407[0m, in [0;36mRequest._parse_uri[0;34m(self, uri)[0m
 [1;32m    404[0m [38;5;28;01mif[39;00m is_read_request:
 [1;32m    405[0m     [38;5;66;03m# Reading: check that the file exists (but is allowed a dir)[39;00m
 [1;32m    406[0m     [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m os[38;5;241m.[39mpath[38;5;241m.[39mexists(fn):
