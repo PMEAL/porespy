@@ -70,13 +70,10 @@ class VisualizationTest():
         bd[:, 0] = True
         inv, size = ps.simulations.ibip(im=im, inlets=bd)
         satn = ps.filters.seq_to_satn(seq=inv, im=im)
-        try:
-            mov = ps.visualization.satn_to_movie(im, satn, cmap='viridis',
-                                                 c_under='grey', c_over='white',
-                                                 v_under=1e-3, v_over=1.0, fps=10,
-                                                 repeat=False)
-        except:
-            pass
+        # mov = ps.visualization.satn_to_movie(im, satn, cmap='viridis',
+        #                                      c_under='grey', c_over='white',
+        #                                      v_under=1e-3, v_over=1.0, fps=10,
+        #                                      repeat=False)
         # mov.save('image_based_ip.gif', writer='pillow', fps=10)
 
     def test_satn_to_panels(self):
