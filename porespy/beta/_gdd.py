@@ -3,13 +3,54 @@ from porespy import simulations, tools, settings
 from porespy.tools import Results
 import numpy as np
 import openpnm as op
-from pandas import DataFrame
 import dask.delayed
 import dask
 import edt
+import pandas as pd
 
-__all__ = ['tortuosity_gdd', 'chunks_to_dataframe']
-settings.loglevel=50
+
+__all__ = [
+    'tortuosity_gdd',
+    'chunks_to_dataframe',
+    'rev_tortuosity',
+]
+
+
+tqdm = tools.get_tqdm()
+settings.loglevel = 50
+
+
+def rev_tortuosity(im, maxsize=100):
+    r"""
+    Compute data for a representative element volume plot based on tortuosity
+
+    Parameters
+    ----------
+    im : ndarray
+        A boolean image of the porous media with `True` values indicating the phase
+        of interest.
+    maxsize : int
+        The maximum size of blocks to analyze.  Placing an upper limit on the
+        size of the blocks can avoid time consuming computations.
+
+    Returns
+    -------
+    df : pandas DataFrame
+        A DataFrame with the tortuosity and volume for each block, along with
+        other useful data like the porosity.
+
+    """
+    a = np.ceil(min(im.shape)/maxsize).astype(int)
+    block_size = min(im.shape) // np.arange(a, 1000)  # Generate WAY more than needed
+    block_size = block_size[block_size >= 10]  # Trim to 10 and higher
+    tau = []
+    for s in tqdm(block_size):
+        tau.append(chunks_to_dataframe(im, block_size=s))
+    df = pd.concat(tau)
+    del df['Diffusive Conductance']
+    del df['Throat Number']
+    df = df[df.Tortuosity > 1]
+    return df
 
 
 @dask.delayed
@@ -28,11 +69,12 @@ def calc_g(image, axis):
     '''
     try:
         # if tortuosity_fd fails, throat is closed off from whichever axis was specified
-        results = simulations.tortuosity_fd(im=image, axis=axis)
+        solver = op.solvers.PyamgRugeStubenSolver(tol=1e-5)
+        results = simulations.tortuosity_fd(im=image, axis=axis, solver=solver)
 
     except Exception:
         # a is diffusive conductance, b is tortuosity
-        a, b = (0, 99)
+        a, b = (0, -1)
 
         return (a, b)
 
@@ -105,8 +147,9 @@ def chunking(spacing, divs):
     return np.array(slices, dtype=int)
 
 
-def tortuosity_gdd(im, scale_factor=3, use_dask=True):
-    r'''Calculates the resistor network tortuosity.
+def tortuosity_gdd(im, scale_factor=3, block_size=None, use_dask=True):
+    r'''
+    Calculates the resistor network tortuosity.
 
     Parameters
     ----------
@@ -123,34 +166,17 @@ def tortuosity_gdd(im, scale_factor=3, use_dask=True):
     '''
     t0 = time.perf_counter()
 
-    dt = edt.edt(im)
-    print(f'Max distance transform found: {np.round(dt.max(), 3)}')
-
-    # determining the number of chunks in each direction, minimum of 3 is required
-    if np.all(im.shape//(scale_factor*dt.max())>np.array([3, 3, 3])):
-
-        # if the minimum is exceeded, then chunk number is validated
-        # integer division is required for defining chunk shapes
-        chunk_shape=np.array(im.shape//(dt.max()*scale_factor), dtype=int)
-        print(f"{chunk_shape} > [3,3,3], using {(im.shape//chunk_shape)} as chunk size.")
-
-    # otherwise, the minimum of 3 in all directions is used
-    else:
-        chunk_shape=np.array([3, 3, 3])
-        print(f"{np.array(im.shape//(dt.max()*scale_factor), dtype=int)} <= [3,3,3], \
-using {im.shape[0]//3} as chunk size.")
+    chunk_shape, chunk_size = \
+        _parse_blocks(im, block_size=block_size, scale_factor=scale_factor)
 
     t1 = time.perf_counter() - t0
-
-    # determines chunk size
-    chunk_size = np.floor(im.shape/np.array(chunk_shape))
 
     # creates the masked images - removes half of a chunk from both ends of one axis
     x_image = im[int(chunk_size[0]//2): int(im.shape[0] - chunk_size[0] //2), :, :]
     y_image = im[:, int(chunk_size[1]//2): int(im.shape[1] - chunk_size[1] //2), :]
     z_image = im[:, :, int(chunk_size[2]//2): int(im.shape[2] - chunk_size[2] //2)]
 
-    t2 = time.perf_counter()- t0
+    t2 = time.perf_counter() - t0
 
     # creates the chunks for each masked image
     x_slices = chunking(spacing=chunk_size,
@@ -160,7 +186,7 @@ using {im.shape[0]//3} as chunk size.")
     z_slices = chunking(spacing=chunk_size,
                         divs=[chunk_shape[0], chunk_shape[1], chunk_shape[2]-1])
 
-    t3 = time.perf_counter()- t0
+    t3 = time.perf_counter() - t0
     # queues up dask delayed function to be run in parallel
 
     x_gD = [calc_g(x_image[x_slice[0, 0]:x_slice[0, 1],
@@ -202,41 +228,39 @@ using {im.shape[0]//3} as chunk size.")
     all_tau = [result.tortuosity if type(result)!=int
                else result for result in all_tau_unfiltered]
 
-    t4 = time.perf_counter()- t0
+    t4 = time.perf_counter() - t0
 
     # creates opnepnm network to calculate image tortuosity
     net = op.network.Cubic(chunk_shape)
     air = op.phase.Phase(network=net)
 
-    air['throat.diffusive_conductance']=np.array(all_gD).flatten()
+    air['throat.diffusive_conductance'] = np.array(all_gD).flatten()
 
     # calculates throat tau in x, y, z directions
     throat_tau = [
-    # x direction
-    network_calc(image=im,
-                 chunk_size=chunk_size,
-                 network=net,
-                 phase=air,
-                 bc=['left', 'right'],
-                 axis=1),
+        # x direction
+        network_calc(image=im,
+                     chunk_size=chunk_size,
+                     network=net,
+                     phase=air,
+                     bc=['left', 'right'],
+                     axis=1),
+        # y direction
+        network_calc(image=im,
+                     chunk_size=chunk_size,
+                     network=net,
+                     phase=air,
+                     bc=['front', 'back'],
+                     axis=2),
+        # z direction
+        network_calc(image=im,
+                     chunk_size=chunk_size,
+                     network=net,
+                     phase=air,
+                     bc=['top', 'bottom'],
+                     axis=0)]
 
-    # y direction
-    network_calc(image=im,
-                 chunk_size=chunk_size,
-                 network=net,
-                 phase=air,
-                 bc=['front', 'back'],
-                 axis=2),
-
-    # z direction
-    network_calc(image=im,
-                 chunk_size=chunk_size,
-                 network=net,
-                 phase=air,
-                 bc=['top', 'bottom'],
-                 axis=0)]
-
-    t5 = time.perf_counter()- t0
+    t5 = time.perf_counter() - t0
 
     output = Results()
     output.__setitem__('tau', throat_tau)
@@ -246,14 +270,36 @@ using {im.shape[0]//3} as chunk size.")
     return output
 
 
-def chunks_to_dataframe(im, scale_factor=3, use_dask=True):
-    r'''Calculates the resistor network tortuosity.
+def _parse_blocks(im, scale_factor=None, block_size=None):
+    if block_size is None:
+        dt = edt.edt(im)
+        print(f'Max distance transform found: {np.round(dt.max(), 3)}')
+        # determining the number of chunks in each direction, minimum of 3 is required
+        if np.all(im.shape // (scale_factor*dt.max()) > np.array([3, 3, 3])):
+            # if the minimum is exceeded, then chunk number is validated
+            # integer division is required for defining chunk shapes
+            chunk_shape = np.array(im.shape // (dt.max()*scale_factor), dtype=int)
+            print(f"{chunk_shape} > [3,3,3], using {(im.shape//chunk_shape)} as chunk size.")
+        # otherwise, the minimum of 3 in all directions is used
+        else:
+            chunk_shape = np.array([3, 3, 3])
+            print(f"{np.array(im.shape//(dt.max()*scale_factor), dtype=int)} <= [3,3,3], \
+    using {im.shape[0]//3} as chunk size.")
+    else:
+        chunk_shape = np.array(np.array(im.shape) // np.array(block_size), dtype=int)
+    # determines chunk size
+    chunk_size = np.floor(im.shape/np.array(chunk_shape)).astype(int)
+    return chunk_shape, chunk_size
+
+
+def chunks_to_dataframe(im, scale_factor=3, block_size=None, use_dask=True):
+    r'''
+    Calculates the resistor network tortuosity.
 
     Parameters
     ----------
-    im : np.ndarray
+    im : ndarray
         The binary image to analyze with ``True`` indicating phase of interest
-
     chunk_shape : list
         Contains the number of chunks to be made in the x, y, z directions.
 
@@ -263,30 +309,13 @@ def chunks_to_dataframe(im, scale_factor=3, use_dask=True):
         Contains throat numbers, tau values, diffusive conductance values, and porosity
 
     '''
-    dt = edt.edt(im)
-    print(f'Max distance transform found: {np.round(dt.max(), 3)}')
-
-    # determining the number of chunks in each direction, minimum of 3 is required
-    if np.all(im.shape//(scale_factor*dt.max())>np.array([3, 3, 3])):
-
-        # if the minimum is exceeded, then chunk number is validated
-        # integer division is required for defining chunk shapes
-        chunk_shape=np.array(im.shape//(dt.max()*scale_factor), dtype=int)
-        print(f"{chunk_shape} > [3,3,3], using {(im.shape//chunk_shape)} as chunk size.")
-
-    # otherwise, the minimum of 3 in all directions is used
-    else:
-        chunk_shape=np.array([3, 3, 3])
-        print(f"{np.array(im.shape//(dt.max()*scale_factor), dtype=int)} <= [3,3,3], \
-using {im.shape[0]//3} as chunk size.")
-
-    # determines chunk size
-    chunk_size = np.floor(im.shape/np.array(chunk_shape))
+    chunk_shape, chunk_size = \
+        _parse_blocks(im=im, scale_factor=scale_factor, block_size=block_size)
 
     # creates the masked images - removes half of a chunk from both ends of one axis
-    x_image = im[int(chunk_size[0]//2): int(im.shape[0] - chunk_size[0] //2), :, :]
-    y_image = im[:, int(chunk_size[1]//2): int(im.shape[1] - chunk_size[1] //2), :]
-    z_image = im[:, :, int(chunk_size[2]//2): int(im.shape[2] - chunk_size[2] //2)]
+    x_image = im[int(chunk_size[0]//2): int(im.shape[0] - chunk_size[0]//2), :, :]
+    y_image = im[:, int(chunk_size[1]//2): int(im.shape[1] - chunk_size[1]//2), :]
+    z_image = im[:, :, int(chunk_size[2]//2): int(im.shape[2] - chunk_size[2]//2)]
 
     # creates the chunks for each masked image
     x_slices = chunking(spacing=chunk_size,
@@ -312,44 +341,63 @@ using {im.shape[0]//3} as chunk size.")
                            z_slice[2, 0]:z_slice[2, 1],],
                            axis=2) for z_slice in z_slices]
 
+    # compute volume of each block
+    x_vol = [np.size(x_image[x_slice[0, 0]:x_slice[0, 1],
+                             x_slice[1, 0]:x_slice[1, 1],
+                             x_slice[2, 0]:x_slice[2, 1],])
+             for x_slice in x_slices]
+
+    y_vol = [np.size(y_image[y_slice[0, 0]:y_slice[0, 1],
+                             y_slice[1, 0]:y_slice[1, 1],
+                             y_slice[2, 0]:y_slice[2, 1],])
+             for y_slice in y_slices]
+
+    z_vol = [np.size(z_image[z_slice[0, 0]:z_slice[0, 1],
+                             z_slice[1, 0]:z_slice[1, 1],
+                             z_slice[2, 0]:z_slice[2, 1],])
+             for z_slice in z_slices]
+    volumes = np.hstack((z_vol, y_vol, x_vol))
+
     # order of throat creation
     all_values = [z_gD, y_gD, x_gD]
 
     if use_dask:
         all_results = np.array(dask.compute(all_values), dtype=object).flatten()
-
     else:
         all_values = np.array(all_values).flatten()
         all_results = []
         for item in all_values:
             all_results.append(item.compute())
-
         all_results = np.array(all_results).flatten()
 
     all_gD = [result for result in all_results[::2]]
     all_tau_unfiltered = [result for result in all_results[1::2]]
-
     all_porosity = [result.effective_porosity if type(result)!=int
                     else result for result in all_tau_unfiltered]
     all_tau = [result.tortuosity if type(result)!=int
                else result for result in all_tau_unfiltered]
 
-    # creates opnepnm network to calculate image tortuosity
+    # create opnepnm network to calculate image tortuosity
     net = op.network.Cubic(chunk_shape)
+    net.add_model(propname='throat.vector',
+                  model=op.models.geometry.throat_vector.pore_to_pore)
+    net.regenerate_models()
+    axis = np.where(net['throat.vector'] > 0)[1]
 
-    df = DataFrame(list(zip(np.arange(net.Nt), all_tau, all_gD, all_porosity)),
-                        columns=['Throat Number', 'Tortuosity',
-                                 'Diffusive Conductance', 'Porosity'])
-
+    df = pd.DataFrame(
+        list(zip(np.arange(net.Nt), all_tau, all_gD, all_porosity, axis, volumes)),
+        columns=['Throat Number', 'Tortuosity', 'Diffusive Conductance',
+                 'Porosity', 'Axis', 'Volume'])
     return df
 
 
 if __name__ =="__main__":
     import porespy as ps
     import numpy as np
+    from porespy import beta
     np.random.seed(1)
     im = ps.generators.blobs(shape=[100, 100, 100], porosity=0.7)
-    res = ps.simulations.tortuosity_gdd(im=im, scale_factor=3, use_dask=True)
+    res = beta.tortuosity_gdd(im=im, scale_factor=3, use_dask=True)
     print(res)
 
     # np.random.seed(2)
