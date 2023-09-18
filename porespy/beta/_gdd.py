@@ -20,7 +20,7 @@ tqdm = tools.get_tqdm()
 settings.loglevel = 50
 
 
-def rev_tortuosity(im, maxsize=100):
+def rev_tortuosity(im, block_size_lim=[10, 100]):
     r"""
     Compute data for a representative element volume plot based on tortuosity
 
@@ -29,33 +29,36 @@ def rev_tortuosity(im, maxsize=100):
     im : ndarray
         A boolean image of the porous media with `True` values indicating the phase
         of interest.
-    maxsize : int
-        The maximum size of blocks to analyze.  Placing an upper limit on the
-        size of the blocks can avoid time consuming computations.
+    block_size_lim : list of ints
+        The upper and lower bounds of the block sizes to use.  The defaults are
+        10 to 100 voxels.  Placing an upper limit on the size of the blocks can
+        avoid time consuming computations, while placing a lower limit can avoid
+        computing values for meaninglessly small blocks.
 
     Returns
     -------
-    df : pandas DataFrame
-        A DataFrame with the tortuosity and volume for each block, along with
-        other useful data like the porosity.
+    df : DataFrame
+        A `pandas` DataFrame with the tortuosity and volume for each block, along
+        with other useful data like the porosity.
 
     """
-    a = np.ceil(min(im.shape)/maxsize).astype(int)
-    block_size = min(im.shape) // np.arange(a, 1000)  # Generate WAY more than needed
-    block_size = block_size[block_size >= 10]  # Trim to 10 and higher
+    mn, mx = block_size_lim
+    a = np.ceil(min(im.shape)/mx).astype(int)
+    block_size = min(im.shape) // np.arange(a, 9999)  # Generate WAY more than needed
+    block_size = block_size[block_size >= mn]  # Trim to given min block size
     tau = []
     for s in tqdm(block_size):
         tau.append(chunks_to_dataframe(im, block_size=s))
     df = pd.concat(tau)
-    del df['Diffusive Conductance']
     del df['Throat Number']
-    df = df[df.Tortuosity > 1]
+    df = df[df.Tortuosity < np.inf]  # inf values mean block did not percolate
     return df
 
 
 @dask.delayed
 def calc_g(image, axis):
-    r'''Calculates diffusive conductance of an image.
+    r"""
+    Calculates diffusive conductance of an image.
 
     Parameters
     ----------
@@ -63,10 +66,10 @@ def calc_g(image, axis):
         The binary image to analyze with ``True`` indicating phase of interest.
     axis : int
         0 for x-axis, 1 for y-axis, 2 for z-axis.
-    result: int
+    result : int
         0 for diffusive conductance, 1 for both diffusive conductance
         and results object from Porespy.
-    '''
+    """
     try:
         # if tortuosity_fd fails, throat is closed off from whichever axis was specified
         solver = op.solvers.PyamgRugeStubenSolver(tol=1e-5)
@@ -74,7 +77,7 @@ def calc_g(image, axis):
 
     except Exception:
         # a is diffusive conductance, b is tortuosity
-        a, b = (0, -1)
+        a, b = (0, np.inf)
 
         return (a, b)
 
@@ -155,7 +158,6 @@ def tortuosity_gdd(im, scale_factor=3, block_size=None, use_dask=True):
     ----------
     im : np.ndarray
         The binary image to analyze with ``True`` indicating phase of interest
-
     chunk_shape : list
         Contains the number of chunks to be made in the x,y,z directions.
 
