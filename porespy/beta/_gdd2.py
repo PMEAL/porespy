@@ -112,12 +112,13 @@ def estimate_block_size(im, scale_factor=3, mode='radial'):
     mode : str
         Which method to use when estimating the block size. Options are:
 
-        -------- --------------------------------------------------------------------
+        ======== ====================================================================
         mode     description
-        -------- --------------------------------------------------------------------
+        ======== ====================================================================
         radial   Uses the maximum of the distance transform
-        linear   Uses chords drawn in all three directions, then uses the mean length
-        -------- --------------------------------------------------------------------
+        linear   Draws chords drawn in all three directions, then uses the median
+                 length
+        ======== ====================================================================
 
     Returns
     -------
@@ -127,7 +128,7 @@ def estimate_block_size(im, scale_factor=3, mode='radial'):
         size will be used if passed into another function.
     """
     if mode.startswith('rad'):
-        dt = edt(im)
+        dt = edt(im, parallel=settings.ncores)
         x = min(dt.max()*scale_factor, min(im.shape)/2)  # Div by 2 is fewest blocks
         size = np.array([x, x, x], dtype=int)
     elif mode.startswith('lin'):
@@ -135,7 +136,7 @@ def estimate_block_size(im, scale_factor=3, mode='radial'):
         for ax in range(im.ndim):
             crds = ps.filters.apply_chords(im, axis=ax)
             crd_sizes = ps.filters.region_size(crds > 0)
-            L = np.mean(crd_sizes[crds > 0])/2  # Divide by 2 to make it a radius
+            L = np.median(crd_sizes[crds > 0])/2  # Divide by 2 to make it a radius
             L = min(L*scale_factor, im.shape[ax]/2)  # Div by 2 is fewest blocks
             size.append(L)
         size = np.array(size, dtype=int)
