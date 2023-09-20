@@ -76,8 +76,7 @@ def rev_tortuosity(im, block_size_range=[10, 100]):
     for s in tqdm(block_sizes):
         tau.append(blocks_to_dataframe(im, block_size=s))
     df = pd.concat(tau)
-    del df['Throat Number']
-    df = df[df.Tortuosity < np.inf]  # inf values mean block did not percolate
+    df = df[df.tau < np.inf]  # inf values mean block did not percolate
     return df
 
 
