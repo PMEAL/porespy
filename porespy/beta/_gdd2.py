@@ -12,6 +12,7 @@ from porespy import settings
 __all__ = [
     'tortuosity_by_blocks',
     'rev_tortuosity',
+    'blocks_to_dataframe',
 ]
 
 
@@ -52,15 +53,24 @@ def rev_tortuosity(im, block_size_range=[10, 100]):
         A boolean image of the porous media with `True` values indicating the phase
         of interest.
     block_size_range : sequence of 2 ints
-        The [lower, upper] range of the desired block sizes. Default is [10, 100]
+        The [lower, upper] range of the desired block sizes. Default is [10, 100].
+        If a single value is supplied then only that block size is used.
 
     Returns
     -------
     df : DataFrame
         A `pandas` DataFrame with the tortuosity and volume for each block, along
         with other useful data like the porosity.
+
+    Notes
+    -----
+    DataFrames can be concatentated using `pandas.concat((df1, df2))`, so the
+    results can be combined easily if calling this function multiple times.
     """
-    block_sizes = get_block_sizes(im.shape, block_size_range=[10, 100])
+    if isinstance(block_size_range, int) or (len(block_size_range) == 1):
+        block_size_range = list(block_size_range)
+    else:
+        block_sizes = get_block_sizes(im.shape, block_size_range=[10, 100])
     tau = []
     for s in tqdm(block_sizes):
         tau.append(blocks_to_dataframe(im, block_size=s))
@@ -81,6 +91,11 @@ def calc_g(im, axis):
         The binary image to analyze with ``True`` indicating phase of interest.
     axis : int
         0 for x-axis, 1 for y-axis, 2 for z-axis.
+
+    Returns
+    -------
+    results : dataclass-like
+        An object with the results of the calculation as attributes.
     """
     from porespy.simulations import tortuosity_fd
     try:
@@ -159,10 +174,12 @@ def block_size_to_divs(shape, block_size):
     Returns
     -------
     divs : list of ints
-        The number of blocks to divide the image into along each axis
+        The number of blocks to divide the image into along each axis. The minimum
+        number of blocks is 2.
     """
     shape = np.array(shape)
     divs = (shape/np.array(block_size)).astype(int)
+    divs = np.clip(divs, a_min=2, a_max=shape)
     return divs
 
 
@@ -192,7 +209,7 @@ def blocks_to_dataframe(im, block_size):
         block_size = max(block_size)
     df = pd.DataFrame()
     offset = int(block_size/2)
-    for axis in tqdm(range(im.ndim)):
+    for axis in tqdm(range(im.ndim), **settings.tqdm):
         im_temp = np.swapaxes(im, 0, axis)
         im_temp = im_temp[offset:-offset, ...]
         divs = block_size_to_divs(shape=im_temp.shape, block_size=block_size)
@@ -292,9 +309,7 @@ def tortuosity_by_blocks(im, block_size=None):
 
 if __name__ =="__main__":
     import porespy as ps
-    import numpy as np
-    import matplotlib.pyplot as plt
-    im = ps.generators.cylinders(shape=[200, 200, 200], porosity=0.5, r=3, seed=1)
+    im = ps.generators.cylinders(shape=[300, 200, 100], porosity=0.5, r=3, seed=1)
     block_size = estimate_block_size(im, scale_factor=3, mode='linear')
     tau = tortuosity_by_blocks(im=im, block_size=block_size)
     print(tau)
