@@ -5,7 +5,8 @@ import logging
 import dask
 from dask.distributed import Client, LocalCluster
 from edt import edt
-from porespy.tools import Results, get_tqdm
+from porespy.tools import Results, get_tqdm, subdivide
+from porespy.filters import apply_chords, region_size
 from porespy import settings
 
 
@@ -149,8 +150,8 @@ def estimate_block_size(im, scale_factor=3, mode='radial'):
     elif mode.startswith('lin'):
         size = []
         for ax in range(im.ndim):
-            crds = ps.filters.apply_chords(im, axis=ax)
-            crd_sizes = ps.filters.region_size(crds > 0)
+            crds = apply_chords(im, axis=ax)
+            crd_sizes = region_size(crds > 0)
             L = np.median(crd_sizes[crds > 0])/2  # Divide by 2 to make it a radius
             L = min(L*scale_factor, im.shape[ax]/2)  # Div by 2 is fewest blocks
             size.append(L)
@@ -213,7 +214,7 @@ def blocks_to_dataframe(im, block_size):
         im_temp = np.swapaxes(im, 0, axis)
         im_temp = im_temp[offset:-offset, ...]
         divs = block_size_to_divs(shape=im_temp.shape, block_size=block_size)
-        slices = ps.tools.subdivide(im_temp, divs)
+        slices = subdivide(im_temp, divs)
         queue = []
         for s in slices:
             queue.append(calc_g(im_temp[s], axis=0))
