@@ -1,26 +1,21 @@
-import time
-from porespy import simulations, tools, settings
-from porespy.tools import Results
 import numpy as np
 import openpnm as op
-import dask.delayed
-import dask
-import edt
 import pandas as pd
-from dask.distributed import Client, LocalCluster
 import logging
-import porespy as ps
+import dask
+from dask.distributed import Client, LocalCluster
+from edt import edt
+from porespy.tools import Results, get_tqdm
+from porespy import settings
 
 
 __all__ = [
-    'network_to_tau',
     'tortuosity_by_blocks',
-    'blocks_to_dataframe',
     'rev_tortuosity',
 ]
 
 
-tqdm = tools.get_tqdm()
+tqdm = get_tqdm()
 settings.loglevel = 50
 
 
@@ -47,28 +42,6 @@ def get_block_sizes(shape, block_size_range=[10, 100]):
     return block_sizes
 
 
-def get_divs(shape, block_size_range=[10, 100]):
-    r"""
-    Finds all the viable ways the image can be divided between the lower and upper
-    limits
-
-    Parameters
-    ----------
-    shape : sequence of int
-        The [x, y, z] size of the image
-    block_size_range : sequence of 2 ints
-        The [lower, upper] range of the desired block sizes. Default is [10, 100]
-
-    Returns
-    -------
-    sizes : ndarray
-        All the viable block sizes in the specified range
-    """
-    Lmin, Lmax = block_size_range
-    num_blocks = np.unique((min(shape)/np.arange(Lmin, Lmax)).astype(int))
-    return num_blocks
-
-
 def rev_tortuosity(im, block_size_range=[10, 100]):
     r"""
     Computes data for a representative element volume plot based on tortuosity
@@ -78,25 +51,18 @@ def rev_tortuosity(im, block_size_range=[10, 100]):
     im : ndarray
         A boolean image of the porous media with `True` values indicating the phase
         of interest.
-    block_size_range : sequence of ints
-        The upper and lower bounds of the block sizes to use. The defaults are
-        10 to 100 voxels.  Placing an upper limit on the size of the blocks can
-        avoid time consuming computations, while placing a lower limit can avoid
-        computing values for meaninglessly small blocks.
+    block_size_range : sequence of 2 ints
+        The [lower, upper] range of the desired block sizes. Default is [10, 100]
 
     Returns
     -------
     df : DataFrame
         A `pandas` DataFrame with the tortuosity and volume for each block, along
         with other useful data like the porosity.
-
     """
-    mn, mx = block_size_range
-    a = np.ceil(min(im.shape)/mx).astype(int)
-    block_size = min(im.shape) // np.arange(a, 9999)  # Generate WAY more than needed
-    block_size = block_size[block_size >= mn]  # Trim to given min block size
+    block_sizes = get_block_sizes(im.shape, block_size_range=[10, 100])
     tau = []
-    for s in tqdm(block_size):
+    for s in tqdm(block_sizes):
         tau.append(blocks_to_dataframe(im, block_size=s))
     df = pd.concat(tau)
     del df['Throat Number']
@@ -111,14 +77,15 @@ def calc_g(im, axis):
 
     Parameters
     ----------
-    image : np.ndarray
+    image : ndarray
         The binary image to analyze with ``True`` indicating phase of interest.
     axis : int
         0 for x-axis, 1 for y-axis, 2 for z-axis.
     """
+    from porespy.simulations import tortuosity_fd
     try:
         solver = op.solvers.PyamgRugeStubenSolver(tol=1e-6)
-        results = simulations.tortuosity_fd(im=im, axis=axis, solver=solver)
+        results = tortuosity_fd(im=im, axis=axis, solver=solver)
     except Exception:
         results = Results()
         results.effective_porosity = 0.0
@@ -128,7 +95,7 @@ def calc_g(im, axis):
     A = np.prod(im.shape)/im.shape[axis]
     g = (results.effective_porosity * A) / (results.tortuosity * L)
     results.diffusive_conductance = g
-    return (g, results)
+    return results
 
 
 def estimate_block_size(im, scale_factor=3, mode='radial'):
@@ -158,10 +125,9 @@ def estimate_block_size(im, scale_factor=3, mode='radial'):
         The block size in a 3 directions. If `mode='radial'` these will all be equal.
         If `mode='linear'` they could differ in each direction.  The largest block
         size will be used if passed into another function.
-
     """
     if mode.startswith('rad'):
-        dt = edt.edt(im)
+        dt = edt(im)
         x = min(dt.max()*scale_factor, min(im.shape)/2)  # Div by 2 is fewest blocks
         size = np.array([x, x, x], dtype=int)
     elif mode.startswith('lin'):
@@ -179,14 +145,24 @@ def estimate_block_size(im, scale_factor=3, mode='radial'):
 
 
 def block_size_to_divs(shape, block_size):
+    r"""
+    Finds the number of blocks in each direction given the size of the blocks
+
+    Parameters
+    ----------
+    shape : sequence of ints
+        The [x, y, z] shape of the image
+    block_size : int or sequence of ints
+        The size of the blocks
+
+    Returns
+    -------
+    divs : list of ints
+        The number of blocks to divide the image into along each axis
+    """
     shape = np.array(shape)
-    divs = (shape/block_size).astype(int)
+    divs = (shape/np.array(block_size)).astype(int)
     return divs
-
-
-def divs_to_block_size(shape, divs):
-    block_size = (np.array(shape)/divs).astype(int)
-    return block_size
 
 
 def blocks_to_dataframe(im, block_size):
@@ -206,7 +182,6 @@ def blocks_to_dataframe(im, block_size):
     -------
     df : dataframe
         A `pandas` data frame with the properties for each block on a given row.
-
     """
     if dask.distributed.client._get_global_client() is None:
         client = Client(LocalCluster(silence_logs=logging.CRITICAL))
@@ -226,10 +201,10 @@ def blocks_to_dataframe(im, block_size):
             queue.append(calc_g(im_temp[s], axis=0))
         results = dask.compute(queue, scheduler=client)[0]
         df_temp = pd.DataFrame()
-        df_temp['eps_orig'] = [r[1].original_porosity for r in results]
-        df_temp['eps_perc'] = [r[1].effective_porosity for r in results]
-        df_temp['g'] = [r[1].diffusive_conductance for r in results]
-        df_temp['tau'] = [r[1].tortuosity for r in results]
+        df_temp['eps_orig'] = [r.original_porosity for r in results]
+        df_temp['eps_perc'] = [r.effective_porosity for r in results]
+        df_temp['g'] = [r.diffusive_conductance for r in results]
+        df_temp['tau'] = [r.tortuosity for r in results]
         df_temp['axis'] = [axis for _ in results]
         df = pd.concat((df, df_temp))
     return df
@@ -318,8 +293,7 @@ if __name__ =="__main__":
     import porespy as ps
     import numpy as np
     import matplotlib.pyplot as plt
-    np.random.seed(1)
-    im = ps.generators.cylinders(shape=[200, 200, 200], porosity=0.7, r=3)
+    im = ps.generators.cylinders(shape=[200, 200, 200], porosity=0.5, r=3, seed=1)
     block_size = estimate_block_size(im, scale_factor=3, mode='linear')
     tau = tortuosity_by_blocks(im=im, block_size=block_size)
     print(tau)

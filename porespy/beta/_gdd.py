@@ -12,47 +12,11 @@ import pandas as pd
 __all__ = [
     'tortuosity_gdd',
     'chunks_to_dataframe',
-    'rev_tortuosity',
 ]
 
 
 tqdm = tools.get_tqdm()
 settings.loglevel = 50
-
-
-def rev_tortuosity(im, block_size_lim=[10, 100]):
-    r"""
-    Compute data for a representative element volume plot based on tortuosity
-
-    Parameters
-    ----------
-    im : ndarray
-        A boolean image of the porous media with `True` values indicating the phase
-        of interest.
-    block_size_lim : list of ints
-        The upper and lower bounds of the block sizes to use.  The defaults are
-        10 to 100 voxels.  Placing an upper limit on the size of the blocks can
-        avoid time consuming computations, while placing a lower limit can avoid
-        computing values for meaninglessly small blocks.
-
-    Returns
-    -------
-    df : DataFrame
-        A `pandas` DataFrame with the tortuosity and volume for each block, along
-        with other useful data like the porosity.
-
-    """
-    mn, mx = block_size_lim
-    a = np.ceil(min(im.shape)/mx).astype(int)
-    block_size = min(im.shape) // np.arange(a, 9999)  # Generate WAY more than needed
-    block_size = block_size[block_size >= mn]  # Trim to given min block size
-    tau = []
-    for s in tqdm(block_size):
-        tau.append(chunks_to_dataframe(im, block_size=s))
-    df = pd.concat(tau)
-    del df['Throat Number']
-    df = df[df.Tortuosity < np.inf]  # inf values mean block did not percolate
-    return df
 
 
 @dask.delayed
