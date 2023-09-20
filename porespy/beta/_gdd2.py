@@ -111,6 +111,7 @@ def calc_g(im, axis):
     A = np.prod(im.shape)/im.shape[axis]
     g = (results.effective_porosity * A) / (results.tortuosity * L)
     results.diffusive_conductance = g
+    results.volume = np.prod(im.shape)
     return results
 
 
@@ -224,6 +225,7 @@ def blocks_to_dataframe(im, block_size):
         df_temp['eps_perc'] = [r.effective_porosity for r in results]
         df_temp['g'] = [r.diffusive_conductance for r in results]
         df_temp['tau'] = [r.tortuosity for r in results]
+        df_temp['volume'] = [r.volume for r in results]
         df_temp['axis'] = [axis for _ in results]
         df = pd.concat((df, df_temp))
     return df
