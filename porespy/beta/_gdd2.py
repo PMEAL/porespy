@@ -6,7 +6,7 @@ import dask
 from dask.distributed import Client, LocalCluster
 from edt import edt
 from porespy.tools import Results, get_tqdm, subdivide
-from porespy.filters import apply_chords, region_size
+from porespy.filters import apply_chords, region_size, fill_blind_pores
 from porespy import settings
 
 
@@ -264,7 +264,7 @@ def network_to_tau(df, im, block_size):
     bcs = {0: {'in': 'left', 'out': 'right'},
            1: {'in': 'front', 'out': 'back'},
            2: {'in': 'top', 'out': 'bottom'}}
-    im_temp = ps.filters.fill_blind_pores(im, surface=True)
+    im_temp = fill_blind_pores(im, surface=True)
     e = np.sum(im_temp, dtype=np.int64) / im_temp.size
     D_AB = 1
     tau = []
