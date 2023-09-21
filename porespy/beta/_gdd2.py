@@ -68,13 +68,15 @@ def rev_tortuosity(im, block_size_range=[10, 100]):
     DataFrames can be concatentated using `pandas.concat((df1, df2))`, so the
     results can be combined easily if calling this function multiple times.
     """
-    if isinstance(block_size_range, int) or (len(block_size_range) == 1):
+    if not np.isscalar(block_size_range) or (len(block_size_range) == 1):
         block_size_range = list(block_size_range)
-    else:
-        block_sizes = get_block_sizes(im.shape, block_size_range=[10, 100])
+    block_sizes = get_block_sizes(im.shape, block_size_range=block_size_range)
     tau = []
-    for s in tqdm(block_sizes):
+    disable = settings.tqdm['disable']
+    for s in tqdm(block_sizes, **settings.tqdm):
+        settings.tqdm['disable'] = True
         tau.append(blocks_to_dataframe(im, block_size=s))
+    settings.tqdm['disable'] = disable
     df = pd.concat(tau)
     df = df[df.tau < np.inf]  # inf values mean block did not percolate
     return df
@@ -206,7 +208,7 @@ def blocks_to_dataframe(im, block_size):
         client = Client(LocalCluster(silence_logs=logging.CRITICAL))
     else:
         client = dask.distributed.client._get_global_client()
-    if not isinstance(block_size, int):  # divs must be equal, so use biggest block
+    if not np.isscalar(block_size):  # divs must be equal, so use biggest block
         block_size = max(block_size)
     df = pd.DataFrame()
     offset = int(block_size/2)
@@ -250,7 +252,7 @@ def network_to_tau(df, im, block_size):
     tau : list of floats
         The tortuosity in all three principal directions
     """
-    if not isinstance(block_size, int):  # divs must be equal, so use biggest block
+    if not np.isscalar(block_size):  # divs must be equal, so use biggest block
         block_size = max(block_size)
     divs = block_size_to_divs(shape=im.shape, block_size=block_size)
     net = op.network.Cubic(shape=divs)
@@ -312,6 +314,7 @@ def tortuosity_by_blocks(im, block_size=None):
 if __name__ =="__main__":
     import porespy as ps
     im = ps.generators.cylinders(shape=[300, 200, 100], porosity=0.5, r=3, seed=1)
+    rev_tortuosity(im, [10, 50])
     block_size = estimate_block_size(im, scale_factor=3, mode='linear')
     tau = tortuosity_by_blocks(im=im, block_size=block_size)
     print(tau)
