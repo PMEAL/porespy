@@ -11,9 +11,9 @@ from porespy import settings
 
 
 __all__ = [
-    'tortuosity_by_blocks',
+    'tortuosity_bt',
     'rev_tortuosity',
-    'blocks_to_dataframe',
+    'analyze_blocks',
 ]
 
 
@@ -75,10 +75,13 @@ def rev_tortuosity(im, block_size_range=[10, 100]):
     disable = settings.tqdm['disable']
     for s in tqdm(block_sizes, **settings.tqdm):
         settings.tqdm['disable'] = True
-        tau.append(blocks_to_dataframe(im, block_size=s))
+        tau.append(analyze_blocks(im, block_size=s, dask_args={'close': False}))
     settings.tqdm['disable'] = disable
     df = pd.concat(tau)
     df = df[df.tau < np.inf]  # inf values mean block did not percolate
+    client = dask.distributed.client._get_global_client()
+    client.cluster.close()
+    client.close()
     return df
 
 
@@ -186,7 +189,7 @@ def block_size_to_divs(shape, block_size):
     return divs
 
 
-def blocks_to_dataframe(im, block_size):
+def analyze_blocks(im, block_size, dask_args={}):
     r"""
     Computes the diffusive conductance for each block and returns values in a
     dataframe
@@ -204,10 +207,12 @@ def blocks_to_dataframe(im, block_size):
     df : dataframe
         A `pandas` data frame with the properties for each block on a given row.
     """
-    if dask.distributed.client._get_global_client() is None:
-        client = Client(LocalCluster(silence_logs=logging.CRITICAL))
-    else:
+    da_kws = {'client': None, 'close': True}
+    da_kws.update(dask_args)  # Overwrite user-supplied values
+    if da_kws['client'] is None:
         client = dask.distributed.client._get_global_client()
+        if client is None:
+            client = Client(LocalCluster(silence_logs=logging.CRITICAL))
     if not np.isscalar(block_size):  # divs must be equal, so use biggest block
         block_size = max(block_size)
     df = pd.DataFrame()
@@ -229,6 +234,9 @@ def blocks_to_dataframe(im, block_size):
         df_temp['volume'] = [r.volume for r in results]
         df_temp['axis'] = [axis for _ in results]
         df = pd.concat((df, df_temp))
+    if da_kws['close']:
+        client.cluster.close()
+        client.close()
     return df
 
 
@@ -286,10 +294,10 @@ def network_to_tau(df, im, block_size):
     return tau
 
 
-def tortuosity_by_blocks(im, block_size=None):
+def tortuosity_bt(im, block_size=None):
     r"""
-    Computes the tortuosity tensor of an image using the geometric domain
-    decomposition method
+    Computes the tortuosity tensor of an image using the "block and tackle"
+    method
 
     Parameters
     ----------
@@ -306,7 +314,7 @@ def tortuosity_by_blocks(im, block_size=None):
     """
     if block_size is None:
         block_size = estimate_block_size(im, scale_factor=3, mode='radial')
-    df = blocks_to_dataframe(im, block_size)
+    df = analyze_blocks(im, block_size)
     tau = network_to_tau(df=df, im=im, block_size=block_size)
     return tau
 
@@ -314,7 +322,8 @@ def tortuosity_by_blocks(im, block_size=None):
 if __name__ =="__main__":
     import porespy as ps
     im = ps.generators.cylinders(shape=[300, 200, 100], porosity=0.5, r=3, seed=1)
-    rev_tortuosity(im, [10, 50])
-    block_size = estimate_block_size(im, scale_factor=3, mode='linear')
-    tau = tortuosity_by_blocks(im=im, block_size=block_size)
-    print(tau)
+    df = rev_tortuosity(im, [20, 40])
+    print(df)
+    # block_size = estimate_block_size(im, scale_factor=3, mode='linear')
+    # tau = tortuosity_bt(im=im, block_size=block_size)
+    # print(tau)
