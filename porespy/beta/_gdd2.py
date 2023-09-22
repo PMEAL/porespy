@@ -48,6 +48,10 @@ def rev_tortuosity(im, block_size_range=[10, 100]):
     r"""
     Computes data for a representative element volume plot based on tortuosity
 
+    This function is a wrapper for `analyze_block`. It basically just determines
+    the block sizes that should be analyzed, then collects the result into a
+    single DataFrame.
+
     Parameters
     ----------
     im : ndarray
@@ -68,27 +72,27 @@ def rev_tortuosity(im, block_size_range=[10, 100]):
     DataFrames can be concatentated using `pandas.concat((df1, df2))`, so the
     results can be combined easily if calling this function multiple times.
     """
-    if not np.isscalar(block_size_range) or (len(block_size_range) == 1):
+    if np.shape(block_size_range) not in ((1,), ()):
         block_size_range = list(block_size_range)
     block_sizes = get_block_sizes(im.shape, block_size_range=block_size_range)
     tau = []
     disable = settings.tqdm['disable']
     for s in tqdm(block_sizes, **settings.tqdm):
         settings.tqdm['disable'] = True
-        tau.append(analyze_blocks(im, block_size=s, dask_args={'close': False}))
+        tau.append(analyze_blocks(im, block_size=s))
     settings.tqdm['disable'] = disable
     df = pd.concat(tau)
     df = df[df.tau < np.inf]  # inf values mean block did not percolate
     client = dask.distributed.client._get_global_client()
-    client.cluster.close()
-    client.close()
+    if client is not None:
+        client.cluster.close()
+        client.close()
     return df
 
 
-@dask.delayed
-def calc_g(im, axis):
+def calc_g(im, axis, solver_args={}):
     r"""
-    Calculates diffusive conductance of an image
+    Calculates diffusive conductance of an image in the direction specified
 
     Parameters
     ----------
@@ -96,15 +100,20 @@ def calc_g(im, axis):
         The binary image to analyze with ``True`` indicating phase of interest.
     axis : int
         0 for x-axis, 1 for y-axis, 2 for z-axis.
+    solver_args : dict
+        Dicionary of keyword arguments to pass on to the solver.  The most
+        relevant one being `'tol'` which is 1e-6 by default. Using larger values
+        might improve speed at the cost of accuracy.
 
     Returns
     -------
     results : dataclass-like
         An object with the results of the calculation as attributes.
     """
+    solver_args = {'tol': 1e-6} | solver_args
     from porespy.simulations import tortuosity_fd
     try:
-        solver = op.solvers.PyamgRugeStubenSolver(tol=1e-6)
+        solver = op.solvers.PyamgRugeStubenSolver(**solver_args)
         results = tortuosity_fd(im=im, axis=axis, solver=solver)
     except Exception:
         results = Results()
@@ -136,9 +145,12 @@ def estimate_block_size(im, scale_factor=3, mode='radial'):
         ======== ====================================================================
         mode     description
         ======== ====================================================================
-        radial   Uses the maximum of the distance transform
+        radial   Uses the maximum of the distance transform. This means that the
+                 value will be unable to see anisotropy and will only detect the
+                 smallest distance.
         linear   Draws chords drawn in all three directions, then uses the median
-                 length
+                 length. If the same is anisotropic this will be a better choice
+                 since it will see that longer distances of the elongated direction.
         ======== ====================================================================
 
     Returns
@@ -189,7 +201,7 @@ def block_size_to_divs(shape, block_size):
     return divs
 
 
-def analyze_blocks(im, block_size, dask_args={}):
+def analyze_blocks(im, block_size, dask_args={}, solver_args={}):
     r"""
     Computes the diffusive conductance for each block and returns values in a
     dataframe
@@ -207,11 +219,11 @@ def analyze_blocks(im, block_size, dask_args={}):
     df : dataframe
         A `pandas` data frame with the properties for each block on a given row.
     """
-    da_kws = {'client': None, 'close': True}
-    da_kws.update(dask_args)  # Overwrite user-supplied values
-    if da_kws['client'] is None:
-        client = dask.distributed.client._get_global_client()
-        if client is None:
+    dask_args = {'client': None, 'close': False} | dask_args
+    solver_args = {'tol': 1e-6} | solver_args
+    if dask_args['client'] is None:  # If client is provided, use it
+        client = dask.distributed.client._get_global_client()  # If one exists use it
+        if client is None:  # Otherwise create one
             client = Client(LocalCluster(silence_logs=logging.CRITICAL))
     if not np.isscalar(block_size):  # divs must be equal, so use biggest block
         block_size = max(block_size)
@@ -224,8 +236,8 @@ def analyze_blocks(im, block_size, dask_args={}):
         slices = subdivide(im_temp, divs)
         queue = []
         for s in slices:
-            queue.append(calc_g(im_temp[s], axis=0))
-        results = dask.compute(queue, scheduler=client)[0]
+            queue.append(dask.delayed(calc_g)(im_temp[s], axis=0))
+        results = dask.compute(*queue, scheduler=client)
         df_temp = pd.DataFrame()
         df_temp['eps_orig'] = [r.original_porosity for r in results]
         df_temp['eps_perc'] = [r.effective_porosity for r in results]
@@ -234,7 +246,7 @@ def analyze_blocks(im, block_size, dask_args={}):
         df_temp['volume'] = [r.volume for r in results]
         df_temp['axis'] = [axis for _ in results]
         df = pd.concat((df, df_temp))
-    if da_kws['close']:
+    if dask_args['close']:
         client.cluster.close()
         client.close()
     return df
@@ -314,7 +326,7 @@ def tortuosity_bt(im, block_size=None):
     """
     if block_size is None:
         block_size = estimate_block_size(im, scale_factor=3, mode='radial')
-    df = analyze_blocks(im, block_size)
+    df = analyze_blocks(im, block_size, dask_args={'close': True})
     tau = network_to_tau(df=df, im=im, block_size=block_size)
     return tau
 
@@ -322,7 +334,9 @@ def tortuosity_bt(im, block_size=None):
 if __name__ =="__main__":
     import porespy as ps
     im = ps.generators.cylinders(shape=[300, 200, 100], porosity=0.5, r=3, seed=1)
-    df = rev_tortuosity(im, [20, 40])
+    ps.tools.tic()
+    df = rev_tortuosity(im, [20, 30])
+    t = ps.tools.toc()
     print(df)
     # block_size = estimate_block_size(im, scale_factor=3, mode='linear')
     # tau = tortuosity_bt(im=im, block_size=block_size)
