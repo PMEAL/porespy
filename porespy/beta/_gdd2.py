@@ -111,8 +111,9 @@ def calc_g(im, axis, solver_args={}):
     results : dataclass-like
         An object with the results of the calculation as attributes.
     """
-    solver_args = {'tol': 1e-6} | solver_args
     from porespy.simulations import tortuosity_fd
+    solver_args = {'tol': 1e-6} | solver_args
+    solver = solver_args.pop('solver', None)
     try:
         solver = op.solvers.PyamgRugeStubenSolver(**solver_args)
         results = tortuosity_fd(im=im, axis=axis, solver=solver)
@@ -138,7 +139,7 @@ def estimate_block_size(im, scale_factor=3, mode='radial'):
     im : ndarray
         The boolean image of the materials with `True` indicating the void space
     scale_factor : int
-        The factor by which to increase the estimating block size to ensure blocks
+        The factor by which to increase the estimated block size to ensure blocks
         are big enough
     mode : str
         Which method to use when estimating the block size. Options are:
@@ -198,7 +199,7 @@ def block_size_to_divs(shape, block_size):
     """
     shape = np.array(shape)
     divs = shape // np.array(block_size)
-    scraps = shape % np.array(block_size)
+    # scraps = shape % np.array(block_size)
     divs = np.clip(divs, a_min=2, a_max=shape)
     return divs
 
