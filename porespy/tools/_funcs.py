@@ -252,7 +252,7 @@ def align_image_with_openpnm(im):
     return im
 
 
-def subdivide(im, divs=2, overlap=0):
+def subdivide(im, divs=2, block_size=None, overlap=0, mode='offset'):
     r"""
     Returns slices into an image describing the specified number of sub-arrays.
 
@@ -266,20 +266,39 @@ def subdivide(im, divs=2, overlap=0):
         The image of the porous media
     divs : scalar or array_like
         The number of sub-divisions to create in each axis of the image.  If a
-        scalar is given it is assumed this value applies in all dimensions.
+        scalar is given it is assumed this value applies in all dimensions. If
+        `block_size` is given this is ignored.
+    block_size : scalar or array_like
+        The size of the divisions to create. If a scalar is given then cubic
+        blocks are created. If this argument is given then `divs` is ignored.
     overlap : scalar or array_like
         The amount of overlap to use when dividing along each axis.  If a
         scalar is given it is assumed this value applies in all dimensions.
+    mode : str
+        This argument is only used if `block_size` is given and it controls how
+        to handle the situation when block sizes is not a clean multiple of
+        the image shape. The options are:
+
+        ========== ==================================================================
+        mode       description
+        ========== ==================================================================
+        'whole'    Blocks start at the beginning of each axis, and only "whole"
+                   blocks (that fit within the image) are included in the returned
+                   list of slice objects.
+        'offset'   Only whole blocks are included, but an offset is applied to the
+                   start of each axis so that an equal amount of voxels are missed
+                   at the start and end of each axis.
+        'partial'  Blocks start at the beginning of each axis, and any blocks which
+                   partially extend beyond the end of the image are returned.
+        'strict'   Raises an Exception of the image cannot be evenly divided by the
+                   given block size.
+        ========== ==================================================================
 
     Returns
     -------
     slices : ndarray
         An ndarray containing sets of slice objects for indexing into ``im``
-        that extract subdivisions of an image.  If ``flatten`` was ``True``,
-        then this array is suitable for iterating.  If ``flatten`` was
-        ``False`` then the slice objects must be accessed by row, col, layer
-        indices.  An ndarray is the preferred container since its shape can
-        be easily queried.
+        that extract subdivisions of an image.
 
     See Also
     --------
@@ -299,33 +318,57 @@ def subdivide(im, divs=2, overlap=0):
     to view online example.
 
     """
-    divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
-    overlap = overlap * (divs > 1)
-
+    offset = np.zeros(im.ndim, dtype=int)
+    shape = np.array(im.shape, dtype=int)
+    if block_size is None:
+        divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
+        overlap = overlap * (divs > 1)
+        spacing = np.round(shape/divs, decimals=0).astype(int)
+    else:
+        block_size = np.array(block_size, dtype=int)
+        spacing = np.ones((im.ndim,), dtype=int) * block_size
+        divs = shape/spacing
+        if mode == 'offset':
+            divs = np.array(divs, dtype=int)
+            offset = ((shape - block_size*divs)/2).astype(int)
+        elif mode == 'whole':
+            divs = np.array(divs, dtype=int)
+        elif mode == 'partial':
+            divs = np.ceil(divs).astype(int)
+        elif mode == 'strict':
+            if np.any(shape % block_size):
+                m = 'The image cannot be evenly divided by the given block_size'
+                raise Exception(m)
+            divs = np.array(divs).astype(int)
+        else:
+            raise Exception('Unsupported mode')
     s = np.zeros(shape=divs, dtype=object)
-    spacing = np.round(np.array(im.shape)/divs, decimals=0).astype(int)
     for i in range(s.shape[0]):
         x = spacing[0]
-        sx = slice(x*i, min(im.shape[0], x*(i+1)), None)
+        o = offset[0]
+        sx = slice(x*i + o, min(im.shape[0], x*(i+1)) + o, None)
         for j in range(s.shape[1]):
             y = spacing[1]
-            sy = slice(y*j, min(im.shape[1], y*(j+1)), None)
+            o = offset[1]
+            sy = slice(y*j + o, min(im.shape[1], y*(j+1)) + o, None)
             if im.ndim == 3:
                 for k in range(s.shape[2]):
                     z = spacing[2]
-                    sz = slice(z*k, min(im.shape[2], z*(k+1)), None)
+                    o = offset[2]
+                    sz = slice(z*k + o, min(im.shape[2], z*(k+1)) + o, None)
                     s[i, j, k] = tuple([sx, sy, sz])
             else:
                 s[i, j] = tuple([sx, sy])
     s = s.flatten().tolist()
-    for i, item in enumerate(s):
-        s[i] = extend_slice(slices=item, shape=im.shape, pad=overlap)
+    if np.any(overlap):
+        for i, item in enumerate(s):
+            s[i] = extend_slice(slices=item, shape=im.shape, pad=overlap)
     return s
 
 
 def recombine(ims, slices, overlap):
     r"""
-    Recombines image chunks back into full image of original shape
+    Recombines image chunks back into full image
 
     Parameters
     ----------
@@ -340,8 +383,7 @@ def recombine(ims, slices, overlap):
     Returns
     -------
     im : ndarray
-        An image constituted from the chunks in ``ims`` of the same shape
-        as the original image.
+        An image constituted from the chunks in ``ims``
 
     See Also
     --------

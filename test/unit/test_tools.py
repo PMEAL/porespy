@@ -283,6 +283,46 @@ class ToolsTest():
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[10, 20, 25])
         assert np.all(im == im2)
 
+    def test_subdivide_with_mode_offset(self):
+        im = im = np.random.rand(143, 177, 111)
+        s = ps.tools.subdivide(im, block_size=10, mode='offset')
+        assert s[0][0].start > 0
+        assert s[0][1].start > 0
+        assert s[0][2].start == 0  # If only 1 remainder, the start is 0
+        assert s[-1][0].stop < im.shape[0]
+        assert s[-1][1].stop < im.shape[1]
+        assert s[-1][2].stop < im.shape[2]
+
+    def test_subdivide_with_mode_unsupported(self):
+        im = im = np.random.rand(143, 177, 111)
+        with pytest.raises(Exception):
+            ps.tools.subdivide(im, block_size=10, mode='blah')
+
+    def test_subdivide_with_mode_strict(self):
+        im = im = np.random.rand(143, 177, 111)
+        with pytest.raises(Exception):
+            ps.tools.subdivide(im, block_size=10, mode='strict')
+
+    def test_subdivide_with_mode_partial(self):
+        im = im = np.random.rand(143, 177, 111)
+        s = ps.tools.subdivide(im, block_size=10, mode='partial')
+        assert s[0][0].start == 0
+        assert s[0][1].start == 0
+        assert s[0][2].start == 0  # If only 1 remainder, the start is 0
+        assert s[-1][0].stop == im.shape[0]
+        assert s[-1][1].stop == im.shape[1]
+        assert s[-1][2].stop == im.shape[2]
+
+    def test_subdivide_with_mode_whole(self):
+        im = im = np.random.rand(143, 177, 111)
+        s = ps.tools.subdivide(im, block_size=10, mode='whole')
+        assert s[0][0].start == 0
+        assert s[0][1].start == 0
+        assert s[0][2].start == 0  # If only 1 remainder, the start is 0
+        assert s[-1][0].stop < im.shape[0]
+        assert s[-1][1].stop < im.shape[1]
+        assert s[-1][2].stop < im.shape[2]
+
     def test_sanitize_filename(self):
         fname = "test.stl.stl"
         assert ps.tools.sanitize_filename(fname, "stl") == "test.stl.stl"
