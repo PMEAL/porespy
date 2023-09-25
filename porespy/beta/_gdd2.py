@@ -1,13 +1,16 @@
+import logging
 import numpy as np
 import openpnm as op
 import pandas as pd
-import logging
 import dask
 from dask.distributed import Client, LocalCluster
 from edt import edt
 from porespy.tools import Results, get_tqdm, subdivide
 from porespy.filters import apply_chords, region_size, fill_blind_pores
 from porespy import settings
+
+
+logger = logging.getLogger(__name__)
 
 
 __all__ = [
@@ -44,7 +47,7 @@ def get_block_sizes(shape, block_size_range=[10, 100]):
     return block_sizes
 
 
-def rev_tortuosity(im, block_sizes=None):
+def rev_tortuosity(im, block_sizes=None, **kwargs):
     r"""
     Computes data for a representative element volume plot based on tortuosity
 
@@ -71,12 +74,13 @@ def rev_tortuosity(im, block_sizes=None):
     DataFrames can be concatentated using `pandas.concat((df1, df2))`, so the
     results can be combined easily if calling this function multiple times.
     """
-    block_sizes = np.array(block_sizes, dtype=int, ndmin=1)
+    block_sizes = np.array(block_sizes, dtype=int)
     tau = []
     disable = settings.tqdm['disable']
-    for s in tqdm(block_sizes, **settings.tqdm):
+    msg = "Scanning block sizes"
+    for s in tqdm(block_sizes, desc=msg, **settings.tqdm):
         settings.tqdm['disable'] = True
-        tau.append(analyze_blocks(im, block_size=s))
+        tau.append(analyze_blocks(im, block_size=s, **kwargs))
     settings.tqdm['disable'] = disable
     df = pd.concat(tau)
     df = df[df.tau < np.inf]  # inf values mean block did not percolate
@@ -202,7 +206,7 @@ def block_size_to_divs(shape, block_size):
 def analyze_blocks(im, block_size, dask_args={}, solver_args={}):
     r"""
     Computes the diffusive conductance tensor for each block and returns values in a
-    dataframe
+    DataFrame
 
     Parameters
     ----------
@@ -213,48 +217,90 @@ def analyze_blocks(im, block_size, dask_args={}, solver_args={}):
         must be given, or an exception is raised. If the image is not evenly
         divisible by the given `block_size` any extra voxels are removed from the
         end of each axis before all processing occcurs.
+    dask_args : dict
+        A dictionary of arguments to control the behavior of `dask`. Options are:
+
+        =========== =================================================================
+        key         values
+        =========== =================================================================
+        'enable'    Can be `True` (default) or `False`. If `True` then `dask` is
+                    used (obviously), but can be set to `False` for timing tests,
+                    unit tests, or if you're willing to wait.
+        'client'    If `False` (default) then first a check is performed to see
+                    if a client is already running, if not then a `LocalCluster`
+                    is started up.
+        'close'     If `True` (default) then the client is closed upon completion.
+                    Keeping it open would be preferred if many calls to this
+                    function are expected, like doing REV calculations.
+        =========== =================================================================
+
+    solver_args : dict
+        A dictionary of arguments to control the solver used. This dictionary is
+        passed to `porespy.simulations.tortuosity_fd` function.
 
     Returns
     -------
-    df : dataframe
+    df : DataFrame
         A `pandas` data frame with the properties for each block on a given row.
 
     """
-    dask_args = {'client': None, 'close': False} | dask_args
+    # Deal with dask args and clients
+    dask_args = {'enable': True, 'client': None, 'close': False} | dask_args
     solver_args = {'tol': 1e-6} | solver_args
-    if dask_args['client'] is None:  # If client is provided, use it
-        client = dask.distributed.client._get_global_client()  # If one exists use it
-        if client is None:  # Otherwise create one
-            client = Client(LocalCluster(silence_logs=logging.CRITICAL))
+    if dask_args['enable'] is True:
+        if dask_args['client'] is None:  # If client is provided, use it
+            client = dask.distributed.client._get_global_client()  # Use it if found
+            if client is None:  # Otherwise create one
+                client = Client(LocalCluster(silence_logs=logging.CRITICAL))
+
+    # Parse args
     if not np.isscalar(block_size):
         raise Exception('Only cubic blocks supported. block_size must be a scalar')
-    # Trim image to be a clean multiple of block size in all directions
-    tmp1 = im.shape
-    stops = block_size * (np.array(im.shape) // block_size)
-    s = tuple(slice(0, stops[i], None) for i in range(im.ndim))
-    im_temp = im[s]
-    tmp2 = im_temp.shape
-    print(f"Image was trimmed to fit given block size from {tmp1} to {tmp2}")
+
+    # Trim image to be a clean multiple of block_size in all directions
+    im_temp = np.copy(im)
+    if np.any(np.array(im_temp.shape) % block_size):
+        tmp1 = im_temp.shape
+        stops = block_size * (np.array(im_temp.shape) // block_size)
+        s = tuple(slice(0, stops[i], None) for i in range(im_temp.ndim))
+        im_temp = im_temp[s]
+        tmp2 = im_temp.shape
+        msg = f"Image was trimmed to fit given block size from {tmp1} to {tmp2}"
+        logger.warn(msg)
+
+    # Prepare to find tau for all blocks in all principal directions
     df = pd.DataFrame()
     offset = int(block_size/2)
-    for ax in tqdm(range(im.ndim), **settings.tqdm):
+    msg = "Analyzing blocks along each axis"
+    for ax in tqdm(range(im.ndim), desc=msg, **settings.tqdm):
         im_temp = np.swapaxes(im_temp, 0, ax)
-        im_temp = im_temp[offset:-offset, ...]
+        im_temp = im_temp[offset:-offset, ...]  # Remove 1/2 block from start and end
         im_temp = np.swapaxes(im_temp, 0, ax)
-        slices = subdivide(im_temp, block_size=block_size, mode='offset')
-        queue = []
-        for s in slices:
-            queue.append(dask.delayed(calc_g)(im_temp[s], axis=ax))
-        results = dask.compute(*queue, scheduler=client)
+        slices = subdivide(im_temp, block_size=block_size, mode='whole')
+        if dask_args['enable']:  # Do it with dask
+            queue = []
+            for s in slices:
+                queue.append(dask.delayed(calc_g)(im_temp[s],
+                                                  axis=ax,
+                                                  solver_args=solver_args))
+            results = dask.compute(*queue, scheduler=client)
+        else:  # Or do it the simple way
+            results = []
+            for s in slices:
+                results.append(calc_g(im_temp[s], axis=ax, solver_args=solver_args))
+
+        # Convert results to a new DataFrame and append to main DataFrame
         df_temp = pd.DataFrame()
         df_temp['eps_orig'] = [r.original_porosity for r in results]
         df_temp['eps_perc'] = [r.effective_porosity for r in results]
         df_temp['g'] = [r.diffusive_conductance for r in results]
         df_temp['tau'] = [r.tortuosity for r in results]
         df_temp['volume'] = [r.volume for r in results]
+        df_temp['length'] = [block_size for r in results]
         df_temp['axis'] = [ax for _ in results]
         df = pd.concat((df, df_temp))
-    if dask_args['close']:
+
+    if dask_args['enable'] and dask_args['close']:
         client.cluster.close()
         client.close()
     return df
@@ -271,17 +317,16 @@ def network_to_tau(df, im, block_size):
         The dataframe returned by the `blocks_to_dataframe` function
     im : ndarray
         The boolean image of the materials with `True` indicating the void space
-    block_size : int or list of ints
-        The size of the blocks to use. If a list is given, the largest value is used
-        for all directions.
+    block_size : int
+        The size of the blocks used to compute the conductance values in `df`
 
     Returns
     -------
     tau : list of floats
         The tortuosity in all three principal directions
     """
-    if not np.isscalar(block_size):  # divs must be equal, so use biggest block
-        block_size = max(block_size)
+    if not np.isscalar(block_size):
+        raise Exception('Only cubic blocks supported. block_size must be a scalar')
     divs = block_size_to_divs(shape=im.shape, block_size=block_size)
     net = op.network.Cubic(shape=divs)
     phase = op.phase.Phase(network=net)
@@ -340,9 +385,10 @@ def tortuosity_bt(im, block_size=None):
 
 if __name__ =="__main__":
     import porespy as ps
-    im = ps.generators.cylinders(shape=[300, 200, 100], porosity=0.5, r=3, seed=1)
+    # im = ps.generators.cylinders(shape=[300, 200, 100], porosity=0.5, r=3, seed=1)
+    im = ps.generators.blobs(shape=[300, 200, 100], porosity=0.5, blobiness=[1, 2, 3], seed=1)
     ps.tools.tic()
-    df = rev_tortuosity(im, [20, 30])
+    df = rev_tortuosity(im, [20, 30], dask_args={'enable': True})
     t = ps.tools.toc()
     print(df)
     # block_size = estimate_block_size(im, scale_factor=3, mode='linear')
