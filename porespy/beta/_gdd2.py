@@ -44,7 +44,7 @@ def get_block_sizes(shape, block_size_range=[10, 100]):
     return block_sizes
 
 
-def rev_tortuosity(im, block_size_range=[10, 100]):
+def rev_tortuosity(im, block_sizes=None):
     r"""
     Computes data for a representative element volume plot based on tortuosity
 
@@ -57,9 +57,8 @@ def rev_tortuosity(im, block_size_range=[10, 100]):
     im : ndarray
         A boolean image of the porous media with `True` values indicating the phase
         of interest.
-    block_size_range : sequence of 2 ints
-        The [lower, upper] range of the desired block sizes. Default is [10, 100].
-        If a single value is supplied then only that block size is used.
+    block_sizes : sequence of ints
+        The sizes of block to test.
 
     Returns
     -------
@@ -72,9 +71,7 @@ def rev_tortuosity(im, block_size_range=[10, 100]):
     DataFrames can be concatentated using `pandas.concat((df1, df2))`, so the
     results can be combined easily if calling this function multiple times.
     """
-    if np.shape(block_size_range) not in ((1,), ()):
-        block_size_range = list(block_size_range)
-    block_sizes = get_block_sizes(im.shape, block_size_range=block_size_range)
+    block_sizes = np.array(block_sizes, dtype=int, ndmin=1)
     tau = []
     disable = settings.tqdm['disable']
     for s in tqdm(block_sizes, **settings.tqdm):
@@ -196,28 +193,32 @@ def block_size_to_divs(shape, block_size):
         number of blocks is 2.
     """
     shape = np.array(shape)
-    divs = (shape/np.array(block_size)).astype(int)
+    divs = shape // np.array(block_size)
+    scraps = shape % np.array(block_size)
     divs = np.clip(divs, a_min=2, a_max=shape)
     return divs
 
 
 def analyze_blocks(im, block_size, dask_args={}, solver_args={}):
     r"""
-    Computes the diffusive conductance for each block and returns values in a
+    Computes the diffusive conductance tensor for each block and returns values in a
     dataframe
 
     Parameters
     ----------
     im : ndarray
         The boolean image of the materials with `True` indicating the void space
-    block_size : int or list of ints
-        The size of the blocks to use. If a list is given, the largest value is used
-        for all directions.
+    block_size : int or sequence of ints
+        The size of the blocks to use. Only cubic blocks are supported so an integer
+        must be given, or an exception is raised. If the image is not evenly
+        divisible by the given `block_size` any extra voxels are removed from the
+        end of each axis before all processing occcurs.
 
     Returns
     -------
     df : dataframe
         A `pandas` data frame with the properties for each block on a given row.
+
     """
     dask_args = {'client': None, 'close': False} | dask_args
     solver_args = {'tol': 1e-6} | solver_args
@@ -225,18 +226,25 @@ def analyze_blocks(im, block_size, dask_args={}, solver_args={}):
         client = dask.distributed.client._get_global_client()  # If one exists use it
         if client is None:  # Otherwise create one
             client = Client(LocalCluster(silence_logs=logging.CRITICAL))
-    if not np.isscalar(block_size):  # divs must be equal, so use biggest block
-        block_size = max(block_size)
+    if not np.isscalar(block_size):
+        raise Exception('Only cubic blocks supported. block_size must be a scalar')
+    # Trim image to be a clean multiple of block size in all directions
+    tmp1 = im.shape
+    stops = block_size * (np.array(im.shape) // block_size)
+    s = tuple(slice(0, stops[i], None) for i in range(im.ndim))
+    im_temp = im[s]
+    tmp2 = im_temp.shape
+    print(f"Image was trimmed to fit given block size from {tmp1} to {tmp2}")
     df = pd.DataFrame()
     offset = int(block_size/2)
-    for axis in tqdm(range(im.ndim), **settings.tqdm):
-        im_temp = np.swapaxes(im, 0, axis)
+    for ax in tqdm(range(im.ndim), **settings.tqdm):
+        im_temp = np.swapaxes(im_temp, 0, ax)
         im_temp = im_temp[offset:-offset, ...]
-        divs = block_size_to_divs(shape=im_temp.shape, block_size=block_size)
-        slices = subdivide(im_temp, divs)
+        im_temp = np.swapaxes(im_temp, 0, ax)
+        slices = subdivide(im_temp, block_size=block_size, mode='offset')
         queue = []
         for s in slices:
-            queue.append(dask.delayed(calc_g)(im_temp[s], axis=0))
+            queue.append(dask.delayed(calc_g)(im_temp[s], axis=ax))
         results = dask.compute(*queue, scheduler=client)
         df_temp = pd.DataFrame()
         df_temp['eps_orig'] = [r.original_porosity for r in results]
@@ -244,7 +252,7 @@ def analyze_blocks(im, block_size, dask_args={}, solver_args={}):
         df_temp['g'] = [r.diffusive_conductance for r in results]
         df_temp['tau'] = [r.tortuosity for r in results]
         df_temp['volume'] = [r.volume for r in results]
-        df_temp['axis'] = [axis for _ in results]
+        df_temp['axis'] = [ax for _ in results]
         df = pd.concat((df, df_temp))
     if dask_args['close']:
         client.cluster.close()
@@ -281,8 +289,7 @@ def network_to_tau(df, im, block_size):
     gy = np.array(df['g'])[df['axis'] == 1]
     gz = np.array(df['g'])[df['axis'] == 2]
     g = np.hstack((gz, gy, gx))  # throat indices in openpnm are in reverse order!
-    if np.any(g == 0):
-        g += 1e-20
+    g[g == 0] = 1e-20
     phase['throat.diffusive_conductance'] = g
     bcs = {0: {'in': 'left', 'out': 'right'},
            1: {'in': 'front', 'out': 'back'},
@@ -315,14 +322,14 @@ def tortuosity_bt(im, block_size=None):
     ----------
     im : ndarray
         The boolean image of the materials with `True` indicating the void space
-    block_size : int or list of ints
-        The size of the blocks to use. If a list is given, the largest value is used
-        for all directions.
+    block_size : int
+        The size of the blocks to use. If not given then it will be estimated
+        automatically.
 
     Returns
     -------
     tau : list of floats
-        The tortuosity in all three principal directions
+        The tortuosity in all principal directions
     """
     if block_size is None:
         block_size = estimate_block_size(im, scale_factor=3, mode='radial')
