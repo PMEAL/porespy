@@ -83,7 +83,6 @@ def rev_tortuosity(im, block_sizes=None, **kwargs):
         tau.append(analyze_blocks(im, block_size=s, **kwargs))
     settings.tqdm['disable'] = disable
     df = pd.concat(tau)
-    df = df[df.tau < np.inf]  # inf values mean block did not percolate
     client = dask.distributed.client._get_global_client()
     if client is not None:
         client.cluster.close()
@@ -124,7 +123,7 @@ def calc_g(im, axis, solver_args={}):
         results.tortuosity = np.inf
     L = im.shape[axis]
     A = np.prod(im.shape)/im.shape[axis]
-    g = (results.effective_porosity * A) / (results.tortuosity * L)
+    g = (results.effective_porosity * A) / (results.tortuosity * (L - 1))
     results.diffusive_conductance = g
     results.volume = np.prod(im.shape)
     return results
@@ -274,10 +273,11 @@ def analyze_blocks(im, block_size, dask_args={}, solver_args={}):
     offset = int(block_size/2)
     msg = "Analyzing blocks along each axis"
     for ax in tqdm(range(im.ndim), desc=msg, **settings.tqdm):
-        im_temp = np.swapaxes(im_temp, 0, ax)
-        im_temp = im_temp[offset:-offset, ...]  # Remove 1/2 block from start and end
-        im_temp = np.swapaxes(im_temp, 0, ax)
-        slices = subdivide(im_temp, block_size=block_size, mode='whole')
+        # Rotate, remove 1/2 block from start and end, and rotate back
+        tmp = np.swapaxes(im_temp, 0, ax)
+        tmp = tmp[offset:-offset, ...]
+        tmp = np.swapaxes(tmp, 0, ax)
+        slices = subdivide(tmp, block_size=block_size, mode='offset')
         if dask_args['enable']:  # Do it with dask
             queue = []
             for s in slices:
@@ -387,9 +387,9 @@ def tortuosity_bt(im, block_size=None):
 if __name__ =="__main__":
     import porespy as ps
     # im = ps.generators.cylinders(shape=[300, 200, 100], porosity=0.5, r=3, seed=1)
-    im = ps.generators.blobs(shape=[300, 200, 100], porosity=0.5, blobiness=[1, 2, 3], seed=1)
+    im = ps.generators.blobs(shape=[100, 100, 100], porosity=0.99, blobiness=1, seed=1)
     ps.tools.tic()
-    df = rev_tortuosity(im, [20, 30], dask_args={'enable': True})
+    df = rev_tortuosity(im, [25], dask_args={'enable': True})
     t = ps.tools.toc()
     print(df)
     # block_size = estimate_block_size(im, scale_factor=3, mode='linear')

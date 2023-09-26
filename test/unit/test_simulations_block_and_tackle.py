@@ -1,9 +1,7 @@
 import numpy as np
-import scipy.ndimage as spim
-import matplotlib.pyplot as plt
-import pandas as pd
 from porespy.tools import subdivide
 import openpnm as op
+from porespy import beta
 
 
 class TestBlockAndTackle:
@@ -15,7 +13,6 @@ class TestBlockAndTackle:
         im = np.repeat(im, block_size, axis=0)
         im = np.repeat(im, block_size, axis=1)
         im = np.repeat(im, block_size, axis=2)
-        df = pd.DataFrame()
         offset = int(block_size/2)
         queue = [[], [], []]
         for ax in range(im.ndim):
@@ -31,3 +28,10 @@ class TestBlockAndTackle:
         pn = op.network.Cubic(shape)
         assert np.all(pn.conns == conns)
 
+    def test_analyze_blocks_on_empty_image(self):
+        im = np.ones([100, 100, 100], dtype=bool)
+        df = beta.rev_tortuosity(im, [25], dask_args={'enable': False})
+        assert len(df) == 144
+        assert np.all(df['volume'] == 25**3)
+        assert np.all(df['length'] == 25)
+        assert np.all(np.around(df['tau'], decimals=4) == 1.0000)
