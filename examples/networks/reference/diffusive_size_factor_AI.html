@@ -2954,31 +2954,84 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-10-25 08:49:08.198042: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
-2023-10-25 08:49:08.258224: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
-2023-10-25 08:49:08.259641: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
-To enable the following instructions: AVX2 AVX512F FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: tensorflow in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (2.13.1)
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-10-25 08:49:11.725252: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: absl-py&gt;=1.0.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (2.0.0)
+Requirement already satisfied: astunparse&gt;=1.6.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (1.6.3)
+Requirement already satisfied: flatbuffers&gt;=23.1.21 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (23.5.26)
+Requirement already satisfied: gast&lt;=0.4.0,&gt;=0.2.1 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (0.4.0)
+Requirement already satisfied: google-pasta&gt;=0.1.1 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (0.2.0)
+Requirement already satisfied: grpcio&lt;2.0,&gt;=1.24.3 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (1.59.0)
+Requirement already satisfied: h5py&gt;=2.9.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (3.10.0)
+Requirement already satisfied: keras&lt;2.14,&gt;=2.13.1 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (2.13.1)
+Requirement already satisfied: libclang&gt;=13.0.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (16.0.6)
+Requirement already satisfied: numpy&lt;=1.24.3,&gt;=1.22 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (1.24.3)
+Requirement already satisfied: opt-einsum&gt;=2.3.2 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (3.3.0)
+Requirement already satisfied: packaging in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (23.2)
+Requirement already satisfied: protobuf!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,&lt;5.0.0dev,&gt;=3.20.3 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (4.24.4)
+Requirement already satisfied: setuptools in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (56.0.0)
+Requirement already satisfied: six&gt;=1.12.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (1.16.0)
+Requirement already satisfied: tensorboard&lt;2.14,&gt;=2.13 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (2.13.0)
+Requirement already satisfied: tensorflow-estimator&lt;2.14,&gt;=2.13.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (2.13.0)
+Requirement already satisfied: termcolor&gt;=1.1.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (2.3.0)
+Requirement already satisfied: typing-extensions&lt;4.6.0,&gt;=3.6.6 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (4.5.0)
+Requirement already satisfied: wrapt&gt;=1.11.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (1.15.0)
+Requirement already satisfied: tensorflow-io-gcs-filesystem&gt;=0.23.1 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (0.34.0)
+Requirement already satisfied: wheel&lt;1.0,&gt;=0.23.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from astunparse&gt;=1.6.0-&gt;tensorflow) (0.41.2)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: google-auth&lt;3,&gt;=1.6.3 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (2.23.3)
+Requirement already satisfied: google-auth-oauthlib&lt;1.1,&gt;=0.5 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (1.0.0)
+Requirement already satisfied: markdown&gt;=2.6.8 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (3.5)
+Requirement already satisfied: requests&lt;3,&gt;=2.21.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (2.31.0)
+Requirement already satisfied: tensorboard-data-server&lt;0.8.0,&gt;=0.7.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (0.7.2)
+Requirement already satisfied: werkzeug&gt;=1.0.1 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (3.0.1)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: cachetools&lt;6.0,&gt;=2.0.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (5.3.2)
+Requirement already satisfied: pyasn1-modules&gt;=0.2.1 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (0.3.0)
+Requirement already satisfied: rsa&lt;5,&gt;=3.1.4 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (4.9)
+Requirement already satisfied: requests-oauthlib&gt;=0.7.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from google-auth-oauthlib&lt;1.1,&gt;=0.5-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (1.3.1)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: importlib-metadata&gt;=4.4 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from markdown&gt;=2.6.8-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (6.8.0)
+Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (3.3.1)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (3.4)
+Requirement already satisfied: urllib3&lt;3,&gt;=1.21.1 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (2.0.7)
+Requirement already satisfied: certifi&gt;=2017.4.17 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (2023.7.22)
+Requirement already satisfied: MarkupSafe&gt;=2.1.1 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from werkzeug&gt;=1.0.1-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (2.1.3)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: zipp&gt;=0.5 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from importlib-metadata&gt;=4.4-&gt;markdown&gt;=2.6.8-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (3.17.0)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: pyasn1&lt;0.6.0,&gt;=0.4.6 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from pyasn1-modules&gt;=0.2.1-&gt;google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (0.5.0)
+Requirement already satisfied: oauthlib&gt;=3.0.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from requests-oauthlib&gt;=0.7.0-&gt;google-auth-oauthlib&lt;1.1,&gt;=0.5-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (3.2.2)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> A new release of pip is available: <span class=" -Color -Color-Red">23.0.1</span> -&gt; <span class=" -Color -Color-Green">23.3.1</span>
+<span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> To update, run: <span class=" -Color -Color-Green">pip install --upgrade pip</span>
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting scikit-learn
   Using cached scikit_learn-1.3.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
-Requirement already satisfied: numpy&lt;2.0,&gt;=1.17.3 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from scikit-learn) (1.24.3)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: numpy&lt;2.0,&gt;=1.17.3 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from scikit-learn) (1.24.3)
 Requirement already satisfied: scipy&gt;=1.5.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from scikit-learn) (1.10.1)
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting joblib&gt;=1.1.1 (from scikit-learn)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Using cached joblib-1.3.2-py3-none-any.whl.metadata (5.4 kB)
+  Using cached joblib-1.3.2-py3-none-any.whl.metadata (5.4 kB)
 Collecting threadpoolctl&gt;=2.0.0 (from scikit-learn)
   Using cached threadpoolctl-3.2.0-py3-none-any.whl.metadata (10.0 kB)
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using cached scikit_learn-1.3.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (11.1 MB)
-Using cached joblib-1.3.2-py3-none-any.whl (302 kB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using cached joblib-1.3.2-py3-none-any.whl (302 kB)
 Using cached threadpoolctl-3.2.0-py3-none-any.whl (15 kB)
 </pre></div>
 </div>
@@ -3008,9 +3061,7 @@ remote: Compressing objects:  60% (3/5)
 remote: Compressing objects:  80% (4/5)
 remote: Compressing objects: 100% (5/5)
 remote: Compressing objects: 100% (5/5), done.
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:   2% (1/36)
+Receiving objects:   2% (1/36)
 Receiving objects:   5% (2/36)
 Receiving objects:   8% (3/36)
 Receiving objects:  11% (4/36)
@@ -3020,92 +3071,87 @@ Receiving objects:  13% (5/36)
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36), 39.02 MiB | 39.02 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36), 23.51 MiB | 23.10 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36), 83.37 MiB | 41.68 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36), 51.93 MiB | 25.56 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 83.37 MiB | 41.68 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36), 82.50 MiB | 27.09 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 127.39 MiB | 42.46 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 82.50 MiB | 27.09 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 162.18 MiB | 40.53 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 114.93 MiB | 28.32 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  22% (8/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  25% (9/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  27% (10/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  30% (11/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  33% (12/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  36% (13/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  38% (14/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  41% (15/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  44% (16/36), 162.18 MiB | 40.53 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 148.73 MiB | 31.06 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  47% (17/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  50% (18/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  52% (19/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  55% (20/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  58% (21/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  61% (22/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  63% (23/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  66% (24/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  69% (25/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  72% (26/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  75% (27/36), 162.18 MiB | 40.53 MiB/s
-Receiving objects:  77% (28/36), 162.18 MiB | 40.53 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  22% (8/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  25% (9/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  27% (10/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  30% (11/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  33% (12/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  36% (13/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  38% (14/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  41% (15/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  44% (16/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  47% (17/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  50% (18/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  52% (19/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  55% (20/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  58% (21/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  61% (22/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  63% (23/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  66% (24/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  69% (25/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  72% (26/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  75% (27/36), 165.79 MiB | 31.20 MiB/s
+Receiving objects:  77% (28/36), 165.79 MiB | 31.20 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 188.00 MiB | 38.22 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 183.03 MiB | 31.89 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 209.96 MiB | 32.78 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 218.02 MiB | 33.15 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 221.82 MiB | 25.71 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 253.86 MiB | 34.09 MiB/s
+Receiving objects:  80% (29/36), 253.86 MiB | 34.09 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 230.09 MiB | 18.73 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 291.08 MiB | 34.94 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 238.71 MiB | 14.19 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 329.10 MiB | 35.93 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 248.22 MiB | 10.39 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>remote: Total 36 (delta 0), reused 2 (delta 0), pack-reused 31
+Receiving objects:  83% (30/36), 329.10 MiB | 35.93 MiB/s
+Receiving objects:  86% (31/36), 329.10 MiB | 35.93 MiB/s
+Receiving objects:  88% (32/36), 329.10 MiB | 35.93 MiB/s
+Receiving objects:  91% (33/36), 329.10 MiB | 35.93 MiB/s
+Receiving objects:  94% (34/36), 329.10 MiB | 35.93 MiB/s
+Receiving objects:  97% (35/36), 329.10 MiB | 35.93 MiB/s
+Receiving objects: 100% (36/36), 329.10 MiB | 35.93 MiB/s
+Receiving objects: 100% (36/36), 334.57 MiB | 32.55 MiB/s, done.
+Resolving deltas:   0% (0/8)
+Resolving deltas:  12% (1/8)
+Resolving deltas:  25% (2/8)
+Resolving deltas:  37% (3/8)
+Resolving deltas:  50% (4/8)
+Resolving deltas:  62% (5/8)
+Resolving deltas:  75% (6/8)
+Resolving deltas:  87% (7/8)
+Resolving deltas: 100% (8/8)
+Resolving deltas: 100% (8/8), done.
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 253.20 MiB | 9.53 MiB/s 
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 256.95 MiB | 8.90 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 265.36 MiB | 8.65 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 274.77 MiB | 8.83 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 284.79 MiB | 9.01 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 295.04 MiB | 9.09 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 302.92 MiB | 9.11 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 312.01 MiB | 9.14 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 321.84 MiB | 9.15 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>^C
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Updating files:  87% (7/8)
+Updating files: 100% (8/8)
+Updating files: 100% (8/8), done.
 </pre></div>
 </div>
 </div>
@@ -3143,7 +3189,10 @@ Receiving objects:  77% (28/36), 162.18 MiB | 40.53 MiB/s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Signature (regions, throat_conns, model, g_train, voxel_size=1)&gt;
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[10:41:41] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
+</pre>
+</div><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Signature (regions, throat_conns, model, g_train, voxel_size=1)&gt;
 </pre></div>
 </div>
 </div>
@@ -3164,14 +3213,37 @@ Receiving objects:  77% (28/36), 162.18 MiB | 40.53 MiB/s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-03-23 14:30:39.889200: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE4.1 SSE4.2
-To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">line</span> <span class="mi">5</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">path_weights</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;model_weights.h5&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">g_train</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">path_train</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)[</span><span class="s1">&#39;g_train&#39;</span><span class="p">][()]</span>
+<span class="ne">----&gt; </span><span class="mi">5</span> <span class="n">model</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">create_model</span><span class="p">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="n">path_weights</span><span class="p">)</span>
+
+<span class="nn">File ~/work/porespy/porespy/porespy/networks/_size_factors.py:612,</span> in <span class="ni">create_model</span><span class="nt">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">604</span> <span class="k">def</span> <span class="nf">create_model</span><span class="p">():</span>
+<span class="g g-Whitespace">    </span><span class="mi">605</span><span class="w">     </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="g g-Whitespace">    </span><span class="mi">606</span><span class="sd">     Returns</span>
+<span class="g g-Whitespace">    </span><span class="mi">607</span><span class="sd">     -------</span>
+<span class="sd">   (...)</span>
+<span class="g g-Whitespace">    </span><span class="mi">610</span><span class="sd"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">611</span><span class="sd">     &#39;&#39;&#39;</span>
+<span class="ne">--&gt; </span><span class="mi">612</span>     <span class="kn">from</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
+<span class="g g-Whitespace">    </span><span class="mi">613</span>     <span class="n">model</span> <span class="o">=</span> <span class="n">_resnet3d</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">614</span>     <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mse&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">),</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mse&#39;</span><span class="p">])</span>
+
+<span class="n">File</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">hostedtoolcache</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">3.8.18</span><span class="o">/</span><span class="n">x64</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.8</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">tensorflow</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">38</span>
+<span class="g g-Whitespace">     </span><span class="mi">35</span> <span class="kn">import</span> <span class="nn">sys</span> <span class="k">as</span> <span class="nn">_sys</span>
+<span class="g g-Whitespace">     </span><span class="mi">36</span> <span class="kn">import</span> <span class="nn">typing</span> <span class="k">as</span> <span class="nn">_typing</span>
+<span class="ne">---&gt; </span><span class="mi">38</span> <span class="kn">from</span> <span class="nn">tensorflow.python.tools</span> <span class="kn">import</span> <span class="n">module_util</span> <span class="k">as</span> <span class="n">_module_util</span>
+<span class="g g-Whitespace">     </span><span class="mi">39</span> <span class="kn">from</span> <span class="nn">tensorflow.python.util.lazy_loader</span> <span class="kn">import</span> <span class="n">LazyLoader</span> <span class="k">as</span> <span class="n">_LazyLoader</span>
+<span class="g g-Whitespace">     </span><span class="mi">41</span> <span class="c1"># Make sure code inside the TensorFlow codebase can use tf2.enabled() at import.</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;tensorflow.python&#39;
 </pre></div>
 </div>
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[14:30:41] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> `lr` is deprecated, please use `learning_rate` instead, or use the legacy      <a href="file:///home/anaconda/mambaforge/envs/tensorflow_env/lib/python3.9/site-packages/keras/optimizers/optimizer_experimental/optimizer.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">optimizer.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/anaconda/mambaforge/envs/tensorflow_env/lib/python3.9/site-packages/keras/optimizers/optimizer_experimental/optimizer.py#106" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">106</span></a>
-<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         optimizer, e.g.,tf.keras.optimizers.legacy.Adam.                               <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
-</pre>
-</div></div>
+</div>
 </div>
 </section>
 <section id="regions">
