@@ -6,6 +6,11 @@ from porespy.tools import get_tqdm
 tqdm = get_tqdm()
 
 
+__all__ = [
+    'polydisperse_cylinders',
+]
+
+
 def polydisperse_cylinders(
     shape,
     porosity,
@@ -19,6 +24,11 @@ def polydisperse_cylinders(
 ):
     r"""
     Generates overlapping cylinders with radii from the given size distribution
+
+    This function works by combining individual images from the `cylinders` function
+    for each radius, so **it can be slow**.  For instance, if the distribution spans
+    10 different radii, then this function will take approximately 10x longer
+    than generating unimodal cylinders.
 
     Parameters
     ----------
@@ -65,6 +75,14 @@ def polydisperse_cylinders(
 
     Notes
     -----
+    The `scipy.stats` object must be initialized with desired parameter to create
+    a *frozen* object, like `dist = spst.gamma(5, 1, 7)`. Then this parameters
+    are fixed for all future calls to the object's methods (i.e. `ppf`, `pdf`, etc.)
+    The classes in the `stats` module have a very useful `fit` method for
+    finding the fitting parameters for a given data set.  For example,
+    `params = scipy.stats.gamma.fit(data)` can then be used to initialize the
+    frozen distribution as `dist = scipy.stats.gamma(*params)`.
+
     The `stats` object is used to compute the lower and upper limits on the
     cylinder radii in units of voxels using the `ppf` method as follows:
 
@@ -135,13 +153,13 @@ if __name__ == "__main__":
     dist = spst.gamma(*params)
     fibers = polydisperse_cylinders(
         shape=[500, 500, 250],
-        porosity=0.9,
+        porosity=0.75,
         dist=dist,
         voxel_size=5,
         phi_max=5,
         theta_max=90,
         maxiter=3,
-        rtol=1e-1,
+        rtol=1e-2,
         seed=0,
     )
     print(fibers.sum()/fibers.size)
