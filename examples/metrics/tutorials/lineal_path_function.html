@@ -2882,6 +2882,11 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[03:53:53] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
+</pre>
+</div></div>
 </div>
 <p>First generate an anisotropic image using the <code class="docutils literal notranslate"><span class="pre">blobs</span></code> generator:</p>
 <div class="cell docutils container">
@@ -2892,7 +2897,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/a51100ded44855c2ea2083e58b1a54c3a7b67285d5836d759176150235cb5087.png" src="../../../_images/a51100ded44855c2ea2083e58b1a54c3a7b67285d5836d759176150235cb5087.png" />
+<img alt="../../../_images/ce64171362c4cca99001b81fbe9d2e2756f4668f6bcf31a9966acf793eff07fb.png" src="../../../_images/ce64171362c4cca99001b81fbe9d2e2756f4668f6bcf31a9966acf793eff07fb.png" />
 </div>
 </div>
 <p>Next apply the <code class="docutils literal notranslate"><span class="pre">distance_transform_lin</span></code> function along the 0 axis.</p>
@@ -2904,7 +2909,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/40a745dddead973d15991f173f8838677a6e468840fbde53f5f4c26107459030.png" src="../../../_images/40a745dddead973d15991f173f8838677a6e468840fbde53f5f4c26107459030.png" />
+<img alt="../../../_images/40a1cc52f854b5301c62404778bef5ac56bc507ea69ff5129b31314be911947e.png" src="../../../_images/40a1cc52f854b5301c62404778bef5ac56bc507ea69ff5129b31314be911947e.png" />
 </div>
 </div>
 <p>The greyscale values of the above image are worth a comment. They indicated the length of a path that can be drawn from each voxel to the nearest solid voxel, in the specified direction.  Or in terms of Torquato’s definition, each greyscale value represents a random starting point (A) and moving along this line until solid is encountered represents the end of the line (B), providing the path length A <span class="math notranslate nohighlight">\(\rightarrow\)</span> B.  The ‘counter associated with the distance between A and B is then incremented’, which corresponds to the binning the greyscale values in the above image. In other words, the above representation includes ALL possible starting points on each path, so provides the largest possible data set.</p>
@@ -2927,7 +2932,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/5a46c835a7ade513662787d7ec8a35139252170220ddcca3c9e86eefa2f74000.png" src="../../../_images/5a46c835a7ade513662787d7ec8a35139252170220ddcca3c9e86eefa2f74000.png" />
+<img alt="../../../_images/ba5a235786c4326ee7984b674f5290cfc45fea0f0f636d513cdb6e4f46c74eac.png" src="../../../_images/ba5a235786c4326ee7984b674f5290cfc45fea0f0f636d513cdb6e4f46c74eac.png" />
 </div>
 </div>
 <p>Since the image is anisotropic, the process will yeild a different result in the perpendicular direction, so repeating the above with <code class="docutils literal notranslate"><span class="pre">axis=1</span></code> instead of the default <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>.</p>
@@ -2939,7 +2944,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/0973494de5e739613d2fb03ffbd71a9e193d4ff688208aed61a17b51a7d86ff5.png" src="../../../_images/0973494de5e739613d2fb03ffbd71a9e193d4ff688208aed61a17b51a7d86ff5.png" />
+<img alt="../../../_images/47c94fba07ac0da9745fcb207d2c4b213c1c011cb208dd95f23a820d53a2366d.png" src="../../../_images/47c94fba07ac0da9745fcb207d2c4b213c1c011cb208dd95f23a820d53a2366d.png" />
 </div>
 </div>
 <p>Overlaying this result wit the previous one:</p>
@@ -2952,7 +2957,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/f182fa94c5a16e6a5b8c1a7d47d5fc5c1ffd6cd2b458ef508cc720ddb6c89c32.png" src="../../../_images/f182fa94c5a16e6a5b8c1a7d47d5fc5c1ffd6cd2b458ef508cc720ddb6c89c32.png" />
+<img alt="../../../_images/0ea04d272fbdbdb9c0a597c938c6111a19b39943056ed111faf89119a46e0bb3.png" src="../../../_images/0ea04d272fbdbdb9c0a597c938c6111a19b39943056ed111faf89119a46e0bb3.png" />
 </div>
 </div>
 <p>The anisotropy of the image is clearly visible with the first axis possessing longer lineal-path values.</p>

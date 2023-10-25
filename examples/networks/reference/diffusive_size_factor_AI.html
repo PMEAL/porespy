@@ -2954,40 +2954,24 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting tensorflow
-  Obtaining dependency information for tensorflow from https://files.pythonhosted.org/packages/88/cc/14affad82a28640974ff2a37c177269a0a088266104ddf76a01eac21c9ac/tensorflow-2.13.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata
-  Using cached tensorflow-2.13.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (3.4 kB)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting absl-py&gt;=1.0.0 (from tensorflow)
-  Using cached absl_py-1.4.0-py3-none-any.whl (126 kB)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting astunparse&gt;=1.6.0 (from tensorflow)
-  Using cached astunparse-1.6.3-py2.py3-none-any.whl (12 kB)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: tensorflow in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (2.13.1)
+Requirement already satisfied: absl-py&gt;=1.0.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (2.0.0)
+Requirement already satisfied: astunparse&gt;=1.6.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (1.6.3)
 Requirement already satisfied: flatbuffers&gt;=23.1.21 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (23.5.26)
 Requirement already satisfied: gast&lt;=0.4.0,&gt;=0.2.1 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (0.4.0)
 Requirement already satisfied: google-pasta&gt;=0.1.1 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (0.2.0)
-Requirement already satisfied: grpcio&lt;2.0,&gt;=1.24.3 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (1.58.0)
-Requirement already satisfied: h5py&gt;=2.9.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (3.9.0)
+Requirement already satisfied: grpcio&lt;2.0,&gt;=1.24.3 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (1.59.0)
+Requirement already satisfied: h5py&gt;=2.9.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (3.10.0)
 Requirement already satisfied: keras&lt;2.14,&gt;=2.13.1 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (2.13.1)
 Requirement already satisfied: libclang&gt;=13.0.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (16.0.6)
 Requirement already satisfied: numpy&lt;=1.24.3,&gt;=1.22 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (1.24.3)
-Collecting opt-einsum&gt;=2.3.2 (from tensorflow)
-  Using cached opt_einsum-3.3.0-py3-none-any.whl (65 kB)
-Requirement already satisfied: packaging in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (23.1)
-Requirement already satisfied: protobuf!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,&lt;5.0.0dev,&gt;=3.20.3 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (4.24.3)
+Requirement already satisfied: opt-einsum&gt;=2.3.2 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (3.3.0)
+Requirement already satisfied: packaging in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (23.2)
+Requirement already satisfied: protobuf!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,&lt;5.0.0dev,&gt;=3.20.3 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (4.24.4)
 Requirement already satisfied: setuptools in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (56.0.0)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: six&gt;=1.12.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (1.16.0)
-Collecting tensorboard&lt;2.14,&gt;=2.13 (from tensorflow)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Using cached tensorboard-2.13.0-py3-none-any.whl (5.6 MB)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: tensorflow-estimator&lt;2.14,&gt;=2.13.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (2.13.0)
+Requirement already satisfied: six&gt;=1.12.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (1.16.0)
+Requirement already satisfied: tensorboard&lt;2.14,&gt;=2.13 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (2.13.0)
+Requirement already satisfied: tensorflow-estimator&lt;2.14,&gt;=2.13.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (2.13.0)
 Requirement already satisfied: termcolor&gt;=1.1.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (2.3.0)
 Requirement already satisfied: typing-extensions&lt;4.6.0,&gt;=3.6.6 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (4.5.0)
 Requirement already satisfied: wrapt&gt;=1.11.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorflow) (1.15.0)
@@ -2995,98 +2979,63 @@ Requirement already satisfied: tensorflow-io-gcs-filesystem&gt;=0.23.1 in /opt/h
 Requirement already satisfied: wheel&lt;1.0,&gt;=0.23.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from astunparse&gt;=1.6.0-&gt;tensorflow) (0.41.2)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting google-auth&lt;3,&gt;=1.6.3 (from tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow)
-  Obtaining dependency information for google-auth&lt;3,&gt;=1.6.3 from https://files.pythonhosted.org/packages/9d/44/5a992cb9d7bf8aaae73bc5adaf721ad08731c9d00c1c17999a8691404b0c/google_auth-2.23.0-py2.py3-none-any.whl.metadata
-  Using cached google_auth-2.23.0-py2.py3-none-any.whl.metadata (4.2 kB)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting google-auth-oauthlib&lt;1.1,&gt;=0.5 (from tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow)
-  Using cached google_auth_oauthlib-1.0.0-py2.py3-none-any.whl (18 kB)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting markdown&gt;=2.6.8 (from tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow)
-  Obtaining dependency information for markdown&gt;=2.6.8 from https://files.pythonhosted.org/packages/1a/b5/228c1cdcfe138f1a8e01ab1b54284c8b83735476cb22b6ba251656ed13ad/Markdown-3.4.4-py3-none-any.whl.metadata
-  Using cached Markdown-3.4.4-py3-none-any.whl.metadata (6.9 kB)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: google-auth&lt;3,&gt;=1.6.3 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (2.23.3)
+Requirement already satisfied: google-auth-oauthlib&lt;1.1,&gt;=0.5 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (1.0.0)
+Requirement already satisfied: markdown&gt;=2.6.8 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (3.5)
 Requirement already satisfied: requests&lt;3,&gt;=2.21.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (2.31.0)
-Requirement already satisfied: tensorboard-data-server&lt;0.8.0,&gt;=0.7.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (0.7.1)
-Requirement already satisfied: werkzeug&gt;=1.0.1 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (2.3.7)
+Requirement already satisfied: tensorboard-data-server&lt;0.8.0,&gt;=0.7.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (0.7.2)
+Requirement already satisfied: werkzeug&gt;=1.0.1 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (3.0.1)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: cachetools&lt;6.0,&gt;=2.0.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (5.3.1)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: cachetools&lt;6.0,&gt;=2.0.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (5.3.2)
+Requirement already satisfied: pyasn1-modules&gt;=0.2.1 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (0.3.0)
+Requirement already satisfied: rsa&lt;5,&gt;=3.1.4 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (4.9)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting pyasn1-modules&gt;=0.2.1 (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow)
-  Using cached pyasn1_modules-0.3.0-py2.py3-none-any.whl (181 kB)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting rsa&lt;5,&gt;=3.1.4 (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow)
-  Using cached rsa-4.9-py3-none-any.whl (34 kB)
-Requirement already satisfied: urllib3&lt;2.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (1.26.16)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting requests-oauthlib&gt;=0.7.0 (from google-auth-oauthlib&lt;1.1,&gt;=0.5-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow)
-  Using cached requests_oauthlib-1.3.1-py2.py3-none-any.whl (23 kB)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: importlib-metadata&gt;=4.4 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from markdown&gt;=2.6.8-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (6.8.0)
-Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (3.2.0)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: requests-oauthlib&gt;=0.7.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from google-auth-oauthlib&lt;1.1,&gt;=0.5-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (1.3.1)
+Requirement already satisfied: importlib-metadata&gt;=4.4 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from markdown&gt;=2.6.8-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (6.8.0)
+Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (3.3.1)
 Requirement already satisfied: idna&lt;4,&gt;=2.5 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (3.4)
+Requirement already satisfied: urllib3&lt;3,&gt;=1.21.1 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (2.0.7)
 Requirement already satisfied: certifi&gt;=2017.4.17 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (2023.7.22)
 Requirement already satisfied: MarkupSafe&gt;=2.1.1 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from werkzeug&gt;=1.0.1-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (2.1.3)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: zipp&gt;=0.5 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from importlib-metadata&gt;=4.4-&gt;markdown&gt;=2.6.8-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (3.16.2)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: zipp&gt;=0.5 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from importlib-metadata&gt;=4.4-&gt;markdown&gt;=2.6.8-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (3.17.0)
 Requirement already satisfied: pyasn1&lt;0.6.0,&gt;=0.4.6 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from pyasn1-modules&gt;=0.2.1-&gt;google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (0.5.0)
 Requirement already satisfied: oauthlib&gt;=3.0.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from requests-oauthlib&gt;=0.7.0-&gt;google-auth-oauthlib&lt;1.1,&gt;=0.5-&gt;tensorboard&lt;2.14,&gt;=2.13-&gt;tensorflow) (3.2.2)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using cached tensorflow-2.13.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (524.1 MB)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using cached google_auth-2.23.0-py2.py3-none-any.whl (181 kB)
-Using cached Markdown-3.4.4-py3-none-any.whl (94 kB)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Installing collected packages: rsa, pyasn1-modules, opt-einsum, astunparse, absl-py, requests-oauthlib, markdown, google-auth, google-auth-oauthlib, tensorboard, tensorflow
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successfully installed absl-py-1.4.0 astunparse-1.6.3 google-auth-2.23.0 google-auth-oauthlib-1.0.0 markdown-3.4.4 opt-einsum-3.3.0 pyasn1-modules-0.3.0 requests-oauthlib-1.3.1 rsa-4.9 tensorboard-2.13.0 tensorflow-2.13.0
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> A new release of pip is available: <span class=" -Color -Color-Red">23.0.1</span> -&gt; <span class=" -Color -Color-Green">23.2.1</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> A new release of pip is available: <span class=" -Color -Color-Red">23.0.1</span> -&gt; <span class=" -Color -Color-Green">23.3.1</span>
 <span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> To update, run: <span class=" -Color -Color-Green">pip install --upgrade pip</span>
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting scikit-learn
-  Obtaining dependency information for scikit-learn from https://files.pythonhosted.org/packages/bf/15/d1b649fc7685d11b806b4546a5438191fb2ad761de70da95ff676189dcec/scikit_learn-1.3.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata
-  Using cached scikit_learn-1.3.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: numpy&gt;=1.17.3 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from scikit-learn) (1.24.3)
+  Using cached scikit_learn-1.3.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
+Requirement already satisfied: numpy&lt;2.0,&gt;=1.17.3 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from scikit-learn) (1.24.3)
 Requirement already satisfied: scipy&gt;=1.5.0 in /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages (from scikit-learn) (1.10.1)
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting joblib&gt;=1.1.1 (from scikit-learn)
-  Obtaining dependency information for joblib&gt;=1.1.1 from https://files.pythonhosted.org/packages/10/40/d551139c85db202f1f384ba8bcf96aca2f329440a844f924c8a0040b6d02/joblib-1.3.2-py3-none-any.whl.metadata
   Using cached joblib-1.3.2-py3-none-any.whl.metadata (5.4 kB)
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting threadpoolctl&gt;=2.0.0 (from scikit-learn)
-  Obtaining dependency information for threadpoolctl&gt;=2.0.0 from https://files.pythonhosted.org/packages/81/12/fd4dea011af9d69e1cad05c75f3f7202cdcbeac9b712eea58ca779a72865/threadpoolctl-3.2.0-py3-none-any.whl.metadata
   Using cached threadpoolctl-3.2.0-py3-none-any.whl.metadata (10.0 kB)
+Using cached scikit_learn-1.3.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (11.1 MB)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using cached scikit_learn-1.3.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (11.1 MB)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using cached joblib-1.3.2-py3-none-any.whl (302 kB)
+Using cached threadpoolctl-3.2.0-py3-none-any.whl (15 kB)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Downloading joblib-1.3.2-py3-none-any.whl (302 kB)
-?25l   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.0/302.2 kB</span> <span class=" -Color -Color-Red">?</span> eta <span class=" -Color -Color-Cyan">-:--:--</span>^C
-
-   ━━━━━━━━╺━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">61.4/302.2 kB</span> <span class=" -Color -Color-Red">1.7 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
-   ━━━━━━━━╺━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">61.4/302.2 kB</span> <span class=" -Color -Color-Red">1.7 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
-?25h<span class=" -Color -Color-Red">ERROR: Operation cancelled by user</span>
-
-<span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> A new release of pip is available: <span class=" -Color -Color-Red">23.0.1</span> -&gt; <span class=" -Color -Color-Green">23.2.1</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Installing collected packages: threadpoolctl, joblib, scikit-learn
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successfully installed joblib-1.3.2 scikit-learn-1.3.2 threadpoolctl-3.2.0
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> A new release of pip is available: <span class=" -Color -Color-Red">23.0.1</span> -&gt; <span class=" -Color -Color-Green">23.3.1</span>
 <span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> To update, run: <span class=" -Color -Color-Green">pip install --upgrade pip</span>
 </pre></div>
 </div>
@@ -3116,7 +3065,77 @@ Receiving objects:  13% (5/36)
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36), 28.04 MiB | 27.81 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36), 48.07 MiB | 48.06 MiB/s
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 70.47 MiB | 46.98 MiB/s
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 92.47 MiB | 46.23 MiB/s
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 142.99 MiB | 47.66 MiB/s
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  22% (8/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  25% (9/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  27% (10/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  30% (11/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  33% (12/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  36% (13/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  38% (14/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  41% (15/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  44% (16/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  47% (17/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  50% (18/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  52% (19/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  55% (20/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  58% (21/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  61% (22/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  63% (23/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  66% (24/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  69% (25/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  72% (26/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  75% (27/36), 167.27 MiB | 47.79 MiB/s
+Receiving objects:  77% (28/36), 167.27 MiB | 47.79 MiB/s
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 191.99 MiB | 48.00 MiB/s
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 243.04 MiB | 48.87 MiB/s
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 243.04 MiB | 48.87 MiB/s
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 291.80 MiB | 49.18 MiB/s
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>remote: Total 36 (delta 0), reused 2 (delta 0), pack-reused 31
+Receiving objects:  83% (30/36), 315.99 MiB | 49.67 MiB/s
+Receiving objects:  86% (31/36), 315.99 MiB | 49.67 MiB/s
+Receiving objects:  88% (32/36), 315.99 MiB | 49.67 MiB/s
+Receiving objects:  91% (33/36), 315.99 MiB | 49.67 MiB/s
+Receiving objects:  94% (34/36), 315.99 MiB | 49.67 MiB/s
+Receiving objects:  97% (35/36), 315.99 MiB | 49.67 MiB/s
+Receiving objects: 100% (36/36), 315.99 MiB | 49.67 MiB/s
+Receiving objects: 100% (36/36), 334.57 MiB | 48.59 MiB/s, done.
+Resolving deltas:   0% (0/8)
+Resolving deltas:  12% (1/8)
+Resolving deltas:  25% (2/8)
+Resolving deltas:  37% (3/8)
+Resolving deltas:  50% (4/8)
+Resolving deltas:  62% (5/8)
+Resolving deltas:  75% (6/8)
+Resolving deltas:  87% (7/8)
+Resolving deltas: 100% (8/8)
+Resolving deltas: 100% (8/8), done.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Updating files:  87% (7/8)
+Updating files: 100% (8/8)
+Updating files: 100% (8/8), done.
 </pre></div>
 </div>
 </div>
@@ -3154,7 +3173,10 @@ Receiving objects:  13% (5/36)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Signature (regions, throat_conns, model, g_train, voxel_size=1)&gt;
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[03:54:28] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
+</pre>
+</div><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Signature (regions, throat_conns, model, g_train, voxel_size=1)&gt;
 </pre></div>
 </div>
 </div>
@@ -3175,14 +3197,60 @@ Receiving objects:  13% (5/36)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-03-23 14:30:39.889200: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE4.1 SSE4.2
-To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">line</span> <span class="mi">5</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">path_weights</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;model_weights.h5&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">g_train</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">path_train</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)[</span><span class="s1">&#39;g_train&#39;</span><span class="p">][()]</span>
+<span class="ne">----&gt; </span><span class="mi">5</span> <span class="n">model</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">create_model</span><span class="p">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="n">path_weights</span><span class="p">)</span>
+
+<span class="nn">File ~/work/porespy/porespy/porespy/networks/_size_factors.py:612,</span> in <span class="ni">create_model</span><span class="nt">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">604</span> <span class="k">def</span> <span class="nf">create_model</span><span class="p">():</span>
+<span class="g g-Whitespace">    </span><span class="mi">605</span><span class="w">     </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="g g-Whitespace">    </span><span class="mi">606</span><span class="sd">     Returns</span>
+<span class="g g-Whitespace">    </span><span class="mi">607</span><span class="sd">     -------</span>
+<span class="sd">   (...)</span>
+<span class="g g-Whitespace">    </span><span class="mi">610</span><span class="sd"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">611</span><span class="sd">     &#39;&#39;&#39;</span>
+<span class="ne">--&gt; </span><span class="mi">612</span>     <span class="kn">from</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
+<span class="g g-Whitespace">    </span><span class="mi">613</span>     <span class="n">model</span> <span class="o">=</span> <span class="n">_resnet3d</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">614</span>     <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mse&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">),</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mse&#39;</span><span class="p">])</span>
+
+<span class="n">File</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">hostedtoolcache</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">3.8.18</span><span class="o">/</span><span class="n">x64</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.8</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">tensorflow</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">38</span>
+<span class="g g-Whitespace">     </span><span class="mi">35</span> <span class="kn">import</span> <span class="nn">sys</span> <span class="k">as</span> <span class="nn">_sys</span>
+<span class="g g-Whitespace">     </span><span class="mi">36</span> <span class="kn">import</span> <span class="nn">typing</span> <span class="k">as</span> <span class="nn">_typing</span>
+<span class="ne">---&gt; </span><span class="mi">38</span> <span class="kn">from</span> <span class="nn">tensorflow.python.tools</span> <span class="kn">import</span> <span class="n">module_util</span> <span class="k">as</span> <span class="n">_module_util</span>
+<span class="g g-Whitespace">     </span><span class="mi">39</span> <span class="kn">from</span> <span class="nn">tensorflow.python.util.lazy_loader</span> <span class="kn">import</span> <span class="n">LazyLoader</span> <span class="k">as</span> <span class="n">_LazyLoader</span>
+<span class="g g-Whitespace">     </span><span class="mi">41</span> <span class="c1"># Make sure code inside the TensorFlow codebase can use tf2.enabled() at import.</span>
+
+<span class="n">File</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">hostedtoolcache</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">3.8.18</span><span class="o">/</span><span class="n">x64</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.8</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">tensorflow</span><span class="o">/</span><span class="n">python</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">36</span>
+<span class="g g-Whitespace">     </span><span class="mi">27</span> <span class="kn">import</span> <span class="nn">traceback</span>
+<span class="g g-Whitespace">     </span><span class="mi">29</span> <span class="c1"># We aim to keep this file minimal and ideally remove completely.</span>
+<span class="g g-Whitespace">     </span><span class="mi">30</span> <span class="c1"># If you are adding a new file with @tf_export decorators,</span>
+<span class="g g-Whitespace">     </span><span class="mi">31</span> <span class="c1"># import it in modules_with_exports.py instead.</span>
+<span class="g g-Whitespace">     </span><span class="mi">32</span> 
+<span class="g g-Whitespace">     </span><span class="mi">33</span> <span class="c1"># go/tf-wildcard-import</span>
+<span class="g g-Whitespace">     </span><span class="mi">34</span> <span class="c1"># pylint: disable=wildcard-import,g-bad-import-order,g-import-not-at-top</span>
+<span class="ne">---&gt; </span><span class="mi">36</span> <span class="kn">from</span> <span class="nn">tensorflow.python</span> <span class="kn">import</span> <span class="n">pywrap_tensorflow</span> <span class="k">as</span> <span class="n">_pywrap_tensorflow</span>
+<span class="g g-Whitespace">     </span><span class="mi">37</span> <span class="kn">from</span> <span class="nn">tensorflow.python.eager</span> <span class="kn">import</span> <span class="n">context</span>
+<span class="g g-Whitespace">     </span><span class="mi">39</span> <span class="c1"># pylint: enable=wildcard-import</span>
+<span class="g g-Whitespace">     </span><span class="mi">40</span> 
+<span class="g g-Whitespace">     </span><span class="mi">41</span> <span class="c1"># Bring in subpackages.</span>
+
+<span class="n">File</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">hostedtoolcache</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">3.8.18</span><span class="o">/</span><span class="n">x64</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.8</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">tensorflow</span><span class="o">/</span><span class="n">python</span><span class="o">/</span><span class="n">pywrap_tensorflow</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">21</span>
+<span class="g g-Whitespace">     </span><span class="mi">18</span> <span class="kn">import</span> <span class="nn">sys</span>
+<span class="g g-Whitespace">     </span><span class="mi">19</span> <span class="kn">import</span> <span class="nn">traceback</span>
+<span class="ne">---&gt; </span><span class="mi">21</span> <span class="kn">from</span> <span class="nn">tensorflow.python.platform</span> <span class="kn">import</span> <span class="n">self_check</span>
+<span class="g g-Whitespace">     </span><span class="mi">23</span> <span class="c1"># TODO(mdan): Cleanup antipattern: import for side effects.</span>
+<span class="g g-Whitespace">     </span><span class="mi">24</span> 
+<span class="g g-Whitespace">     </span><span class="mi">25</span> <span class="c1"># Perform pre-load sanity checks in order to produce a more actionable error.</span>
+<span class="g g-Whitespace">     </span><span class="mi">26</span> <span class="n">self_check</span><span class="o">.</span><span class="n">preload_check</span><span class="p">()</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;tensorflow.python.platform&#39;
 </pre></div>
 </div>
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[14:30:41] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> `lr` is deprecated, please use `learning_rate` instead, or use the legacy      <a href="file:///home/anaconda/mambaforge/envs/tensorflow_env/lib/python3.9/site-packages/keras/optimizers/optimizer_experimental/optimizer.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">optimizer.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/anaconda/mambaforge/envs/tensorflow_env/lib/python3.9/site-packages/keras/optimizers/optimizer_experimental/optimizer.py#106" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">106</span></a>
-<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         optimizer, e.g.,tf.keras.optimizers.legacy.Adam.                               <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
-</pre>
-</div></div>
+</div>
 </div>
 </section>
 <section id="regions">
