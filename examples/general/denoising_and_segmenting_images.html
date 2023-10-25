@@ -2915,7 +2915,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[03:50:25] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:44:37] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
@@ -2932,7 +2932,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/4dff8455f6d1399644c35bb4587481e55f9cd11a46841d76c7904de41666d2af.png" src="../../_images/4dff8455f6d1399644c35bb4587481e55f9cd11a46841d76c7904de41666d2af.png" />
+<img alt="../../_images/2698470d0f087711de4861e07d7f079eec55efa21a1f4e6c07fbacbc372ebdca.png" src="../../_images/2698470d0f087711de4861e07d7f079eec55efa21a1f4e6c07fbacbc372ebdca.png" />
 </div>
 </div>
 <p>The above image now contains some noise in each phase, which is more realistic, though as we will see it not close to reality.  Let’s look at a histogram of this image:</p>
@@ -2944,7 +2944,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e684d237bf027604a35343e7691547cc4ea545929e0be34b8414410e920ba175.png" src="../../_images/e684d237bf027604a35343e7691547cc4ea545929e0be34b8414410e920ba175.png" />
+<img alt="../../_images/d65ff66cbdc56ffbdf03f6dbe3d21c3c31a45b7a0ce0585e81d394ddfc423ce1.png" src="../../_images/d65ff66cbdc56ffbdf03f6dbe3d21c3c31a45b7a0ce0585e81d394ddfc423ce1.png" />
 </div>
 </div>
 <p>We can see above that all pixels with a value less than 0.5 belong to the dark phase, while the other pixels belong to the light phase.  A simple global threshold can reproduce the original image perfectly:</p>
@@ -2956,7 +2956,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/72ef1ff4166fc94cb3f19698d9c469a2372582e12ca0cac07bd92adffb2cc46d.png" src="../../_images/72ef1ff4166fc94cb3f19698d9c469a2372582e12ca0cac07bd92adffb2cc46d.png" />
+<img alt="../../_images/e49ec4c9b892c18cee8ce9ca55087a1f990ebe8899084b9aef7c7fd78b0151b8.png" src="../../_images/e49ec4c9b892c18cee8ce9ca55087a1f990ebe8899084b9aef7c7fd78b0151b8.png" />
 </div>
 </div>
 <p>Now let’s look at a more realistic noise distribution, though still artificially generated:</p>
@@ -2971,7 +2971,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/144b1faccd634f5a5cc730b3f7b016a7ee4a9ca58bcf9871001997c45489e055.png" src="../../_images/144b1faccd634f5a5cc730b3f7b016a7ee4a9ca58bcf9871001997c45489e055.png" />
+<img alt="../../_images/8171c1422bf4d0f054652b7930b16575fb84116dad38741a3957404c8d11714f.png" src="../../_images/8171c1422bf4d0f054652b7930b16575fb84116dad38741a3957404c8d11714f.png" />
 </div>
 </div>
 <p>Now we can see that the noise is much less separated, and in fact the tails of the distributions just touch each other in the middle.  Let’s see how the simple threshold we used above would work now:</p>
@@ -2983,7 +2983,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/dbe806b0e32117695bcf613856aa9d07596ab1f996d8de22e5add74da855f8d7.png" src="../../_images/dbe806b0e32117695bcf613856aa9d07596ab1f996d8de22e5add74da855f8d7.png" />
+<img alt="../../_images/bdc5eb2b0679c3a3ecd6d4907e8af4160c3380ede6db016a484a39d3dc11952c.png" src="../../_images/bdc5eb2b0679c3a3ecd6d4907e8af4160c3380ede6db016a484a39d3dc11952c.png" />
 </div>
 </div>
 <p>Now there are a few pixels in the dark phase which have been identified as bright and vice-versa. Let’s take this further but putting more extreme, but more realistic noise:</p>
@@ -2999,7 +2999,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f8efd2bfef77b6c0759f3fdc781aadf025fa34e030cef233384db55d8842faab.png" src="../../_images/f8efd2bfef77b6c0759f3fdc781aadf025fa34e030cef233384db55d8842faab.png" />
+<img alt="../../_images/64a95c959fb05b8c24e90c48ea4db8228a2d85ff82d3a1f8a84e3712334247e2.png" src="../../_images/64a95c959fb05b8c24e90c48ea4db8228a2d85ff82d3a1f8a84e3712334247e2.png" />
 </div>
 </div>
 <p>In the above case our eyes can differentiate the light and dark phases pretty well, but the histogram is fully merged into one, and the global threshold produces a very problematic result. Just to show this is not an exageration, below is an actual slice of a tomogram taken of an electrospun flow-battery electrode:</p>
