@@ -594,6 +594,25 @@ class GeneratorTest():
         im = ps.generators.spheres_from_coords(df)
         assert im.ndim == 3
 
+    def test_polydisperse_cylinders(self):
+        import scipy.stats as spst
+        from porespy import beta
+        params = (5.0, 0.0, 7.0)
+        dist = spst.gamma(*params)
+        fibers = beta.polydisperse_cylinders(
+            shape=[100, 100, 100],
+            porosity=0.75,
+            dist=dist,
+            voxel_size=5,
+            phi_max=5,
+            theta_max=90,
+            maxiter=2,
+            rtol=2e-2,
+            seed=0,
+        )
+        eps = fibers.sum()/fibers.size
+        assert eps == 0.759302
+
 
 if __name__ == '__main__':
     t = GeneratorTest()
