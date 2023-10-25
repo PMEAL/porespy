@@ -400,14 +400,16 @@ def find_disconnected_voxels(im, conn=None, surface=False):
         else:
             raise Exception("Received conn is not valid")
     labels, N = spim.label(input=im, structure=strel)
-    holes = clear_border(labels=labels) > 0
-    if surface:
-        from porespy.generators import borders
-        bd = borders(im.shape, mode='faces')
-        hits = np.unique(labels[bd])
-        hits = hits[hits > 0]
-        face_holes = np.isin(labels, hits).reshape(im.shape)
-        holes += face_holes
+    if not surface:
+        holes = clear_border(labels=labels) > 0
+    else:
+        keep = set(np.unique(labels))
+        for ax in range(labels.ndim):
+            labels = np.swapaxes(labels, 0, ax)
+            keep.intersection_update(set(np.unique(labels[0, ...])))
+            keep.intersection_update(set(np.unique(labels[-1, ...])))
+            labels = np.swapaxes(labels, 0, ax)
+        holes = np.isin(labels, list(keep), invert=True)
     return holes
 
 
