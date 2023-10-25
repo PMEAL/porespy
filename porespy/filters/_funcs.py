@@ -403,9 +403,13 @@ def find_disconnected_voxels(im, conn=None, surface=False):
     if not surface:
         holes = clear_border(labels=labels) > 0
     else:
-        counts = np.bincount(labels.flatten())[1:]
-        keep = np.where(counts == counts.max())[0] + 1
-        holes = (labels != keep)*im
+        keep = set(np.unique(labels))
+        for ax in range(labels.ndim):
+            labels = np.swapaxes(labels, 0, ax)
+            keep.intersection_update(set(np.unique(labels[0, ...])))
+            keep.intersection_update(set(np.unique(labels[-1, ...])))
+            labels = np.swapaxes(labels, 0, ax)
+        holes = np.isin(labels, list(keep), invert=True)
     return holes
 
 
