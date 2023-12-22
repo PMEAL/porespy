@@ -1161,7 +1161,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                                           overlap=int(r) + 1, parallel=0,
                                           cores=settings.ncores, divs=divs) < r
                 else:
-                    imtemp = edt(~imtemp) < r
+                    imtemp = edt(~imtemp, parallel=-1) < r
                 imresults[(imresults == 0) * imtemp] = r
     elif mode == "hybrid":
         imresults = np.zeros(np.shape(im))
