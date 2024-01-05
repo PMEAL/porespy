@@ -563,6 +563,21 @@ class FilterTest():
         hits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 16, 17, 19, 31, 32, 37]
         assert np.all(hits == np.unique(s)[1:])
 
+    def test_porosimetry_dt_and_si(self):
+        im = ps.generators.blobs([100, 100, 100], seed=0, porosity=0.7)
+        dt = edt(im, parallel=-1)
+
+        inlets = np.zeros_like(im, dtype=bool)
+        inlets[0, :] = True
+
+        d = ps.filters.porosimetry_si(im=im, dt=dt, inlets=inlets)
+        vals = np.arange(np.floor(dt.max()).astype(int), 0, -1)
+        e = ps.filters.porosimetry(im=im, sizes=vals, inlets=inlets, mode='dt')
+        f = ps.filters.porosimetry_dt(im=im, dt=dt, inlets=inlets)
+
+        # Make sure all three functions return exact same result
+        assert np.sum(d - e) == 0
+        assert np.sum(e - f) == 0
 
 if __name__ == '__main__':
     t = FilterTest()
