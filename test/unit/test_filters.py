@@ -5,7 +5,8 @@ import porespy as ps
 import scipy.ndimage as spim
 from skimage.morphology import disk, ball, skeletonize_3d
 from skimage.util import random_noise
-from scipy.stats import norm
+
+
 ps.settings.tqdm['disable'] = True
 
 
@@ -578,6 +579,7 @@ class FilterTest():
         # Make sure all three functions return exact same result
         assert np.sum(d - e) == 0
         assert np.sum(e - f) == 0
+
 
 if __name__ == '__main__':
     t = FilterTest()
