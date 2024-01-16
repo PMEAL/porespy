@@ -68,12 +68,12 @@ class VisualizationTest():
                                            lattice='tri')
         bd = np.zeros_like(im)
         bd[:, 0] = True
-        inv, size = ps.filters.ibip(im=im, inlets=bd)
+        inv, size = ps.simulations.ibip(im=im, inlets=bd)
         satn = ps.filters.seq_to_satn(seq=inv, im=im)
-        mov = ps.visualization.satn_to_movie(im, satn, cmap='viridis',
-                                             c_under='grey', c_over='white',
-                                             v_under=1e-3, v_over=1.0, fps=10,
-                                             repeat=False)
+        # mov = ps.visualization.satn_to_movie(im, satn, cmap='viridis',
+        #                                      c_under='grey', c_over='white',
+        #                                      v_under=1e-3, v_over=1.0, fps=10,
+        #                                      repeat=False)
         # mov.save('image_based_ip.gif', writer='pillow', fps=10)
 
     def test_satn_to_panels(self):

@@ -108,10 +108,11 @@ class Snow2Test:
         ]
         for case, out_desired in test_cases_2d:
             try:
-                out = ps.networks._parse_pad_width(case, shape_2d).tolist()
+                out = ps.networks._parse_pad_width(case, shape_2d)
+                assert out.dtype == int
             except Exception as e:
                 out = e.args[0]
-            assert out == out_desired
+            assert np.all(out == out_desired)
 
     def test_parse_pad_width_3d(self):
         shape_3d = [10, 10, 10]
@@ -133,10 +134,11 @@ class Snow2Test:
         ]
         for case, out_desired in test_cases_3d:
             try:
-                out = ps.networks._parse_pad_width(case, shape_3d).tolist()
+                out = ps.networks._parse_pad_width(case, shape_3d)
+                assert out.dtype == int
             except Exception as e:
                 out = e.args[0]
-            assert out == out_desired
+            assert np.all(out == out_desired)
 
     def test_label_phases(self):
         im = self.spheres2D
@@ -155,7 +157,7 @@ class Snow2Test:
     def test_ensure_correct_sizes_are_returned_single_phase_2d(self):
         im = self.spheres2D
         snow = ps.networks.snow2(phases=im, parallelization=None)
-        mode = spst.mode(snow.network['pore.extended_diameter'])
+        mode = spst.mode(snow.network['pore.extended_diameter'], keepdims=False)
         assert mode[0] == 60
         D = np.unique(snow.network['pore.extended_diameter'].astype(int))
         assert np.all(D == np.array([30, 34, 60]))
@@ -164,7 +166,7 @@ class Snow2Test:
         im = self.spheres2D
         phases = im.astype(int) + 1
         snow = ps.networks.snow2(phases=phases, parallelization=None)
-        mode = spst.mode(snow.network['pore.extended_diameter'])
+        mode = spst.mode(snow.network['pore.extended_diameter'], keepdims=False)
         assert mode[0] == 60
         D = np.unique(snow.network['pore.extended_diameter'].astype(int))
         assert np.all(D == np.array([15, 16, 17, 18, 19, 21,
@@ -173,7 +175,7 @@ class Snow2Test:
     def test_ensure_correct_sizes_are_returned_single_phase_3d(self):
         im = self.spheres3D
         snow = ps.networks.snow2(phases=im, parallelization=None)
-        mode = spst.mode(snow.network['pore.extended_diameter'])
+        mode = spst.mode(snow.network['pore.extended_diameter'], keepdims=False)
         assert mode[0] == 30
         D = np.unique(snow.network['pore.extended_diameter'].astype(int))
         assert np.all(D == np.array([25, 30, 38]))
@@ -182,7 +184,7 @@ class Snow2Test:
         im = self.spheres3D
         phases = im.astype(int) + 1
         snow = ps.networks.snow2(phases=phases, parallelization=None)
-        mode = spst.mode(snow.network['pore.extended_diameter'])
+        mode = spst.mode(snow.network['pore.extended_diameter'], keepdims=False)
         assert mode[0] == 30
         D = np.unique(snow.network['pore.extended_diameter'].astype(int))
         assert np.all(D == np.array([7, 12, 17, 19, 20, 22, 24, 25, 26,

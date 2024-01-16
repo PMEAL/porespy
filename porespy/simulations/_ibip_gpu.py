@@ -5,6 +5,11 @@ from porespy.tools import get_tqdm, get_border
 from porespy.tools import Results
 
 
+__all__ = [
+    "ibip_gpu",
+]
+
+
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 

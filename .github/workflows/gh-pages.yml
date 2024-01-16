@@ -22,30 +22,21 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Cache conda
+      - name: Cache pip
         uses: actions/cache@v2
-        env:
-          CACHE_NUMBER: 0  # increase value -> force reset cache
         with:
-          path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('requirements.txt') }}
-
-      - name: Set up conda/mamba
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          mamba-version: "*"
-          allow-softlinks: true
-          use-only-tar-bz2: true
-          show-channel-urls: false
-          auto-activate-base: true
-          channel-priority: strict
-          channels: conda-forge,defaults
-          python-version: 3.8
+          # This path is specific to Ubuntu
+          path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
 
       - name: Install dependencies (conda)
         run: |
-          mamba install --file requirements/docs.txt
           pip install -r requirements.txt
+          pip install -r requirements/docs.txt
 
       # Build the documentation
       - name: Build the documentation

@@ -1,13 +1,21 @@
 import logging
 import numpy as np
 import scipy.ndimage as spim
-from trimesh import Trimesh
 from porespy.tools import extend_slice, ps_round
 from porespy.tools import _check_for_singleton_axes, Results
 from porespy.tools import mesh_region
 from skimage import measure
 from porespy.tools import get_tqdm
 from porespy import settings
+
+
+__all__ = [
+    "mesh_surface_area",
+    "mesh_volume",
+    "region_interface_areas",
+    "region_surface_areas",
+    "region_volumes",
+]
 
 
 tqdm = get_tqdm()
@@ -55,7 +63,7 @@ def region_volumes(regions, mode='marching_cubes'):
         if mode == 'marching_cubes':
             vols[i] = mesh_volume(region)
         elif mode.startswith('voxel'):
-            vols[i] = region.sum()
+            vols[i] = region.sum(dtype=np.int64)
     return vols
 
 
@@ -82,6 +90,11 @@ def mesh_volume(region):
     to view online example.
 
     """
+    try:
+        from trimesh import Trimesh
+    except ModuleNotFoundError:
+        msg = 'The trimesh package can be installed with pip install trimesh'
+        raise ModuleNotFoundError(msg)
     mc = mesh_region(region > 0)
     m = Trimesh(vertices=mc.verts, faces=mc.faces, vertex_normals=mc.norm)
     if m.is_watertight:

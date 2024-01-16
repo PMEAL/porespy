@@ -13,8 +13,100 @@ from porespy.tools import get_tqdm
 from numba import njit
 
 
+__all__ = [
+    "boxcount",
+    "chord_counts",
+    "chord_length_distribution",
+    "find_h",
+    "lineal_path_distribution",
+    "pore_size_distribution",
+    "radial_density_distribution",
+    "porosity",
+    "porosity_profile",
+    "representative_elementary_volume",
+    "satn_profile",
+    "two_point_correlation",
+    "phase_fraction",
+    "pc_curve",
+    "pc_curve_from_ibip",
+    "pc_curve_from_mio",
+    "pc_map_to_pc_curve",
+]
+
+
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
+
+
+def boxcount(im, bins=10):
+    r"""
+    Calculates fractal dimension of an image using the tiled box counting
+    method [1]_
+
+    Parameters
+    ----------
+    im : ndarray
+        The image of the porous material.
+    bins : int or array_like, optional
+        The number of box sizes to use. The default is 10 sizes
+        logarithmically spaced between 1 and ``min(im.shape)``.
+        If an array is provided, this is used directly.
+
+    Returns
+    -------
+    results
+        An object possessing the following attributes:
+
+        size : ndarray
+            The box sizes used
+        count : ndarray
+            The number of boxes of each size that contain both solid and void
+        slope : ndarray
+            The gradient of ``count``. This has the same number of elements as
+            ``count`` and
+
+    References
+    ----------
+    .. [1] See Boxcounting on `Wikipedia <https://en.wikipedia.org/wiki/Box_counting>`_
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/metrics/reference/box_counting.html>`_
+    to view online example.
+
+    """
+    im = np.array(im, dtype=bool)
+
+    if (len(im.shape) != 2 and len(im.shape) != 3):
+        raise Exception('Image must be 2-dimensional or 3-dimensional')
+
+    if isinstance(bins, int):
+        Ds = np.unique(np.logspace(1, np.log10(min(im.shape)), bins).astype(int))
+    else:
+        Ds = np.array(bins).astype(int)
+
+    N = []
+    for d in tqdm(Ds, **settings.tqdm):
+        result = 0
+        for i in range(0, im.shape[0], d):
+            for j in range(0, im.shape[1], d):
+                if len(im.shape) == 2:
+                    temp = im[i:i+d, j:j+d]
+                    result += np.any(temp)
+                    result -= np.all(temp)
+                else:
+                    for k in range(0, im.shape[2], d):
+                        temp = im[i:i+d, j:j+d, k:k+d]
+                        result += np.any(temp)
+                        result -= np.all(temp)
+        N.append(result)
+    slope = -1*np.gradient(np.log(np.array(N)), np.log(Ds))
+    data = Results()
+    data.size = Ds
+    data.count = N
+    data.slope = slope
+    return data
 
 
 def representative_elementary_volume(im, npoints=1000):
@@ -81,7 +173,7 @@ def representative_elementary_volume(im, npoints=1000):
         p = pads[i]
         new_s = extend_slice(s, shape=im.shape, pad=p)
         temp = im[new_s]
-        Vp = np.sum(temp)
+        Vp = np.sum(temp, dtype=np.int64)
         Vt = np.size(temp)
         porosity[i] = Vp / Vt
         volume[i] = Vt
@@ -134,9 +226,9 @@ def porosity(im):
     to view online example.
 
     """
-    im = np.array(im, dtype=int)
-    Vp = np.sum(im == 1)
-    Vs = np.sum(im == 0)
+    im = np.array(im, dtype=np.int64)
+    Vp = np.sum(im == 1, dtype=np.int64)
+    Vs = np.sum(im == 0, dtype=np.int64)
     e = Vp / (Vs + Vp)
     return e
 
@@ -172,7 +264,8 @@ def porosity_profile(im, axis=0):
     im = np.atleast_3d(im)
     a = set(range(im.ndim)).difference(set([axis]))
     a1, a2 = a
-    prof = np.sum(np.sum(im == 1, axis=a2), axis=a1) / (im.shape[a2] * im.shape[a1])
+    tmp = np.sum(np.sum(im == 1, axis=a2, dtype=np.int64), axis=a1, dtype=np.int64)
+    prof = tmp / (im.shape[a2] * im.shape[a1])
     return prof
 
 
@@ -442,8 +535,10 @@ def chord_length_distribution(im, bins=10, log=False, voxel_size=1,
         x = np.log10(x)
     if normalization == 'length':
         h = list(np.histogram(x, bins=bins, density=False))
-        h[0] = h[0] * (h[1][1:] + h[1][:-1]) / 2  # Scale bin heigths by length
-        h[0] = h[0] / h[0].sum() / (h[1][1:] - h[1][:-1])  # Normalize h[0] manually
+        # Scale bin heigths by length
+        h[0] = h[0] * (h[1][1:] + h[1][:-1]) / 2
+        # Normalize h[0] manually
+        h[0] = h[0] / h[0].sum(dtype=np.int64) / (h[1][1:] - h[1][:-1])
     elif normalization in ['number', 'count']:
         h = np.histogram(x, bins=bins, density=True)
     else:
@@ -674,12 +769,13 @@ def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
     return tpcf
 
 
-@njit(parallel=True)
+@njit(parallel=False)
 def _get_radial_sum(dt, bins, bin_size, autocorr):
     radial_sum = np.zeros_like(bins[:-1])
     for i, r in enumerate(bins[:-1]):
         mask = (dt <= r) * (dt > (r - bin_size[i]))
-        radial_sum[i] = np.sum(np.ravel(autocorr)[np.ravel(mask)]) / np.sum(mask)
+        radial_sum[i] = np.sum(np.ravel(autocorr)[np.ravel(mask)], dtype=np.int64) \
+            / np.sum(mask)
     return radial_sum
 
 
@@ -818,7 +914,7 @@ def chord_counts(im):
     """
     labels, N = spim.label(im > 0)
     props = regionprops(labels)
-    chord_lens = np.array([i.filled_area for i in props])
+    chord_lens = np.array([i.filled_area for i in props], dtype=int)
     return chord_lens
 
 
@@ -857,7 +953,8 @@ def phase_fraction(im, normed=True):
     labels = np.unique(im)
     results = {}
     for label in labels:
-        results[label] = np.sum(im == label) * (1 / im.size if normed else 1)
+        results[label] = np.sum(im == label, dtype=np.int64) * \
+            (1 / im.size if normed else 1)
     return results
 
 
@@ -959,11 +1056,16 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
             for n in seqs:
                 pbar.update()
                 mask = seq == n
-                # The following assumes only one size found, which was confirmed
-                r = sizes[mask][0]*voxel_size
-                pc = -2*sigma*np.cos(np.deg2rad(theta))/r
-                x.append(pc)
-                snwp = ((seq <= n)*(seq > 0)*(im == 1)).sum()/im.sum()
+                if (pc is not None) and (sizes is not None):
+                    raise Exception("Only one of pc or sizes can be specified")
+                elif pc is not None:
+                    pressure = pc[mask][0]
+                elif sizes is not None:
+                    r = sizes[mask][0]*voxel_size
+                    pressure = -2*sigma*np.cos(np.deg2rad(theta))/r
+                x.append(pressure)
+                snwp = ((seq <= n)*(seq > 0) *
+                        (im == 1)).sum(dtype=np.int64)/im.sum(dtype=np.int64)
                 y.append(snwp)
         pc_curve = Results()
         pc_curve.pc = x
@@ -981,7 +1083,7 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
                 r = n*voxel_size
                 pc = -2*sigma*np.cos(np.deg2rad(theta))/r
                 x.append(pc)
-                snwp = ((sizes >= n)*(im == 1)).sum()/im.sum()
+                snwp = ((sizes >= n)*(im == 1)).sum(dtype=np.int64)/im.sum(dtype=np.int64)
                 y.append(snwp)
         pc_curve = Results()
         pc_curve.pc = x
@@ -997,17 +1099,73 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
             # Add a point at begining to ensure curve starts a 0, if no residual
             Ps = np.hstack((Ps[0] - np.abs(Ps[0]/2), Ps))
         y = []
-        Vp = im.sum()
+        Vp = im.sum(dtype=np.int64)
         temp = pc[im]
         for p in tqdm(Ps, **settings.tqdm):
-            y.append((temp <= p).sum()/Vp)
+            y.append((temp <= p).sum(dtype=np.int64)/Vp)
         pc_curve = Results()
         pc_curve.pc = Ps
         pc_curve.snwp = y
     return pc_curve
 
 
-def satn_profile(satn, s, axis=0, span=10, mode='tile'):
+def pc_map_to_pc_curve(pc, im, seq=None):
+    r"""
+    Converts a pc map into a capillary pressure curve
+
+    Parameters
+    ----------
+    pc : ndarray
+        A numpy array with each voxel containing the capillary pressure at which
+        it was invaded. `-inf` indicates voxels which are already filled with
+        non-wetting fluid, and `+inf` indicates voxels that are not invaded by
+        non-wetting fluid (e.g., trapped wetting phase). Solids should be
+        noted by `+inf` but this is also enforced inside the function using `im`.
+    im : ndarray
+        A numpy array with `True` values indicating the void space and `False`
+        elsewhere. This is necessary to define the total void volume of the domain
+        for computing the saturation.
+    seq : ndarray, optional
+        A numpy array with each voxel containing the sequence at which it was
+        invaded. This is required when analyzing results from invasion percolation
+        since the pressures in `pc` do not correspond to the sequence in which
+        they were filled.
+
+    Returns
+    -------
+    results : dataclass-like
+        A dataclass like object with the following attributes:
+
+        ================== =========================================================
+        Attribute          Description
+        ================== =========================================================
+        pc                 The capillary pressure
+        snwp               The fraction of void space filled by non-wetting
+                           phase at each pressure in ``pc``
+        ================== =========================================================
+
+    Notes
+    -----
+    To use this function with the results of `porosimetry` or `ibip` the sizes map
+    must be converted to a capillary pressure map first.  `drainage` and `invasion`
+    both return capillary pressure maps which can be passed directly as `pc`.
+    """
+    pc[~im] = np.inf  # Ensure solid voxels are set to inf invasion pressure
+    if seq is None:
+        pcs, counts = np.unique(pc, return_counts=True)
+    else:
+        vals, index, counts = np.unique(seq, return_index=True, return_counts=True)
+        pcs = pc.flatten()[index]
+    snwp = np.cumsum(counts[pcs < np.inf])/im.sum()
+    pcs = pcs[pcs < np.inf]
+
+    results = Results()
+    results.pc = pcs
+    results.snwp = snwp
+    return results
+
+
+def satn_profile(satn, s=None, im=None, axis=0, span=10, mode='tile'):
     r"""
     Computes a saturation profile from an image of fluid invasion
 
@@ -1018,7 +1176,12 @@ def satn_profile(satn, s, axis=0, span=10, mode='tile'):
         invasion.  0's are treated as solid and -1's are treated as uninvaded
         void space.
     s : scalar
-        The global saturation value for which the profile is desired
+        The global saturation value for which the profile is desired. If `satn` is
+        a pre-thresholded boolean image then this is ignored, `im` is required.
+    im : ndarray
+        A boolean image with `True` values indicating the void phase. This is used
+        to compute the void volume if `satn` is given as a pre-thresholded boolean
+        mask.
     axis : int
         The axis along which to profile should be measured
     span : int
@@ -1056,46 +1219,41 @@ def satn_profile(satn, s, axis=0, span=10, mode='tile'):
     <https://porespy.org/examples/metrics/reference/satn_profile.html>`_
     to view online example.
     """
-    # @numba.njit()
-    def func(satn, s, axis, span, mode):
-        span = max(1, span)
-        satn = np.swapaxes(satn, 0, axis)
-        if mode == 'tile':
-            y = np.zeros(int(satn.shape[0]/span))
-            z = np.zeros_like(y)
-            for i in range(int(satn.shape[0]/span)):
-                void = satn[i*span:(i+1)*span, ...] != 0
-                nwp = (satn[i*span:(i+1)*span, ...] < s) \
-                    *(satn[i*span:(i+1)*span, ...] > 0)
-                y[i] = nwp.sum()/void.sum()
-                z[i] = i*span + (span-1)/2
-        if mode == 'slide':
-            y = np.zeros(int(satn.shape[0]-span))
-            z = np.zeros_like(y)
-            for i in range(int(satn.shape[0]-span)):
-                void = satn[i:i+span, ...] != 0
-                nwp = (satn[i:i+span, ...] < s)*(satn[i:i+span, ...] > 0)
-                y[i] = nwp.sum()/void.sum()
-                z[i] = i + (span-1)/2
-        return z, y
+    span = max(1, span)
+    if s is None:
+        if satn.dtype != bool:
+            msg = 'Must specify a target saturation if saturation map is provided'
+            raise Exception(msg)
+        s = 2  # Will find ALL voxels, then > 0 will limit to only True ones
+        satn = satn.astype(int)
+        satn[satn == 0] = -1
+        satn[~im] = 0
+    else:
+        msg = 'The maximum saturation in the image is less than the given threshold'
+        if satn.max() < s:
+            raise Exception(msg)
 
-    z, y = func(satn=satn, s=s, axis=axis, span=span, mode=mode)
-
-    class results(Results):
-        r"""
-
-        Attributes
-        ----------
-        position : ndarray
-            The position along the given axis at which saturation values are
-            computed.  The units are in voxels.
-        saturation : ndarray
-            The computed saturation value at each position
-
-        """
-        position = z
-        saturation = y
-
+    satn = np.swapaxes(satn, 0, axis)
+    if mode == 'tile':
+        y = np.zeros(int(satn.shape[0]/span))
+        z = np.zeros_like(y)
+        for i in range(int(satn.shape[0]/span)):
+            void = satn[i*span:(i+1)*span, ...] != 0
+            nwp = (satn[i*span:(i+1)*span, ...] <= s) \
+                *(satn[i*span:(i+1)*span, ...] > 0)
+            y[i] = nwp.sum(dtype=np.int64)/void.sum(dtype=np.int64)
+            z[i] = i*span + (span-1)/2
+    if mode == 'slide':
+        y = np.zeros(int(satn.shape[0]-span))
+        z = np.zeros_like(y)
+        for i in range(int(satn.shape[0]-span)):
+            void = satn[i:i+span, ...] != 0
+            nwp = (satn[i:i+span, ...] <= s)*(satn[i:i+span, ...] > 0)
+            y[i] = nwp.sum(dtype=np.int64)/void.sum(dtype=np.int64)
+            z[i] = i + (span-1)/2
+    results = Results()
+    results.position = z
+    results.saturation = y
     return results
 
 

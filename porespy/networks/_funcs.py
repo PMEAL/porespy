@@ -12,6 +12,15 @@ from porespy import settings
 from porespy.tools import get_tqdm
 
 
+__all__ = [
+    "add_boundary_regions",
+    "generate_voxel_image",
+    "label_phases",
+    "label_boundaries",
+    "map_to_regions",
+]
+
+
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 
@@ -260,7 +269,7 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
         logger.debug(f"Maximum dimension: {max_dim} voxels")
         im = _generate_voxel_image(
             network, pore_shape, throat_shape, max_dim=max_dim)
-        eps = im.astype(bool).sum() / np.prod(im.shape)
+        eps = im.astype(bool).sum(dtype=np.int64) / np.prod(im.shape)
         err = abs(1 - eps / eps_old)
         eps_old = eps
         max_dim = int(max_dim * 1.25)

@@ -1,5 +1,4 @@
 import logging
-import numba
 import numpy as np
 import scipy.ndimage as spim
 from edt import edt
@@ -10,6 +9,12 @@ from porespy.tools import _insert_disks_at_points
 from porespy.filters import trim_disconnected_blobs, fftmorphology
 import random
 from typing import Literal
+
+
+__all__ = [
+    "pseudo_gravity_packing",
+    "pseudo_electrostatic_packing",
+]
 
 
 tqdm = get_tqdm()
@@ -23,6 +28,7 @@ def pseudo_gravity_packing(
     axis: int = 0,
     edges: Literal['contained', 'extended'] = 'contained',
     maxiter: int = 1000,
+	seed: float = None,
 ):
     r"""
     Iteratively inserts spheres at the lowest accessible point in an image,
@@ -44,15 +50,24 @@ def pseudo_gravity_packing(
     maxiter : int (default is 1000)
         The maximum number of spheres to add
     edges : string (default is 'contained')
-        Controls how the edges of the image are handled.  Options are:
+        Controls how spheres at the edges of the image are handled.  Options are:
 
-        'contained'
-            Spheres are all completely within the image
-        'extended'
-            Spheres are allowed to extend beyond the edge of the
-            image.  In this mode the volume fraction will be less that
-            requested since some spheres extend beyond the image, but their
-            entire volume is counted as added for computational efficiency.
+        ============ ================================================================
+        edges        description
+        ============ ================================================================
+        'contained'  Spheres are all completely within the image
+        'extended'   Spheres are allowed to extend beyond the edge of the
+                     image.  In this mode the volume fraction will be less that
+                     requested since some spheres extend beyond the image, but their
+                     entire volume is counted as added for computational efficiency.
+        ============ ================================================================
+
+    seed : int, optional, default = `None`
+        The seed to supply to the random number generator. Because this function
+        uses ``numba`` for speed, calling the normal ``numpy.random.seed(<seed>)``
+        has no effect. To get a repeatable image, the seed must be passed to the
+        function so it can be initialized the way ``numba`` requires. The default
+        is ``None``, which means each call will produce a new realization.
 
     Returns
     -------
@@ -69,6 +84,10 @@ def pseudo_gravity_packing(
 
     """
     logger.debug(f'Adding spheres of radius {r}')
+
+    if seed is not None:  # Initialize rng so numba sees it
+        _set_seed(seed)
+        np.random.seed(seed)
 
     im = np.swapaxes(im, 0, axis)
     im_temp = np.zeros_like(im, dtype=bool)
@@ -117,6 +136,7 @@ def pseudo_electrostatic_packing(
     protrusion: int = 0,
     edges: Literal['extended', 'contained'] = 'extended',
     maxiter: int = 1000,
+	seed: float = None,
 ):
     r"""
     Iterativley inserts spheres as close to the given sites as possible.
@@ -140,15 +160,24 @@ def pseudo_electrostatic_packing(
     maxiter : int (optional, default=1000)
         The maximum number of spheres to insert.
     edges : string (default is 'contained')
-        Controls how the edges of the image are handled.  Options are:
+        Controls how spheres at the edges of the image are handled.  Options are:
 
-        'contained'
-            Spheres are all completely within the image
-        'extended'
-            Spheres are allowed to extend beyond the edge of the
-            image.  In this mode the volume fraction will be less that
-            requested since some spheres extend beyond the image, but their
-            entire volume is counted as added for computational efficiency.
+        ============ ================================================================
+        edges        description
+        ============ ================================================================
+        'contained'  Spheres are all completely within the image
+        'extended'   Spheres are allowed to extend beyond the edge of the
+                     image.  In this mode the volume fraction will be less that
+                     requested since some spheres extend beyond the image, but their
+                     entire volume is counted as added for computational efficiency.
+        ============ ================================================================
+
+    seed : int, optional, default = `None`
+        The seed to supply to the random number generator. Because this function
+        uses ``numba`` for speed, calling the normal ``numpy.random.seed(<seed>)``
+        has no effect. To get a repeatable image, the seed must be passed to the
+        function so it can be initialized the way ``numba`` requires. The default
+        is ``None``, which means each call will produce a new realization.
 
     Returns
     -------
@@ -162,7 +191,10 @@ def pseudo_electrostatic_packing(
     to view online example.
 
     """
-    random.seed(0)
+    if seed is not None:  # Initialize rng so numba sees it
+        _set_seed(seed)
+        np.random.seed(seed)
+
     im_temp = np.zeros_like(im, dtype=bool)
     dt_im = edt(im)
     if sites is None:
@@ -184,14 +216,14 @@ def pseudo_electrostatic_packing(
     options = np.where(dt == 1)
     for _ in tqdm(range(maxiter), **settings.tqdm):
         hits = dt[options] < dtmax
-        if hits.sum() == 0:
+        if hits.sum(dtype=np.int64) == 0:
             if dt.min() == dtmax:
                 break
             options = np.where(dt == dt.min())
             hits = dt[options] < dtmax
         if hits.size == 0:
             break
-        choice = random.choice(np.where(hits)[0])
+        choice = np.random.choice(np.where(hits)[0])
         cen = np.vstack([options[i][choice] for i in range(im.ndim)])
         im_temp = _insert_disks_at_points(im_temp, coords=cen,
                                           radii=np.array([r-clearance]),
@@ -212,7 +244,7 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(1, 2)
     im = ps.generators.pseudo_gravity_packing(im=np.ones(shape, dtype=bool),
                                               r=7, clearance=3,
-                                              edges='contained')
+                                              edges='contained', seed=0)
     ax[0].imshow(im, origin='lower')
 
     sites = np.zeros(shape, dtype=bool)
@@ -221,5 +253,5 @@ if __name__ == "__main__":
                                                                dtype=bool),
                                                     r=5, sites=sites,
                                                     clearance=4,
-                                                    maxiter=50)
+                                                    maxiter=50, seed=0)
     ax[1].imshow(im, origin='lower')

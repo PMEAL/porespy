@@ -4,9 +4,14 @@ from porespy.tools import get_tqdm
 from porespy.tools import get_border, make_contiguous
 from porespy.tools import _insert_disk_at_points
 from porespy.tools import Results
-import numba
+from numba import njit
 from porespy import settings
 tqdm = get_tqdm()
+
+
+__all__ = [
+    "ibip",
+]
 
 
 def ibip(im, inlets=None, dt=None, maxiter=10000):
@@ -98,14 +103,14 @@ def ibip(im, inlets=None, dt=None, maxiter=10000):
     return results
 
 
-@numba.jit(nopython=True, parallel=False)
+@njit(parallel=False)
 def _where(arr):
     inds = np.where(arr)
     result = np.vstack(inds)
     return result
 
 
-@numba.jit(nopython=True)
+@njit()
 def _update_dt_and_bd(dt, bd, pt):
     if dt.ndim == 2:
         for i in range(pt.shape[1]):

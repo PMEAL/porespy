@@ -18,6 +18,34 @@ from porespy.tools import get_tqdm
 from typing import Literal
 
 
+__all__ = [
+    "apply_chords",
+    "apply_chords_3D",
+    "apply_padded",
+    "chunked_func",
+    "distance_transform_lin",
+    "fill_blind_pores",
+    "find_disconnected_voxels",
+    "find_trapped_regions",
+    "find_dt_artifacts",
+    "flood",
+    "flood_func",
+    "hold_peaks",
+    "ibip",
+    "ibip_gpu",
+    "local_thickness",
+    "nphase_border",
+    "porosimetry",
+    "prune_branches",
+    "region_size",
+    "trim_disconnected_blobs",
+    "trim_extrema",
+    "trim_floating_solid",
+    "trim_nonpercolating_paths",
+    "trim_small_clusters",
+]
+
+
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 
@@ -92,11 +120,24 @@ def find_trapped_regions(seq, outlets=None, bins: int = 25, return_mask: bool = 
         bins = np.unique(seq)[-1::-1]
         bins = bins[bins > 0]
     elif isinstance(bins, int):
-        bins = np.linspace(seq.max(), 1, bins)
+        # starting the max_bin at: minimum sequence at outlets
+        # This means soon as the fluid reaches the outlets
+        # outlet_seq = np.setdiff1d(seq[outlets], np.array([0]))
+        # bins_start = outlet_seq.min()
+        # starting the max_bin at: maximum sequence available
+        # in the image. No matter if it's after percolation
+        # threshold (reaching the outlets):
+        bins_start = seq.max()
+        bins = np.linspace(bins_start, 1, bins)
     for i in tqdm(bins, **settings.tqdm):
         temp = seq >= i
         labels = spim.label(temp)[0]
-        keep = np.unique(labels[outlets])[1:]
+        keep = np.unique(labels[outlets])
+        # In cases where entire outlet is filled, the
+        # first indice is not necessarily the
+        # void space. Only the element with value
+        # of zero needs to be removed, if it's in keep.
+        keep = np.setdiff1d(keep, np.array([0]))
         trapped += temp*np.isin(labels, keep, invert=True)
     if return_mask:
         return trapped
@@ -367,9 +408,13 @@ def find_disconnected_voxels(im, conn: int = None, surface: bool = False):
     if not surface:
         holes = clear_border(labels=labels) > 0
     else:
-        counts = np.bincount(labels.flatten())[1:]
-        keep = np.where(counts == counts.max())[0] + 1
-        holes = (labels != keep)*im
+        keep = set(np.unique(labels))
+        for ax in range(labels.ndim):
+            labels = np.swapaxes(labels, 0, ax)
+            keep.intersection_update(set(np.unique(labels[0, ...])))
+            keep.intersection_update(set(np.unique(labels[-1, ...])))
+            labels = np.swapaxes(labels, 0, ax)
+        holes = np.isin(labels, list(keep), invert=True)
     return holes
 
 
@@ -1033,23 +1078,24 @@ def porosimetry(
             invading fluid configuration. The choice of 'dt' or 'hybrid'
             depends on speed, which is system and installation specific.
         'mio'
-            Uses bindary erosion followed by dilation to obtain the invading
-            fluid confirguration directly. If ``access_limitations`` is
+            Uses binary erosion followed by dilation to obtain the invading
+            fluid configuration directly. If ``access_limitated`` is
             ``True`` then disconnected blobs are trimmmed before the dilation.
             This is the only method that can be parallelized by chunking (see
             ``divs`` and ``cores``).
 
     divs : int or array_like
-        The number of times to divide the image for parallel processing.  If ``1``
-        then parallel processing does not occur.  ``2`` is equivalent to
-        ``[2, 2, 2]`` for a 3D image.  The number of cores used is specified in
-        ``porespy.settings.ncores`` and defaults to all cores.
+        The number of times to divide the image for parallel processing.
+        If ``1`` then parallel processing does not occur.  ``2`` is
+        equivalent to ``[2, 2, 2]`` for a 3D image.  The number of cores
+        used is specified in ``porespy.settings.ncores`` and defaults to
+        all cores.
 
     Returns
     -------
     image : ndarray
         A copy of ``im`` with voxel values indicating the sphere radius at
-        which it becomes accessible from the inlets.  This image can be
+        which it becomes accessible from the ``inlets``.  This image can be
         used to find invading fluid configurations as a function of
         applied capillary pressure by applying a boolean comparison:
         ``inv_phase = im > r`` where ``r`` is the radius (in voxels) of
@@ -1203,7 +1249,7 @@ def trim_disconnected_blobs(im, inlets, strel=None):
     to view online example.
 
     """
-    if type(inlets) == tuple:
+    if isinstance(inlets, tuple):
         temp = np.copy(inlets)
         inlets = np.zeros_like(im, dtype=bool)
         inlets[temp] = True
@@ -1501,7 +1547,7 @@ def chunked_func(func,
         return func(**kwargs)
 
     # Determine the value for im_arg
-    if type(im_arg) == str:
+    if isinstance(im_arg, str):
         im_arg = [im_arg]
     for item in im_arg:
         if item in kwargs.keys():
@@ -1518,7 +1564,7 @@ def chunked_func(func,
     if overlap is not None:
         overlap = overlap * (divs > 1)
     else:
-        if type(strel_arg) == str:
+        if isinstance(strel_arg, str):
             strel_arg = [strel_arg]
         for item in strel_arg:
             if item in kwargs.keys():
