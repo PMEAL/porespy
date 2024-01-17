@@ -7,7 +7,7 @@ from porespy import settings
 from porespy.tools import get_tqdm, ps_round, get_border
 from porespy.tools import _insert_disks_at_points
 from porespy.filters import trim_disconnected_blobs, fftmorphology
-import random
+from numba import njit
 from typing import Literal
 
 
@@ -21,6 +21,11 @@ tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 
 
+@njit
+def _set_seed(a):
+    np.random.seed(a)
+
+
 def pseudo_gravity_packing(
     im,
     r: int = 5,
@@ -28,7 +33,7 @@ def pseudo_gravity_packing(
     axis: int = 0,
     edges: Literal['contained', 'extended'] = 'contained',
     maxiter: int = 1000,
-	seed: float = None,
+    seed: float = None,
 ):
     r"""
     Iteratively inserts spheres at the lowest accessible point in an image,

@@ -5,7 +5,7 @@ from typing import Literal
 __all__ = ['faces', 'borders']
 
 
-def faces(shape, inlet: int = 0, outlet: int = 0):
+def faces(shape, inlet: int = None, outlet: int = None):
     r"""
     Generate an image with ``True`` values on the specified ``inlet`` and
     ``outlet`` faces
