@@ -141,7 +141,7 @@ def pseudo_electrostatic_packing(
     protrusion: int = 0,
     edges: Literal['extended', 'contained'] = 'extended',
     maxiter: int = 1000,
-	seed: float = None,
+    seed: float = None,
 ):
     r"""
     Iterativley inserts spheres as close to the given sites as possible.

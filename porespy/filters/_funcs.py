@@ -461,7 +461,7 @@ def fill_blind_pores(im, conn: int = None, surface: bool = False):
     return im
 
 
-def trim_floating_solid(im, conn:int = None, surface: bool = False):
+def trim_floating_solid(im, conn: int = None, surface: bool = False):
     r"""
     Removes all solid that that is not attached to main solid structure.
 

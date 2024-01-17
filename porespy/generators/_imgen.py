@@ -795,7 +795,7 @@ def _get_Voronoi_edges(vor):
 
 def lattice_spheres(shape,
                     r: int = 5,
-                    spacing: int = 10,
+                    spacing: int = None,
                     offset: int = None,
                     smooth: bool = True,
                     lattice: Literal['sc', 'tri', 'fcc', 'bcc'] = "sc"):
