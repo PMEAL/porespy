@@ -198,8 +198,8 @@
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span><span class="p">,</span> <span class="n">ps_round</span><span class="p">,</span> <span class="n">get_border</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_insert_disks_at_points</span>
 <span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">trim_disconnected_blobs</span><span class="p">,</span> <span class="n">fftmorphology</span>
-<span class="c1"># import random</span>
 <span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -219,12 +219,12 @@
 
 <div class="viewcode-block" id="pseudo_gravity_packing"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.pseudo_gravity_packing.html#porespy.generators.pseudo_gravity_packing">[docs]</a><span class="k">def</span> <span class="nf">pseudo_gravity_packing</span><span class="p">(</span>
     <span class="n">im</span><span class="p">,</span>
-    <span class="n">r</span><span class="p">,</span>
-    <span class="n">clearance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-    <span class="n">edges</span><span class="o">=</span><span class="s1">&#39;contained&#39;</span><span class="p">,</span>
-    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">r</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">clearance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">edges</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;contained&#39;</span><span class="p">,</span> <span class="s1">&#39;extended&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;contained&#39;</span><span class="p">,</span>
+    <span class="n">maxiter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iteratively inserts spheres at the lowest accessible point in an image,</span>
@@ -326,13 +326,13 @@
 
 <div class="viewcode-block" id="pseudo_electrostatic_packing"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.pseudo_electrostatic_packing.html#porespy.generators.pseudo_electrostatic_packing">[docs]</a><span class="k">def</span> <span class="nf">pseudo_electrostatic_packing</span><span class="p">(</span>
     <span class="n">im</span><span class="p">,</span>
-    <span class="n">r</span><span class="p">,</span>
+    <span class="n">r</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
     <span class="n">sites</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">clearance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="n">protrusion</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="n">edges</span><span class="o">=</span><span class="s1">&#39;extended&#39;</span><span class="p">,</span>
-    <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">clearance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">protrusion</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">edges</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;extended&#39;</span><span class="p">,</span> <span class="s1">&#39;contained&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;extended&#39;</span><span class="p">,</span>
+    <span class="n">maxiter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iterativley inserts spheres as close to the given sites as possible.</span>
@@ -471,7 +471,7 @@
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2023, PMEAL.<br>
+    &copy; Copyright 2024, PMEAL.<br>
 </p>
   </div>
   

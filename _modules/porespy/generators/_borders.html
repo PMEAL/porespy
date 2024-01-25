@@ -190,12 +190,13 @@
                 
   <h1>Source code for porespy.generators._borders</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;faces&#39;</span><span class="p">,</span> <span class="s1">&#39;borders&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="faces"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.faces.html#porespy.generators.faces">[docs]</a><span class="k">def</span> <span class="nf">faces</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">inlet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outlet</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="faces"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.faces.html#porespy.generators.faces">[docs]</a><span class="k">def</span> <span class="nf">faces</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">inlet</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">outlet</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate an image with ``True`` values on the specified ``inlet`` and</span>
 <span class="sd">    ``outlet`` faces</span>
@@ -209,7 +210,7 @@
 <span class="sd">    inlet : int</span>
 <span class="sd">        The axis where the faces should be added (e.g. ``inlet=0`` will</span>
 <span class="sd">        put ``True`` values on the ``x=0`` face). A value of ``None``</span>
-<span class="sd">        (default) bypasses the addition of inlets.</span>
+<span class="sd">        bypasses the addition of inlets.</span>
 <span class="sd">    outlet : int</span>
 <span class="sd">        Same as ``inlet`` except for the outlet face. This is optional. It</span>
 <span class="sd">        can be be applied at the same time as ``inlet``, instead of</span>
@@ -244,7 +245,11 @@
     <span class="k">return</span> <span class="n">im</span></div>
 
 
-<div class="viewcode-block" id="borders"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.borders.html#porespy.generators.borders">[docs]</a><span class="k">def</span> <span class="nf">borders</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;edges&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="borders"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.borders.html#porespy.generators.borders">[docs]</a><span class="k">def</span> <span class="nf">borders</span><span class="p">(</span>
+    <span class="n">shape</span><span class="p">,</span>
+    <span class="n">thickness</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;edges&#39;</span><span class="p">,</span> <span class="s1">&#39;faces&#39;</span><span class="p">,</span> <span class="s1">&#39;corners&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;edges&#39;</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates an array of specified size with corners, edges or faces</span>
 <span class="sd">    labelled as ``True``.</span>
@@ -321,7 +326,7 @@
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2023, PMEAL.<br>
+    &copy; Copyright 2024, PMEAL.<br>
 </p>
   </div>
   

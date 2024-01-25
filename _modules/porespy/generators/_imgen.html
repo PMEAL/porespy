@@ -204,7 +204,7 @@
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">insert_sphere</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_insert_disk_at_points</span><span class="p">,</span> <span class="n">_insert_disk_at_points_parallel</span>
 <span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -738,8 +738,8 @@
     <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
     <span class="n">spacing</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">distribution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a 3D image of a bundle of tubes, in the form of a rectangular</span>
@@ -802,7 +802,7 @@
     <span class="k">return</span> <span class="n">temp</span></div>
 
 
-<div class="viewcode-block" id="polydisperse_spheres"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.polydisperse_spheres.html#porespy.generators.polydisperse_spheres">[docs]</a><span class="k">def</span> <span class="nf">polydisperse_spheres</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+<div class="viewcode-block" id="polydisperse_spheres"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.polydisperse_spheres.html#porespy.generators.polydisperse_spheres">[docs]</a><span class="k">def</span> <span class="nf">polydisperse_spheres</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span>
                          <span class="n">porosity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                          <span class="n">dist</span><span class="p">,</span>
                          <span class="n">nbins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
@@ -876,7 +876,7 @@
     <span class="n">ncells</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">r</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">flat_faces</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -984,12 +984,12 @@
     <span class="k">return</span> <span class="n">edges</span>
 
 
-<div class="viewcode-block" id="lattice_spheres"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.lattice_spheres.html#porespy.generators.lattice_spheres">[docs]</a><span class="k">def</span> <span class="nf">lattice_spheres</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-                    <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<div class="viewcode-block" id="lattice_spheres"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.lattice_spheres.html#porespy.generators.lattice_spheres">[docs]</a><span class="k">def</span> <span class="nf">lattice_spheres</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span>
+                    <span class="n">r</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
                     <span class="n">spacing</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                    <span class="n">lattice</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sc&quot;</span><span class="p">):</span>
+                    <span class="n">lattice</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;sc&#39;</span><span class="p">,</span> <span class="s1">&#39;tri&#39;</span><span class="p">,</span> <span class="s1">&#39;fcc&#39;</span><span class="p">,</span> <span class="s1">&#39;bcc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sc&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a cubic packing of spheres in a specified lattice arrangement.</span>
 
@@ -1124,11 +1124,11 @@
 
 <div class="viewcode-block" id="overlapping_spheres"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.overlapping_spheres.html#porespy.generators.overlapping_spheres">[docs]</a><span class="k">def</span> <span class="nf">overlapping_spheres</span><span class="p">(</span>
     <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-    <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">porosity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">r</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">porosity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
     <span class="n">maxiter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
     <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
-    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a packing of overlapping mono-disperse spheres</span>
@@ -1631,7 +1631,7 @@
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2023, PMEAL.<br>
+    &copy; Copyright 2024, PMEAL.<br>
 </p>
   </div>
   
