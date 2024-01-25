@@ -1,22 +1,18 @@
 import numpy as np
 from porespy.tools import norm_to_uniform
 import psutil
-
-
-__all__ = [
-    'fractal_noise',
-]
+from typing import Literal
 
 
 def fractal_noise(
     shape,
-    frequency=0.05,
-    octaves=4,
-    gain=0.5,
-    mode='simplex',
-    seed=None,
-    cores=None,
-    uniform=True,
+    frequency: float = 0.05,
+    octaves: int = 4,
+    gain: float = 0.5,
+    mode: Literal['simplex', 'perlin', 'value', 'cubic'] = 'simplex',
+    seed: int = None,
+    cores: int = 1,
+    uniform: bool = True,
 ):
     r"""
     Generate fractal noise which can be thresholded to create binary

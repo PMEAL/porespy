@@ -16,7 +16,7 @@ __all__ = [
 ]
 
 
-def random_cantor_dust(shape, n=5, p=2, f=0.8, seed=None):
+def random_cantor_dust(shape, n: int = 5, p: int = 2, f: float = 0.8, seed: int = None):
     r"""
     Generates an image of random cantor dust
 
@@ -72,7 +72,7 @@ def random_cantor_dust(shape, n=5, p=2, f=0.8, seed=None):
     return im
 
 
-def sierpinski_foam2(shape, n=5):
+def sierpinski_foam2(shape, n: int = 5):
     r"""
     Generates an image of a Sierpinski carpet or foam with independent control of
     image size and number of iterations
@@ -136,7 +136,7 @@ def sierpinski_foam2(shape, n=5):
     return im
 
 
-def sierpinski_foam(dmin=1, n=5, ndim=2, max_size=1e9):
+def sierpinski_foam(dmin: int = 1, n: int = 5, ndim: int = 2, max_size: int = 1e9):
     r"""
     Generates an image of a Sierpinski carpet or foam
 

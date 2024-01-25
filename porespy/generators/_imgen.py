@@ -13,7 +13,7 @@ from porespy.tools import extract_subsection
 from porespy.tools import insert_sphere
 from porespy.tools import _insert_disk_at_points, _insert_disk_at_points_parallel
 from porespy import settings
-from typing import List
+from typing import List, Literal
 
 
 __all__ = [
@@ -547,8 +547,8 @@ def bundle_of_tubes(
     shape: List[int],
     spacing: int,
     distribution=None,
-    smooth=True,
-    seed=None,
+    smooth: bool = True,
+    seed: int = None,
 ):
     r"""
     Create a 3D image of a bundle of tubes, in the form of a rectangular
@@ -611,7 +611,7 @@ def bundle_of_tubes(
     return temp
 
 
-def polydisperse_spheres(shape: List[int],
+def polydisperse_spheres(shape,
                          porosity: float,
                          dist,
                          nbins: int = 5,
@@ -685,7 +685,7 @@ def voronoi_edges(
     ncells: int,
     r: int = 0,
     flat_faces: bool = True,
-    seed=None,
+    seed: int = None,
     **kwargs,
 ):
     r"""
@@ -793,12 +793,12 @@ def _get_Voronoi_edges(vor):
     return edges
 
 
-def lattice_spheres(shape: List[int],
-                    r: int,
+def lattice_spheres(shape,
+                    r: int = 5,
                     spacing: int = None,
                     offset: int = None,
                     smooth: bool = True,
-                    lattice: str = "sc"):
+                    lattice: Literal['sc', 'tri', 'fcc', 'bcc'] = "sc"):
     r"""
     Generate a cubic packing of spheres in a specified lattice arrangement.
 
@@ -933,11 +933,11 @@ def lattice_spheres(shape: List[int],
 
 def overlapping_spheres(
     shape: List[int],
-    r: int,
-    porosity: float,
+    r: int = 5,
+    porosity: float = 0.5,
     maxiter: int = 10,
     tol: float = 0.01,
-    seed=None,
+    seed: int = None,
 ):
     r"""
     Generate a packing of overlapping mono-disperse spheres

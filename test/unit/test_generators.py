@@ -214,31 +214,37 @@ class GeneratorTest():
 
     def test_lattice_spheres_square(self):
         im = ps.generators.lattice_spheres(
-            shape=[101, 101], r=5, spacing=10, lattice='sc')
+            shape=[101, 101], r=5, offset=5, spacing=10, lattice='sc')
         labels, N = spim.label(input=~im)
         assert N == 100
 
     def test_lattice_spheres_triangular(self):
         im = ps.generators.lattice_spheres(
-            shape=[101, 101], r=5, spacing=15, lattice='triangular')
+            shape=[101, 101], r=5, offset=5, spacing=15, lattice='triangular')
         labels, N = spim.label(input=~im)
         assert N == 85
 
     def test_lattice_spheres_sc(self):
         im = ps.generators.lattice_spheres(
-            shape=[101, 101, 101], r=4, spacing=10, lattice='sc')
+            shape=[101, 101, 101], r=4, offset=5, spacing=10, lattice='sc')
         labels, N = spim.label(input=~im)
         assert N == 1000
 
     def test_lattice_spheres_fcc(self):
         im = ps.generators.lattice_spheres(
-            shape=[101, 101, 101], r=4, spacing=12, lattice='fcc')
+            shape=[101, 101, 101],
+            r=4,
+            offset=0,
+            spacing=12,
+            smooth=True,
+            lattice='fcc',
+        )
         labels, N = spim.label(input=~im)
         assert N == 2457
 
     def test_lattice_spheres_bcc(self):
         im = ps.generators.lattice_spheres(
-            shape=[101, 101, 101], r=4, spacing=12, lattice='bcc')
+            shape=[101, 101, 101], r=4, offset=4, spacing=12, lattice='bcc')
         labels, N = spim.label(input=~im)
         assert N == 1241
 
@@ -510,7 +516,7 @@ class GeneratorTest():
         im2D = ps.generators.sierpinski_foam(4, 2, 2)
         np.testing.assert_allclose(im2D.sum()/im2D.size, 0.7901234567901234)
 
-    def test_sierpinski_foam_2(self):
+    def test_sierpinski_foam2(self):
         im2D = ps.generators.sierpinski_foam2(shape=[100, 100], n=3)
         assert np.all(im2D.shape == (100, 100))
         im3D = ps.generators.sierpinski_foam2(shape=[100, 100, 100], n=3)

@@ -200,13 +200,23 @@ class MetricsTest():
         assert np.allclose(v, [0.2, 0.3, 0.5])
 
     def test_representative_elementary_volume(self):
-        im = ps.generators.lattice_spheres(shape=[999, 999],
-                                           r=15, offset=4)
+        im = ps.generators.lattice_spheres(
+            shape=[999, 999],
+            r=15,
+            offset=4,
+            smooth=True,
+            lattice='sc',
+        )
         rev = ps.metrics.representative_elementary_volume(im)
         assert_allclose(np.average(rev.porosity), im.sum() / im.size, rtol=1e-1)
 
-        im = ps.generators.lattice_spheres(shape=[151, 151, 151],
-                                           r=9, offset=4)
+        im = ps.generators.lattice_spheres(
+            shape=[151, 151, 151],
+            r=9,
+            offset=4,
+            smooth=True,
+            lattice='sc',
+        )
         rev = ps.metrics.representative_elementary_volume(im)
         assert_allclose(np.average(rev.porosity), im.sum() / im.size, rtol=1e-1)
 

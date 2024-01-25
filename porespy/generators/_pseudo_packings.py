@@ -7,8 +7,8 @@ from porespy import settings
 from porespy.tools import get_tqdm, ps_round, get_border
 from porespy.tools import _insert_disks_at_points
 from porespy.filters import trim_disconnected_blobs, fftmorphology
-# import random
 from numba import njit
+from typing import Literal
 
 
 __all__ = [
@@ -28,12 +28,12 @@ def _set_seed(a):
 
 def pseudo_gravity_packing(
     im,
-    r,
-    clearance=0,
-    axis=0,
-    maxiter=1000,
-    edges='contained',
-    seed=None,
+    r: int = 5,
+    clearance: int = 0,
+    axis: int = 0,
+    edges: Literal['contained', 'extended'] = 'contained',
+    maxiter: int = 1000,
+    seed: float = None,
 ):
     r"""
     Iteratively inserts spheres at the lowest accessible point in an image,
@@ -135,13 +135,13 @@ def pseudo_gravity_packing(
 
 def pseudo_electrostatic_packing(
     im,
-    r,
+    r: int = 5,
     sites=None,
-    clearance=0,
-    protrusion=0,
-    edges='extended',
-    maxiter=1000,
-    seed=None,
+    clearance: int = 0,
+    protrusion: int = 0,
+    edges: Literal['extended', 'contained'] = 'extended',
+    maxiter: int = 1000,
+    seed: float = None,
 ):
     r"""
     Iterativley inserts spheres as close to the given sites as possible.
