@@ -122,10 +122,11 @@ if __name__ == "__main__":
         ax[1][0].imshow(im1 + 2.0*pts1, origin='lower', interpolation='none')
         ax[1][1].imshow(im2 + 2.0*pts2, origin='lower', interpolation='none')
     if cyl_demo:
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(1, 2)
         np.random.seed(0)
         im1, pts1 = cylindrical_pillars(
             shape=[400, 600], Rmin=5, Rmax=15, spacing=40, lattice='simple', truncate=False)
         im2, pts2 = cylindrical_pillars(
-            shape=[400, 600], Rmin=5, Rmax=15, spacing=40, lattice='tri')
-        ax.imshow(im1 + 2.0*pts1, origin='lower', interpolation='none')
+            shape=[400, 600], Rmin=5, Rmax=15, spacing=40, lattice='tri', truncate=False)
+        ax[0].imshow(im1 + 2.0*pts1, origin='lower', interpolation='none')
+        ax[1].imshow(im2 + 2.0*pts2, origin='lower', interpolation='none')
