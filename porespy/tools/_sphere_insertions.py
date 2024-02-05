@@ -12,7 +12,49 @@ __all__ = [
     '_insert_disks_at_points',
     '_insert_disks_at_points_serial',
     '_insert_disks_at_points_parallel',
+    'points_to_spheres',
 ]
+
+
+def points_to_spheres(im):
+    r"""
+    Inserts disks/spheres into an image at locations indicated by non-zero values
+
+    Parameters
+    ----------
+    im : ndarray
+        The image containing nonzeros indicating the locations to insert spheres.
+        If the non-zero values are `bool`, then the maximal size is found and used;
+        if the non-zeros are `int` then these values are used as the radii.
+
+    Returns
+    -------
+    spheres : ndarray
+        A `bool` array with disks/spheres inserted at each nonzero location in `im`.
+    """
+    from scipy.spatial import distance_matrix
+    if im.ndim == 3:
+        x, y, z = np.where(im > 0)
+        coords = np.vstack((x, y, z)).T
+    else:
+        x, y = np.where(im > 0)
+        coords = np.vstack((x, y))
+    if im.dtype == bool:
+        dmap = distance_matrix(coords.T, coords.T)
+        mask = dmap < 1
+        dmap[mask] = np.inf
+        r = np.around(dmap.min(axis=0)/2, decimals=0).astype(int)
+    else:
+        r = im[x, y].flatten()
+    im_spheres = np.zeros_like(im, dtype=bool)
+    im_spheres = _insert_disks_at_points_parallel(
+        im_spheres,
+        coords=coords,
+        radii=r,
+        v=True,
+        smooth=False,
+    )
+    return im_spheres
 
 
 @njit(parallel=True)
