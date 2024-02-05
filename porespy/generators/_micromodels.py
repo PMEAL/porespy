@@ -32,12 +32,15 @@ def _extract(im, shape, spacing, truncate, lattice):
         a, b = (new_shape/2).astype(int)
         s = (slice(a, a+1, None), slice(b, b+1, None))
         if truncate:
-            a, b = (shape/2).astype(int)
+            a, b = np.around(shape/2).astype(int)
+            sx = extend_slice(slices=s, shape=im.shape, pad=[a, b])
+            im = im[sx]
+            im = im[:shape[0], :shape[1]]
         else:
             diag = np.around((spacing**2 + spacing**2)**0.5).astype(int)
             a, b = (np.ceil(shape/diag)*diag/2).astype(int)
-        sx = extend_slice(slices=s, shape=im.shape, pad=[a, b])
-        im = im[sx]
+            sx = extend_slice(slices=s, shape=im.shape, pad=[a, b])
+            im = im[sx]
     return im
 
 
@@ -106,6 +109,8 @@ def rectangular_pillars_array(
         <https://porespy.org/examples/generators/reference/rectangular_pillars_array.html>`_
         to view online example.
     """
+    if len(shape) != 2:
+        raise Exception('shape must be 2D for this function')
     if seed is not None:
         np.random.seed(seed)
     if isinstance(dist, str):
@@ -133,7 +138,6 @@ def rectangular_pillars_array(
         )
         tmp[sx] = True
     tmp = _extract(tmp, shape, spacing, truncate, lattice)
-    pts = _extract(pts, shape, spacing, truncate, lattice)
     return tmp
 
 
@@ -202,6 +206,8 @@ def cylindrical_pillars_array(
         <https://porespy.org/examples/generators/reference/cylindrical_pillars_array.html>`_
         to view online example.
     """
+    if len(shape) != 2:
+        raise Exception('shape must be 2D for this function')
     if seed is not None:
         np.random.seed(seed)
     if isinstance(dist, str):
@@ -235,7 +241,6 @@ def cylindrical_pillars_mesh(
     a: int = 1000,
     n: int = None,
     truncate : bool = True,
-    seed: int = None,
 ):
     r"""
     A 2D micromodel with randomly located cylindrical pillars of random radius
@@ -263,9 +268,15 @@ def cylindrical_pillars_mesh(
         A flag to indicate if the output should be truncated to the given `shape`
         or if the returned image should be expanded to include the full boundary
         pillars.  The default is `True`.
-    seed : int
-        The value to initialize numpy's random number generator. The default is
-        `None` which results in a new realization each time this function is called.
+
+    Returns
+    -------
+    im : ndarray
+        A ndarray with pillars locations determined by generating a triangular mesh
+        of the specified domain size and putting pillars at each vertex. Note that
+        this process is deterministic for a given set of input arguments so the
+        apparent randomness of the pillar locations is actually determined by the
+        underlaying mesh package used (`nanomesh`).
 
     Examples
     --------
@@ -274,10 +285,8 @@ def cylindrical_pillars_mesh(
         to view online example.
 
     """
-    if seed is not None:
-        np.random.seed(seed)
     if len(shape) != 2:
-        raise Exception("Shape must be 2D")
+        raise Exception('shape must be 2D for this function')
     if n is None:
         n = a**0.5/f
     im = np.ones(shape, dtype=float)

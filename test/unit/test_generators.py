@@ -619,6 +619,81 @@ class GeneratorTest():
         eps = fibers.sum()/fibers.size
         assert eps == 0.759302
 
+    def test_rectangular_pillars_array(self):
+        im1 = ps.generators.rectangular_pillars_array(shape=[190, 190])
+        assert im1.shape == (190, 190)
+        im2 = ps.generators.rectangular_pillars_array(
+            shape=[190, 190],
+            truncate=False,)
+        assert im2.shape == (201, 201)
+        im3 = ps.generators.rectangular_pillars_array(shape=[190, 190], seed=0)
+        im4 = ps.generators.rectangular_pillars_array(shape=[190, 190], seed=0)
+        im5 = ps.generators.rectangular_pillars_array(shape=[190, 190], seed=None)
+        assert np.all(im3 == im4)
+        assert ~np.all(im3 == im5)
+        im6 = ps.generators.rectangular_pillars_array(
+            shape=[190, 190],
+            lattice='triangular',
+        )
+        assert ~np.all(im1 == im6)
+        im7 = ps.generators.rectangular_pillars_array(
+            shape=[190, 190],
+            dist='uniform',
+            dist_kwargs=dict(loc=1, scale=2))
+        im8 = ps.generators.rectangular_pillars_array(
+            shape=[190, 190],
+            dist='uniform',
+            dist_kwargs=dict(loc=5, scale=5))
+        assert np.sum(im7) < np.sum(im8)
+
+    def test_cylindrical_pillars_array(self):
+        im1 = ps.generators.cylindrical_pillars_array(shape=[190, 190])
+        assert im1.shape == (190, 190)
+        im2 = ps.generators.cylindrical_pillars_array(
+            shape=[190, 190],
+            truncate=False,)
+        assert im2.shape == (201, 201)
+        im3 = ps.generators.cylindrical_pillars_array(shape=[190, 190], seed=0)
+        im4 = ps.generators.cylindrical_pillars_array(shape=[190, 190], seed=0)
+        im5 = ps.generators.cylindrical_pillars_array(shape=[190, 190], seed=None)
+        assert np.all(im3 == im4)
+        assert ~np.all(im3 == im5)
+        im6 = ps.generators.cylindrical_pillars_array(
+            shape=[190, 190],
+            lattice='triangular',
+        )
+        assert ~np.all(im1 == im6)
+        im7 = ps.generators.cylindrical_pillars_array(
+            shape=[190, 190],
+            dist='uniform',
+            dist_kwargs=dict(loc=1, scale=2))
+        im8 = ps.generators.cylindrical_pillars_array(
+            shape=[190, 190],
+            dist='uniform',
+            dist_kwargs=dict(loc=5, scale=5))
+        assert np.sum(im8) < np.sum(im7)
+
+    def test_cylindrical_pillars_mesh(self):
+        im1 = ps.generators.cylindrical_pillars_mesh(
+            shape=[190, 190],
+            truncate=True,
+        )
+        assert im1.shape == (190, 190)
+        im2 = ps.generators.cylindrical_pillars_mesh(
+            shape=[190, 190],
+            truncate=False,
+        )
+        assert im2.shape == (224, 224)
+        im3 = ps.generators.cylindrical_pillars_mesh(
+            shape=[190, 190],
+            f=.5,
+        )
+        im4 = ps.generators.cylindrical_pillars_mesh(
+            shape=[190, 190],
+            f=.85,
+        )
+        assert im3.sum() > im4.sum()
+
 
 if __name__ == '__main__':
     t = GeneratorTest()
