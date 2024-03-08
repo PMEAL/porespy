@@ -24,7 +24,8 @@ def set_mpl_style():  # pragma: no cover
     lfont = 12
 
     image_props = {'interpolation': 'none',
-                   'cmap': 'viridis'}
+                   'cmap': 'viridis',
+                   'origin': 'lower'}
     line_props = {'linewidth': 2,
                   'markersize': 8,
                   'markerfacecolor': 'w'}
