@@ -248,7 +248,7 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
         net['pore.volume'] = region_volumes(regions=im, mode='marching_cubes')
         areas = region_surface_areas(regions=im, voxel_size=voxel_size)
         net['pore.surface_area'] = areas
-        interface_area = region_interface_areas(regions=im, areas=areas,
+        interface_area = region_interface_areas(regions=im, areas=areas/voxel_size**2,
                                                 voxel_size=voxel_size)
         A = interface_area.area
         net['throat.cross_sectional_area'] = A
