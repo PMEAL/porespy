@@ -103,6 +103,7 @@ dev-dependencies = [
     "trimesh",
     "ipykernel",
     "pypardiso",
+    "nbval",
 ]
 
 [tool.hatch.metadata]
@@ -117,7 +118,15 @@ packages = ["src/porespy"]
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra -v"
-testpaths = ["test"]
+testpaths = ["test", "examples"]
+norecursedirs = [
+    ".git",
+    ".github",
+    ".ipynb_checkpoints",
+    "build",
+    "dist",
+    "locals",
+]
 
 [tool.ruff]
 line-length = 92
