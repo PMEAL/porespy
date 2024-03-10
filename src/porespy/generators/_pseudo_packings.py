@@ -270,13 +270,13 @@ def pseudo_electrostatic_packing(
         mask = dt >= abs(protrusion)
     if edges == 'contained':
         borders = get_border(mask.shape, thickness=1, mode='faces')
-        mask[borders] = False
+        mask[borders] = 0
     if sites is None:
         dt = edt(mask)
         dt = spim.gaussian_filter(dt, sigma=0.5)
         strel = ps_round(r, ndim=im.ndim, smooth=True)
-        sites = (spim.maximum_filter(dt, footprint=strel) == dt)*mask
-    dt = edt(mask)
+        sites = (spim.maximum_filter(dt, footprint=strel) == dt)*(mask > 0)
+    dt = edt(mask > 0)
     mask = dt > r
     # Initialize heap
     tmp = np.arange(dt.size)[mask.flatten()]
@@ -320,24 +320,36 @@ if __name__ == "__main__":
 
 
 # %% Electrostatic packing
-    if 0:
-        fig, ax = plt.subplots(1, 3)
+    if 1:
+        fig, ax = plt.subplots(1, 2)
         blobs = ps.generators.blobs([300, 300], porosity=0.75)
         im = ps.generators.pseudo_electrostatic_packing(
             im=blobs,
             r=10,
-            clearance=-1,
+            clearance=1,
             protrusion=4,
             edges='contained',
             seed=0,
             phi=1.0,
             smooth=False,
-            value=0,
+            value=-2,
         )
         ax[0].imshow(im, origin='lower')
+        im = ps.generators.pseudo_electrostatic_packing(
+            im=im,
+            r=4,
+            clearance=1,
+            protrusion=0,
+            edges='contained',
+            seed=0,
+            phi=1.0,
+            smooth=False,
+            value=-3,
+        )
+        ax[1].imshow(im, origin='lower')
 
 # %% Gravity packing
-    if 1:
+    if 0:
         fig, ax = plt.subplots(1, 3)
         im = pseudo_gravity_packing(
             im=np.ones(shape, dtype=bool),
