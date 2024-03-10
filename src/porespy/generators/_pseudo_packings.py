@@ -10,6 +10,7 @@ from porespy.filters import trim_disconnected_blobs, fftmorphology
 from numba import njit
 from typing import Literal, List
 import numpy.typing as npt
+import heapq
 
 
 __all__ = [
@@ -38,6 +39,7 @@ def pseudo_gravity_packing(
     phi: float = 1.0,
     seed: float = None,
     smooth: bool = True,
+    value: int = 0,
 ) -> np.ndarray:
     r"""
     Iteratively inserts spheres at the lowest accessible point in an image,
@@ -115,7 +117,6 @@ def pseudo_gravity_packing(
         im = np.ones(shape, dtype=bool)
 
     im = np.swapaxes(im, 0, axis)
-    im_temp = np.copy(im)
     if smooth:
         r = r + 1
     sites = im == 1
@@ -135,6 +136,7 @@ def pseudo_gravity_packing(
         Vbulk = np.prod(im.shape)
         maxiter = min(int(np.floor(Vbulk/Vsph)), maxiter)
     n = None
+    im_temp = np.copy(im).astype(type(value))
     for n in tqdm(range(maxiter), **settings.tqdm):
         # Find all locations in sites within 2R of the current x_min
         if im.ndim == 2:
@@ -160,7 +162,7 @@ def pseudo_gravity_packing(
             im_temp,
             coords=cen,
             radii=np.array([r]),
-            v=False,
+            v=value,
             overwrite=True,
             smooth=smooth,
         )
@@ -188,8 +190,11 @@ def pseudo_electrostatic_packing(
     clearance: int = 0,
     protrusion: int = 0,
     edges: Literal['extended', 'contained'] = 'extended',
+    phi: float = 1.0,
     maxiter: int = 1000,
     seed: float = None,
+    smooth: bool = True,
+    value: int = False,
 ):
     r"""
     Iterativley inserts spheres as close to the given sites as possible.
@@ -252,45 +257,59 @@ def pseudo_electrostatic_packing(
     if seed is not None:  # Initialize rng so numba sees it
         _set_seed(seed)
         np.random.seed(seed)
-
-    im_temp = np.zeros_like(im, dtype=bool)
-    dt_im = edt(im)
-    if sites is None:
-        dt2 = spim.gaussian_filter(dt_im, sigma=0.5)
-        strel = ps_round(r, ndim=im.ndim, smooth=True)
-        sites = (spim.maximum_filter(dt2, footprint=strel) == dt2)*im
-    dt = edt(sites == 0).astype(int)
-    sites = (sites == 0)*(dt_im >= (r - protrusion))
-    if dt_im.max() < np.inf:
-        dtmax = int(dt_im.max()*2)
-    else:
-        dtmax = min(im.shape)
-    dt[~sites] = dtmax
+    if phi < 1.0:
+        Vsph = 4/3*np.pi*(r**3) if im.ndim == 3 else 4*np.pi*(r**2)
+        Vbulk = np.prod(im.shape)
+        maxiter = min(int(np.floor(Vbulk/Vsph)), maxiter)
+    mask = np.copy(im)
+    if protrusion > 0:  # Dilate foreground
+        dt = edt(~mask)
+        mask = dt <= protrusion
+    elif protrusion < 0:  # Erode foreground
+        dt = edt(mask)
+        mask = dt >= abs(protrusion)
     if edges == 'contained':
-        borders = get_border(im.shape, thickness=r, mode='faces')
-        dt[borders] = dtmax
-    r = r + clearance
-    # Get initial options
-    options = np.where(dt == 1)
-    for _ in tqdm(range(maxiter), **settings.tqdm):
-        hits = dt[options] < dtmax
-        if hits.sum(dtype=np.int64) == 0:
-            if dt.min() == dtmax:
-                break
-            options = np.where(dt == dt.min())
-            hits = dt[options] < dtmax
-        if hits.size == 0:
+        borders = get_border(mask.shape, thickness=1, mode='faces')
+        mask[borders] = False
+    if sites is None:
+        dt = edt(mask)
+        dt = spim.gaussian_filter(dt, sigma=0.5)
+        strel = ps_round(r, ndim=im.ndim, smooth=True)
+        sites = (spim.maximum_filter(dt, footprint=strel) == dt)*mask
+    dt = edt(mask)
+    mask = dt > r
+    # Initialize heap
+    tmp = np.arange(dt.size)[mask.flatten()]
+    inds = np.vstack(np.unravel_index(tmp, dt.shape)).T
+    q = [(-dt[tuple(i)], tuple(i)) for i in inds]
+    heapq.heapify(q)
+
+    # Begin inserting sphere
+    count = 0
+    im_temp = np.copy(im).astype(type(value))
+    while count < maxiter:
+        try:
+            D, cen = heapq.heappop(q)
+        except IndexError:
             break
-        choice = np.random.choice(np.where(hits)[0])
-        cen = np.vstack([options[i][choice] for i in range(im.ndim)])
-        im_temp = _insert_disks_at_points(im_temp, coords=cen,
-                                          radii=np.array([r-clearance]),
-                                          v=True,
-                                          overwrite=True)
-        dt = _insert_disks_at_points(dt, coords=cen,
-                                     radii=np.array([2*r-clearance]),
-                                     v=int(dtmax),
-                                     overwrite=True)
+        if mask[cen]:
+            count += 1
+            im_temp = _insert_disks_at_points(
+                im=im_temp,
+                coords=np.vstack(cen),
+                radii=np.array([r]),
+                v=value,
+                overwrite=True,
+                smooth=smooth,
+            )
+            mask = _insert_disks_at_points(
+                im=mask,
+                coords=np.vstack(cen),
+                radii=np.array([2*r + 2*clearance]),
+                v=False,
+                overwrite=True,
+                smooth=smooth,
+            )
     return im_temp
 
 
@@ -299,36 +318,59 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     shape = [200, 200]
 
-    fig, ax = plt.subplots(1, 3)
-    im = ps.generators.pseudo_gravity_packing(
-        im=np.ones(shape, dtype=bool),
-        r=17,
-        clearance=11,
-        edges='contained',
-        seed=0,
-        phi=1.0,
-        smooth=False,
-    )
-    ax[0].imshow(im, origin='lower')
-    im = ps.generators.pseudo_gravity_packing(
-        im=im,
-        r=7,
-        clearance=0,
-        edges='extended',
-        seed=0,
-        phi=0.25,
-        maxiter=1000,
-        smooth=True,
-    )
-    ax[1].imshow(im, origin='lower')
-    im = ps.generators.pseudo_gravity_packing(
-        im=im,
-        r=10,
-        clearance=0,
-        edges='contained',
-        seed=0,
-        phi=0.25,
-        smooth=False,
-    )
-    ax[2].imshow(im, origin='lower')
+
+# %% Electrostatic packing
+    if 0:
+        fig, ax = plt.subplots(1, 3)
+        blobs = ps.generators.blobs([300, 300], porosity=0.75)
+        im = ps.generators.pseudo_electrostatic_packing(
+            im=blobs,
+            r=10,
+            clearance=-1,
+            protrusion=4,
+            edges='contained',
+            seed=0,
+            phi=1.0,
+            smooth=False,
+            value=0,
+        )
+        ax[0].imshow(im, origin='lower')
+
+# %% Gravity packing
+    if 1:
+        fig, ax = plt.subplots(1, 3)
+        im = pseudo_gravity_packing(
+            im=np.ones(shape, dtype=bool),
+            r=12,
+            clearance=0,
+            edges='contained',
+            seed=0,
+            phi=.1,
+            smooth=False,
+            value=-4,
+        )
+        ax[0].imshow(im, origin='lower')
+        im = pseudo_gravity_packing(
+            im=im,
+            r=7,
+            clearance=0,
+            edges='extended',
+            seed=0,
+            phi=0.25,
+            maxiter=1000,
+            smooth=True,
+            value=-3
+        )
+        ax[1].imshow(im, origin='lower')
+        im = pseudo_gravity_packing(
+            im=im,
+            r=10,
+            clearance=0,
+            edges='extended',
+            seed=0,
+            phi=0.25,
+            smooth=False,
+            value=-2,
+        )
+        ax[2].imshow(im, origin='lower')
 
