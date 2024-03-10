@@ -1,13 +1,15 @@
 import os
 import subprocess
+
 import numpy as np
 import scipy.ndimage as nd
 import skimage.measure as ms
-from porespy.tools import sanitize_filename
-from porespy.networks import generate_voxel_image
-from porespy.filters import reduce_peaks
-from skimage.morphology import ball
 from edt import edt
+from skimage.morphology import ball
+
+from porespy.filters import reduce_peaks
+from porespy.networks import generate_voxel_image
+from porespy.tools import sanitize_filename
 
 
 def dict_to_vtk(data, filename, voxel_size=1, origin=(0, 0, 0)):
@@ -289,7 +291,7 @@ def _save_stl(im, vs, filename):
         from stl import mesh
     except ModuleNotFoundError:
         msg = 'numpy-stl can be installed with pip install numpy-stl'
-        ModuleNotFoundError(msg)
+        raise ModuleNotFoundError(msg)
     im = np.pad(im, pad_width=10, mode="constant", constant_values=True)
     vertices, faces, norms, values = ms.marching_cubes(im)
     vertices *= vs
