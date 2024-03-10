@@ -1,5 +1,6 @@
 # Ignore the following during testing
 collect_ignore = [
+    "docs/conf.py",
     "examples/generators/reference/fractal_noise.ipynb",
     "examples/networks/reference/diffusive_size_factor_AI.ipynb",
     "examples/networks/tutorials/predicting_diffusive_size_factors_rock_sample.ipynb",
