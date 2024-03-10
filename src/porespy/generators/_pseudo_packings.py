@@ -35,6 +35,7 @@ def pseudo_gravity_packing(
     axis: int = 0,
     edges: Literal['contained', 'extended'] = 'contained',
     maxiter: int = 1000,
+    phi: float = 1.0,
     seed: float = None,
     smooth: bool = True,
 ) -> np.ndarray:
@@ -60,8 +61,14 @@ def pseudo_gravity_packing(
     axis : int (default is 0)
         The axis along which gravity acts, directed from the end (-1) towards the
         start (0).
+    phi : float (default is 1.0)
+        The "solid volume fraction" of spheres to add (considering spheres as solid).
+        This is used to calculate the discrete number of spheres, *N*, required
+        based on the total volume of the image. If *N* is less than `maxiter` then
+        `maxiter` will be set to *N*.
     maxiter : int (default is 1000)
-        The maximum number of spheres to add
+        The maximum number of spheres to add. This places a hard limit on the number
+        of spheres even if `phi` is specified.
     edges : string (default is 'contained')
         Controls how spheres at the edges of the image are handled.  Options are:
 
@@ -123,6 +130,10 @@ def pseudo_gravity_packing(
     s = ball(1) if im.ndim == 3 else disk(1)
     sites = trim_disconnected_blobs(im=sites, inlets=inlets, strel=s)
     x_min = np.where(sites)[0].min()
+    if phi < 1.0:
+        Vsph = 4/3*np.pi*(r**3) if im.ndim == 3 else 4*np.pi*(r**2)
+        Vbulk = np.prod(im.shape)
+        maxiter = min(int(np.floor(Vbulk/Vsph)), maxiter)
     n = None
     for n in tqdm(range(maxiter), **settings.tqdm):
         # Find all locations in sites within 2R of the current x_min
@@ -295,7 +306,7 @@ if __name__ == "__main__":
         clearance=11,
         edges='contained',
         seed=0,
-        maxiter=10,
+        phi=1.0,
         smooth=False,
     )
     ax[0].imshow(im, origin='lower')
@@ -305,8 +316,9 @@ if __name__ == "__main__":
         clearance=0,
         edges='extended',
         seed=0,
-        maxiter=40,
-        smooth=False,
+        phi=0.25,
+        maxiter=1000,
+        smooth=True,
     )
     ax[1].imshow(im, origin='lower')
     im = ps.generators.pseudo_gravity_packing(
@@ -315,7 +327,7 @@ if __name__ == "__main__":
         clearance=0,
         edges='contained',
         seed=0,
-        maxiter=50,
+        phi=0.25,
         smooth=False,
     )
     ax[2].imshow(im, origin='lower')
