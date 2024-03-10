@@ -44,6 +44,46 @@ dependencies = [
 readme = "README.md"
 requires-python = ">= 3.8"
 
+[project.optional-dependencies]
+build = ["hatch"]
+test = [
+    "codecov",
+    "coverage",
+    "nbval",
+    "pytest",
+    "pytest-cache",
+    "pytest-cov",
+    "pytest-custom-exit-code",
+    "pytest-pycodestyle",
+    "pytest-split",
+]
+extras = [
+    "imageio",
+    "numpy-stl",
+    "pyevtk",
+    "pyfastnoisesimd",
+    "scikit-fmm",
+    "scikit-learn",
+    "tensorflow",
+    "trimesh",
+]
+docs = [
+    "mock",
+    "myst-nb",
+    "pandoc",
+    "pydata-sphinx-theme==0.9",
+    "sphinx",
+    "sphinx-copybutton",
+    "sphinx-design",
+]
+interactive = [
+    "ipython",
+    "ipykernel",
+    "ipywidgets",
+    "jupyter",
+    "jupyterlab_widgets",
+]
+
 [project.urls]
 Homepage = "https://porespy.org"
 Repository = "https://github.com/PMEAL/porespy"
