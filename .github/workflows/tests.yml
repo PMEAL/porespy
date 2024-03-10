@@ -46,7 +46,7 @@ jobs:
 
       - name: Install dependencies (pip)
         run: |
-          pip install -e .[test]
+          pip install -e .[test,extras]
 
       # TODO: uncomment this step when integration tests are fixed
       # - name: Disable numba JIT for codecov to include jitted methods
