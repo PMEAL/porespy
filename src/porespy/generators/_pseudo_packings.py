@@ -28,8 +28,8 @@ def _set_seed(a):
 
 
 def pseudo_gravity_packing(
-    im: npt.ArrayLike = None,
     shape: List = None,
+    im: npt.ArrayLike = None,
     r: int = 5,
     clearance: int = 0,
     axis: int = 0,
@@ -44,10 +44,14 @@ def pseudo_gravity_packing(
 
     Parameters
     ----------
+    shape : list
+        The shape of the image to create.  This is equivalent to passing an array
+        of `True` values of the desired size to `im`.
     im : ndarray
         Image with ``True`` values indicating the phase where spheres should be
-        inserted. A common option would be a cylindrical plug which would
-        result in a tube filled with beads.
+        inserted. This can be used to insert spheres into an image that already
+        has some features (e.g. half filled with larger spheres, or a cylindrical
+        plug).
     r : int
         The radius of the spheres to be added
     clearance : int (default is 0)
@@ -66,7 +70,7 @@ def pseudo_gravity_packing(
         ============ ================================================================
         'contained'  Spheres are all completely within the image
         'extended'   Spheres are allowed to extend beyond the edge of the
-                     image.  In this mode the volume fraction will be less that
+                     image. In this mode the volume fraction will be less that
                      requested since some spheres extend beyond the image, but their
                      entire volume is counted as added for computational efficiency.
         ============ ================================================================
@@ -77,6 +81,8 @@ def pseudo_gravity_packing(
         has no effect. To get a repeatable image, the seed must be passed to the
         function so it can be initialized the way ``numba`` requires. The default
         is ``None``, which means each call will produce a new realization.
+    smooth : bool, default = `True`
+        Controls whether or not the spheres have the small pip each face.
 
     Returns
     -------
@@ -97,6 +103,9 @@ def pseudo_gravity_packing(
     if seed is not None:  # Initialize rng so numba sees it
         _set_seed(seed)
         np.random.seed(seed)
+
+    if im is None:
+        im = np.ones(shape, dtype=bool)
 
     im = np.swapaxes(im, 0, axis)
     im_temp = np.copy(im)
@@ -161,7 +170,8 @@ def pseudo_gravity_packing(
 
 
 def pseudo_electrostatic_packing(
-    im,
+    shape: List = None,
+    im: npt.ArrayLike = None,
     r: int = 5,
     sites=None,
     clearance: int = 0,
@@ -175,15 +185,20 @@ def pseudo_electrostatic_packing(
 
     Parameters
     ----------
+    shape : list
+        The shape of the image to create.  This is equivalent to passing an array
+        of `True` values of the desired size to `im`.
     im : ndarray
         Image with ``True`` values indicating the phase where spheres should be
-        inserted.
+        inserted. This can be used to insert spheres into an image that already
+        has some features (e.g. half filled with larger spheres, or a cylindrical
+        plug).
     r : int
         Radius of spheres to insert.
     sites : ndarray (optional)
         An image with ``True`` values indicating the electrostatic attraction
-        points.
-        If this is not given then the peaks in the distance transform are used.
+        points. If this is not given then the peaks in the distance transform of
+        `im` are used.
     clearance : int (optional, default=0)
         The amount of space to put between each sphere. Negative values are
         acceptable to create overlaps, but ``abs(clearance) < r``.
