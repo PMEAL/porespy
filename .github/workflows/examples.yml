@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: FedericoCarboni/setup-ffmpeg@v2
+      - uses: FedericoCarboni/setup-ffmpeg@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
@@ -45,7 +45,8 @@ jobs:
       - name: Running tests
         # Make sure to pass max-parallel to --splits
         run: |
-          pytest examples/ \
+          pytest \
+            -p no:python \
             --nbval-lax \
             --splits ${{ strategy.max-parallel}} \
             --group ${{ matrix.test_group }} \
