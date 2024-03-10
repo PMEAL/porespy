@@ -28,7 +28,7 @@ def flux(c, axis, k=None):
     """
     k = np.ones_like(c) if k is None else np.array(k)
     # Compute the gradient of the concentration field using forward diff
-    dcdX = convolve1d(c, weights=np.array([-1, 1]), axis=axis)
+    dcdX = convolve1d(c, weights=np.array([-1.0, 1.0]), axis=axis)
     # dcdX @ outlet is incorrect due to forward diff -> use backward
     _fix_gradient_outlet(dcdX, axis)
     # Compute the conductivity at the faces using resistors in series
@@ -83,10 +83,11 @@ def _fix_gradient_outlet(J, axis):
     J_outlet[:] = J_penultimate_layer
 
 
-def _slice_view(a, i, axis):
+def _slice_view(a, idx, axis):
     """Returns a slice view of the array along the given axis."""
+    # Example: _slice_view(a, i=5, axis=1) -> a[:, 5, :]
     sl = [slice(None)] * a.ndim
-    sl[axis] = i
+    sl[axis] = idx
     return a[tuple(sl)]
 
 

@@ -1,16 +1,17 @@
 import logging
+
 import numpy as np
 import openpnm as op
-from porespy.filters import trim_nonpercolating_paths
-from porespy.tools import Results
-from porespy.generators import faces
 
+from porespy.filters import trim_nonpercolating_paths
+from porespy.generators import faces
+from porespy.tools import Results
 
 logger = logging.getLogger(__name__)
 ws = op.Workspace()
 
 
-__all__ = ['tortuosity_fd']
+__all__ = ["tortuosity_fd"]
 
 
 def tortuosity_fd(im, axis, solver=None):
@@ -56,7 +57,7 @@ def tortuosity_fd(im, axis, solver=None):
     """
     if axis > (im.ndim - 1):
         raise Exception(f"'axis' must be <= {im.ndim}")
-    openpnm_v3 = op.__version__.startswith('3')
+    openpnm_v3 = op.__version__.startswith("3")
 
     # Obtain original porosity
     eps0 = im.sum(dtype=np.int64) / im.size
@@ -68,9 +69,9 @@ def tortuosity_fd(im, axis, solver=None):
     # Check if porosity is changed after trimmimg floating pores
     eps = im.sum(dtype=np.int64) / im.size
     if not eps:
-        raise Exception('No pores remain after trimming floating pores')
+        raise Exception("No pores remain after trimming floating pores")
     if eps < eps0:  # pragma: no cover
-        logger.warning('Found non-percolating regions, were filled to percolate')
+        logger.warning("Found non-percolating regions, were filled to percolate")
 
     # Generate a Cubic network to be used as an orthogonal grid
     net = op.network.CubicTemplate(template=im, spacing=1.0)
@@ -78,7 +79,7 @@ def tortuosity_fd(im, axis, solver=None):
         phase = op.phase.Phase(network=net)
     else:
         phase = op.phases.GenericPhase(network=net)
-    phase['throat.diffusive_conductance'] = 1.0
+    phase["throat.diffusive_conductance"] = 1.0
     # Run Fickian Diffusion on the image
     fd = op.algorithms.FickianDiffusion(network=net, phase=phase)
     # Choose axis of concentration gradient
@@ -94,9 +95,9 @@ def tortuosity_fd(im, axis, solver=None):
         fd._update_A_and_b()
         fd.x, info = solver.solve(fd.A.tocsr(), fd.b)
         if info:
-            raise Exception(f'Solver failed to converge, exit code: {info}')
+            raise Exception(f"Solver failed to converge, exit code: {info}")
     else:
-        fd.settings.update({'solver_family': 'scipy', 'solver_type': 'cg'})
+        fd.settings.update({"solver_family": "scipy", "solver_type": "cg"})
         fd.run()
 
     # Calculate molar flow rate, effective diffusivity and tortuosity
@@ -108,7 +109,7 @@ def tortuosity_fd(im, axis, solver=None):
     L = im.shape[axis]
     A = np.prod(im.shape) / L
     # L-1 because BCs are put inside the domain, see issue #495
-    Deff = r_in * (L-1)/A / dC
+    Deff = r_in * (L - 1) / A / dC
     tau = eps / Deff
 
     # Attach useful parameters to Results object
@@ -119,8 +120,9 @@ def tortuosity_fd(im, axis, solver=None):
     result.original_porosity = eps0
     result.effective_porosity = eps
     conc = np.zeros(im.size, dtype=float)
-    conc[net['pore.template_indices']] = fd['pore.concentration']
+    conc[net["pore.template_indices"]] = fd["pore.concentration"]
     result.concentration = conc.reshape(im.shape)
+    result.sys = fd.A, fd.b
 
     # Free memory
     ws.close_project(net.project)
