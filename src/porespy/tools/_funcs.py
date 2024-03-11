@@ -1390,7 +1390,7 @@ def extract_regions(regions, labels: list, trim=True):
     to view online example.
 
     """
-    if type(labels) is int:
+    if isinstance(labels, int):
         labels = [labels]
     s = spim.find_objects(regions)
     im_new = np.zeros_like(regions)

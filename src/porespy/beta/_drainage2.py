@@ -183,7 +183,6 @@ if __name__ == "__main__":
     import numpy as np
     import porespy as ps
     import matplotlib.pyplot as plt
-    from copy import copy
     from edt import edt
 
     # %%

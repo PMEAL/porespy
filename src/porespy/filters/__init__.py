@@ -56,9 +56,9 @@ image, but with altered values.
 
 """
 
-from ._funcs import *
-from ._snows import *
-from ._size_seq_satn import *
-from ._nlmeans import *
-from ._fftmorphology import *
 from . import imagej
+from ._fftmorphology import *
+from ._funcs import *
+from ._nlmeans import *
+from ._size_seq_satn import *
+from ._snows import *
