@@ -44,27 +44,28 @@ def random_packing(
     return_spheres: bool = False,
 ) -> np.ndarray:
 
-    if seed is not None:  # Initialize rng so numba sees it
-        _set_seed(seed)
-        np.random.seed(seed)
+    if seed is not None:
+        _set_seed(seed)  # Initialize rng so numba sees it
+        np.random.seed(seed)  # Also initialize numpys rng
 
-    if im is None:
+    if im is None:  # If shape is given instead of im
         im = np.ones(shape, dtype=bool)
 
-    im = np.swapaxes(im, 0, axis)
+    im = np.swapaxes(im, 0, axis)  # Move "axis" to x position for processing
 
-    if smooth:
+    if smooth:  # Smooth balls are 1 pixel smaller, so increase r
         r = r + 1
 
-    # Deal with edges
+    # Deal with edge mode
     mask = im > 0
     if edges == 'contained':
         border = get_border(im.shape, thickness=1, mode='faces')
         mask[border] = False
 
+    # Generate mask of valid insertion points
     mask = edt(mask > 0) > r
 
-    # Initialize the heap
+    # Initialize the queue
     tmp = np.arange(mask.size)[mask.flatten()]
     inds = np.vstack(np.unravel_index(tmp, im.shape)).T
     order = np.random.permutation(np.arange(len(tmp)))
@@ -96,7 +97,7 @@ def pseudo_gravity_packing(
     edges: Literal['contained', 'extended'] = 'contained',
     maxiter: int = 1000,
     phi: float = 1.0,
-    seed: float = None,
+    seed: int = None,
     smooth: bool = True,
     value: int = 0,
     return_spheres: bool = False,
@@ -158,6 +159,9 @@ def pseudo_gravity_packing(
         The value to set the inserted spheres to. Using `value < 0` is a handy
         way to repeatedly insert different sphere sizes into the same image while
         making them easy to identify.
+    return_spheres : bool
+        Creates and returns a new image to hold the spheres, without any of the
+        other structural features of the input `im`.
 
     Returns
     -------
@@ -187,9 +191,6 @@ def pseudo_gravity_packing(
     if smooth:
         r = r + 1
 
-    # Ensure bottom row of image is 0's
-    pw = ((1, 0), (0, 0), (0, 0)) if im.ndim == 3 else ((1, 0), (0, 0))
-    im = np.pad(im, pw, mode='constant', constant_values=False)
     # Deal with edges
     if edges == 'contained':
         pw = ((1, 0), (1, 1), (1, 1)) if im.ndim == 3 else ((1, 0), (1, 1))
@@ -197,16 +198,14 @@ def pseudo_gravity_packing(
         mask = unpad(edt(im_padded) > r, pw)
     else:
         mask = edt(im) > r
-    im = im[1:, ...]  # Remove bottom row
-    mask = mask[1:, ...]  # Remove bottom row
 
-    # Finalize the mask
+    # Finalize the mask of valid insertion points
     inlets = np.zeros_like(im)
     inlets[-1, ...] = True
     s = ball(1) if im.ndim == 3 else disk(1)
     mask = trim_disconnected_blobs(im=mask, inlets=inlets, strel=s)
 
-    # Generate elevation values to initialize the heap
+    # Generate elevation values to initialize queue
     from porespy.generators import ramp
     h = ramp(im.shape, inlet=0, outlet=im.shape[0], axis=0)*mask
     h = h + np.random.rand(len(h))
@@ -242,7 +241,7 @@ def pseudo_electrostatic_packing(
     edges: Literal['extended', 'contained'] = 'extended',
     phi: float = 1.0,
     maxiter: int = 1000,
-    seed: float = None,
+    seed: int = None,
     smooth: bool = True,
     value: int = False,
     return_spheres: bool = False,
@@ -304,7 +303,8 @@ def pseudo_electrostatic_packing(
         way to repeatedly insert different sphere sizes into the same image while
         making them easy to identify.
     return_spheres : bool
-        bka
+        Creates and returns a new image to hold the spheres, without any of the
+        other structural features of the input `im`.
 
     Returns
     -------
@@ -347,9 +347,10 @@ def pseudo_electrostatic_packing(
     dt2 = edt(~sites)
     mask = mask * (dt2 > r) * (dt > r)
 
-    # Initialize heap
+    # Initialize queue
     tmp = np.arange(im.size)[mask.flatten()]
     inds = np.vstack(np.unravel_index(tmp, im.shape)).T
+    dt = dt + 0.1*np.random.rand(*dt.shape)*mask
     order = np.argsort(-dt.flatten()[mask.flatten()])
     q = inds[order, :]
 
