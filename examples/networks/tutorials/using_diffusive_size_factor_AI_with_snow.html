@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Using AI based diffusive size factors for extracted networks &#8212; PoreSpy  documentation</title>
 <script>
@@ -24,25 +23,22 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=19e3b7ad" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
-    <script src="../../../_static/design-tabs.js"></script>
-    <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
+    <script src="../../../_static/js/custom.js?v=8f303282"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Reference" href="../../../_examples/networks/reference.html" />
@@ -72,9 +68,8 @@
   
   
   
-    <img src="../../../_static/porespy_logo.png" class="logo__image only-light" alt="Logo image">
-    <img src="../../../_static/porespy_logo.png" class="logo__image only-dark" alt="Logo image">
   
+    <p class="title logo__title">PoreSpy  documentation</p>
   
 </a>
     
@@ -2959,12 +2954,12 @@
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="using-ai-based-diffusive-size-factors-for-extracted-networks">
-<h1>Using AI based diffusive size factors for extracted networks<a class="headerlink" href="#using-ai-based-diffusive-size-factors-for-extracted-networks" title="Permalink to this heading">#</a></h1>
+<h1>Using AI based diffusive size factors for extracted networks<a class="headerlink" href="#using-ai-based-diffusive-size-factors-for-extracted-networks" title="Link to this heading">#</a></h1>
 <p>This notebook illustrates the use of the deep learning based diffusive conductance algorithm decribed <a class="reference external" href="https://doi.org/10.1016/j.cageo.2022.105086">here</a>. PoreSpy’s <code class="docutils literal notranslate"><span class="pre">diffusive_size_factor_AI</span></code> includes the steps for predicting the diffusive size factors of the conduit images. Note that the diffusive conductance of the conduits can be then calculated by multiplying the size factor by diffusivity of the phase. The function takes in the images of segmented porous medium and returns an array of diffusive size factors for all conduits in the image. Therefore, the framework can be applied to both one conduit image as well as a segmented image of porous medium:</p>
 <a class="reference internal image-reference" href="https://user-images.githubusercontent.com/43128873/116145783-bd458380-a6ab-11eb-8103-fb9a93f0599c.png"><img alt="PS_dl" src="https://user-images.githubusercontent.com/43128873/116145783-bd458380-a6ab-11eb-8103-fb9a93f0599c.png" style="width: 700px;" /></a>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="trained-model-and-supplementary-materials">
-<h1>Trained model and supplementary materials<a class="headerlink" href="#trained-model-and-supplementary-materials" title="Permalink to this heading">#</a></h1>
+<h1>Trained model and supplementary materials<a class="headerlink" href="#trained-model-and-supplementary-materials" title="Link to this heading">#</a></h1>
 <p>To use the <code class="docutils literal notranslate"><span class="pre">diffusive_size_factor_AI</span></code>, the trained model, and training data distribution are required. The AI model files and additional files used in this example are available <a class="reference external" href="https://dl.dropboxusercontent.com/s/jrq82twl0vwedy4/AI_example_data.rar?dl=0">here</a>. The folder contains following files:</p>
 <ul class="simple">
 <li><p>Trained model weights: This file includes only weights of the deep learning layers. To use this file, the Resnet50 model structure must be built first.</p></li>
@@ -2992,13 +2987,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-03-10 13:11:28.363787: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
-2024-03-10 13:11:28.401047: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
-2024-03-10 13:11:28.402117: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-03-11 16:58:49.825631: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2024-03-11 16:58:49.828784: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2024-03-11 16:58:49.866602: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
 To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-03-10 13:11:29.127288: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-03-11 16:58:50.621039: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
 </pre></div>
 </div>
 </div>
@@ -3041,16 +3036,66 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[13:11:30] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[16:58:52] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
-</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[13:11:32] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> `lr` is deprecated in Keras optimizer, please use `learning_rate` or use the   <a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/keras/src/optimizers/optimizer.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">optimizer.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/keras/src/optimizers/optimizer.py#123" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">123</span></a>
-<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         legacy optimizer, e.g.,tf.keras.optimizers.legacy.Adam.                        <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
-</pre>
-</div></div>
+</div><div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">18</span>
+<span class="g g-Whitespace">     </span><span class="mi">16</span> <span class="n">path_weights</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;model_weights.h5&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">17</span> <span class="n">g_train</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">path_train</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)[</span><span class="s1">&#39;g_train&#39;</span><span class="p">][()]</span>
+<span class="ne">---&gt; </span><span class="mi">18</span> <span class="n">model</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">create_model</span><span class="p">()</span>
+<span class="g g-Whitespace">     </span><span class="mi">19</span> <span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="n">path_weights</span><span class="p">)</span>
+
+<span class="nn">File ~/work/porespy/porespy/src/porespy/networks/_size_factors.py:614,</span> in <span class="ni">create_model</span><span class="nt">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">612</span> <span class="kn">from</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
+<span class="g g-Whitespace">    </span><span class="mi">613</span> <span class="n">model</span> <span class="o">=</span> <span class="n">_resnet3d</span><span class="p">()</span>
+<span class="ne">--&gt; </span><span class="mi">614</span> <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mse&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">),</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mse&#39;</span><span class="p">])</span>
+<span class="g g-Whitespace">    </span><span class="mi">615</span> <span class="k">return</span> <span class="n">model</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/keras/src/optimizers/adam.py:60,</span> in <span class="ni">Adam.__init__</span><span class="nt">(self, learning_rate, beta_1, beta_2, epsilon, amsgrad, weight_decay, clipnorm, clipvalue, global_clipnorm, use_ema, ema_momentum, ema_overwrite_frequency, name, **kwargs)</span>
+<span class="g g-Whitespace">     </span><span class="mi">43</span> <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">44</span>     <span class="bp">self</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">45</span>     <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">58</span>     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">59</span> <span class="p">):</span>
+<span class="ne">---&gt; </span><span class="mi">60</span>     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">61</span>         <span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">62</span>         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">63</span>         <span class="n">weight_decay</span><span class="o">=</span><span class="n">weight_decay</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">64</span>         <span class="n">clipnorm</span><span class="o">=</span><span class="n">clipnorm</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">65</span>         <span class="n">clipvalue</span><span class="o">=</span><span class="n">clipvalue</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">66</span>         <span class="n">global_clipnorm</span><span class="o">=</span><span class="n">global_clipnorm</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">67</span>         <span class="n">use_ema</span><span class="o">=</span><span class="n">use_ema</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">68</span>         <span class="n">ema_momentum</span><span class="o">=</span><span class="n">ema_momentum</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">69</span>         <span class="n">ema_overwrite_frequency</span><span class="o">=</span><span class="n">ema_overwrite_frequency</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">70</span>         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">71</span>     <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">72</span>     <span class="bp">self</span><span class="o">.</span><span class="n">beta_1</span> <span class="o">=</span> <span class="n">beta_1</span>
+<span class="g g-Whitespace">     </span><span class="mi">73</span>     <span class="bp">self</span><span class="o">.</span><span class="n">beta_2</span> <span class="o">=</span> <span class="n">beta_2</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/keras/src/backend/tensorflow/optimizer.py:19,</span> in <span class="ni">TFOptimizer.__init__</span><span class="nt">(self, *args, **kwargs)</span>
+<span class="g g-Whitespace">     </span><span class="mi">18</span> <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="ne">---&gt; </span><span class="mi">19</span>     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">20</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_distribution_strategy</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">get_strategy</span><span class="p">()</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/keras/src/optimizers/base_optimizer.py:38,</span> in <span class="ni">BaseOptimizer.__init__</span><span class="nt">(self, learning_rate, weight_decay, clipnorm, clipvalue, global_clipnorm, use_ema, ema_momentum, ema_overwrite_frequency, loss_scale_factor, gradient_accumulation_steps, name, **kwargs)</span>
+<span class="g g-Whitespace">     </span><span class="mi">34</span>     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">35</span>         <span class="s2">&quot;Argument `decay` is no longer supported and will be ignored.&quot;</span>
+<span class="g g-Whitespace">     </span><span class="mi">36</span>     <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">37</span> <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">38</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Argument(s) not recognized: </span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">40</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">41</span>     <span class="n">name</span> <span class="o">=</span> <span class="n">auto_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="ne">ValueError</span>: Argument(s) not recognized: {&#39;lr&#39;: 0.0001}
+</pre></div>
+</div>
+</div>
 </div>
 <section id="create-test-image">
-<h2>Create test image<a class="headerlink" href="#create-test-image" title="Permalink to this heading">#</a></h2>
+<h2>Create test image<a class="headerlink" href="#create-test-image" title="Link to this heading">#</a></h2>
 <p>We can create a 3D image using PoreSpy’s <code class="docutils literal notranslate"><span class="pre">poly_disperese_spheres</span></code> generator:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3068,12 +3113,12 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/1c79ee62c78928089e0f274924b690302ee2ccd63094b85ac0f57eae69d7ef13.png" src="../../../_images/1c79ee62c78928089e0f274924b690302ee2ccd63094b85ac0f57eae69d7ef13.png" />
+<img alt="../../../_images/e46df43382af2d1a9e6f9b1253d87137d390111d28a10e32d8ea9d884f0ce2c0.png" src="../../../_images/e46df43382af2d1a9e6f9b1253d87137d390111d28a10e32d8ea9d884f0ce2c0.png" />
 </div>
 </div>
 </section>
 <section id="extract-the-network">
-<h2>Extract the network<a class="headerlink" href="#extract-the-network" title="Permalink to this heading">#</a></h2>
+<h2>Extract the network<a class="headerlink" href="#extract-the-network" title="Link to this heading">#</a></h2>
 <p>We then extract the pore network of the porous medium image using PoreSpy’s <code class="docutils literal notranslate"><span class="pre">snow2</span></code> algorithm. <code class="docutils literal notranslate"><span class="pre">snow2</span></code> returns the segmented image of the porous medium as well as extracted network data.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3084,11 +3129,11 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "56105ab9af384fe9af7093f6400cd0d2"}</script><script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "b64bdb0a9d3244c18d1e5c98da6c257a"}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "de8c4d327a7a4bb9babb88cde3d452d3", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "f4af1db9c2bb417ea4d56bdaf20cd4d2", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 </section>
 <section id="apply-diffusive-size-factor-ai">
-<h2>Apply diffusive_size_factor_AI<a class="headerlink" href="#apply-diffusive-size-factor-ai" title="Permalink to this heading">#</a></h2>
+<h2>Apply diffusive_size_factor_AI<a class="headerlink" href="#apply-diffusive-size-factor-ai" title="Link to this heading">#</a></h2>
 <p>AI_based diffusive size factors of conduits in the extracted network can then be calculated applying <code class="docutils literal notranslate"><span class="pre">diffusive_size_factor_AI</span></code> on the segmented regions. We can then define <code class="docutils literal notranslate"><span class="pre">throat.diffusive_size_factor_AI</span></code> property and assign the predicted size_factor to this property.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3102,172 +3147,7 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "b01e9d2bad2f4307864cefffc181a6bb"}</script><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-03-10 13:11:47.830199: W tensorflow/tsl/framework/cpu_allocator_impl.cc:83] Allocation of 780140544 exceeds 10% of free system memory.
-2024-03-10 13:11:48.240114: W tensorflow/tsl/framework/cpu_allocator_impl.cc:83] Allocation of 780140544 exceeds 10% of free system memory.
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 1/47 [..............................] - ETA: 1:44
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
- 2/47 [&gt;.............................] - ETA: 1:10
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
- 3/47 [&gt;.............................] - ETA: 1:08
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
- 4/47 [=&gt;............................] - ETA: 1:06
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
- 5/47 [==&gt;...........................] - ETA: 1:05
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
- 6/47 [==&gt;...........................] - ETA: 1:03
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
- 7/47 [===&gt;..........................] - ETA: 1:02
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
- 8/47 [====&gt;.........................] - ETA: 1:00
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
- 9/47 [====&gt;.........................] - ETA: 59s 
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-10/47 [=====&gt;........................] - ETA: 57s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-11/47 [======&gt;.......................] - ETA: 56s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-12/47 [======&gt;.......................] - ETA: 54s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-13/47 [=======&gt;......................] - ETA: 52s
-</pre></div>
-</div>
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">conns</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
-<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">size_factors</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">diffusive_size_factor_AI</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span>                                                     <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span>                                                     <span class="n">g_train</span><span class="o">=</span><span class="n">g_train</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span>                                                     <span class="n">throat_conns</span><span class="o">=</span><span class="n">conns</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.diffusive_size_factor_AI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">size_factors</span>
-
-<span class="nn">File ~/work/porespy/porespy/src/porespy/networks/_size_factors.py:81,</span> in <span class="ni">diffusive_size_factor_AI</span><span class="nt">(regions, throat_conns, model, g_train, voxel_size)</span>
-<span class="g g-Whitespace">     </span><span class="mi">79</span>     <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">16</span>
-<span class="g g-Whitespace">     </span><span class="mi">80</span> <span class="n">test_steps</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">throat_conns</span><span class="p">)</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">)</span>
-<span class="ne">---&gt; </span><span class="mi">81</span> <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="n">test_steps</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">82</span> <span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">83</span> <span class="n">denorm_size_factor</span> <span class="o">=</span> <span class="n">_denorm_predict</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">g_train</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/keras/src/utils/traceback_utils.py:65,</span> in <span class="ni">filter_traceback.&lt;locals&gt;.error_handler</span><span class="nt">(*args, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">63</span> <span class="n">filtered_tb</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="g g-Whitespace">     </span><span class="mi">64</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">---&gt; </span><span class="mi">65</span>     <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">66</span> <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<span class="g g-Whitespace">     </span><span class="mi">67</span>     <span class="n">filtered_tb</span> <span class="o">=</span> <span class="n">_process_traceback_frames</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/keras/src/engine/training.py:2554,</span> in <span class="ni">Model.predict</span><span class="nt">(self, x, batch_size, verbose, steps, callbacks, max_queue_size, workers, use_multiprocessing)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2552</span> <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">data_handler</span><span class="o">.</span><span class="n">steps</span><span class="p">():</span>
-<span class="g g-Whitespace">   </span><span class="mi">2553</span>     <span class="n">callbacks</span><span class="o">.</span><span class="n">on_predict_batch_begin</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
-<span class="ne">-&gt; </span><span class="mi">2554</span>     <span class="n">tmp_batch_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_function</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2555</span>     <span class="k">if</span> <span class="n">data_handler</span><span class="o">.</span><span class="n">should_sync</span><span class="p">:</span>
-<span class="g g-Whitespace">   </span><span class="mi">2556</span>         <span class="n">context</span><span class="o">.</span><span class="n">async_wait</span><span class="p">()</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/tensorflow/python/util/traceback_utils.py:150,</span> in <span class="ni">filter_traceback.&lt;locals&gt;.error_handler</span><span class="nt">(*args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">148</span> <span class="n">filtered_tb</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="g g-Whitespace">    </span><span class="mi">149</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">150</span>   <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">151</span> <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">152</span>   <span class="n">filtered_tb</span> <span class="o">=</span> <span class="n">_process_traceback_frames</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/tensorflow/python/eager/polymorphic_function/polymorphic_function.py:825,</span> in <span class="ni">Function.__call__</span><span class="nt">(self, *args, **kwds)</span>
-<span class="g g-Whitespace">    </span><span class="mi">822</span> <span class="n">compiler</span> <span class="o">=</span> <span class="s2">&quot;xla&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jit_compile</span> <span class="k">else</span> <span class="s2">&quot;nonXla&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">824</span> <span class="k">with</span> <span class="n">OptionalXlaContext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_jit_compile</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">825</span>   <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">827</span> <span class="n">new_tracing_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experimental_get_tracing_count</span><span class="p">()</span>
-<span class="g g-Whitespace">    </span><span class="mi">828</span> <span class="n">without_tracing</span> <span class="o">=</span> <span class="p">(</span><span class="n">tracing_count</span> <span class="o">==</span> <span class="n">new_tracing_count</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/tensorflow/python/eager/polymorphic_function/polymorphic_function.py:864,</span> in <span class="ni">Function._call</span><span class="nt">(self, *args, **kwds)</span>
-<span class="g g-Whitespace">    </span><span class="mi">861</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
-<span class="g g-Whitespace">    </span><span class="mi">862</span> <span class="c1"># In this case we have not created variables on the first call. So we can</span>
-<span class="g g-Whitespace">    </span><span class="mi">863</span> <span class="c1"># run the first trace but we should fail if variables are created.</span>
-<span class="ne">--&gt; </span><span class="mi">864</span> <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable_creation_fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">865</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_created_variables</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ALLOW_DYNAMIC_VARIABLE_CREATION</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">866</span>   <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Creating variables on a non-first call to a function&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">867</span>                    <span class="s2">&quot; decorated with tf.function.&quot;</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/tensorflow/python/eager/polymorphic_function/tracing_compiler.py:148,</span> in <span class="ni">TracingCompiler.__call__</span><span class="nt">(self, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">145</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">146</span>   <span class="p">(</span><span class="n">concrete_function</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">147</span>    <span class="n">filtered_flat_args</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maybe_define_function</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">148</span> <span class="k">return</span> <span class="n">concrete_function</span><span class="o">.</span><span class="n">_call_flat</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">149</span>     <span class="n">filtered_flat_args</span><span class="p">,</span> <span class="n">captured_inputs</span><span class="o">=</span><span class="n">concrete_function</span><span class="o">.</span><span class="n">captured_inputs</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/tensorflow/python/eager/polymorphic_function/monomorphic_function.py:1349,</span> in <span class="ni">ConcreteFunction._call_flat</span><span class="nt">(self, args, captured_inputs)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1345</span> <span class="n">possible_gradient_type</span> <span class="o">=</span> <span class="n">gradients_util</span><span class="o">.</span><span class="n">PossibleTapeGradientTypes</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1346</span> <span class="k">if</span> <span class="p">(</span><span class="n">possible_gradient_type</span> <span class="o">==</span> <span class="n">gradients_util</span><span class="o">.</span><span class="n">POSSIBLE_GRADIENT_TYPES_NONE</span>
-<span class="g g-Whitespace">   </span><span class="mi">1347</span>     <span class="ow">and</span> <span class="n">executing_eagerly</span><span class="p">):</span>
-<span class="g g-Whitespace">   </span><span class="mi">1348</span>   <span class="c1"># No tape is watching; skip to running the function.</span>
-<span class="ne">-&gt; </span><span class="mi">1349</span>   <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_call_outputs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inference_function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">))</span>
-<span class="g g-Whitespace">   </span><span class="mi">1350</span> <span class="n">forward_backward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_forward_and_backward_functions</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1351</span>     <span class="n">args</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1352</span>     <span class="n">possible_gradient_type</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1353</span>     <span class="n">executing_eagerly</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1354</span> <span class="n">forward_function</span><span class="p">,</span> <span class="n">args_with_tangents</span> <span class="o">=</span> <span class="n">forward_backward</span><span class="o">.</span><span class="n">forward</span><span class="p">()</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/tensorflow/python/eager/polymorphic_function/atomic_function.py:196,</span> in <span class="ni">AtomicFunction.__call__</span><span class="nt">(self, *args)</span>
-<span class="g g-Whitespace">    </span><span class="mi">194</span> <span class="k">with</span> <span class="n">record</span><span class="o">.</span><span class="n">stop_recording</span><span class="p">():</span>
-<span class="g g-Whitespace">    </span><span class="mi">195</span>   <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bound_context</span><span class="o">.</span><span class="n">executing_eagerly</span><span class="p">():</span>
-<span class="ne">--&gt; </span><span class="mi">196</span>     <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bound_context</span><span class="o">.</span><span class="n">call_function</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">197</span>         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">198</span>         <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">),</span>
-<span class="g g-Whitespace">    </span><span class="mi">199</span>         <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_type</span><span class="o">.</span><span class="n">flat_outputs</span><span class="p">),</span>
-<span class="g g-Whitespace">    </span><span class="mi">200</span>     <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">201</span>   <span class="k">else</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">202</span>     <span class="n">outputs</span> <span class="o">=</span> <span class="n">make_call_op_in_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/tensorflow/python/eager/context.py:1457,</span> in <span class="ni">Context.call_function</span><span class="nt">(self, name, tensor_inputs, num_outputs)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1455</span> <span class="n">cancellation_context</span> <span class="o">=</span> <span class="n">cancellation</span><span class="o">.</span><span class="n">context</span><span class="p">()</span>
-<span class="g g-Whitespace">   </span><span class="mi">1456</span> <span class="k">if</span> <span class="n">cancellation_context</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<span class="ne">-&gt; </span><span class="mi">1457</span>   <span class="n">outputs</span> <span class="o">=</span> <span class="n">execute</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1458</span>       <span class="n">name</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span>
-<span class="g g-Whitespace">   </span><span class="mi">1459</span>       <span class="n">num_outputs</span><span class="o">=</span><span class="n">num_outputs</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1460</span>       <span class="n">inputs</span><span class="o">=</span><span class="n">tensor_inputs</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1461</span>       <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1462</span>       <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1463</span>   <span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1464</span> <span class="k">else</span><span class="p">:</span>
-<span class="g g-Whitespace">   </span><span class="mi">1465</span>   <span class="n">outputs</span> <span class="o">=</span> <span class="n">execute</span><span class="o">.</span><span class="n">execute_with_cancellation</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1466</span>       <span class="n">name</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span>
-<span class="g g-Whitespace">   </span><span class="mi">1467</span>       <span class="n">num_outputs</span><span class="o">=</span><span class="n">num_outputs</span><span class="p">,</span>
-   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1471</span>       <span class="n">cancellation_manager</span><span class="o">=</span><span class="n">cancellation_context</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1472</span>   <span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/tensorflow/python/eager/execute.py:53,</span> in <span class="ni">quick_execute</span><span class="nt">(op_name, num_outputs, inputs, attrs, ctx, name)</span>
-<span class="g g-Whitespace">     </span><span class="mi">51</span> <span class="k">try</span><span class="p">:</span>
-<span class="g g-Whitespace">     </span><span class="mi">52</span>   <span class="n">ctx</span><span class="o">.</span><span class="n">ensure_initialized</span><span class="p">()</span>
-<span class="ne">---&gt; </span><span class="mi">53</span>   <span class="n">tensors</span> <span class="o">=</span> <span class="n">pywrap_tfe</span><span class="o">.</span><span class="n">TFE_Py_Execute</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">_handle</span><span class="p">,</span> <span class="n">device_name</span><span class="p">,</span> <span class="n">op_name</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">54</span>                                       <span class="n">inputs</span><span class="p">,</span> <span class="n">attrs</span><span class="p">,</span> <span class="n">num_outputs</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">55</span> <span class="k">except</span> <span class="n">core</span><span class="o">.</span><span class="n">_NotOkStatusException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<span class="g g-Whitespace">     </span><span class="mi">56</span>   <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-
-<span class="ne">KeyboardInterrupt</span>: 
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "f838555be3e54152bc06d56452c81917", "version_major": 2, "version_minor": 0}</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>47/47 [==============================] - 42s 841ms/step
 </pre></div>
 </div>
 </div>
@@ -3288,7 +3168,7 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 </div>
 </section>
 <section id="compare-with-finite-difference-method">
-<h2>Compare with finite difference method<a class="headerlink" href="#compare-with-finite-difference-method" title="Permalink to this heading">#</a></h2>
+<h2>Compare with finite difference method<a class="headerlink" href="#compare-with-finite-difference-method" title="Link to this heading">#</a></h2>
 <p>Now that the extracted network includes AI_based diffusive size factor data, we can use the network to compare the accuracy of <code class="docutils literal notranslate"><span class="pre">diffusive_size_factor_AI</span></code>, shape factor method,and geometry method (no shape factor) in contrast to finite difference method. Assuming a generic phase with diffusivity of 1, the diffusive conductance of the conduits will be equal to their diffusive size factors. The diffusive conductance of the conduits can be calculated using OpenPNM’s generic_diffusive method. The diffusive conductance of the conduits using shape factor based method assuming cones and cylinders shapes for pores and throats can be calculated as follows:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3446,7 +3326,7 @@ net : &lt;openpnm.network.Network at 0x7f0256f989a0&gt;
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.<br>
 </p>
   </div>
   

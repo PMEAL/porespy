@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Converting Greyscale Images to Binary &#8212; PoreSpy  documentation</title>
 <script>
@@ -24,25 +23,22 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=19e3b7ad" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
-    <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
+    <script src="../../_static/js/custom.js?v=8f303282"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Opening and Preparing Images" href="loading_images.html" />
@@ -72,9 +68,8 @@
   
   
   
-    <img src="../../_static/porespy_logo.png" class="logo__image only-light" alt="Logo image">
-    <img src="../../_static/porespy_logo.png" class="logo__image only-dark" alt="Logo image">
   
+    <p class="title logo__title">PoreSpy  documentation</p>
   
 </a>
     
@@ -2954,10 +2949,10 @@
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="converting-greyscale-images-to-binary">
-<h1>Converting Greyscale Images to Binary<a class="headerlink" href="#converting-greyscale-images-to-binary" title="Permalink to this heading">#</a></h1>
+<h1>Converting Greyscale Images to Binary<a class="headerlink" href="#converting-greyscale-images-to-binary" title="Link to this heading">#</a></h1>
 <p>The images produced by any microscope are greyscale, meaning each pixel contains a numerical value indicating the intensity of that location.  In an ideal world these values will be nicely distributed, such that all bright pixels corresponding to solid will have high values (i.e, 200-255) while all dark pixels corresponding to void have low values (i.e., 0-50). If this were the case it would be very easy to differentiate or ‘segment’ the solid and void.</p>
 <section id="the-noise-problem">
-<h2>The Noise Problem<a class="headerlink" href="#the-noise-problem" title="Permalink to this heading">#</a></h2>
+<h2>The Noise Problem<a class="headerlink" href="#the-noise-problem" title="Link to this heading">#</a></h2>
 <p>Let’s import some of the packages and functions we’ll need:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -2969,7 +2964,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[13:07:04] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[16:54:20] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
@@ -2986,7 +2981,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ed6c3e9b5ad425d95651cfb128cee6598bddf9cd5b8bd0ba8b14806466a91b53.png" src="../../_images/ed6c3e9b5ad425d95651cfb128cee6598bddf9cd5b8bd0ba8b14806466a91b53.png" />
+<img alt="../../_images/5956829f0d2b7c8f3114a96cf79498f4771e9471b3f3e426798197f1ce48ff73.png" src="../../_images/5956829f0d2b7c8f3114a96cf79498f4771e9471b3f3e426798197f1ce48ff73.png" />
 </div>
 </div>
 <p>The above image now contains some noise in each phase, which is more realistic, though as we will see it not close to reality.  Let’s look at a histogram of this image:</p>
@@ -2998,7 +2993,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7192f8770aa64e4e740800d4c74cb7ba7fce2d13c058cfbb12805a85a863200f.png" src="../../_images/7192f8770aa64e4e740800d4c74cb7ba7fce2d13c058cfbb12805a85a863200f.png" />
+<img alt="../../_images/f7837ea075efae92a964c38b8c7d8c340c9f39d9d6dac5c0efbd7613aae2c2fd.png" src="../../_images/f7837ea075efae92a964c38b8c7d8c340c9f39d9d6dac5c0efbd7613aae2c2fd.png" />
 </div>
 </div>
 <p>We can see above that all pixels with a value less than 0.5 belong to the dark phase, while the other pixels belong to the light phase.  A simple global threshold can reproduce the original image perfectly:</p>
@@ -3010,7 +3005,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/d11fb81e4cbbbff7ada5687330b30b8346cfd6907a93cef0b0e596dc3b5dc8f0.png" src="../../_images/d11fb81e4cbbbff7ada5687330b30b8346cfd6907a93cef0b0e596dc3b5dc8f0.png" />
+<img alt="../../_images/64c79b89fcb085af956cda21437927f87a04bd62ca47da677248e573226c532c.png" src="../../_images/64c79b89fcb085af956cda21437927f87a04bd62ca47da677248e573226c532c.png" />
 </div>
 </div>
 <p>Now let’s look at a more realistic noise distribution, though still artificially generated:</p>
@@ -3025,7 +3020,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f813964327b35fac5de1b86d18a74d3df11f95f115b598af9d418ad026ca1cc7.png" src="../../_images/f813964327b35fac5de1b86d18a74d3df11f95f115b598af9d418ad026ca1cc7.png" />
+<img alt="../../_images/a989c8dcbb0d6e53222f68460b7a735212cff2e26c3378caa9936ca8023deb2b.png" src="../../_images/a989c8dcbb0d6e53222f68460b7a735212cff2e26c3378caa9936ca8023deb2b.png" />
 </div>
 </div>
 <p>Now we can see that the noise is much less separated, and in fact the tails of the distributions just touch each other in the middle.  Let’s see how the simple threshold we used above would work now:</p>
@@ -3037,7 +3032,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/cdfda382026e081860c01db9e4d3c0d4603f29cb80cbf3e2bc32a8412c31d23d.png" src="../../_images/cdfda382026e081860c01db9e4d3c0d4603f29cb80cbf3e2bc32a8412c31d23d.png" />
+<img alt="../../_images/e317a55b9bef5c06229c179af140e11be7dd076508e0f1ace9d8e0c2af23fdfb.png" src="../../_images/e317a55b9bef5c06229c179af140e11be7dd076508e0f1ace9d8e0c2af23fdfb.png" />
 </div>
 </div>
 <p>Now there are a few pixels in the dark phase which have been identified as bright and vice-versa. Let’s take this further but putting more extreme, but more realistic noise:</p>
@@ -3053,7 +3048,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/db3e7df72c993a6009cd68176e4fc9b6803124f3a469d9eefbeb892e7e7060d2.png" src="../../_images/db3e7df72c993a6009cd68176e4fc9b6803124f3a469d9eefbeb892e7e7060d2.png" />
+<img alt="../../_images/43ec19ade37127924c77d26d302a7542162d5abf90348e928c22d35e92ee877c.png" src="../../_images/43ec19ade37127924c77d26d302a7542162d5abf90348e928c22d35e92ee877c.png" />
 </div>
 </div>
 <p>In the above case our eyes can differentiate the light and dark phases pretty well, but the histogram is fully merged into one, and the global threshold produces a very problematic result. Just to show this is not an exageration, below is an actual slice of a tomogram taken of an electrospun flow-battery electrode:</p>
@@ -3076,13 +3071,13 @@
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">/</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/imageio/v2.py:522,</span> in <span class="ni">volread</span><span class="nt">(uri, format, **kwargs)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/imageio/v2.py:522,</span> in <span class="ni">volread</span><span class="nt">(uri, format, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">520</span> <span class="n">imopen_args</span> <span class="o">=</span> <span class="n">decypher_format_arg</span><span class="p">(</span><span class="nb">format</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">521</span> <span class="n">imopen_args</span><span class="p">[</span><span class="s2">&quot;legacy_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="ne">--&gt; </span><span class="mi">522</span> <span class="k">with</span> <span class="n">imopen</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="s2">&quot;rv&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">imopen_args</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">523</span>     <span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/imageio/core/imopen.py:113,</span> in <span class="ni">imopen</span><span class="nt">(uri, io_mode, plugin, extension, format_hint, legacy_mode, **kwargs)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/imageio/core/imopen.py:113,</span> in <span class="ni">imopen</span><span class="nt">(uri, io_mode, plugin, extension, format_hint, legacy_mode, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">111</span>     <span class="n">request</span><span class="o">.</span><span class="n">format_hint</span> <span class="o">=</span> <span class="n">format_hint</span>
 <span class="g g-Whitespace">    </span><span class="mi">112</span> <span class="k">else</span><span class="p">:</span>
 <span class="ne">--&gt; </span><span class="mi">113</span>     <span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">io_mode</span><span class="p">,</span> <span class="n">format_hint</span><span class="o">=</span><span class="n">format_hint</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
@@ -3090,14 +3085,14 @@
 <span class="g g-Whitespace">    </span><span class="mi">117</span> <span class="c1"># fast-path based on plugin</span>
 <span class="g g-Whitespace">    </span><span class="mi">118</span> <span class="c1"># (except in legacy mode)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/imageio/core/request.py:247,</span> in <span class="ni">Request.__init__</span><span class="nt">(self, uri, mode, extension, format_hint, **kwargs)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/imageio/core/request.py:247,</span> in <span class="ni">Request.__init__</span><span class="nt">(self, uri, mode, extension, format_hint, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">244</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Request.Mode: </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">246</span> <span class="c1"># Parse what was given</span>
 <span class="ne">--&gt; </span><span class="mi">247</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">249</span> <span class="c1"># Set extension</span>
 <span class="g g-Whitespace">    </span><span class="mi">250</span> <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/imageio/core/request.py:407,</span> in <span class="ni">Request._parse_uri</span><span class="nt">(self, uri)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/imageio/core/request.py:407,</span> in <span class="ni">Request._parse_uri</span><span class="nt">(self, uri)</span>
 <span class="g g-Whitespace">    </span><span class="mi">404</span> <span class="k">if</span> <span class="n">is_read_request</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">405</span>     <span class="c1"># Reading: check that the file exists (but is allowed a dir)</span>
 <span class="g g-Whitespace">    </span><span class="mi">406</span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
@@ -3114,13 +3109,13 @@
 <p>In the above montage we can see the same effect as the previous artificial case…noisey but usable image, a single histogram, and a segmented image with a lot of falsely labeled pixels.  In the following sections we will explore how to fix this.</p>
 </section>
 <section id="noise-filtering">
-<h2>Noise Filtering<a class="headerlink" href="#noise-filtering" title="Permalink to this heading">#</a></h2>
+<h2>Noise Filtering<a class="headerlink" href="#noise-filtering" title="Link to this heading">#</a></h2>
 <p>The simplest way to describe the noise above is that some pixels which we know lie in the dark region have intensity values brighter than some pixels which we know lie in the bright regions, and vice-versa.  This leads to a false labeling of pixels when a threshold is applied.  The reason that our eyes can still see dark and light regions, depsite the noise, is that the <em>majority</em> of pixels in the dark region are darker than the bright regions, and vice-versa.  Our eyes can do some sort of averaging on the data to discard or correct for the spurious intensity pixels.</p>
 <blockquote>
 <div><p>We just need to find a way to get the computer to recognize this!</p>
 </div></blockquote>
 <section id="non-edge-preserving-filters">
-<h3>Non-Edge Preserving Filters<a class="headerlink" href="#non-edge-preserving-filters" title="Permalink to this heading">#</a></h3>
+<h3>Non-Edge Preserving Filters<a class="headerlink" href="#non-edge-preserving-filters" title="Link to this heading">#</a></h3>
 <p>The most obvious way to fix this is to replace each pixel with a value that is the average of the pixels around it. We could do a straight-up averaging, or some weighting like a gaussian blur:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3167,7 +3162,7 @@
 <p>In the bottom row above it can be seen that the original image is not recovered upon applying the threshold. The reason for this is that the filters merged information from the entire neighborhood without regard for whether those values were high or low (other than the usual weighting). This means that edges are blurred and some information is lost.  Although these filters can do a passable job if the noise is not too bad, in the next section we will look at some fancier filters for this job.</p>
 </section>
 <section id="edge-preserving-filters">
-<h3>Edge Preserving Filters<a class="headerlink" href="#edge-preserving-filters" title="Permalink to this heading">#</a></h3>
+<h3>Edge Preserving Filters<a class="headerlink" href="#edge-preserving-filters" title="Link to this heading">#</a></h3>
 <p>The ability to preserve edges is quite helpful when trying to segment solid and void, which have strong edges in reality.  The simplest edge preserving filter is the median filter which instead of an average takes the middle value of the neighborhood.  This works because a pixel on an edge will be surrounded by many pixels with similar values, and a smaller number of dissimilar values, hence preserving the edge.  The need for a powerful edge preserving filter has inspired the development of several (much) more complicated algorithms, including the <code class="docutils literal notranslate"><span class="pre">non-local</span> <span class="pre">means</span></code>, which is very effective as shown below.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3257,7 +3252,7 @@
 <p>The rightmost figure above is probably the most smooth in terms of noise removal and shows the cleanest segmentation, though only barely better.</p>
 </section>
 <section id="applying-non-local-means-to-a-stack">
-<h3>Applying Non-Local Means to a Stack<a class="headerlink" href="#applying-non-local-means-to-a-stack" title="Permalink to this heading">#</a></h3>
+<h3>Applying Non-Local Means to a Stack<a class="headerlink" href="#applying-non-local-means-to-a-stack" title="Link to this heading">#</a></h3>
 <p>The non-local means filter is <em>very slow</em>, and is exponentially slower when applied to a 3D image.  Luckily, this filter can be applied to each layer independently of the other layers, if done along the same axis as the slicing was done during the experiment.  PoreSpy implements a parallelized version of this filter which basically just processes the layers on each available core.  Usage of this function is outlined <a class="reference external" href="https://porespy.org/examples/filters/reference/nl_means_layered.html">here</a>.</p>
 </section>
 </section>
@@ -3288,7 +3283,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.<br>
 </p>
   </div>
   

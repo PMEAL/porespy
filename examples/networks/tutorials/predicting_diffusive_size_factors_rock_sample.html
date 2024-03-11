@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Predicting diffusive size factors of a rock sample &#8212; PoreSpy  documentation</title>
 <script>
@@ -24,27 +23,24 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=19e3b7ad" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
-    <script src="../../../_static/design-tabs.js"></script>
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/custom.js?v=8f303282"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="SNOW network extraction (advanced)" href="snow_advanced.html" />
@@ -74,9 +70,8 @@
   
   
   
-    <img src="../../../_static/porespy_logo.png" class="logo__image only-light" alt="Logo image">
-    <img src="../../../_static/porespy_logo.png" class="logo__image only-dark" alt="Logo image">
   
+    <p class="title logo__title">PoreSpy  documentation</p>
   
 </a>
     
@@ -2954,12 +2949,12 @@
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="predicting-diffusive-size-factors-of-a-rock-sample">
-<h1>Predicting diffusive size factors of a rock sample<a class="headerlink" href="#predicting-diffusive-size-factors-of-a-rock-sample" title="Permalink to this heading">#</a></h1>
+<h1>Predicting diffusive size factors of a rock sample<a class="headerlink" href="#predicting-diffusive-size-factors-of-a-rock-sample" title="Link to this heading">#</a></h1>
 <p>This tutorial demonstrates how to use PoreSpy’s <code class="docutils literal notranslate"><span class="pre">diffusive_size_factor_AI</span></code> and <code class="docutils literal notranslate"><span class="pre">diffusive_size_factor_DNS</span></code> functions to examine the application of the AI-based size factor model on a real rock sample. Due to the computational cost of the DNS method, only a subsection of the image is used in this examples. However, the method can be applied similarly on the entir image of the rock sample.</p>
 <p><strong>For this specific sample:</strong></p>
 <p>Binary image data was obtained from the digital rock portals for Leopard rock <a class="reference external" href="https://www.digitalrocksportal.org/projects/317/origin_data/1380/">sample</a> with Voxel length of 2.25 um.</p>
 <section id="import-libaries-and-the-ai-model-path">
-<h2>Import libaries and the AI model path<a class="headerlink" href="#import-libaries-and-the-ai-model-path" title="Permalink to this heading">#</a></h2>
+<h2>Import libaries and the AI model path<a class="headerlink" href="#import-libaries-and-the-ai-model-path" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">subprocess</span>
@@ -2982,16 +2977,16 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[13:10:43] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[16:58:03] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
-</div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-03-10 13:10:44.377999: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
-2024-03-10 13:10:44.415372: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
-2024-03-10 13:10:44.416185: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+</div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-03-11 16:58:05.324364: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2024-03-11 16:58:05.327391: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2024-03-11 16:58:05.362170: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
 To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-03-10 13:10:45.226236: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-03-11 16:58:06.414208: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
 </pre></div>
 </div>
 </div>
@@ -3021,7 +3016,9 @@ remote: Compressing objects:  60% (3/5)
 remote: Compressing objects:  80% (4/5)
 remote: Compressing objects: 100% (5/5)
 remote: Compressing objects: 100% (5/5), done.
-Receiving objects:   2% (1/36)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:   2% (1/36)
 Receiving objects:   5% (2/36)
 Receiving objects:   8% (3/36)
 Receiving objects:  11% (4/36)
@@ -3029,62 +3026,63 @@ Receiving objects:  13% (5/36)
 Receiving objects:  16% (6/36)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36), 61.58 MiB | 61.57 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36), 60.03 MiB | 60.02 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 61.58 MiB | 61.57 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 60.03 MiB | 60.02 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 127.05 MiB | 63.52 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 122.70 MiB | 61.35 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  22% (8/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  25% (9/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  27% (10/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  30% (11/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  33% (12/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  36% (13/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  38% (14/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  41% (15/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  44% (16/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  47% (17/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  50% (18/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  52% (19/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  55% (20/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  58% (21/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  61% (22/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  63% (23/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  66% (24/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  69% (25/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  72% (26/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  75% (27/36), 160.36 MiB | 64.14 MiB/s
-Receiving objects:  77% (28/36), 160.36 MiB | 64.14 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  22% (8/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  25% (9/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  27% (10/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  30% (11/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  33% (12/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  36% (13/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  38% (14/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  41% (15/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  44% (16/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  47% (17/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  50% (18/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  52% (19/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  55% (20/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  58% (21/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  61% (22/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  63% (23/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  66% (24/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  69% (25/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  72% (26/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  75% (27/36), 154.50 MiB | 61.80 MiB/s
+Receiving objects:  77% (28/36), 154.50 MiB | 61.80 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 190.80 MiB | 63.60 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 185.70 MiB | 61.90 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 223.37 MiB | 63.82 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 246.99 MiB | 61.75 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 255.64 MiB | 63.91 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 246.99 MiB | 61.75 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 319.33 MiB | 64.20 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 307.70 MiB | 62.19 MiB/s
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>remote: Total 36 (delta 0), reused 2 (delta 0), pack-reused 31
-Receiving objects:  83% (30/36), 319.33 MiB | 64.20 MiB/s
-Receiving objects:  86% (31/36), 319.33 MiB | 64.20 MiB/s
-Receiving objects:  88% (32/36), 319.33 MiB | 64.20 MiB/s
-Receiving objects:  91% (33/36), 319.33 MiB | 64.20 MiB/s
-Receiving objects:  94% (34/36), 319.33 MiB | 64.20 MiB/s
-Receiving objects:  97% (35/36), 319.33 MiB | 64.20 MiB/s
-Receiving objects: 100% (36/36), 319.33 MiB | 64.20 MiB/s
-Receiving objects: 100% (36/36), 334.57 MiB | 63.64 MiB/s, done.
+Receiving objects:  83% (30/36), 307.70 MiB | 62.19 MiB/s
+Receiving objects:  86% (31/36), 307.70 MiB | 62.19 MiB/s
+Receiving objects:  88% (32/36), 307.70 MiB | 62.19 MiB/s
+Receiving objects:  91% (33/36), 307.70 MiB | 62.19 MiB/s
+Receiving objects:  94% (34/36), 307.70 MiB | 62.19 MiB/s
+Receiving objects:  97% (35/36), 307.70 MiB | 62.19 MiB/s
+Receiving objects: 100% (36/36), 307.70 MiB | 62.19 MiB/s
+Receiving objects: 100% (36/36), 334.57 MiB | 61.47 MiB/s, done.
 Resolving deltas:   0% (0/8)
 Resolving deltas:  12% (1/8)
 Resolving deltas:  25% (2/8)
+Resolving deltas:  37% (3/8)
 Resolving deltas:  50% (4/8)
 Resolving deltas:  62% (5/8)
 Resolving deltas:  75% (6/8)
@@ -3127,7 +3125,7 @@ the training data the wieghts. The training data is used in the backend of the <
 </div>
 </section>
 <section id="reading-image-of-the-rock-sample">
-<h2>Reading image of the rock sample<a class="headerlink" href="#reading-image-of-the-rock-sample" title="Permalink to this heading">#</a></h2>
+<h2>Reading image of the rock sample<a class="headerlink" href="#reading-image-of-the-rock-sample" title="Link to this heading">#</a></h2>
 <p>As the image of the rock smaple was large, only a subsection of the image is used in this tutorial for rapid demonstration purposes. We saved a subsection of the Leopard rock sample image of size <span class="math notranslate nohighlight">\(100^3\)</span> in PoreSpy’s <code class="docutils literal notranslate"><span class="pre">test/fixtures</span></code> folder, which is used for this tutorial. However, the steps to download, read, and slice the rock sample image are provided as markdown cells in the next section for reference.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3145,14 +3143,14 @@ the training data the wieghts. The training data is used in the backend of the <
 <span class="ne">----&gt; </span><span class="mi">2</span> <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;../../../test/fixtures/image_Leopard_slice100.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/IPython/core/interactiveshell.py:284,</span> in <span class="ni">_modified_open</span><span class="nt">(file, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">277</span> <span class="k">if</span> <span class="n">file</span> <span class="ow">in</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">}:</span>
-<span class="g g-Whitespace">    </span><span class="mi">278</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">279</span>         <span class="sa">f</span><span class="s2">&quot;IPython won&#39;t let you open fd=</span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2"> by default &quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">280</span>         <span class="s2">&quot;as it is likely to crash IPython. If you know what you are doing, &quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">281</span>         <span class="s2">&quot;you can use builtins&#39; open.&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">282</span>     <span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">284</span> <span class="k">return</span> <span class="n">io_open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/IPython/core/interactiveshell.py:324,</span> in <span class="ni">_modified_open</span><span class="nt">(file, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">317</span> <span class="k">if</span> <span class="n">file</span> <span class="ow">in</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">}:</span>
+<span class="g g-Whitespace">    </span><span class="mi">318</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">319</span>         <span class="sa">f</span><span class="s2">&quot;IPython won&#39;t let you open fd=</span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2"> by default &quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">320</span>         <span class="s2">&quot;as it is likely to crash IPython. If you know what you are doing, &quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">321</span>         <span class="s2">&quot;you can use builtins&#39; open.&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">322</span>     <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">324</span> <span class="k">return</span> <span class="n">io_open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;../../../test/fixtures/image_Leopard_slice100.npy&#39;
 </pre></div>
@@ -3161,7 +3159,7 @@ the training data the wieghts. The training data is used in the backend of the <
 </div>
 </section>
 <section id="additional-info-steps-to-create-a-subsection-of-the-rock-sample">
-<h2>Additional info: steps to create a subsection of the rock sample<a class="headerlink" href="#additional-info-steps-to-create-a-subsection-of-the-rock-sample" title="Permalink to this heading">#</a></h2>
+<h2>Additional info: steps to create a subsection of the rock sample<a class="headerlink" href="#additional-info-steps-to-create-a-subsection-of-the-rock-sample" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
 <li><p>Downloading the image of the rock sample: The cell below creates and ensures the existence of the specific sample path (here rock sample Leopard folder).
 The image of the sample can be downloaded through a link as of the cell below “url” and calling <code class="docutils literal notranslate"><span class="pre">download_image</span></code> function, or added seperately as a file to the rock sample folder. If the file is downloaded separately, the last line of the cell should be commented to prevent re-download.</p></li>
@@ -3216,7 +3214,7 @@ After importing the input image, we need to define the dimensions of the sample,
 </div>
 </section>
 <section id="segmentation-of-the-image">
-<h2>Segmentation of the image<a class="headerlink" href="#segmentation-of-the-image" title="Permalink to this heading">#</a></h2>
+<h2>Segmentation of the image<a class="headerlink" href="#segmentation-of-the-image" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Snow2</span></code> function is part of the PoreSpy’s opensource package, which extracts the pore network and conns from the image.
 We then extract the pore network of the porous medium image using PoreSpy’s snow2 algorithm. snow2 returns the segmented image of the porous medium as well as extracted network data.</p>
 <div class="cell docutils container">
@@ -3233,7 +3231,7 @@ We then extract the pore network of the porous medium image using PoreSpy’s sn
 </div>
 </section>
 <section id="size-factor-prediction">
-<h2>Size factor prediction<a class="headerlink" href="#size-factor-prediction" title="Permalink to this heading">#</a></h2>
+<h2>Size factor prediction<a class="headerlink" href="#size-factor-prediction" title="Link to this heading">#</a></h2>
 <p>Create the AI model and load the weights:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3330,7 +3328,7 @@ Once the values are predicted, you can save them ih hdf5 format for later use.</
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.<br>
 </p>
   </div>
   

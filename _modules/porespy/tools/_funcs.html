@@ -1,7 +1,6 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -23,25 +22,22 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=19e3b7ad" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
-    <script src="../../../_static/design-tabs.js"></script>
-    <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
+    <script src="../../../_static/js/custom.js?v=8f303282"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -69,9 +65,8 @@
   
   
   
-    <img src="../../../_static/porespy_logo.png" class="logo__image only-light" alt="Logo image">
-    <img src="../../../_static/porespy_logo.png" class="logo__image only-dark" alt="Logo image">
   
+    <p class="title logo__title">PoreSpy  documentation</p>
   
 </a>
     
@@ -238,7 +233,9 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="unpad"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.unpad.html#porespy.tools.unpad">[docs]</a><span class="k">def</span> <span class="nf">unpad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">):</span>
+<div class="viewcode-block" id="unpad">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.unpad.html#porespy.tools.unpad">[docs]</a>
+<span class="k">def</span> <span class="nf">unpad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove padding from a previously padded image given original pad widths</span>
 
@@ -294,6 +291,7 @@
     <span class="k">return</span> <span class="n">im</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">s_im</span><span class="p">)]</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">find_bbox</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="s1">&#39;axis&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds the lower and upper corner surrounding the foreground in the image</span>
@@ -330,7 +328,9 @@
     <span class="k">return</span> <span class="n">bbox</span>
 
 
-<div class="viewcode-block" id="isolate_object"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.isolate_object.html#porespy.tools.isolate_object">[docs]</a><span class="k">def</span> <span class="nf">isolate_object</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="isolate_object">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.isolate_object.html#porespy.tools.isolate_object">[docs]</a>
+<span class="k">def</span> <span class="nf">isolate_object</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given an image containing labels, removes all labels except the specified</span>
 <span class="sd">    one.</span>
@@ -366,7 +366,10 @@
     <span class="k">return</span> <span class="n">im</span></div>
 
 
-<div class="viewcode-block" id="marching_map"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.marching_map.html#porespy.tools.marching_map">[docs]</a><span class="k">def</span> <span class="nf">marching_map</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
+
+<div class="viewcode-block" id="marching_map">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.marching_map.html#porespy.tools.marching_map">[docs]</a>
+<span class="k">def</span> <span class="nf">marching_map</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use the fast marching method to find distance of each voxel from a starting</span>
 <span class="sd">    point</span>
@@ -408,7 +411,10 @@
     <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">data</span></div>
 
 
-<div class="viewcode-block" id="align_image_with_openpnm"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.align_image_with_openpnm.html#porespy.tools.align_image_with_openpnm">[docs]</a><span class="k">def</span> <span class="nf">align_image_with_openpnm</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
+
+<div class="viewcode-block" id="align_image_with_openpnm">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.align_image_with_openpnm.html#porespy.tools.align_image_with_openpnm">[docs]</a>
+<span class="k">def</span> <span class="nf">align_image_with_openpnm</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Rotates an image to agree with the coordinates used in OpenPNM.</span>
 
@@ -443,7 +449,10 @@
     <span class="k">return</span> <span class="n">im</span></div>
 
 
-<div class="viewcode-block" id="subdivide"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.subdivide.html#porespy.tools.subdivide">[docs]</a><span class="k">def</span> <span class="nf">subdivide</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">divs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+<div class="viewcode-block" id="subdivide">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.subdivide.html#porespy.tools.subdivide">[docs]</a>
+<span class="k">def</span> <span class="nf">subdivide</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">divs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns slices into an image describing the specified number of sub-arrays.</span>
 
@@ -514,7 +523,10 @@
     <span class="k">return</span> <span class="n">s</span></div>
 
 
-<div class="viewcode-block" id="recombine"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.recombine.html#porespy.tools.recombine">[docs]</a><span class="k">def</span> <span class="nf">recombine</span><span class="p">(</span><span class="n">ims</span><span class="p">,</span> <span class="n">slices</span><span class="p">,</span> <span class="n">overlap</span><span class="p">):</span>
+
+<div class="viewcode-block" id="recombine">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.recombine.html#porespy.tools.recombine">[docs]</a>
+<span class="k">def</span> <span class="nf">recombine</span><span class="p">(</span><span class="n">ims</span><span class="p">,</span> <span class="n">slices</span><span class="p">,</span> <span class="n">overlap</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Recombines image chunks back into full image of original shape</span>
 
@@ -585,7 +597,10 @@
     <span class="k">return</span> <span class="n">im</span></div>
 
 
-<div class="viewcode-block" id="bbox_to_slices"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.bbox_to_slices.html#porespy.tools.bbox_to_slices">[docs]</a><span class="k">def</span> <span class="nf">bbox_to_slices</span><span class="p">(</span><span class="n">bbox</span><span class="p">):</span>
+
+<div class="viewcode-block" id="bbox_to_slices">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.bbox_to_slices.html#porespy.tools.bbox_to_slices">[docs]</a>
+<span class="k">def</span> <span class="nf">bbox_to_slices</span><span class="p">(</span><span class="n">bbox</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a tuple containing bounding box coordinates, return a tuple of slice</span>
 <span class="sd">    objects.</span>
@@ -625,7 +640,10 @@
     <span class="k">return</span> <span class="n">ret</span></div>
 
 
-<div class="viewcode-block" id="find_outer_region"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.find_outer_region.html#porespy.tools.find_outer_region">[docs]</a><span class="k">def</span> <span class="nf">find_outer_region</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="find_outer_region">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.find_outer_region.html#porespy.tools.find_outer_region">[docs]</a>
+<span class="k">def</span> <span class="nf">find_outer_region</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find regions of the image that are outside of the solid matrix.</span>
 
@@ -677,7 +695,10 @@
     <span class="k">return</span> <span class="n">outer_region</span></div>
 
 
-<div class="viewcode-block" id="extract_cylinder"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.extract_cylinder.html#porespy.tools.extract_cylinder">[docs]</a><span class="k">def</span> <span class="nf">extract_cylinder</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+<div class="viewcode-block" id="extract_cylinder">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.extract_cylinder.html#porespy.tools.extract_cylinder">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_cylinder</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a cylindrical section of the image of specified radius.</span>
 
@@ -722,7 +743,10 @@
     <span class="k">return</span> <span class="n">im_temp</span></div>
 
 
-<div class="viewcode-block" id="extract_subsection"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.extract_subsection.html#porespy.tools.extract_subsection">[docs]</a><span class="k">def</span> <span class="nf">extract_subsection</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+
+<div class="viewcode-block" id="extract_subsection">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.extract_subsection.html#porespy.tools.extract_subsection">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_subsection</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extracts the middle section of a image</span>
 
@@ -778,7 +802,10 @@
     <span class="k">return</span> <span class="n">im</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">s_im</span><span class="p">)]</span></div>
 
 
-<div class="viewcode-block" id="get_planes"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.get_planes.html#porespy.tools.get_planes">[docs]</a><span class="k">def</span> <span class="nf">get_planes</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_planes">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.get_planes.html#porespy.tools.get_planes">[docs]</a>
+<span class="k">def</span> <span class="nf">get_planes</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extracts three planar images from the volumetric image, one for each</span>
 <span class="sd">    principle axis.  The planes are taken from the middle of the domain.</span>
@@ -816,7 +843,10 @@
     <span class="k">return</span> <span class="n">planes</span></div>
 
 
-<div class="viewcode-block" id="extend_slice"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.extend_slice.html#porespy.tools.extend_slice">[docs]</a><span class="k">def</span> <span class="nf">extend_slice</span><span class="p">(</span><span class="n">slices</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+<div class="viewcode-block" id="extend_slice">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.extend_slice.html#porespy.tools.extend_slice">[docs]</a>
+<span class="k">def</span> <span class="nf">extend_slice</span><span class="p">(</span><span class="n">slices</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Adjust slice indices to include additional voxles around the slice.</span>
 
@@ -888,7 +918,10 @@
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="randomize_colors"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.randomize_colors.html#porespy.tools.randomize_colors">[docs]</a><span class="k">def</span> <span class="nf">randomize_colors</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">keep_vals</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+
+<div class="viewcode-block" id="randomize_colors">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.randomize_colors.html#porespy.tools.randomize_colors">[docs]</a>
+<span class="k">def</span> <span class="nf">randomize_colors</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">keep_vals</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Takes a greyscale image and randomly shuffles the greyscale values, so that</span>
 <span class="sd">    all voxels labeled X will be labelled Y, and all voxels labeled Y will be</span>
@@ -961,7 +994,10 @@
     <span class="k">return</span> <span class="n">im_new</span></div>
 
 
-<div class="viewcode-block" id="make_contiguous"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.make_contiguous.html#porespy.tools.make_contiguous">[docs]</a><span class="k">def</span> <span class="nf">make_contiguous</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;keep_zeros&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="make_contiguous">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.make_contiguous.html#porespy.tools.make_contiguous">[docs]</a>
+<span class="k">def</span> <span class="nf">make_contiguous</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;keep_zeros&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take an image with arbitrary greyscale values and adjust them to ensure</span>
 <span class="sd">    all values fall in a contiguous range starting at 0.</span>
@@ -1039,7 +1075,10 @@
     <span class="k">return</span> <span class="n">im_new</span></div>
 
 
-<div class="viewcode-block" id="get_border"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.get_border.html#porespy.tools.get_border">[docs]</a><span class="k">def</span> <span class="nf">get_border</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;edges&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_border">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.get_border.html#porespy.tools.get_border">[docs]</a>
+<span class="k">def</span> <span class="nf">get_border</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;edges&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create an array with corners, edges or faces labelled as ``True``.</span>
 
@@ -1090,7 +1129,10 @@
     <span class="k">return</span> <span class="n">borders</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="n">thickness</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="in_hull"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.in_hull.html#porespy.tools.in_hull">[docs]</a><span class="k">def</span> <span class="nf">in_hull</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">hull</span><span class="p">):</span>
+
+<div class="viewcode-block" id="in_hull">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.in_hull.html#porespy.tools.in_hull">[docs]</a>
+<span class="k">def</span> <span class="nf">in_hull</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">hull</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test if a list of coordinates are inside a given convex hull</span>
 
@@ -1123,7 +1165,10 @@
     <span class="k">return</span> <span class="n">hull</span><span class="o">.</span><span class="n">find_simplex</span><span class="p">(</span><span class="n">points</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span></div>
 
 
-<div class="viewcode-block" id="norm_to_uniform"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.norm_to_uniform.html#porespy.tools.norm_to_uniform">[docs]</a><span class="k">def</span> <span class="nf">norm_to_uniform</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="norm_to_uniform">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.norm_to_uniform.html#porespy.tools.norm_to_uniform">[docs]</a>
+<span class="k">def</span> <span class="nf">norm_to_uniform</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take an image with normally distributed greyscale values and convert it to</span>
 <span class="sd">    a uniform (i.e. flat) distribution.</span>
@@ -1158,6 +1203,7 @@
     <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">*</span> <span class="p">(</span><span class="n">scale</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">scale</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">scale</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">im</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_functions_to_table</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">colwidth</span><span class="o">=</span><span class="p">[</span><span class="mi">27</span><span class="p">,</span> <span class="mi">48</span><span class="p">]):</span>
@@ -1201,7 +1247,9 @@
     <span class="k">return</span> <span class="n">s</span>
 
 
-<div class="viewcode-block" id="mesh_region"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.mesh_region.html#porespy.tools.mesh_region">[docs]</a><span class="k">def</span> <span class="nf">mesh_region</span><span class="p">(</span><span class="n">region</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="mesh_region">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.mesh_region.html#porespy.tools.mesh_region">[docs]</a>
+<span class="k">def</span> <span class="nf">mesh_region</span><span class="p">(</span><span class="n">region</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a tri-mesh of the provided region using the marching cubes</span>
 <span class="sd">    algorithm</span>
@@ -1255,7 +1303,10 @@
     <span class="k">return</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="ps_disk"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.ps_disk.html#porespy.tools.ps_disk">[docs]</a><span class="k">def</span> <span class="nf">ps_disk</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ps_disk">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.ps_disk.html#porespy.tools.ps_disk">[docs]</a>
+<span class="k">def</span> <span class="nf">ps_disk</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates circular disk structuring element for morphological operations</span>
 
@@ -1283,7 +1334,10 @@
     <span class="k">return</span> <span class="n">disk</span></div>
 
 
-<div class="viewcode-block" id="ps_ball"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.ps_ball.html#porespy.tools.ps_ball">[docs]</a><span class="k">def</span> <span class="nf">ps_ball</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ps_ball">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.ps_ball.html#porespy.tools.ps_ball">[docs]</a>
+<span class="k">def</span> <span class="nf">ps_ball</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates spherical ball structuring element for morphological operations</span>
 
@@ -1311,7 +1365,10 @@
     <span class="k">return</span> <span class="n">ball</span></div>
 
 
-<div class="viewcode-block" id="ps_round"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.ps_round.html#porespy.tools.ps_round">[docs]</a><span class="k">def</span> <span class="nf">ps_round</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ps_round">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.ps_round.html#porespy.tools.ps_round">[docs]</a>
+<span class="k">def</span> <span class="nf">ps_round</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates round structuring element with the given radius and dimensionality</span>
 
@@ -1347,7 +1404,10 @@
     <span class="k">return</span> <span class="n">ball</span></div>
 
 
-<div class="viewcode-block" id="ps_rect"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.ps_rect.html#porespy.tools.ps_rect">[docs]</a><span class="k">def</span> <span class="nf">ps_rect</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">ndim</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ps_rect">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.ps_rect.html#porespy.tools.ps_rect">[docs]</a>
+<span class="k">def</span> <span class="nf">ps_rect</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">ndim</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates rectilinear structuring element with the given size and</span>
 <span class="sd">    dimensionality</span>
@@ -1380,7 +1440,10 @@
     <span class="k">return</span> <span class="n">strel</span></div>
 
 
-<div class="viewcode-block" id="overlay"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.overlay.html#porespy.tools.overlay">[docs]</a><span class="k">def</span> <span class="nf">overlay</span><span class="p">(</span><span class="n">im1</span><span class="p">,</span> <span class="n">im2</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+
+<div class="viewcode-block" id="overlay">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.overlay.html#porespy.tools.overlay">[docs]</a>
+<span class="k">def</span> <span class="nf">overlay</span><span class="p">(</span><span class="n">im1</span><span class="p">,</span> <span class="n">im2</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Overlays ``im2`` onto ``im1``, given voxel coords of center of ``im2``</span>
 <span class="sd">    in ``im1``.</span>
@@ -1420,7 +1483,10 @@
     <span class="k">return</span> <span class="n">im1</span></div>
 
 
-<div class="viewcode-block" id="insert_sphere"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.insert_sphere.html#porespy.tools.insert_sphere">[docs]</a><span class="k">def</span> <span class="nf">insert_sphere</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="insert_sphere">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.insert_sphere.html#porespy.tools.insert_sphere">[docs]</a>
+<span class="k">def</span> <span class="nf">insert_sphere</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inserts a sphere of a specified radius into a given image</span>
 
@@ -1482,7 +1548,10 @@
     <span class="k">return</span> <span class="n">im</span></div>
 
 
-<div class="viewcode-block" id="insert_cylinder"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.insert_cylinder.html#porespy.tools.insert_cylinder">[docs]</a><span class="k">def</span> <span class="nf">insert_cylinder</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">xyz0</span><span class="p">,</span> <span class="n">xyz1</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+
+<div class="viewcode-block" id="insert_cylinder">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.insert_cylinder.html#porespy.tools.insert_cylinder">[docs]</a>
+<span class="k">def</span> <span class="nf">insert_cylinder</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">xyz0</span><span class="p">,</span> <span class="n">xyz1</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inserts a cylinder of given radius onto an image</span>
 
@@ -1554,7 +1623,10 @@
     <span class="k">return</span> <span class="n">im</span></div>
 
 
-<div class="viewcode-block" id="extract_regions"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.extract_regions.html#porespy.tools.extract_regions">[docs]</a><span class="k">def</span> <span class="nf">extract_regions</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="extract_regions">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.extract_regions.html#porespy.tools.extract_regions">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_regions</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Combine given regions into a single boolean mask</span>
 
@@ -1581,7 +1653,7 @@
 <span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">labels</span><span class="p">]</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
     <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
@@ -1600,6 +1672,7 @@
             <span class="n">bbox</span> <span class="o">=</span> <span class="n">bbox_to_slices</span><span class="p">([</span><span class="n">x_min</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">y_max</span><span class="p">])</span>
         <span class="n">im_new</span> <span class="o">=</span> <span class="n">im_new</span><span class="p">[</span><span class="n">bbox</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">im_new</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_check_for_singleton_axes</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
@@ -1643,7 +1716,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.<br>
 </p>
   </div>
   

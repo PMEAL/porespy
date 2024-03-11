@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Applying chords to 2D and 3D images &#8212; PoreSpy  documentation</title>
 <script>
@@ -24,28 +23,25 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=19e3b7ad" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
-    <script src="../../../_static/design-tabs.js"></script>
-    <script type="application/vnd.jupyter.widget-state+json">{"state": {"a9843447d7184e37a6d9ec405f25d66c": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": "20px"}}, "6fab0bfc288949a998f6518d18f32d1c": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "0cd8ce7e8d6b42138579f98e20452db4": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "info", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_a9843447d7184e37a6d9ec405f25d66c", "max": 1.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_6fab0bfc288949a998f6518d18f32d1c", "value": 1.0}}, "a10917ef7c784d09b157e0242ea5541d": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "bbfe82dddce54d80aebae589c0d863bf": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "d4718722b5cb4e258c88d5c29795e738": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_a10917ef7c784d09b157e0242ea5541d", "placeholder": "\u200b", "style": "IPY_MODEL_bbfe82dddce54d80aebae589c0d863bf", "value": ""}}, "c032bb309f8d4f18b08d9aeed00b6e6a": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "79abbe1af1814699b24187e3fb1c1aa5": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "6f7fc58166674ea784d3fb9b6fdead6d": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_c032bb309f8d4f18b08d9aeed00b6e6a", "placeholder": "\u200b", "style": "IPY_MODEL_79abbe1af1814699b24187e3fb1c1aa5", "value": "\u200799/?\u2007[00:11&lt;00:00,\u200722.94it/s]"}}, "d7f0230889fc40a1bcb773f2e1eeaded": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": "hidden", "width": null}}, "1fe29378ce9949a6a85ca5b18a02e080": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_d4718722b5cb4e258c88d5c29795e738", "IPY_MODEL_0cd8ce7e8d6b42138579f98e20452db4", "IPY_MODEL_6f7fc58166674ea784d3fb9b6fdead6d"], "layout": "IPY_MODEL_d7f0230889fc40a1bcb773f2e1eeaded"}}}, "version_major": 2, "version_minor": 0}</script>
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
+    <script type="application/vnd.jupyter.widget-state+json">{"state": {"f5ac2bc1027b4aaeafb95f370c2dc7ff": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": "20px"}}, "4df5203a3ef9443790db345bb83bfe40": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "75ebc5c480cc494687954cda63329c8f": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "ProgressView", "bar_style": "info", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_f5ac2bc1027b4aaeafb95f370c2dc7ff", "max": 1.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_4df5203a3ef9443790db345bb83bfe40", "tabbable": null, "tooltip": null, "value": 1.0}}, "422ba14022fc4c08b6005421349d04bc": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "b8831228d42747cdb8393d61fdb44fcd": {"model_name": "HTMLStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_size": null, "text_color": null}}, "13a0ca9006b549fa959e69cb1db34c79": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HTMLView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_422ba14022fc4c08b6005421349d04bc", "placeholder": "\u200b", "style": "IPY_MODEL_b8831228d42747cdb8393d61fdb44fcd", "tabbable": null, "tooltip": null, "value": ""}}, "d5ce4c70eafe47e98e11f5e7c2761d4a": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "19df7c30f50c4c0988c25483121ed258": {"model_name": "HTMLStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_size": null, "text_color": null}}, "355a666f787f469fa44a333393330455": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HTMLView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_d5ce4c70eafe47e98e11f5e7c2761d4a", "placeholder": "\u200b", "style": "IPY_MODEL_19df7c30f50c4c0988c25483121ed258", "tabbable": null, "tooltip": null, "value": "\u2007100/?\u2007[00:07&lt;00:00,\u200746.37it/s]"}}, "13f6eab73fb64fd2bcd3a690e2d3c0c2": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": "hidden", "width": null}}, "39243b31d68242cabe77014036feabe0": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_13a0ca9006b549fa959e69cb1db34c79", "IPY_MODEL_75ebc5c480cc494687954cda63329c8f", "IPY_MODEL_355a666f787f469fa44a333393330455"], "layout": "IPY_MODEL_13f6eab73fb64fd2bcd3a690e2d3c0c2", "tabbable": null, "tooltip": null}}}, "version_major": 2, "version_minor": 0}</script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script crossorigin="anonymous" data-jupyter-widgets-cdn="https://cdn.jsdelivr.net/npm/" src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@1.0.6/dist/embed-amd.js"></script>
-    <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/custom.js?v=8f303282"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Local thickness" href="local_thickness.html" />
@@ -75,9 +71,8 @@
   
   
   
-    <img src="../../../_static/porespy_logo.png" class="logo__image only-light" alt="Logo image">
-    <img src="../../../_static/porespy_logo.png" class="logo__image only-dark" alt="Logo image">
   
+    <p class="title logo__title">PoreSpy  documentation</p>
   
 </a>
     
@@ -2940,7 +2935,7 @@
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="applying-chords-to-2d-and-3d-images">
-<h1>Applying chords to 2D and 3D images<a class="headerlink" href="#applying-chords-to-2d-and-3d-images" title="Permalink to this heading">#</a></h1>
+<h1>Applying chords to 2D and 3D images<a class="headerlink" href="#applying-chords-to-2d-and-3d-images" title="Link to this heading">#</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
@@ -2953,13 +2948,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[13:06:05] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[16:53:25] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
 </div>
 <section id="demonstration-on-2d-image">
-<h2>Demonstration on 2D Image<a class="headerlink" href="#demonstration-on-2d-image" title="Permalink to this heading">#</a></h2>
+<h2>Demonstration on 2D Image<a class="headerlink" href="#demonstration-on-2d-image" title="Link to this heading">#</a></h2>
 <p>Start by creating an image using the <code class="docutils literal notranslate"><span class="pre">blobs</span></code> function in <code class="docutils literal notranslate"><span class="pre">generators</span></code>.  The useful thing about this function is that images can be created with anisotropy.  These are exactly the sort of images where chord length distributions are useful, since chords can be drawn in different directions, to probe the anisotropic pore sizes.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -2978,7 +2973,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/82479fc4ab1abf4b362b264c298f492c677aa609ebe593d28b77bc754929d1bf.png" src="../../../_images/82479fc4ab1abf4b362b264c298f492c677aa609ebe593d28b77bc754929d1bf.png" />
+<img alt="../../../_images/9b6d9a2859d7caf5d0037d31631cdac367570268c5915c00f321a30dc1eea52c.png" src="../../../_images/9b6d9a2859d7caf5d0037d31631cdac367570268c5915c00f321a30dc1eea52c.png" />
 </div>
 </div>
 <p>Determining chord-length distributions requires first adding chords to the image, which is done using the <code class="docutils literal notranslate"><span class="pre">apply_chords</span></code> function.  The following code applies chords to the image in the x-direction (along <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>), then applies them in the y-direction (<code class="docutils literal notranslate"><span class="pre">axis=1</span></code>).  The two images are then plotted using <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>.</p>
@@ -2995,7 +2990,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/a65884b41d0369c251982a1f8733ec10741b87fe4a05c4fba8c41a50343ab41b.png" src="../../../_images/a65884b41d0369c251982a1f8733ec10741b87fe4a05c4fba8c41a50343ab41b.png" />
+<img alt="../../../_images/6535f19d71c733653f9137882834d20b60cb9136419521f10e65e72f4b1de49e.png" src="../../../_images/6535f19d71c733653f9137882834d20b60cb9136419521f10e65e72f4b1de49e.png" />
 </div>
 </div>
 <p>Note that none of the chords touch the edge of the image.  These chords are trimmed by default since they are artificially shorter than they should be and would skew the results.  This behavior is optional and these chords can be kept by setting <code class="docutils literal notranslate"><span class="pre">trim_edges=False</span></code>.</p>
@@ -3013,7 +3008,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/fa401c06efc84d7a3d1847aee9e98e0a509dc7d3569544a419355ac38c672724.png" src="../../../_images/fa401c06efc84d7a3d1847aee9e98e0a509dc7d3569544a419355ac38c672724.png" />
+<img alt="../../../_images/3e755717fc3eec3569145c88513faf6017930444728a64c7b7c591143678ff10.png" src="../../../_images/3e755717fc3eec3569145c88513faf6017930444728a64c7b7c591143678ff10.png" />
 </div>
 </div>
 <p>Although the above images are useful for quick visualization, they are not quantitative.  To get quantitative chord length distributions, pass the chord image(s) to the <code class="docutils literal notranslate"><span class="pre">chord_length_distribution</span></code> functions in the <code class="docutils literal notranslate"><span class="pre">metrics</span></code> submodule:</p>
@@ -3034,7 +3029,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-Results of chord_length_distribution generated at Sun Mar 10 13:06:07 2024
+Results of chord_length_distribution generated at Mon Mar 11 16:53:27 2024
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 L                         Array of size (25,)
 pdf                       Array of size (25,)
@@ -3060,13 +3055,13 @@ bin_widths                Array of size (25,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/7e37ab1da6b4643d267de06cc3208bb9b5f94b70c537a5c0dc3fa0fb8e50b15f.png" src="../../../_images/7e37ab1da6b4643d267de06cc3208bb9b5f94b70c537a5c0dc3fa0fb8e50b15f.png" />
+<img alt="../../../_images/1029262e4b21f88777a756a488082ee9d1f056039841261236c1e896a7ec44c7.png" src="../../../_images/1029262e4b21f88777a756a488082ee9d1f056039841261236c1e896a7ec44c7.png" />
 </div>
 </div>
 <p>The key point to see here is that the blue bars are for the y-direction, which was the elongated direction, and as expected they show a tendency toward longer chords.</p>
 </section>
 <section id="application-to-3d-images">
-<h2>Application to 3D images<a class="headerlink" href="#application-to-3d-images" title="Permalink to this heading">#</a></h2>
+<h2>Application to 3D images<a class="headerlink" href="#application-to-3d-images" title="Link to this heading">#</a></h2>
 <p>Chords can just as easily be applied to 3D images.  Let’s create an artificial image of fibers, aligned in the YZ plane, but oriented randomly in the X direction</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3077,7 +3072,7 @@ bin_widths                Array of size (25,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "1fe29378ce9949a6a85ca5b18a02e080"}</script><img alt="../../../_images/de3d0a94ca4d151bfa16f34ea9e643edce33a47242957da0df2c5e54e95237ba.png" src="../../../_images/de3d0a94ca4d151bfa16f34ea9e643edce33a47242957da0df2c5e54e95237ba.png" />
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "39243b31d68242cabe77014036feabe0"}</script><img alt="../../../_images/afb7bcf89a9277e9170248fe7cc62caa68f831513b61406d18ae080ad1848e7a.png" src="../../../_images/afb7bcf89a9277e9170248fe7cc62caa68f831513b61406d18ae080ad1848e7a.png" />
 </div>
 </div>
 <p>As above, we must apply chords to the image then pass the chord image to the <code class="docutils literal notranslate"><span class="pre">chord_length_distribution</span></code> function:</p>
@@ -3091,7 +3086,7 @@ bin_widths                Array of size (25,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/fa1ae8a9d1f1a2380ce45265ce58357e057d406a97418882a4f3461c6770042e.png" src="../../../_images/fa1ae8a9d1f1a2380ce45265ce58357e057d406a97418882a4f3461c6770042e.png" />
+<img alt="../../../_images/54dabfedf0c868c47e434f5333de2e9a7feeb5dee67bda1b0b59efd7bb7f97c8.png" src="../../../_images/54dabfedf0c868c47e434f5333de2e9a7feeb5dee67bda1b0b59efd7bb7f97c8.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -3105,7 +3100,7 @@ bin_widths                Array of size (25,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/139cb7d4248c7c31565ef09f494f0404029c261b557ced8bd8bee7d9a8d5591e.png" src="../../../_images/139cb7d4248c7c31565ef09f494f0404029c261b557ced8bd8bee7d9a8d5591e.png" />
+<img alt="../../../_images/130d521cb92b0df33a9239ed967cbb77234a6bc863d1d90a43bdc7d84eff6247.png" src="../../../_images/130d521cb92b0df33a9239ed967cbb77234a6bc863d1d90a43bdc7d84eff6247.png" />
 </div>
 </div>
 </section>
@@ -3136,7 +3131,7 @@ bin_widths                Array of size (25,)
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.<br>
 </p>
   </div>
   

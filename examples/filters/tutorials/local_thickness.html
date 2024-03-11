@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Local thickness &#8212; PoreSpy  documentation</title>
 <script>
@@ -24,30 +23,27 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=19e3b7ad" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
-    <script src="../../../_static/design-tabs.js"></script>
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script type="application/vnd.jupyter.widget-state+json">{"state": {"a079827a7d6848e7a83de560b2b7bb96": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "93e5bd083ffc42dfb65b6dbf8329bd2f": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "ab6f6547010f43ed996b5ddb23ae7599": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_a079827a7d6848e7a83de560b2b7bb96", "max": 25.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_93e5bd083ffc42dfb65b6dbf8329bd2f", "value": 25.0}}, "621ffd5d82644545a37f1f3468acf62a": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "8d3323998cbb43408486dba734f5293b": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "4fc641fe8dc04001b4cbfc49ff55d70a": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_621ffd5d82644545a37f1f3468acf62a", "placeholder": "\u200b", "style": "IPY_MODEL_8d3323998cbb43408486dba734f5293b", "value": "\u200780%"}}, "1c227b598e254c0e9653c347a31862a6": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "08e7d2bea7784fe9a3b8113b0c0f4bb4": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "94b1dc8658a1457fbef8a41c57ece1e1": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_1c227b598e254c0e9653c347a31862a6", "placeholder": "\u200b", "style": "IPY_MODEL_08e7d2bea7784fe9a3b8113b0c0f4bb4", "value": "\u200720/25\u2007[00:00&lt;00:00,\u2007198.10it/s]"}}, "f25445d2f114453d93dc6b08d911f4e2": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": "hidden", "width": null}}, "b1ddbd11d01140828691cd625b7f9849": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_4fc641fe8dc04001b4cbfc49ff55d70a", "IPY_MODEL_ab6f6547010f43ed996b5ddb23ae7599", "IPY_MODEL_94b1dc8658a1457fbef8a41c57ece1e1"], "layout": "IPY_MODEL_f25445d2f114453d93dc6b08d911f4e2"}}}, "version_major": 2, "version_minor": 0}</script>
+    <script type="application/vnd.jupyter.widget-state+json">{"state": {"ff6fe304aab84329a778fcdbf82bea2f": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "190ab316a9bc486b92c9110398b2e3da": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "a06b0432fd4c46278e5e083d72cb07bc": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "ProgressView", "bar_style": "", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_ff6fe304aab84329a778fcdbf82bea2f", "max": 25.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_190ab316a9bc486b92c9110398b2e3da", "tabbable": null, "tooltip": null, "value": 25.0}}, "50b7587a25ed4a76ac7787b4c7e5a2ae": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "e140624cd7034fc7b90431439129d07d": {"model_name": "HTMLStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_size": null, "text_color": null}}, "a46d0f464f754a79bb96895ccd93abf2": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HTMLView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_50b7587a25ed4a76ac7787b4c7e5a2ae", "placeholder": "\u200b", "style": "IPY_MODEL_e140624cd7034fc7b90431439129d07d", "tabbable": null, "tooltip": null, "value": "100%"}}, "c18fc5c63e954bf583a97455c0277450": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "77048e242bf941cfb6ffb080fda1075d": {"model_name": "HTMLStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_size": null, "text_color": null}}, "3cb6a099b9f449f48aad9d10217c6bee": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HTMLView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_c18fc5c63e954bf583a97455c0277450", "placeholder": "\u200b", "style": "IPY_MODEL_77048e242bf941cfb6ffb080fda1075d", "tabbable": null, "tooltip": null, "value": "\u200725/25\u2007[00:00&lt;00:00,\u2007242.65it/s]"}}, "77264bea8e334c0d8d6660284b317822": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": "hidden", "width": null}}, "e499e9c0fb334658a0f7fc4696e3b32d": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_a46d0f464f754a79bb96895ccd93abf2", "IPY_MODEL_a06b0432fd4c46278e5e083d72cb07bc", "IPY_MODEL_3cb6a099b9f449f48aad9d10217c6bee"], "layout": "IPY_MODEL_77264bea8e334c0d8d6660284b317822", "tabbable": null, "tooltip": null}}}, "version_major": 2, "version_minor": 0}</script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script crossorigin="anonymous" data-jupyter-widgets-cdn="https://cdn.jsdelivr.net/npm/" src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@1.0.6/dist/embed-amd.js"></script>
-    <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/custom.js?v=8f303282"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="SNOW partitioning" href="snow_partitioning.html" />
@@ -77,9 +73,8 @@
   
   
   
-    <img src="../../../_static/porespy_logo.png" class="logo__image only-light" alt="Logo image">
-    <img src="../../../_static/porespy_logo.png" class="logo__image only-dark" alt="Logo image">
   
+    <p class="title logo__title">PoreSpy  documentation</p>
   
 </a>
     
@@ -2952,7 +2947,7 @@
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="local-thickness">
-<h1>Local thickness<a class="headerlink" href="#local-thickness" title="Permalink to this heading">#</a></h1>
+<h1>Local thickness<a class="headerlink" href="#local-thickness" title="Link to this heading">#</a></h1>
 <p>This example explains how to use the <code class="docutils literal notranslate"><span class="pre">local_thickness</span></code> filter to get information about the pore size distribution from an image.  The local thickness is probably the closest you can get to an actual pore size distribution.  Unlike porosimetry experiments or simulations, it is unaffected by artifacts such as edge effects and access limitations.  The implementation in PoreSpy is slightly different than the common approach done in ImageJ, as will be explained below.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -2965,13 +2960,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[13:06:26] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[16:53:42] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
 </div>
 <section id="generate-test-image">
-<h2>Generate Test Image<a class="headerlink" href="#generate-test-image" title="Permalink to this heading">#</a></h2>
+<h2>Generate Test Image<a class="headerlink" href="#generate-test-image" title="Link to this heading">#</a></h2>
 <p>Start by generating an image.  We’ll use the RSA generator for fun:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -2987,22 +2982,22 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2849/1607336354.py:2: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2762/1607336354.py:2: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
   im = ps.generators.rsa(im, r=20, volume_fraction=0.2)
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2849/1607336354.py:3: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2762/1607336354.py:3: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
   im = ps.generators.rsa(im, r=15, volume_fraction=0.4)
-/tmp/ipykernel_2849/1607336354.py:4: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
+/tmp/ipykernel_2762/1607336354.py:4: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
   im = ps.generators.rsa(im, r=10, volume_fraction=0.6)
 </pre></div>
 </div>
-<img alt="../../../_images/cdec983ff054f817dc08a66691e120ec2a1aa2cb8935837dc5f9344df3d90d94.png" src="../../../_images/cdec983ff054f817dc08a66691e120ec2a1aa2cb8935837dc5f9344df3d90d94.png" />
+<img alt="../../../_images/8f903e436a88c0329001f77e2a61046cf26fe6beea770bdef26dab6841175db8.png" src="../../../_images/8f903e436a88c0329001f77e2a61046cf26fe6beea770bdef26dab6841175db8.png" />
 </div>
 </div>
 </section>
 <section id="apply-local-thickness-filter">
-<h2>Apply Local Thickness Filter<a class="headerlink" href="#apply-local-thickness-filter" title="Permalink to this heading">#</a></h2>
+<h2>Apply Local Thickness Filter<a class="headerlink" href="#apply-local-thickness-filter" title="Link to this heading">#</a></h2>
 <p>The local thickness filter is called by simply passing in the image.  Like all filters in PoreSpy it is applied to the foreground, indicated by 1’s or <code class="docutils literal notranslate"><span class="pre">True</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3014,12 +3009,12 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "b1ddbd11d01140828691cd625b7f9849"}</script><img alt="../../../_images/2065bb018537691509249101e849587162f9e1d479e061ff9bb0eb3e35ed6953.png" src="../../../_images/2065bb018537691509249101e849587162f9e1d479e061ff9bb0eb3e35ed6953.png" />
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "e499e9c0fb334658a0f7fc4696e3b32d"}</script><img alt="../../../_images/e1b717dfc036425a7f6337f4788ce30ce1281490517659725f9e86f64cbe0bce.png" src="../../../_images/e1b717dfc036425a7f6337f4788ce30ce1281490517659725f9e86f64cbe0bce.png" />
 </div>
 </div>
 </section>
 <section id="extracting-psd-as-a-histogram">
-<h2>Extracting PSD as a Histogram<a class="headerlink" href="#extracting-psd-as-a-histogram" title="Permalink to this heading">#</a></h2>
+<h2>Extracting PSD as a Histogram<a class="headerlink" href="#extracting-psd-as-a-histogram" title="Link to this heading">#</a></h2>
 <p>Obtaining pore size distribution information from this image requires obtaining a histogram of voxel values.  A function in the <code class="docutils literal notranslate"><span class="pre">metrics</span></code> module does this for us:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3037,7 +3032,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-Results of pore_size_distribution generated at Sun Mar 10 13:06:32 2024
+Results of pore_size_distribution generated at Mon Mar 11 16:53:48 2024
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 LogR                      Array of size (10,)
 pdf                       Array of size (10,)
@@ -3062,12 +3057,12 @@ bin_widths                Array of size (10,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/bef687bffb3b135b5353eef497af078332ccc0c5dbf3100f38ecd52a3b484655.png" src="../../../_images/bef687bffb3b135b5353eef497af078332ccc0c5dbf3100f38ecd52a3b484655.png" />
+<img alt="../../../_images/ed062468e9e838ce7990639f035ef996fb4972c6971d95b26782a86745b215e8.png" src="../../../_images/ed062468e9e838ce7990639f035ef996fb4972c6971d95b26782a86745b215e8.png" />
 </div>
 </div>
 </section>
 <section id="porespy-implementation">
-<h2>PoreSpy Implementation<a class="headerlink" href="#porespy-implementation" title="Permalink to this heading">#</a></h2>
+<h2>PoreSpy Implementation<a class="headerlink" href="#porespy-implementation" title="Link to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">local_thickness</span></code> filter in PoreSpy is implemented differently that the <em>normal</em> approach such as the ImageJ plugin, though the end result is comparible though not identical.</p>
 <p>In our approach, we use a form of image dilation and erosion.  We start with a large spherical structuring element, and note all the places where this fits in the pore space.  This gives a result like that below for a structuring element of radius R=10:</p>
 <div class="cell docutils container">
@@ -3081,7 +3076,7 @@ bin_widths                Array of size (10,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/8450a7244d264faeebe93620f7f5242afdb8ab10a6af88ab6e38f598f7a4ddfa.png" src="../../../_images/8450a7244d264faeebe93620f7f5242afdb8ab10a6af88ab6e38f598f7a4ddfa.png" />
+<img alt="../../../_images/ece27efc9736b2f9ee69c85011ff557be4f505116f431765ab164f48b19046bf.png" src="../../../_images/ece27efc9736b2f9ee69c85011ff557be4f505116f431765ab164f48b19046bf.png" />
 </div>
 </div>
 <p>The key is to make a <em>master</em> array containing the numerical value of the largest sphere that covers each voxel.  We’ll initialize a new array with the current locations where R=10 fits:</p>
@@ -3119,7 +3114,7 @@ bin_widths                Array of size (10,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/eb096f86d85946dee911f2486246b57cc7ff6e28f8873c28c86608c5b6abc63b.png" src="../../../_images/eb096f86d85946dee911f2486246b57cc7ff6e28f8873c28c86608c5b6abc63b.png" />
+<img alt="../../../_images/d7aadc82c0a964f8abdae2d1e182c6e4c721963efde7cec3efd1a3c87c7376f5.png" src="../../../_images/d7aadc82c0a964f8abdae2d1e182c6e4c721963efde7cec3efd1a3c87c7376f5.png" />
 </div>
 </div>
 <p>The procedure is then repeated for smaller structuring elements down to R = 1.  It’s possible to specify which sizes are used, but by default all integers between <span class="math notranslate nohighlight">\(R_{max}\)</span> and 1.  This yields the image showed above:</p>
@@ -3131,7 +3126,7 @@ bin_widths                Array of size (10,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/3ee549c8433c291102e4bebd076ba9859c3ab6606f6118c29d47680658fe5488.png" src="../../../_images/3ee549c8433c291102e4bebd076ba9859c3ab6606f6118c29d47680658fe5488.png" />
+<img alt="../../../_images/022e0e2446d49e2fd6e2f427cb4ad694630928f5b0236b686c44e300bdf2b50a.png" src="../../../_images/022e0e2446d49e2fd6e2f427cb4ad694630928f5b0236b686c44e300bdf2b50a.png" />
 </div>
 </div>
 </section>
@@ -3162,7 +3157,7 @@ bin_widths                Array of size (10,)
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.<br>
 </p>
   </div>
   

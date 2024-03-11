@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Finding the Tortuosity (\(\tau\)) of an Image Using tortuosity_fd &#8212; PoreSpy  documentation</title>
 <script>
@@ -24,27 +23,24 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=19e3b7ad" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
-    <script src="../../../_static/design-tabs.js"></script>
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/custom.js?v=8f303282"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Image-based invasion percoalation" href="using_ibip.html" />
@@ -74,9 +70,8 @@
   
   
   
-    <img src="../../../_static/porespy_logo.png" class="logo__image only-light" alt="Logo image">
-    <img src="../../../_static/porespy_logo.png" class="logo__image only-dark" alt="Logo image">
   
+    <p class="title logo__title">PoreSpy  documentation</p>
   
 </a>
     
@@ -2956,10 +2951,10 @@
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="finding-the-tortuosity-tau-of-an-image-using-tortuosity-fd">
-<h1>Finding the Tortuosity (<span class="math notranslate nohighlight">\(\tau\)</span>) of an Image Using tortuosity_fd<a class="headerlink" href="#finding-the-tortuosity-tau-of-an-image-using-tortuosity-fd" title="Permalink to this heading">#</a></h1>
+<h1>Finding the Tortuosity (<span class="math notranslate nohighlight">\(\tau\)</span>) of an Image Using tortuosity_fd<a class="headerlink" href="#finding-the-tortuosity-tau-of-an-image-using-tortuosity-fd" title="Link to this heading">#</a></h1>
 <p>In this tutorial, we will walk through how to use tortuosity_fd to calculate the tortuosity of an image using a finite difference method. The function takes a binary image to analyze with “True” to indicate the phase of interest as well as the axis along which to find the tortuosity.</p>
 <section id="algortihm-description">
-<h2>Algortihm Description<a class="headerlink" href="#algortihm-description" title="Permalink to this heading">#</a></h2>
+<h2>Algortihm Description<a class="headerlink" href="#algortihm-description" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">tortuoisty_fd</span></code> starts by calculating the porosity of the image.
 <br><br>
@@ -2986,7 +2981,7 @@ $<span class="math notranslate nohighlight">\(\tau = \frac{D_{AB}}{D_{Eff}} \cdo
 <li><p>All useful results are then compiled into a Results object.</p></li>
 </ol>
 <section id="importing-packages">
-<h3>Importing Packages<a class="headerlink" href="#importing-packages" title="Permalink to this heading">#</a></h3>
+<h3>Importing Packages<a class="headerlink" href="#importing-packages" title="Link to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -2998,14 +2993,14 @@ $<span class="math notranslate nohighlight">\(\tau = \frac{D_{AB}}{D_{Eff}} \cdo
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[13:12:48] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[16:59:30] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
 </div>
 </section>
 <section id="generating-the-image">
-<h3>Generating the image:<a class="headerlink" href="#generating-the-image" title="Permalink to this heading">#</a></h3>
+<h3>Generating the image:<a class="headerlink" href="#generating-the-image" title="Link to this heading">#</a></h3>
 <p>For the purposes of this tutorial, we will generate a 200 x 200 pixel image with a target porosity of 0.65.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3021,12 +3016,12 @@ $<span class="math notranslate nohighlight">\(\tau = \frac{D_{AB}}{D_{Eff}} \cdo
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.5, 199.5, -0.5, 199.5)
 </pre></div>
 </div>
-<img alt="../../../_images/deec432efe0958b517cb2719632114dd4744a4bb19fc48d3d76e4920f3999e88.png" src="../../../_images/deec432efe0958b517cb2719632114dd4744a4bb19fc48d3d76e4920f3999e88.png" />
+<img alt="../../../_images/1d60927bdedd2108df47bec7890d2d61a766e1bd8488cf83f4c75caf819fba77.png" src="../../../_images/1d60927bdedd2108df47bec7890d2d61a766e1bd8488cf83f4c75caf819fba77.png" />
 </div>
 </div>
 </section>
 <section id="running-the-algorithm">
-<h3>Running the algorithm<a class="headerlink" href="#running-the-algorithm" title="Permalink to this heading">#</a></h3>
+<h3>Running the algorithm<a class="headerlink" href="#running-the-algorithm" title="Link to this heading">#</a></h3>
 <p>As mentioned at the start of the tutorial, the only two inputs for the function are the image and the axis along which to run the calculation. For the x-axis we assign axis a value of 1 and for the y-axis we assign axis a value of 0.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3036,10 +3031,10 @@ $<span class="math notranslate nohighlight">\(\tau = \frac{D_{AB}}{D_{Eff}} \cdo
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> Found non-percolating regions, were filled to percolate                              <a href="file:///home/runner/work/porespy/porespy/src/porespy/simulations/_dns.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_dns.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/simulations/_dns.py#74" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">74</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[16:59:31] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> Found non-percolating regions, were filled to percolate                              <a href="file:///home/runner/work/porespy/porespy/src/porespy/simulations/_dns.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_dns.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/simulations/_dns.py#74" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">74</span></a>
 </pre>
 </div><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-Results of tortuosity_fd generated at Sun Mar 10 13:12:49 2024
+Results of tortuosity_fd generated at Mon Mar 11 16:59:31 2024
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 im                        Array of size (200, 200)
 tortuosity                1.8776173160636371
@@ -3082,7 +3077,7 @@ sys                       (&lt;25859x25859 sparse matrix of type &#39;&lt;class 
 </table>
 </section>
 <section id="calling-values-from-the-output">
-<h3>Calling Values From The Output<a class="headerlink" href="#calling-values-from-the-output" title="Permalink to this heading">#</a></h3>
+<h3>Calling Values From The Output<a class="headerlink" href="#calling-values-from-the-output" title="Link to this heading">#</a></h3>
 <p>There are a couple ways to call the values from the returned object. The easiest way to call the values is to use object.attribute</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3096,7 +3091,7 @@ sys                       (&lt;25859x25859 sparse matrix of type &#39;&lt;class 
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2.9043927701204795
 </pre></div>
 </div>
-<img alt="../../../_images/39b37cbfe44490bfe74ee20a9bc85d7bde01af4959c8edab08641a7d09d5c583.png" src="../../../_images/39b37cbfe44490bfe74ee20a9bc85d7bde01af4959c8edab08641a7d09d5c583.png" />
+<img alt="../../../_images/535bcce1ebed3920584c3b15ad3013ab0a067dcadb0bbbd6648b7e5849018fd1.png" src="../../../_images/535bcce1ebed3920584c3b15ad3013ab0a067dcadb0bbbd6648b7e5849018fd1.png" />
 </div>
 </div>
 </section>
@@ -3128,7 +3123,7 @@ sys                       (&lt;25859x25859 sparse matrix of type &#39;&lt;class 
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.<br>
 </p>
   </div>
   

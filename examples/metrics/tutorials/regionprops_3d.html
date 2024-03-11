@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Using regionprops_3d to analyze properties of each pore &#8212; PoreSpy  documentation</title>
 <script>
@@ -24,28 +23,25 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=19e3b7ad" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
-    <script src="../../../_static/design-tabs.js"></script>
-    <script type="application/vnd.jupyter.widget-state+json">{"state": {"508487e9bc9e465d91158876f5c7db3e": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": "20px"}}, "08a00666b922427895f37c4f28020bcc": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "a661976c46da49a4a7c010d5c59f1615": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "info", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_508487e9bc9e465d91158876f5c7db3e", "max": 1.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_08a00666b922427895f37c4f28020bcc", "value": 1.0}}, "f5337eaa1df44b5db34420e6f11e1006": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "bf09e0be71614625a20ac23cadb591b8": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "481b5af2326147879b333a130aacf082": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_f5337eaa1df44b5db34420e6f11e1006", "placeholder": "\u200b", "style": "IPY_MODEL_bf09e0be71614625a20ac23cadb591b8", "value": ""}}, "6c5d816f48d4473b86222d2129feac18": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "ff9da3f06ddd4e9585187f711f221239": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "3cffe8602096445b9182bcdd7ff8d229": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_6c5d816f48d4473b86222d2129feac18", "placeholder": "\u200b", "style": "IPY_MODEL_ff9da3f06ddd4e9585187f711f221239", "value": "\u20070/?\u2007[00:00&lt;?,\u2007?it/s]"}}, "8233212a9578490daa3342ff284469e6": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": "hidden", "width": null}}, "9a9ce1e232af44a383d8007c8441487e": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_481b5af2326147879b333a130aacf082", "IPY_MODEL_a661976c46da49a4a7c010d5c59f1615", "IPY_MODEL_3cffe8602096445b9182bcdd7ff8d229"], "layout": "IPY_MODEL_8233212a9578490daa3342ff284469e6"}}}, "version_major": 2, "version_minor": 0}</script>
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
+    <script type="application/vnd.jupyter.widget-state+json">{"state": {"e6ac4ffefb9c4018b0975f1b5d6c8b4b": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": "20px"}}, "5d4e93118505433abd27c7bd86e33315": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "22de6c7a8b9743a9ba56c8acd1ccbf94": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "ProgressView", "bar_style": "info", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_e6ac4ffefb9c4018b0975f1b5d6c8b4b", "max": 1.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_5d4e93118505433abd27c7bd86e33315", "tabbable": null, "tooltip": null, "value": 1.0}}, "1cda8d1fc8764554a3d68dde25af5b8b": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "7fe58f8c46454e718fed07eaeadf651a": {"model_name": "HTMLStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_size": null, "text_color": null}}, "a6b01a9682df45f6a0681d730c7338df": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HTMLView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_1cda8d1fc8764554a3d68dde25af5b8b", "placeholder": "\u200b", "style": "IPY_MODEL_7fe58f8c46454e718fed07eaeadf651a", "tabbable": null, "tooltip": null, "value": ""}}, "e9a8be0acce245a3b4bfd90953eedfcd": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "b6ded2d1d1d842088b4b5f3f81acf24c": {"model_name": "HTMLStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_size": null, "text_color": null}}, "c49cff97fe404c628aa86877038ff445": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HTMLView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_e9a8be0acce245a3b4bfd90953eedfcd", "placeholder": "\u200b", "style": "IPY_MODEL_b6ded2d1d1d842088b4b5f3f81acf24c", "tabbable": null, "tooltip": null, "value": "\u20070/?\u2007[00:00&lt;?,\u2007?it/s]"}}, "f4e4a2220df74f61a578cedb7f4a2849": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": "hidden", "width": null}}, "40cab01932d1440c8140f6e821fb2e31": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_a6b01a9682df45f6a0681d730c7338df", "IPY_MODEL_22de6c7a8b9743a9ba56c8acd1ccbf94", "IPY_MODEL_c49cff97fe404c628aa86877038ff445"], "layout": "IPY_MODEL_f4e4a2220df74f61a578cedb7f4a2849", "tabbable": null, "tooltip": null}}}, "version_major": 2, "version_minor": 0}</script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script crossorigin="anonymous" data-jupyter-widgets-cdn="https://cdn.jsdelivr.net/npm/" src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@1.0.6/dist/embed-amd.js"></script>
-    <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/custom.js?v=8f303282"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Reference" href="../../../_examples/metrics/reference.html" />
@@ -75,9 +71,8 @@
   
   
   
-    <img src="../../../_static/porespy_logo.png" class="logo__image only-light" alt="Logo image">
-    <img src="../../../_static/porespy_logo.png" class="logo__image only-dark" alt="Logo image">
   
+    <p class="title logo__title">PoreSpy  documentation</p>
   
 </a>
     
@@ -2970,7 +2965,7 @@
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="using-regionprops-3d-to-analyze-properties-of-each-pore">
-<h1>Using regionprops_3d to analyze properties of each pore<a class="headerlink" href="#using-regionprops-3d-to-analyze-properties-of-each-pore" title="Permalink to this heading">#</a></h1>
+<h1>Using regionprops_3d to analyze properties of each pore<a class="headerlink" href="#using-regionprops-3d-to-analyze-properties-of-each-pore" title="Link to this heading">#</a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">regionprops</span></code> function included in <em>Scikit-image</em> is pretty thorough, and the recent version of <em>Scikit-image</em> (&gt;0.14) vastly increase support for 3D images.  Nonetheless, there are still a handful of features and properties that are useful for porous media analysis.  The <code class="docutils literal notranslate"><span class="pre">regionprops_3d</span></code> in <em>PoreSpy</em> aims to address thsi need, and it’s use is illustrated here.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -2984,13 +2979,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[13:09:27] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[16:56:47] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
 </div>
 <section id="generating-a-test-image">
-<h2>Generating a test image<a class="headerlink" href="#generating-a-test-image" title="Permalink to this heading">#</a></h2>
+<h2>Generating a test image<a class="headerlink" href="#generating-a-test-image" title="Link to this heading">#</a></h2>
 <p>Start by generating a test image using the <code class="docutils literal notranslate"><span class="pre">generators</span></code> module in <em>PoreSpy</em>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3001,12 +2996,12 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/438b58521c59dac00ef71e904bc2995916cb36a8dca823cb0ba395ef84cc161f.png" src="../../../_images/438b58521c59dac00ef71e904bc2995916cb36a8dca823cb0ba395ef84cc161f.png" />
+<img alt="../../../_images/ab48d8dd148f617e23aff44217d31f9f34215c33d908a887f740839257bed89b.png" src="../../../_images/ab48d8dd148f617e23aff44217d31f9f34215c33d908a887f740839257bed89b.png" />
 </div>
 </div>
 </section>
 <section id="segementing-void-space-into-regions-for-individual-analysis">
-<h2>Segementing void space into regions for individual analysis<a class="headerlink" href="#segementing-void-space-into-regions-for-individual-analysis" title="Permalink to this heading">#</a></h2>
+<h2>Segementing void space into regions for individual analysis<a class="headerlink" href="#segementing-void-space-into-regions-for-individual-analysis" title="Link to this heading">#</a></h2>
 <p>Next, we need to segment the image into discrete pores, which will become the <em>regions</em> that we analyze.  For this purpose we’ll use the SNOW algorithm, which helps to find true local maximums in the distance transform that are used as markers in the <em>watershed</em> segementation.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3016,7 +3011,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "9a9ce1e232af44a383d8007c8441487e"}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "40cab01932d1440c8140f6e821fb2e31"}</script></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3026,12 +3021,12 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/a9c827276417adadd13b045adbe39259632231ba8934aaf7f32ceadecce74406.png" src="../../../_images/a9c827276417adadd13b045adbe39259632231ba8934aaf7f32ceadecce74406.png" />
+<img alt="../../../_images/e78193c1b13181b757c054625c9b14095e87289872a9e7ada381a3971ab11f60.png" src="../../../_images/e78193c1b13181b757c054625c9b14095e87289872a9e7ada381a3971ab11f60.png" />
 </div>
 </div>
 </section>
 <section id="applying-regionsprops-3d">
-<h2>Applying regionsprops_3d<a class="headerlink" href="#applying-regionsprops-3d" title="Permalink to this heading">#</a></h2>
+<h2>Applying regionsprops_3d<a class="headerlink" href="#applying-regionsprops-3d" title="Link to this heading">#</a></h2>
 <p>Now that the void space has been segmented into discrete regions, it’s possible to extract information about each region using <code class="docutils literal notranslate"><span class="pre">regionsprops_3d</span></code>.</p>
 <blockquote>
 <div><p><strong>NOTE</strong>: <em>PoreSpy</em> calls the <em>Scikit-image</em> <code class="docutils literal notranslate"><span class="pre">regionprops</span></code> function internally, and uses many of it’s values in subsequent calculations.  The result return by <code class="docutils literal notranslate"><span class="pre">regionprops_3d</span></code> is the same as <code class="docutils literal notranslate"><span class="pre">regionprops</span></code> of <em>Scikit-image</em>, but with additional information added to each region.</p>
@@ -3048,7 +3043,7 @@
 </div></blockquote>
 </section>
 <section id="listing-all-available-properties">
-<h2>Listing all available properties<a class="headerlink" href="#listing-all-available-properties" title="Permalink to this heading">#</a></h2>
+<h2>Listing all available properties<a class="headerlink" href="#listing-all-available-properties" title="Link to this heading">#</a></h2>
 <p>Let’s look at some of the properties for the regions, starting by printing a list of all available properties for a given region:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3066,7 +3061,7 @@
 </div>
 </section>
 <section id="analyze-properties-for-a-single-region">
-<h2>Analyze properties for a single region<a class="headerlink" href="#analyze-properties-for-a-single-region" title="Permalink to this heading">#</a></h2>
+<h2>Analyze properties for a single region<a class="headerlink" href="#analyze-properties-for-a-single-region" title="Link to this heading">#</a></h2>
 <p>Now let’s look at some of the properties for each region, first view image of the region in isolation</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3076,7 +3071,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/6ed417a69e7ec747ffb853d6a5196d1bd9945bfd03a9adccc614aafad54d7910.png" src="../../../_images/6ed417a69e7ec747ffb853d6a5196d1bd9945bfd03a9adccc614aafad54d7910.png" />
+<img alt="../../../_images/edeaccfc6e9605cff66c4efc305912cda0cb249c90c6dbe4fdd99d992f072a7c.png" src="../../../_images/edeaccfc6e9605cff66c4efc305912cda0cb249c90c6dbe4fdd99d992f072a7c.png" />
 </div>
 </div>
 <p>View image of region’s border and largest incribed sphere together.</p>
@@ -3088,7 +3083,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/ff3f49efef2e8a68fec567c7fb7bc754142bfbeb38b714155ae2bdbe20ca5b8d.png" src="../../../_images/ff3f49efef2e8a68fec567c7fb7bc754142bfbeb38b714155ae2bdbe20ca5b8d.png" />
+<img alt="../../../_images/ccc654bb6134bfba385c63fe93023e94a3bbd96e62d1e813a924269bc5a9945d.png" src="../../../_images/ccc654bb6134bfba385c63fe93023e94a3bbd96e62d1e813a924269bc5a9945d.png" />
 </div>
 </div>
 <p>One of the more interesting properties is the convex image, which is an image of the region with all the depressions in the boundary filled in.  This is useful because one can compare it to the actual region and learn about the shape of the region.  One such metric is the <em>solidity</em> which is defined as the ratio of pixels in the region to pixels of the convex hull image.</p>
@@ -3100,7 +3095,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/927e81494c61e70b481611f9f634443d5ad17ce7fade944085b1d562bf7d8476.png" src="../../../_images/927e81494c61e70b481611f9f634443d5ad17ce7fade944085b1d562bf7d8476.png" />
+<img alt="../../../_images/e6f5c8afc80b3c2d6977856c99a4ace72e9a98d38522dc457dea5e1e8839dd60.png" src="../../../_images/e6f5c8afc80b3c2d6977856c99a4ace72e9a98d38522dc457dea5e1e8839dd60.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -3117,7 +3112,7 @@
 </div>
 </section>
 <section id="extracting-one-property-for-all-regions-as-an-array">
-<h2>Extracting one property for all regions as an array<a class="headerlink" href="#extracting-one-property-for-all-regions-as-an-array" title="Permalink to this heading">#</a></h2>
+<h2>Extracting one property for all regions as an array<a class="headerlink" href="#extracting-one-property-for-all-regions-as-an-array" title="Link to this heading">#</a></h2>
 <p>As mentioned above, the <em>list</em> of objects that are returned by the <code class="docutils literal notranslate"><span class="pre">regionprops_3d</span></code> funciton is a bit inconvenient for accessing one piece of information for all regions at once.  <em>PoreSpy</em> has a function called <code class="docutils literal notranslate"><span class="pre">props_to_DataFrame</span></code> which helps in this regard by generating a Pandas DataFrame object with all of the <em>key metrics</em> listed as Numpy arrays in each column.  <em>Key metrics</em> refers to scalar values like area and solidity.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3141,7 +3136,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/ee86d528c57fa12d9f22b2bc42a0e57d50bea16e4993221de6d44b749b7e600d.png" src="../../../_images/ee86d528c57fa12d9f22b2bc42a0e57d50bea16e4993221de6d44b749b7e600d.png" />
+<img alt="../../../_images/392da04e6cd3d5e30c5a71622678060fd7ee1ab128932b27338fcaee0ce139e7.png" src="../../../_images/392da04e6cd3d5e30c5a71622678060fd7ee1ab128932b27338fcaee0ce139e7.png" />
 </div>
 </div>
 <p>Another useful feature of the Pandas DataFrame is the ability to look at all metrics for a given pore at once, which is done by looking at a single row in all columns:</p>
@@ -3181,7 +3176,7 @@ Name: 0, dtype: float64
 </div>
 </section>
 <section id="creating-a-composite-image-of-region-images">
-<h2>Creating a composite image of region images<a class="headerlink" href="#creating-a-composite-image-of-region-images" title="Permalink to this heading">#</a></h2>
+<h2>Creating a composite image of region images<a class="headerlink" href="#creating-a-composite-image-of-region-images" title="Link to this heading">#</a></h2>
 <p>Another useful function available in <em>PoreSpy</em> is <code class="docutils literal notranslate"><span class="pre">prop_to_image</span></code>, which can create an image from the various subimages available on each region.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3193,12 +3188,12 @@ Name: 0, dtype: float64
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/2ef374a49f10dad0221516eaa25d86d534587bfe9e08aae7894775535731b70b.png" src="../../../_images/2ef374a49f10dad0221516eaa25d86d534587bfe9e08aae7894775535731b70b.png" />
+<img alt="../../../_images/a523476f5191f90ba3a277d24342aa50b944f4f9b269e4c96c1d8d20140b19db.png" src="../../../_images/a523476f5191f90ba3a277d24342aa50b944f4f9b269e4c96c1d8d20140b19db.png" />
 </div>
 </div>
 </section>
 <section id="creating-a-colorized-image-based-on-region-properties">
-<h2>Creating a colorized image based on region properties<a class="headerlink" href="#creating-a-colorized-image-based-on-region-properties" title="Permalink to this heading">#</a></h2>
+<h2>Creating a colorized image based on region properties<a class="headerlink" href="#creating-a-colorized-image-based-on-region-properties" title="Link to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">prop_to_image</span></code> function can also accept a scalar property which will result in an image of the regions colorized according to the local value of that property.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3210,7 +3205,7 @@ Name: 0, dtype: float64
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d0367fda689f665998664574fd8b2ede73740bcf998b77fc0c2aa3fe9cdf555a.png" src="../../../_images/d0367fda689f665998664574fd8b2ede73740bcf998b77fc0c2aa3fe9cdf555a.png" />
+<img alt="../../../_images/290cfbd85b20762610afc20be943350afe2da3e9c0e8e813aa20af00738748dd.png" src="../../../_images/290cfbd85b20762610afc20be943350afe2da3e9c0e8e813aa20af00738748dd.png" />
 </div>
 </div>
 <p>An interesting result can be seen where the regions at the edges are darker signifying more <em>solidity</em>. This is because the straight edges conform exactly to their convex hulls.</p>
@@ -3242,7 +3237,7 @@ Name: 0, dtype: float64
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.<br>
 </p>
   </div>
   

@@ -1,7 +1,6 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -23,25 +22,22 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=19e3b7ad" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
-    <script src="../../../_static/design-tabs.js"></script>
-    <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
+    <script src="../../../_static/js/custom.js?v=8f303282"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -69,9 +65,8 @@
   
   
   
-    <img src="../../../_static/porespy_logo.png" class="logo__image only-light" alt="Logo image">
-    <img src="../../../_static/porespy_logo.png" class="logo__image only-dark" alt="Logo image">
   
+    <p class="title logo__title">PoreSpy  documentation</p>
   
 </a>
     
@@ -203,7 +198,9 @@
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">sanitize_filename</span>
 
 
-<div class="viewcode-block" id="dict_to_vtk"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.io.dict_to_vtk.html#porespy.io.dict_to_vtk">[docs]</a><span class="k">def</span> <span class="nf">dict_to_vtk</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)):</span>
+<div class="viewcode-block" id="dict_to_vtk">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.io.dict_to_vtk.html#porespy.io.dict_to_vtk">[docs]</a>
+<span class="k">def</span> <span class="nf">dict_to_vtk</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Accepts multiple images as a dictionary and compiles them into a vtk file</span>
 
@@ -245,7 +242,10 @@
     <span class="n">imageToVTK</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">cellData</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">vs</span><span class="p">,</span> <span class="n">vs</span><span class="p">),</span> <span class="n">origin</span><span class="o">=</span><span class="n">origin</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="to_vtk"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.io.to_vtk.html#porespy.io.to_vtk">[docs]</a><span class="k">def</span> <span class="nf">to_vtk</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">divide</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">downsample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vox</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="to_vtk">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.io.to_vtk.html#porespy.io.to_vtk">[docs]</a>
+<span class="k">def</span> <span class="nf">to_vtk</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">divide</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">downsample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vox</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts an array to a vtk file.</span>
 
@@ -314,7 +314,10 @@
                    <span class="n">spacing</span><span class="o">=</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">vs</span><span class="p">,</span> <span class="n">vs</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="to_palabos"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.io.to_palabos.html#porespy.io.to_palabos">[docs]</a><span class="k">def</span> <span class="nf">to_palabos</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">solid</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+<div class="viewcode-block" id="to_palabos">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.io.to_palabos.html#porespy.io.to_palabos">[docs]</a>
+<span class="k">def</span> <span class="nf">to_palabos</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">solid</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts an ndarray image to a text file that Palabos can read in as a</span>
 <span class="sd">    geometry for Lattice Boltzmann simulations. Uses a Euclidean distance</span>
@@ -360,7 +363,10 @@
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">repr</span><span class="p">,</span> <span class="n">out_data</span><span class="p">)))</span></div>
 
 
-<div class="viewcode-block" id="openpnm_to_im"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.io.openpnm_to_im.html#porespy.io.openpnm_to_im">[docs]</a><span class="k">def</span> <span class="nf">openpnm_to_im</span><span class="p">(</span>
+
+<div class="viewcode-block" id="openpnm_to_im">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.io.openpnm_to_im.html#porespy.io.openpnm_to_im">[docs]</a>
+<span class="k">def</span> <span class="nf">openpnm_to_im</span><span class="p">(</span>
     <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_shape</span><span class="o">=</span><span class="s2">&quot;sphere&quot;</span><span class="p">,</span>
     <span class="n">throat_shape</span><span class="o">=</span><span class="s2">&quot;cylinder&quot;</span><span class="p">,</span>
@@ -408,7 +414,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="to_stl"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.io.to_stl.html#porespy.io.to_stl">[docs]</a><span class="k">def</span> <span class="nf">to_stl</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">divide</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">downsample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vox</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="to_stl">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.io.to_stl.html#porespy.io.to_stl">[docs]</a>
+<span class="k">def</span> <span class="nf">to_stl</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">divide</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">downsample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vox</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts an array to an STL file.</span>
 
@@ -464,6 +473,7 @@
         <span class="n">_save_stl</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">vs</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">_save_stl</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">vs</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper method to convert an array to an STL file.</span>
@@ -494,7 +504,9 @@
     <span class="n">export</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.stl&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="to_paraview"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.io.to_paraview.html#porespy.io.to_paraview">[docs]</a><span class="k">def</span> <span class="nf">to_paraview</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<div class="viewcode-block" id="to_paraview">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.io.to_paraview.html#porespy.io.to_paraview">[docs]</a>
+<span class="k">def</span> <span class="nf">to_paraview</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts an array to a paraview state file.</span>
 
@@ -653,7 +665,10 @@
     <span class="n">paraview</span><span class="o">.</span><span class="n">simple</span><span class="o">.</span><span class="n">SaveState</span><span class="p">(</span><span class="n">file</span> <span class="o">+</span> <span class="s2">&quot;.pvsm&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="open_paraview"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.io.open_paraview.html#porespy.io.open_paraview">[docs]</a><span class="k">def</span> <span class="nf">open_paraview</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="open_paraview">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.io.open_paraview.html#porespy.io.open_paraview">[docs]</a>
+<span class="k">def</span> <span class="nf">open_paraview</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Open a paraview state file or image directly in paraview.</span>
 
@@ -685,7 +700,10 @@
     <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">paraview_path</span><span class="p">,</span> <span class="n">statefile</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="spheres_to_comsol"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.io.spheres_to_comsol.html#porespy.io.spheres_to_comsol">[docs]</a><span class="k">def</span> <span class="nf">spheres_to_comsol</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">centers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">radii</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="spheres_to_comsol">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.io.spheres_to_comsol.html#porespy.io.spheres_to_comsol">[docs]</a>
+<span class="k">def</span> <span class="nf">spheres_to_comsol</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">centers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">radii</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exports a sphere pack into a Comsol geometry file.</span>
 
@@ -734,6 +752,7 @@
         <span class="n">centers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">peaks</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
         <span class="n">radii</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">centers</span><span class="o">.</span><span class="n">T</span><span class="p">)]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="n">_save_to_comsol</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">centers</span><span class="p">,</span> <span class="n">radii</span><span class="p">)</span></div>
+
 </pre></div>
 
               </article>
@@ -760,7 +779,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.<br>
 </p>
   </div>
   
