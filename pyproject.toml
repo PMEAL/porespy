@@ -1,0 +1,166 @@
+[project]
+name = "porespy"
+dynamic = ["version"]
+description = "A set of tools for analyzing 3D images of porous materials"
+authors = [{ name = "PoreSpy Team", email = "jgostick@gmail.com" }]
+maintainers = [
+    { name = "Jeff Gostick", email = "jgostick@gmail.com" },
+    { name = "Amin Sadeghi", email = "amin.sadeghi@live.com" },
+]
+license = "MIT"
+keywords = [
+    "voxel images",
+    "porous materials",
+    "image analysis",
+    "direct numerical simulation",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = [
+    "dask",
+    "deprecated",
+    "edt",
+    "matplotlib",
+    "numba",
+    "numpy",
+    "openpnm",
+    "pandas",
+    "psutil",
+    "rich",
+    "scikit-image",
+    "scipy",
+    "tqdm",
+    "pywavelets",
+    "nanomesh",
+    "setuptools",
+]
+readme = "README.md"
+requires-python = ">= 3.8"
+
+[project.optional-dependencies]
+build = ["hatch"]
+test = [
+    "codecov",
+    "coverage",
+    "nbval",
+    "pytest",
+    "pytest-cache",
+    "pytest-cov",
+    "pytest-custom-exit-code",
+    "pytest-split",
+]
+extras = [
+    "imageio",
+    "numpy-stl",
+    "pyevtk",
+    "scikit-fmm",
+    "scikit-learn",
+    "tensorflow",
+    "trimesh",
+]
+docs = [
+    "mock",
+    "myst-nb",
+    "pandoc",
+    "pydata-sphinx-theme==0.9",
+    "sphinx",
+    "sphinx-copybutton",
+    "sphinx-design",
+]
+interactive = [
+    "ipython",
+    "ipykernel",
+    "ipywidgets",
+    "jupyter",
+    "jupyterlab_widgets",
+]
+
+[project.urls]
+Homepage = "https://porespy.org"
+Repository = "https://github.com/PMEAL/porespy"
+"Bug Tracker" = "https://github.com/PMEAL/porespy/issues"
+Documentation = "https://porespy.org"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "pytest",
+    "hatch",
+    "numpy-stl",
+    "pyevtk",
+    "trimesh",
+    "ipykernel",
+    "pypardiso",
+    "nbval",
+    "ruff",
+    "mock",
+    "myst-nb",
+    "pandoc",
+    "pydata-sphinx-theme==0.9",
+    "sphinx",
+    "sphinx-copybutton",
+    "sphinx-design",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.version]
+path = "src/porespy/__version__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/porespy"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = [
+    "-ra -v",
+    "--ignore=docs/conf.py",
+    "--ignore=examples/generators/reference/fractal_noise.ipynb",
+    "--ignore=examples/networks/reference/diffusive_size_factor_AI.ipynb",
+    "--ignore=examples/networks/tutorials/predicting_diffusive_size_factors_rock_sample.ipynb",
+    "--ignore=examples/networks/tutorials/using_diffusive_size_factor_AI_with_snow.ipynb",
+]
+python_files = "*.py"
+python_classes = "*Test"
+python_functions = "test_*"
+testpaths = ["test", "examples"]
+norecursedirs = [".git", ".github", ".ipynb_checkpoints", "build", "dist"]
+# filterwarnings = ["error", "ignore::UserWarning", "ignore::DeprecationWarning"]
+# -p no:warnings
+
+[tool.coverage.run]
+source = ["src/porespy"]
+[tool.coverage.report]
+omit = [
+    "docs/**",
+    "test/**",
+    "examples/**",
+    "src/porespy/__version__.py",
+    "src/porespy/beta/**",
+    "**/__init__.py",
+    "example.py",
+    "setup.py",
+]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+[tool.ruff]
+exclude = [".git", ".github", ".venv", "build", "docs", "examples", "test"]
+line-length = 92
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F401", "F403"]

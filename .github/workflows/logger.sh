@@ -22,8 +22,10 @@ function filter_commits_by_label {
     temp=$(echo "${commits}" | grep -E --ignore-case "$exclude_labels")
     # Strip empty lines (that might include tabs, spaces, etc.)
     temp=$(echo "${temp}" | sed -r '/^\s*$/d')
-    # Make each line a bullet point by appending "- " to lines
-    temp=$(echo "${temp}" | sed -e 's/^/- /')
+    # Make each line a bullet point by appending "- " to lines if not already present
+    temp=$(echo "${temp}" | sed -e 's/^\(\s*\)\(\-\s\)\?/\1- /')
+    # Remove the specific tag at the end of each line
+    temp=$(echo "${temp}" | sed -r "s/\s$exclude_labels\b//g")
     echo "$temp"
 }
 
@@ -31,12 +33,12 @@ function filter_commits_exclude_label {
     local temp
     local commits=$1            # fetch the first argument
     local exclude_labels=$2     # fetch the second argument
-    # Reverse filter commits by the given labels (i.e. exclude labels)
+    # Reverse filter commits by the given labels (i.e., exclude labels)
     temp=$(echo "$commits" | grep -v -E --ignore-case "$exclude_labels")
     # Strip empty lines (that might include tabs, spaces, etc.)
     temp=$(echo "${temp}" | sed -r '/^\s*$/d')
-    # Make each line a bullet point by appending "- " to lines
-    temp=$(echo "${temp}" | sed -e 's/^/- /')
+    # Make each line a bullet point by appending "- " to lines if not already present
+    temp=$(echo "${temp}" | sed -e 's/^\(\s*\)\(\-\s\)\?/\1- /')
     echo "$temp"
 }
 
@@ -53,9 +55,7 @@ function filter_commits_by_tag_interval {
 
 function append_to_entry_with_label {
     if [ "$(is_empty "$1")" == "false" ]; then
-        echo "### $3"   >> $2
-        echo "${1}"     >> $2
-        echo ""         >> $2
+        printf "### %s\n\n%s\n\n" "$3" "$1" >> $2
     fi
 }
 
@@ -93,7 +93,7 @@ if test -f CHANGELOG.md; then
 fi
 
 # Compile change log
-echo -e "## ${tag_new}\n" >> entry
+printf "## %s\n\n" "${tag_new}" >> entry
 append_to_entry_with_label "$features" entry ":rocket: New features"
 append_to_entry_with_label "$enhancements" entry ":cake: Enhancements"
 append_to_entry_with_label "$maintenance" entry ":wrench: Maintenace"
@@ -102,9 +102,9 @@ append_to_entry_with_label "$fixes" entry ":bug: Bugfixes"
 append_to_entry_with_label "$documentation" entry ":green_book: Documentation"
 append_to_entry_with_label "$uncategorized" entry ":question: Uncategorized"
 
-echo "$(<entry)"
+cat entry
 
 # Modify CHANGELOG.md to reflect new changes
-echo -e "# Change log\n" >> CHANGELOG.md
-echo "$(<entry)" >> CHANGELOG.md
+printf "# Change log\n\n" >> CHANGELOG.md
+cat entry >> CHANGELOG.md
 rm entry
