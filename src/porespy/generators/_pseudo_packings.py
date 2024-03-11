@@ -66,8 +66,8 @@ def random_packing(
     # Initialize the heap
     tmp = np.arange(mask.size)[mask.flatten()]
     inds = np.vstack(np.unravel_index(tmp, im.shape)).T
-    q = [(np.random.rand(), tuple(i)) for i in inds]
-    heapq.heapify(q)
+    order = np.random.permutation(np.arange(len(tmp)))
+    q = inds[order, :]
 
     # Compute maxiter
     if phi < 1.0:
@@ -203,10 +203,12 @@ def pseudo_gravity_packing(
     # Generate elevation values to initialize the heap
     from porespy.generators import ramp
     h = ramp(im.shape, inlet=0, outlet=im.shape[0], axis=0)*mask
+    h = h + np.random.rand(len(h))
     tmp = np.arange(h.size)[mask.flatten()]
     inds = np.vstack(np.unravel_index(tmp, im.shape)).T
-    q = [(h[tuple(i)]+np.random.rand(), tuple(i)) for i in inds]
-    heapq.heapify(q)
+    h = h.flatten()[mask.flatten()]
+    order = np.argsort(h, axis=0)
+    q = inds[order, :]
 
     # Compute maxiter
     if phi < 1.0:
@@ -310,7 +312,7 @@ def pseudo_electrostatic_packing(
     if smooth:
         r = r + 1
 
-    mask = np.copy(im)
+    mask = im > 0
     if protrusion > 0:  # Dilate foreground
         dt = edt(~mask)
         mask = dt <= protrusion
@@ -328,15 +330,15 @@ def pseudo_electrostatic_packing(
         strel = ps_round(r, ndim=im.ndim, smooth=True)
         sites = (spim.maximum_filter(dt, footprint=strel) == dt)*(mask > 0)
 
-    # Finalize the mask
-    dt = edt(mask > 0)
-    mask = dt > r
+    dt = edt(mask + sites)
+    dt2 = edt(~sites)
+    mask = mask * (dt2 > r) * (dt > r)
 
     # Initialize heap
-    tmp = np.arange(dt.size)[mask.flatten()]
-    inds = np.vstack(np.unravel_index(tmp, dt.shape)).T
-    q = [(-dt[tuple(i)], tuple(i)) for i in inds]
-    heapq.heapify(q)
+    tmp = np.arange(im.size)[mask.flatten()]
+    inds = np.vstack(np.unravel_index(tmp, im.shape)).T
+    order = np.argsort(-dt.flatten()[mask.flatten()])
+    q = inds[order, :]
 
     # Compute maxiter
     if phi < 1.0:
@@ -350,16 +352,13 @@ def pseudo_electrostatic_packing(
     return im_temp
 
 
-# @njit  # Uncommenting this does work, but makes it slower for some reason
+# @njit
 def _do_packing(im, mask, q, r, value, clearance, smooth, maxiter):
     # Begin inserting sphere
     count = 0
     im_temp = np.copy(im).astype(type(value))
-    while count < maxiter:
-        if len(q):
-            D, cen = heapq.heappop(q)
-        else:
-            break
+    for i in range(len(q)):
+        cen = tuple(q[i, :])
         if mask[cen]:
             count += 1
             im_temp = _insert_disk_at_point(
@@ -378,35 +377,39 @@ def _do_packing(im, mask, q, r, value, clearance, smooth, maxiter):
                 overwrite=True,
                 smooth=smooth,
             )
+        if count >= maxiter:
+            break
     return im_temp, count
 
 
 if __name__ == "__main__":
     import porespy as ps
     import matplotlib.pyplot as plt
+    import scipy.ndimage as spim
     shape = [200, 200]
 
 
 # %% Electrostatic packing
-    if 0:
+    if 1:
         fig, ax = plt.subplots(1, 2)
-        blobs = ps.generators.blobs([500, 500], porosity=0.75)
+        blobs = ps.generators.blobs([400, 400], porosity=0.75)
         im = ps.generators.pseudo_electrostatic_packing(
             im=blobs,
-            r=20,
-            clearance=2,
+            r=10,
+            clearance=0,
             protrusion=10,
             edges='contained',
             seed=0,
-            phi=1.0,
+            phi=.25,
             smooth=True,
             value=-2,
         )
         ax[0].imshow(im, origin='lower')
         im = ps.generators.pseudo_electrostatic_packing(
             im=im,
-            r=8,
-            clearance=-1,
+            sites=im == -2,
+            r=5,
+            clearance=0,
             protrusion=0,
             edges='contained',
             seed=0,
@@ -454,7 +457,7 @@ if __name__ == "__main__":
         ax[2].imshow(im, origin='lower')
 
 # %% Random packing
-    if 1:
+    if 0:
         fig, ax = plt.subplots(1, 3)
         im = random_packing(
             im=np.ones(shape, dtype=bool),
