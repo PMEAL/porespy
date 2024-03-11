@@ -144,32 +144,43 @@ def sem(im, axis=0):  # pragma: no cover
         im = np.transpose(im, axes=[1, 0, 2])
     if axis == 2:
         im = np.transpose(im, axes=[2, 1, 0])
-    t = im.shape[0]
-    depth = np.reshape(np.arange(0, t), [t, 1, 1])
-    im = im*depth
-    im = np.amax(im, axis=0)
-    return im
-
+    return sem_parallel(im)
 
 
 @njit(parallel=True)
-def sem2(im):  # pragma: no cover
-    shape=im.shape    
+def sem_parallel(im):  # pragma: no cover
+    r"""
+    Extracts depth values from image for SEM view
+
+    Parameters
+    ----------
+    im : array_like
+        ndarray of the porous material with the solid phase marked as 1 or
+        True
+
+    Returns
+    -------
+    image : ndarray
+        A 2D greyscale image suitable for use in matplotlib's ``imshow``
+        function.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/visualization/reference/sem.html>`_
+    to view online example.
+
+    """
+    shape=im.shape
     depth = np.zeros(shape[:2])
     for x in prange(shape[0]):
         for y in prange(shape[1]):
-            for z in range(shape[2]):
-                if not im[x][y][z] and z>depth[x][y]:
-                    depth[x][y]=z/shape[2]
+            for z in range(shape[2]-1, 0, -1):
+                if not im[x][y][z]:
+                    depth[x][y]=z
+                    break
     return depth
 
-def testingOldTime():
-    img1 = ps.generators.voronoi_edges((100,100,100), 15, 3, True)
-    sem(img1)
-
-def testingNewTime():
-    img1 = ps.generators.voronoi_edges((100,100,100), 15, 3, True)
-    sem2(img1)
 
 def xray(im, axis=0):  # pragma: no cover
     r"""
@@ -207,36 +218,3 @@ def xray(im, axis=0):  # pragma: no cover
     im = np.sum(im, axis=0, dtype=np.int64)
     return im
 
-
-import porespy as ps
-import time
-img1 = ps.generators.voronoi_edges((100,100,100), 15, 3, True)
-img2 = ps.generators.voronoi_edges((100,100,100), 15, 3, True)
-img3 = ps.generators.voronoi_edges((100,100,100), 15, 3, True)
-img4 = ps.generators.voronoi_edges((100,100,100), 15, 3, True)
-img5 = ps.generators.voronoi_edges((100,100,100), 15, 3, True)
-fig, ax = plt.subplots()
-
-start = time.time()
-image = sem(img1)
-image = sem(img2)
-image = sem(img3)
-image = sem(img4)
-end = time.time()
-
-start2Comp = time.time()
-image = sem2(img5)  # gets image sem view
-start2 = time.time()
-image = sem2(img1)
-image = sem2(img2)
-image = sem2(img3)
-end2Comp = time.time()
-image = sem2(img4)
-end2 = time.time()
-
-print("Old Version: ", end-start)
-print("New Version with Compile: ", end2Comp-start2Comp)
-print("New Version no Compile: ", end2-start2)
-
-ax.imshow(image)
-plt.show()
