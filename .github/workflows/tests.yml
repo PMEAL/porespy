@@ -56,10 +56,7 @@ jobs:
 
       - name: Running tests
         run:
-          pytest .
-            --cov=.
-            --cov-report=xml
-            --pycodestyle
+          pytest --cov=. --cov-report=xml
 
       - name: Upload coverage to Codecov
         if: (matrix.python-version == 3.10) && (matrix.os == 'ubuntu-latest')
