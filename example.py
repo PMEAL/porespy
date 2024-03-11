@@ -1,7 +1,5 @@
-import porespy as ps
-import numpy as np
 import matplotlib.pyplot as plt
-
+import porespy as ps
 
 # Generate an image of spheres using the imgen class
 im = ps.generators.blobs(shape=[500, 500], porosity=0.7, blobiness=1)
@@ -17,4 +15,4 @@ fig, ax = plt.subplots(2, 2)
 ax[0][0].imshow(im)
 ax[0][1].imshow(chords)
 ax[1][0].imshow(colored_chords, cmap=plt.cm.jet)
-ax[1][1].bar(h.L, h.pdf, width=h.bin_widths, edgecolor='k')
+ax[1][1].bar(h.L, h.pdf, width=h.bin_widths, edgecolor="k")
