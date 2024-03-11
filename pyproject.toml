@@ -140,6 +140,25 @@ norecursedirs = [".git", ".github", ".ipynb_checkpoints", "build", "dist"]
 # filterwarnings = ["error", "ignore::UserWarning", "ignore::DeprecationWarning"]
 # -p no:warnings
 
+[tool.coverage.run]
+source = ["src/porespy"]
+[tool.coverage.report]
+omit = [
+    "docs/**",
+    "test/**",
+    "examples/**",
+    "src/porespy/__version__.py",
+    "src/porespy/beta/**",
+    "**/__init__.py",
+    "example.py",
+    "setup.py",
+]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
 [tool.ruff]
 exclude = [".git", ".github", ".venv", "build", "docs", "examples", "test"]
 line-length = 92
