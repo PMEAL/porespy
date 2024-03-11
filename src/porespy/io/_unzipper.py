@@ -1,10 +1,12 @@
+import os
+import shutil
+from pathlib import Path
+from zipfile import ZipFile
+
 import imageio
 import numpy as np
-import os
-from zipfile import ZipFile
-from porespy.tools import get_tqdm
-from pathlib import Path
 
+from porespy.tools import get_tqdm
 
 tqdm = get_tqdm()
 
@@ -90,5 +92,8 @@ def zip_to_stack(f):
                   dtype=test_im.dtype)
     for i, f in enumerate(tqdm(os.listdir(dir_for_files))):
         im[..., i] = imageio.v2.imread(os.path.join(dir_for_files , f))
+
+    # Remove the unzipped folder    
+    shutil.rmtree(dir_for_files)
 
     return im

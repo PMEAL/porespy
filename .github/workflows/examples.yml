@@ -14,40 +14,39 @@ jobs:
       fail-fast: false
       max-parallel: 5
       matrix:
-        python-version: ['3.8']
+        python-version: ['3.10']
         operating-system: [ubuntu-latest]
         # Next line should be [1, 2, ..., max-parallel)
         test_group: [1, 2, 3, 4, 5]
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: FedericoCarboni/setup-ffmpeg@v2
+      - uses: actions/checkout@v4
+      - uses: FedericoCarboni/setup-ffmpeg@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Cache pip
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
           # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
           restore-keys: |
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
 
       - name: Install dependencies (pip)
         run: |
-          pip install -r requirements.txt
-          pip install -r requirements/tests.txt
-          pip install -r requirements/examples.txt
+          pip install -e .[test,extras]
 
       - name: Running tests
         # Make sure to pass max-parallel to --splits
         run: |
-          pytest examples/ \
+          pytest \
+            -p no:python \
             --nbval-lax \
             --splits ${{ strategy.max-parallel}} \
             --group ${{ matrix.test_group }} \

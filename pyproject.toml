@@ -44,6 +44,44 @@ dependencies = [
 readme = "README.md"
 requires-python = ">= 3.8"
 
+[project.optional-dependencies]
+build = ["hatch"]
+test = [
+    "codecov",
+    "coverage",
+    "nbval",
+    "pytest",
+    "pytest-cache",
+    "pytest-cov",
+    "pytest-custom-exit-code",
+    "pytest-split",
+]
+extras = [
+    "imageio",
+    "numpy-stl",
+    "pyevtk",
+    "scikit-fmm",
+    "scikit-learn",
+    "tensorflow",
+    "trimesh",
+]
+docs = [
+    "mock",
+    "myst-nb",
+    "pandoc",
+    "pydata-sphinx-theme==0.9",
+    "sphinx",
+    "sphinx-copybutton",
+    "sphinx-design",
+]
+interactive = [
+    "ipython",
+    "ipykernel",
+    "ipywidgets",
+    "jupyter",
+    "jupyterlab_widgets",
+]
+
 [project.urls]
 Homepage = "https://porespy.org"
 Repository = "https://github.com/PMEAL/porespy"
@@ -64,6 +102,8 @@ dev-dependencies = [
     "trimesh",
     "ipykernel",
     "pypardiso",
+    "nbval",
+    "ruff>=0.3.2",
 ]
 
 [tool.hatch.metadata]
@@ -77,8 +117,24 @@ packages = ["src/porespy"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -v"
-testpaths = ["test"]
+addopts = [
+    "-ra -v",
+    "--ignore=docs/conf.py",
+    "--ignore=examples/generators/reference/fractal_noise.ipynb",
+    "--ignore=examples/networks/reference/diffusive_size_factor_AI.ipynb",
+    "--ignore=examples/networks/tutorials/predicting_diffusive_size_factors_rock_sample.ipynb",
+    "--ignore=examples/networks/tutorials/using_diffusive_size_factor_AI_with_snow.ipynb",
+]
+python_files = "*.py"
+python_classes = "*Test"
+python_functions = "test_*"
+testpaths = ["test", "examples"]
+norecursedirs = [".git", ".github", ".ipynb_checkpoints", "build", "dist"]
+# filterwarnings = ["error", "ignore::UserWarning", "ignore::DeprecationWarning"]
+# -p no:warnings
 
 [tool.ruff]
+exclude = [".git", ".github", ".venv", "build", "docs", "examples", "test"]
 line-length = 92
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F401", "F403"]
