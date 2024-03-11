@@ -41,6 +41,7 @@ def random_packing(
     seed: float = None,
     smooth: bool = True,
     value: int = 0,
+    return_spheres: bool = False,
 ) -> np.ndarray:
 
     if seed is not None:  # Initialize rng so numba sees it
@@ -76,10 +77,14 @@ def random_packing(
         maxiter = min(int(np.round(phi*Vbulk/Vsph)), maxiter)
 
     # Finally run it
-    im_temp, count = _do_packing(im, mask, q, r, value, clearance, smooth, maxiter)
+    if return_spheres:
+        im_new = np.zeros_like(im).astype(type(value))
+    else:
+        im_new = np.copy(im).astype(type(value))
+    im_new, count = _do_packing(im_new, mask, q, r, value, clearance, smooth, maxiter)
     logger.debug(f'A total of {count} spheres were added')
-    im_temp = np.swapaxes(im_temp, 0, axis)
-    return im_temp
+    im_new = np.swapaxes(im_new, 0, axis)
+    return im_new
 
 
 def pseudo_gravity_packing(
@@ -94,6 +99,7 @@ def pseudo_gravity_packing(
     seed: float = None,
     smooth: bool = True,
     value: int = 0,
+    return_spheres: bool = False,
 ) -> np.ndarray:
     r"""
     Iteratively inserts spheres at the lowest accessible point in an image,
@@ -216,10 +222,14 @@ def pseudo_gravity_packing(
         Vbulk = np.prod(im.shape)
         maxiter = min(int(np.round(phi*Vbulk/Vsph)), maxiter)
 
-    im_temp, count = _do_packing(im, mask, q, r, value, clearance, smooth, maxiter)
+    if return_spheres:
+        im_new = np.zeros_like(im).astype(type(value))
+    else:
+        im_new = np.copy(im).astype(type(value))
+    im_new, count = _do_packing(im_new, mask, q, r, value, clearance, smooth, maxiter)
     logger.debug(f'A total of {count} spheres were added')
-    im_temp = np.swapaxes(im_temp, 0, axis)
-    return im_temp
+    im_new = np.swapaxes(im_new, 0, axis)
+    return im_new
 
 
 def pseudo_electrostatic_packing(
@@ -235,6 +245,7 @@ def pseudo_electrostatic_packing(
     seed: float = None,
     smooth: bool = True,
     value: int = False,
+    return_spheres: bool = False,
 ):
     r"""
     Iterativley inserts spheres as close to the given sites as possible.
@@ -292,6 +303,8 @@ def pseudo_electrostatic_packing(
         The value to set the inserted spheres to. Using `value < 0` is a handy
         way to repeatedly insert different sphere sizes into the same image while
         making them easy to identify.
+    return_spheres : bool
+        bka
 
     Returns
     -------
@@ -347,22 +360,24 @@ def pseudo_electrostatic_packing(
         maxiter = min(int(np.round(phi*Vbulk/Vsph)), maxiter)
 
     # Finally run it
-    im_temp, count = _do_packing(im, mask, q, r, value, clearance, smooth, maxiter)
+    if return_spheres:
+        im_new = np.zeros_like(im).astype(type(value))
+    else:
+        im_new = np.copy(im).astype(type(value))
+    im_new, count = _do_packing(im_new, mask, q, r, value, clearance, smooth, maxiter)
     logger.debug(f'A total of {count} spheres were added')
-    return im_temp
+    return im_new
 
 
 # @njit
 def _do_packing(im, mask, q, r, value, clearance, smooth, maxiter):
-    # Begin inserting sphere
     count = 0
-    im_temp = np.copy(im).astype(type(value))
     for i in range(len(q)):
         cen = tuple(q[i, :])
         if mask[cen]:
             count += 1
-            im_temp = _insert_disk_at_point(
-                im=im_temp,
+            im = _insert_disk_at_point(
+                im=im,
                 coords=cen,
                 r=r,
                 v=value,
@@ -379,7 +394,7 @@ def _do_packing(im, mask, q, r, value, clearance, smooth, maxiter):
             )
         if count >= maxiter:
             break
-    return im_temp, count
+    return im, count
 
 
 if __name__ == "__main__":
@@ -390,24 +405,25 @@ if __name__ == "__main__":
 
 
 # %% Electrostatic packing
-    if 1:
+    if 0:
         fig, ax = plt.subplots(1, 2)
         blobs = ps.generators.blobs([400, 400], porosity=0.75)
         im = ps.generators.pseudo_electrostatic_packing(
             im=blobs,
             r=10,
             clearance=0,
-            protrusion=10,
+            protrusion=0,
             edges='contained',
             seed=0,
             phi=.25,
             smooth=True,
-            value=-2,
+            value=2,
+            return_spheres=True,
         )
-        ax[0].imshow(im, origin='lower')
-        im = ps.generators.pseudo_electrostatic_packing(
-            im=im,
-            sites=im == -2,
+        ax[0].imshow(im + blobs, origin='lower')
+        im2 = ps.generators.pseudo_electrostatic_packing(
+            im=blobs,
+            sites=im == 2,
             r=5,
             clearance=0,
             protrusion=0,
@@ -415,12 +431,13 @@ if __name__ == "__main__":
             seed=0,
             phi=1.0,
             smooth=True,
-            value=-3,
+            value=3,
+            return_spheres=True,
         )
-        ax[1].imshow(im, origin='lower')
+        ax[1].imshow(im + im2 + blobs, origin='lower')
 
 # %% Gravity packing
-    if 0:
+    if 1:
         fig, ax = plt.subplots(1, 3)
         im = pseudo_gravity_packing(
             im=np.ones(shape, dtype=bool),
