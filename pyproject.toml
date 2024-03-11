@@ -104,6 +104,7 @@ dev-dependencies = [
     "ipykernel",
     "pypardiso",
     "nbval",
+    "ruff>=0.3.2",
 ]
 
 [tool.hatch.metadata]
@@ -117,19 +118,23 @@ packages = ["src/porespy"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -v -p no:warnings"
+# addopts = "-ra -v -p no:warnings"
+addopts = [
+    "-ra -v -p no:warnings",
+    "--ignore=docs/conf.py",
+    "--ignore=examples/generators/reference/fractal_noise.ipynb",
+    "--ignore=examples/networks/reference/diffusive_size_factor_AI.ipynb",
+    "--ignore=examples/networks/tutorials/predicting_diffusive_size_factors_rock_sample.ipynb",
+    "--ignore=examples/networks/tutorials/using_diffusive_size_factor_AI_with_snow.ipynb",
+]
 python_files = "*.py"
 python_classes = "*Test"
 python_functions = "test_*"
 testpaths = ["test", "examples"]
-norecursedirs = [
-    ".git",
-    ".github",
-    ".ipynb_checkpoints",
-    "build",
-    "dist",
-    "locals",
-]
+norecursedirs = [".git", ".github", ".ipynb_checkpoints", "build", "dist"]
 
 [tool.ruff]
+exclude = [".git", ".github", ".venv", "build", "docs", "examples", "test"]
 line-length = 92
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402","F401", "F403"]
