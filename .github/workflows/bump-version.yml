@@ -11,53 +11,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         persist-credentials: false  # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
         fetch-depth: 0              # otherwise, you will failed to push refs to dest repo
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.8'
+        python-version: '3.10'
 
     - name: Set env variables
       run: |
-        # The next line is very important, otherwise the line after triggers
-        # git to track the permission change, which breaks bump2version API (needs clean git folder)
-        git config core.filemode false
-        chmod +x .github/workflows/utils.sh
-        echo "VERSION_FILE=porespy/__version__.py" >> $GITHUB_ENV
-        echo "SETUP_CFG_FILE=setup.cfg" >> $GITHUB_ENV
         echo "${{ github.event.head_commit.message }}"
 
     - name: Install dependencies
       run: |
-        pip install bump2version
+        pip install -e .[build]
 
     - name: Bump version (patch)
       if: contains(github.event.head_commit.message, '#patch')
       run: |
-        source .github/workflows/utils.sh
-        bump_version patch $VERSION_FILE
-        echo "TAG_NEW=v$(get_version $VERSION_FILE)" >> $GITHUB_ENV
+        hatch version patch
+        echo "TAG_NEW=v$(hatch version)" >> $GITHUB_ENV
 
     - name: Bump version (minor)
       if: contains(github.event.head_commit.message, '#minor')
       run: |
-        source .github/workflows/utils.sh
-        bump_version minor $VERSION_FILE
-        echo "TAG_NEW=v$(get_version $VERSION_FILE)" >> $GITHUB_ENV
+        hatch version minor
+        echo "TAG_NEW=v$(hatch version)" >> $GITHUB_ENV
 
     - name: Bump version (major)
       if: contains(github.event.head_commit.message, '#major')
       run: |
-        source .github/workflows/utils.sh
-        bump_version major $VERSION_FILE
-        echo "TAG_NEW=v$(get_version $VERSION_FILE)" >> $GITHUB_ENV
+        hatch version major
+        echo "TAG_NEW=v$(hatch version)" >> $GITHUB_ENV
 
     - name: Commit files
-      if:
+      if: |
         contains(github.event.head_commit.message, '#patch') ||
         contains(github.event.head_commit.message, '#minor') ||
         contains(github.event.head_commit.message, '#major')
@@ -68,7 +59,7 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
 
-        # commit version bump to release
+        # Commit version bump to release
         git commit -m "Bump version number" -a
         git push "${remote_repo}" release
 
@@ -77,17 +68,13 @@ jobs:
       with:
         source_branch: "release"                          # If blank, default: triggered branch
         destination_branch: "dev"                         # If blank, default: master
-        pr_title: "Don't forget to merge release back into dev!"
+        pr_title: "Merge release -> dev to propagate version number bump"
         pr_body: "Changes made to the release branch (e.g. hotfixes), plus the version bump."
         pr_assignee: "jgostick,ma-sadeghi"                # Comma-separated list (no spaces)
         pr_label: "high priority"                         # Comma-separated list (no spaces)
         pr_draft: false                                   # Creates pull request as draft
         pr_allow_empty: true                              # Creates pull request even if there are no changes
         github_token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Trim the 4th digit from the tag
-      run:
-        echo "TAG_NEW=${TAG_NEW%.dev?}" >> $GITHUB_ENV
 
     - name: Create new tag
       run: |

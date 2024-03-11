@@ -214,31 +214,37 @@ class GeneratorTest():
 
     def test_lattice_spheres_square(self):
         im = ps.generators.lattice_spheres(
-            shape=[101, 101], r=5, spacing=10, lattice='sc')
+            shape=[101, 101], r=5, offset=5, spacing=10, lattice='sc')
         labels, N = spim.label(input=~im)
         assert N == 100
 
     def test_lattice_spheres_triangular(self):
         im = ps.generators.lattice_spheres(
-            shape=[101, 101], r=5, spacing=15, lattice='triangular')
+            shape=[101, 101], r=5, offset=5, spacing=15, lattice='triangular')
         labels, N = spim.label(input=~im)
         assert N == 85
 
     def test_lattice_spheres_sc(self):
         im = ps.generators.lattice_spheres(
-            shape=[101, 101, 101], r=4, spacing=10, lattice='sc')
+            shape=[101, 101, 101], r=4, offset=5, spacing=10, lattice='sc')
         labels, N = spim.label(input=~im)
         assert N == 1000
 
     def test_lattice_spheres_fcc(self):
         im = ps.generators.lattice_spheres(
-            shape=[101, 101, 101], r=4, spacing=12, lattice='fcc')
+            shape=[101, 101, 101],
+            r=4,
+            offset=0,
+            spacing=12,
+            smooth=True,
+            lattice='fcc',
+        )
         labels, N = spim.label(input=~im)
         assert N == 2457
 
     def test_lattice_spheres_bcc(self):
         im = ps.generators.lattice_spheres(
-            shape=[101, 101, 101], r=4, spacing=12, lattice='bcc')
+            shape=[101, 101, 101], r=4, offset=4, spacing=12, lattice='bcc')
         labels, N = spim.label(input=~im)
         assert N == 1241
 
@@ -452,29 +458,27 @@ class GeneratorTest():
         with pytest.raises(Exception):
             ps.generators.faces(shape=[10, 10, 10])
 
+    @pytest.mark.skip(reason="Doesn't support Python 3.9+")
     def test_fractal_noise_2d(self):
-        try:
-            s = [100, 100]
-            # Ensure identical images are returned if seed is same
-            im1 = ps.generators.fractal_noise(shape=s, seed=0, cores=1)
-            im2 = ps.generators.fractal_noise(shape=s, seed=0, cores=1)
-            assert np.linalg.norm(im1) == np.linalg.norm(im2)
-            # Ensure different images are returned even if seed is same
-            im1 = ps.generators.fractal_noise(shape=s, mode='perlin',
-                                              seed=0, octaves=2, cores=1)
-            im2 = ps.generators.fractal_noise(shape=s, mode='perlin',
-                                              seed=0, octaves=4, cores=1)
-            assert np.linalg.norm(im1) != np.linalg.norm(im2)
-            # Check uniformization
-            im1 = ps.generators.fractal_noise(shape=s, mode='cubic',
-                                              uniform=True, cores=1)
-            assert im1.min() >= 0
-            assert im1.max() <= 1
-            im2 = ps.generators.fractal_noise(shape=s, mode='cubic',
-                                              uniform=False, cores=1)
-            assert im2.min() < 0
-        except ModuleNotFoundError:
-            pass
+        s = [100, 100]
+        # Ensure identical images are returned if seed is same
+        im1 = ps.generators.fractal_noise(shape=s, seed=0, cores=1)
+        im2 = ps.generators.fractal_noise(shape=s, seed=0, cores=1)
+        assert np.linalg.norm(im1) == np.linalg.norm(im2)
+        # Ensure different images are returned even if seed is same
+        im1 = ps.generators.fractal_noise(shape=s, mode='perlin',
+                                            seed=0, octaves=2, cores=1)
+        im2 = ps.generators.fractal_noise(shape=s, mode='perlin',
+                                            seed=0, octaves=4, cores=1)
+        assert np.linalg.norm(im1) != np.linalg.norm(im2)
+        # Check uniformization
+        im1 = ps.generators.fractal_noise(shape=s, mode='cubic',
+                                            uniform=True, cores=1)
+        assert im1.min() >= 0
+        assert im1.max() <= 1
+        im2 = ps.generators.fractal_noise(shape=s, mode='cubic',
+                                            uniform=False, cores=1)
+        assert im2.min() < 0
 
     def test_cantor_dust(self):
         np.random.seed(0)
@@ -510,7 +514,7 @@ class GeneratorTest():
         im2D = ps.generators.sierpinski_foam(4, 2, 2)
         np.testing.assert_allclose(im2D.sum()/im2D.size, 0.7901234567901234)
 
-    def test_sierpinski_foam_2(self):
+    def test_sierpinski_foam2(self):
         im2D = ps.generators.sierpinski_foam2(shape=[100, 100], n=3)
         assert np.all(im2D.shape == (100, 100))
         im3D = ps.generators.sierpinski_foam2(shape=[100, 100, 100], n=3)
@@ -593,6 +597,100 @@ class GeneratorTest():
                            'R': [5.0, 8.0, 17.5, 4.0]})
         im = ps.generators.spheres_from_coords(df)
         assert im.ndim == 3
+
+    def test_polydisperse_cylinders(self):
+        import scipy.stats as spst
+        from porespy import beta
+        params = (5.0, 0.0, 7.0)
+        dist = spst.gamma(*params)
+        fibers = beta.polydisperse_cylinders(
+            shape=[100, 100, 100],
+            porosity=0.75,
+            dist=dist,
+            voxel_size=5,
+            phi_max=5,
+            theta_max=90,
+            maxiter=2,
+            rtol=2e-2,
+            seed=0,
+        )
+        eps = fibers.sum()/fibers.size
+        assert eps == 0.759302
+
+    def test_rectangular_pillars_array(self):
+        im1 = ps.generators.rectangular_pillars_array(shape=[190, 190])
+        assert im1.shape == (190, 190)
+        im2 = ps.generators.rectangular_pillars_array(
+            shape=[190, 190],
+            truncate=False,)
+        assert im2.shape == (201, 201)
+        im3 = ps.generators.rectangular_pillars_array(shape=[190, 190], seed=0)
+        im4 = ps.generators.rectangular_pillars_array(shape=[190, 190], seed=0)
+        im5 = ps.generators.rectangular_pillars_array(shape=[190, 190], seed=None)
+        assert np.all(im3 == im4)
+        assert ~np.all(im3 == im5)
+        im6 = ps.generators.rectangular_pillars_array(
+            shape=[190, 190],
+            lattice='triangular',
+        )
+        assert ~np.all(im1 == im6)
+        im7 = ps.generators.rectangular_pillars_array(
+            shape=[190, 190],
+            dist='uniform',
+            dist_kwargs=dict(loc=1, scale=2))
+        im8 = ps.generators.rectangular_pillars_array(
+            shape=[190, 190],
+            dist='uniform',
+            dist_kwargs=dict(loc=5, scale=5))
+        assert np.sum(im7) < np.sum(im8)
+
+    def test_cylindrical_pillars_array(self):
+        im1 = ps.generators.cylindrical_pillars_array(shape=[190, 190])
+        assert im1.shape == (190, 190)
+        im2 = ps.generators.cylindrical_pillars_array(
+            shape=[190, 190],
+            truncate=False,)
+        assert im2.shape == (201, 201)
+        im3 = ps.generators.cylindrical_pillars_array(shape=[190, 190], seed=0)
+        im4 = ps.generators.cylindrical_pillars_array(shape=[190, 190], seed=0)
+        im5 = ps.generators.cylindrical_pillars_array(shape=[190, 190], seed=None)
+        assert np.all(im3 == im4)
+        assert ~np.all(im3 == im5)
+        im6 = ps.generators.cylindrical_pillars_array(
+            shape=[190, 190],
+            lattice='triangular',
+        )
+        assert ~np.all(im1 == im6)
+        im7 = ps.generators.cylindrical_pillars_array(
+            shape=[190, 190],
+            dist='uniform',
+            dist_kwargs=dict(loc=1, scale=2))
+        im8 = ps.generators.cylindrical_pillars_array(
+            shape=[190, 190],
+            dist='uniform',
+            dist_kwargs=dict(loc=5, scale=5))
+        assert np.sum(im8) < np.sum(im7)
+
+    def test_cylindrical_pillars_mesh(self):
+        im1 = ps.generators.cylindrical_pillars_mesh(
+            shape=[190, 190],
+            truncate=True,
+        )
+        assert im1.shape == (190, 190)
+        im2 = ps.generators.cylindrical_pillars_mesh(
+            shape=[190, 190],
+            truncate=False,
+        )
+        assert im2.shape == (224, 224)
+        im3 = ps.generators.cylindrical_pillars_mesh(
+            shape=[190, 190],
+            f=.5,
+        )
+        im4 = ps.generators.cylindrical_pillars_mesh(
+            shape=[190, 190],
+            f=.85,
+        )
+        assert im3.sum() > im4.sum()
 
 
 if __name__ == '__main__':

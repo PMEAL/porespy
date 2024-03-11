@@ -16,10 +16,9 @@ jobs:
 
     strategy:
       fail-fast: false
-      max-parallel: 9
+      max-parallel: 12
       matrix:
-        # Add '3.10' to the list once #611 is addressed
-        python-version: ['3.8', '3.9', '3.10']
+        python-version: ['3.10', '3.11']
         os: [ubuntu-latest, macos-latest, windows-latest]
         include:
         - os: ubuntu-latest
@@ -31,42 +30,37 @@ jobs:
 
     steps:
       - name: Cache pip
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ matrix.path }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies (pip)
         run: |
-          pip install \
-            -r requirements.txt \
-            -r requirements/tests.txt
+          pip install -e .[test,extras]
 
       # TODO: uncomment this step when integration tests are fixed
       # - name: Disable numba JIT for codecov to include jitted methods
-      #   if: (matrix.python-version == 3.8) && (matrix.os == 'ubuntu-latest')
+      #   if: (matrix.python-version == 3.10) && (matrix.os == 'ubuntu-latest')
       #   run: |
       #     echo "NUMBA_DISABLE_JIT=1" >> $GITHUB_ENV
 
       - name: Running tests
         run:
-          pytest .
-            --cov=.
-            --cov-report=xml
-            --pycodestyle
+          pytest --cov=. --cov-report=xml
 
       - name: Upload coverage to Codecov
-        if: (matrix.python-version == 3.8) && (matrix.os == 'ubuntu-latest')
-        uses: codecov/codecov-action@v1
+        if: (matrix.python-version == 3.10) && (matrix.os == 'ubuntu-latest')
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml

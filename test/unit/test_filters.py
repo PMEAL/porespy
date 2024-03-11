@@ -223,6 +223,20 @@ class FilterTest():
         im3 = ps.filters.fill_blind_pores(im, surface=True)
         assert im3.sum() == 0
 
+    def test_fill_blind_pores_surface_blobs_2D(self):
+        im = ps.generators.blobs([100, 100], porosity=0.6, seed=0)
+        im2 = ps.filters.fill_blind_pores(im)
+        assert im.sum() == 6021
+        assert im2.sum() == 5981
+        im3 = ps.filters.fill_blind_pores(im, surface=True)
+        assert im3.sum() == 5699
+
+    def test_fill_blind_pores_surface_blobs_3D(self):
+        im = ps.generators.blobs([100, 100, 100], porosity=0.5)
+        im2 = ps.filters.fill_blind_pores(im, surface=True)
+        labels, N = spim.label(im2, ps.tools.ps_rect(3, ndim=3))
+        assert N == 1
+
     def test_trim_floating_solid(self):
         f = ps.filters.trim_floating_solid(~self.im)
         assert np.sum(f) > np.sum(~self.im)
