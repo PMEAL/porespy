@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.ndimage as spim
 import matplotlib.pyplot as plt
+from numba import njit, prange
 # from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 
@@ -150,6 +151,26 @@ def sem(im, axis=0):  # pragma: no cover
     return im
 
 
+
+@njit(parallel=True)
+def sem2(im):  # pragma: no cover
+    shape=im.shape    
+    depth = np.zeros(shape[:2])
+    for x in prange(shape[0]):
+        for y in prange(shape[1]):
+            for z in range(shape[2]):
+                if not im[x][y][z] and z>depth[x][y]:
+                    depth[x][y]=z/shape[2]
+    return depth
+
+def testingOldTime():
+    img1 = ps.generators.voronoi_edges((100,100,100), 15, 3, True)
+    sem(img1)
+
+def testingNewTime():
+    img1 = ps.generators.voronoi_edges((100,100,100), 15, 3, True)
+    sem2(img1)
+
 def xray(im, axis=0):  # pragma: no cover
     r"""
     Simulates an X-ray radiograph looking through the porous material.
@@ -185,3 +206,37 @@ def xray(im, axis=0):  # pragma: no cover
         im = np.transpose(im, axes=[2, 1, 0])
     im = np.sum(im, axis=0, dtype=np.int64)
     return im
+
+
+import porespy as ps
+import time
+img1 = ps.generators.voronoi_edges((100,100,100), 15, 3, True)
+img2 = ps.generators.voronoi_edges((100,100,100), 15, 3, True)
+img3 = ps.generators.voronoi_edges((100,100,100), 15, 3, True)
+img4 = ps.generators.voronoi_edges((100,100,100), 15, 3, True)
+img5 = ps.generators.voronoi_edges((100,100,100), 15, 3, True)
+fig, ax = plt.subplots()
+
+start = time.time()
+image = sem(img1)
+image = sem(img2)
+image = sem(img3)
+image = sem(img4)
+end = time.time()
+
+start2Comp = time.time()
+image = sem2(img5)  # gets image sem view
+start2 = time.time()
+image = sem2(img1)
+image = sem2(img2)
+image = sem2(img3)
+end2Comp = time.time()
+image = sem2(img4)
+end2 = time.time()
+
+print("Old Version: ", end-start)
+print("New Version with Compile: ", end2Comp-start2Comp)
+print("New Version no Compile: ", end2-start2)
+
+ax.imshow(image)
+plt.show()
