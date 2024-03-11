@@ -60,6 +60,12 @@ def ramp(shape, inlet=1.0, outlet=0.0, axis=0):
     ramp : ndarray
         An array of the requested shape with greyscale values changing linearly
         from inlet to outlet in the direction specified.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/reference/ramp.html>`_
+    to view online example.
     """
     shape = np.array(shape)
     vals = np.linspace(inlet, outlet, shape[axis])
