@@ -70,11 +70,11 @@ class ExportTest():
 
     def test_zip_to_stack_and_folder_to_stack(self):
         p = Path(os.path.realpath(__file__),
-                 '../../../test/unit/blobs_layers.zip').resolve()
+                 '../../../test/fixtures/blobs_layers.zip').resolve()
         im = ps.io.zip_to_stack(p)
         assert im.shape == (100, 100, 10)
         p = Path(os.path.realpath(__file__),
-                 '../../../test/unit/blobs_layers').resolve()
+                 '../../../test/fixtures/blobs_layers').resolve()
         im = ps.io.folder_to_stack(p)
         assert im.shape == (100, 100, 10)
 
