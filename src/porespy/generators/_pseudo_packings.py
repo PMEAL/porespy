@@ -1,21 +1,22 @@
 import logging
+import heapq
 import numpy as np
 import scipy.ndimage as spim
+import numpy.typing as npt
 from edt import edt
 from skimage.morphology import disk, ball
 from porespy import settings
 from porespy.tools import get_tqdm, ps_round, get_border, unpad
 from porespy.tools import _insert_disk_at_point
-from porespy.filters import trim_disconnected_blobs, fftmorphology
+from porespy.filters import trim_disconnected_blobs
 from numba import njit
 from typing import Literal, List
-import numpy.typing as npt
-import heapq
 
 
 __all__ = [
     "pseudo_gravity_packing",
     "pseudo_electrostatic_packing",
+    "random_packing",
 ]
 
 
@@ -26,6 +27,59 @@ logger = logging.getLogger(__name__)
 @njit
 def _set_seed(a):
     np.random.seed(a)
+
+
+def random_packing(
+    shape: List = None,
+    im: npt.ArrayLike = None,
+    r: int = 5,
+    clearance: int = 0,
+    axis: int = 0,
+    edges: Literal['contained', 'extended'] = 'contained',
+    maxiter: int = 1000,
+    phi: float = 1.0,
+    seed: float = None,
+    smooth: bool = True,
+    value: int = 0,
+) -> np.ndarray:
+
+    if seed is not None:  # Initialize rng so numba sees it
+        _set_seed(seed)
+        np.random.seed(seed)
+
+    if im is None:
+        im = np.ones(shape, dtype=bool)
+
+    im = np.swapaxes(im, 0, axis)
+
+    if smooth:
+        r = r + 1
+
+    # Deal with edges
+    mask = im > 0
+    if edges == 'contained':
+        border = get_border(im.shape, thickness=1, mode='faces')
+        mask[border] = False
+
+    mask = edt(mask > 0) > r
+
+    # Initialize the heap
+    tmp = np.arange(mask.size)[mask.flatten()]
+    inds = np.vstack(np.unravel_index(tmp, im.shape)).T
+    q = [(np.random.rand(), tuple(i)) for i in inds]
+    heapq.heapify(q)
+
+    # Compute maxiter
+    if phi < 1.0:
+        Vsph = 4/3*np.pi*(r**3) if im.ndim == 3 else np.pi*(r**2)
+        Vbulk = np.prod(im.shape)
+        maxiter = min(int(np.round(phi*Vbulk/Vsph)), maxiter)
+
+    # Finally run it
+    im_temp, count = _do_packing(im, mask, q, r, value, clearance, smooth, maxiter)
+    logger.debug(f'A total of {count} spheres were added')
+    im_temp = np.swapaxes(im_temp, 0, axis)
+    return im_temp
 
 
 def pseudo_gravity_packing(
@@ -146,11 +200,6 @@ def pseudo_gravity_packing(
     s = ball(1) if im.ndim == 3 else disk(1)
     mask = trim_disconnected_blobs(im=mask, inlets=inlets, strel=s)
 
-    if phi < 1.0:
-        Vsph = 4/3*np.pi*(r**3) if im.ndim == 3 else 4*np.pi*(r**2)
-        Vbulk = np.prod(im.shape)
-        maxiter = min(int(np.floor(Vbulk/Vsph)), maxiter)
-
     # Generate elevation values to initialize the heap
     from porespy.generators import ramp
     h = ramp(im.shape, inlet=0, outlet=im.shape[0], axis=0)*mask
@@ -158,6 +207,12 @@ def pseudo_gravity_packing(
     inds = np.vstack(np.unravel_index(tmp, im.shape)).T
     q = [(h[tuple(i)]+np.random.rand(), tuple(i)) for i in inds]
     heapq.heapify(q)
+
+    # Compute maxiter
+    if phi < 1.0:
+        Vsph = 4/3*np.pi*(r**3) if im.ndim == 3 else np.pi*(r**2)
+        Vbulk = np.prod(im.shape)
+        maxiter = min(int(np.round(phi*Vbulk/Vsph)), maxiter)
 
     im_temp, count = _do_packing(im, mask, q, r, value, clearance, smooth, maxiter)
     logger.debug(f'A total of {count} spheres were added')
@@ -255,11 +310,6 @@ def pseudo_electrostatic_packing(
     if smooth:
         r = r + 1
 
-    if phi < 1.0:
-        Vsph = 4/3*np.pi*(r**3) if im.ndim == 3 else 4*np.pi*(r**2)
-        Vbulk = np.prod(im.shape)
-        maxiter = min(int(np.floor(Vbulk/Vsph)), maxiter)
-
     mask = np.copy(im)
     if protrusion > 0:  # Dilate foreground
         dt = edt(~mask)
@@ -288,13 +338,19 @@ def pseudo_electrostatic_packing(
     q = [(-dt[tuple(i)], tuple(i)) for i in inds]
     heapq.heapify(q)
 
+    # Compute maxiter
+    if phi < 1.0:
+        Vsph = 4/3*np.pi*(r**3) if im.ndim == 3 else np.pi*(r**2)
+        Vbulk = np.prod(im.shape)
+        maxiter = min(int(np.round(phi*Vbulk/Vsph)), maxiter)
+
     # Finally run it
     im_temp, count = _do_packing(im, mask, q, r, value, clearance, smooth, maxiter)
     logger.debug(f'A total of {count} spheres were added')
     return im_temp
 
 
-@njit # Uncommenting this does work, but makes it slower for some reason
+# @njit  # Uncommenting this does work, but makes it slower for some reason
 def _do_packing(im, mask, q, r, value, clearance, smooth, maxiter):
     # Begin inserting sphere
     count = 0
@@ -361,7 +417,7 @@ if __name__ == "__main__":
         ax[1].imshow(im, origin='lower')
 
 # %% Gravity packing
-    if 1:
+    if 0:
         fig, ax = plt.subplots(1, 3)
         im = pseudo_gravity_packing(
             im=np.ones(shape, dtype=bool),
@@ -383,7 +439,7 @@ if __name__ == "__main__":
             phi=0.25,
             maxiter=1000,
             smooth=False,
-            value=-3
+            value=-3,
         )
         ax[1].imshow(im, origin='lower')
         im = pseudo_gravity_packing(
@@ -397,3 +453,39 @@ if __name__ == "__main__":
         )
         ax[2].imshow(im, origin='lower')
 
+# %% Random packing
+    if 1:
+        fig, ax = plt.subplots(1, 3)
+        im = random_packing(
+            im=np.ones(shape, dtype=bool),
+            r=16,
+            clearance=0,
+            edges='extended',
+            seed=0,
+            phi=.25,
+            smooth=False,
+            value=-4,
+        )
+        ax[0].imshow(im, origin='lower')
+        im = random_packing(
+            im=im,
+            r=8,
+            clearance=0,
+            edges='contained',
+            seed=0,
+            phi=0.1,
+            maxiter=1000,
+            smooth=False,
+            value=-3,
+        )
+        ax[1].imshow(im, origin='lower')
+        im = random_packing(
+            im=im,
+            r=12,
+            clearance=0,
+            edges='contained',
+            seed=0,
+            smooth=True,
+            value=-2,
+        )
+        ax[2].imshow(im, origin='lower')
