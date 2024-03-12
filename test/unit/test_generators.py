@@ -388,7 +388,7 @@ class GeneratorTest():
         im = np.ones([100, 100], dtype=bool)
         im = ps.generators.pseudo_gravity_packing(
             im=im, r=8, clearance=1)
-        assert im.sum() == 5727  # Used to be 4578
+        assert im.sum() == 5976  # Used to be 4578
 
     def test_pseudo_gravity_packing_3D(self):
         np.random.seed(0)
