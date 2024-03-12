@@ -266,7 +266,8 @@ def pseudo_electrostatic_packing(
     sites : ndarray (optional)
         An image with ``True`` values indicating the electrostatic attraction
         points. If this is not given then the peaks in the distance transform of
-        `im` are used.
+        `im` are used, which corresponds to the center of the image for a blank
+        input.
     clearance : int (optional, default=0)
         The amount of space to put between each sphere. Negative values are
         acceptable to create overlaps, but ``abs(clearance) < r``.
@@ -352,11 +353,10 @@ def pseudo_electrostatic_packing(
             inds = tuple((np.array(im.shape)/2).astype(int))
             sites[inds] = True
 
-    dt = edt(mask + sites)  # Where spheres can fit
     dt2 = edt(~sites)  # Where spheres are attracted to
+    dt = edt(mask + sites)  # Where spheres can fit
     mask = mask * (dt2 > r) * (dt > r)
     mask = mask.astype(bool)
-    # dt = edt(mask).astype(int)
 
     # Initialize queue
     tmp = np.arange(im.size)[mask.flatten()]

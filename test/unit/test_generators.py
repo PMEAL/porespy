@@ -432,6 +432,16 @@ class GeneratorTest():
             im=im, r=8, sites=sites, maxiter=10)
         assert im.sum() == 29690  # Used to be 21030
 
+    def test_pseudo_electrostatic_packing_w_seed(self):
+        im1 = ps.generators.pseudo_electrostatic_packing(
+            shape=[100, 100], r=5, seed=0)
+        im2 = ps.generators.pseudo_electrostatic_packing(
+            shape=[100, 100], r=5, seed=0)
+        im3 = ps.generators.pseudo_electrostatic_packing(
+            shape=[100, 100], r=5, seed=1)
+        assert np.all(im1 == im2)
+        assert not np.all(im1 == im3)
+
     def test_faces(self):
         im = ps.generators.faces(shape=[10, 10], inlet=0)
         assert im.sum() == 10
