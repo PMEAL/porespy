@@ -229,7 +229,7 @@ def random_spheres(
     return_spheres: bool = False,
     smooth: bool = True,
     seed: int = None,
-    value: int = 1,
+    value: int = True,
 ):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
@@ -351,7 +351,7 @@ def rsa(
     return_spheres: bool = False,
     smooth: bool = True,
     seed: int = None,
-    value: int = 1,
+    value: int = True,
 ):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
@@ -442,14 +442,14 @@ def rsa(
     """
     logger.debug(f"rsa: Adding spheres of size {r}")
     if np.array(im_or_shape).ndim < 2:
-        im = np.zeros(shape=im_or_shape, dtype=bool)
+        im = np.zeros(shape=im_or_shape, dtype=type(value))
         input_im = np.copy(im)
     else:
         input_im = np.copy(im_or_shape)
-        im = np.zeros_like(im_or_shape, dtype=bool)
+        im = np.zeros_like(im_or_shape, dtype=type(value))
     if seed is not None:  # Initialize rng so numba sees it
         _set_seed(seed)
-    im = im.astype(bool)
+    im = im.astype(type(value))
     shape_orig = im.shape  # Store original image shape, to undo padding at the end
     if n_max is None:
         n_max = np.inf
