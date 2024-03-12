@@ -193,22 +193,24 @@ def pseudo_gravity_packing(
 
     # Deal with edges
     if edges == 'contained':
-        pw = ((1, 0), (1, 1), (1, 1)) if im.ndim == 3 else ((1, 0), (1, 1))
-        im_padded = np.pad(im, pad_width=pw, mode='constant', constant_values=False)
-        mask = unpad(edt(im_padded) > r, pw)
+        im_padded = np.pad(im, pad_width=1, mode='constant', constant_values=False)
+        if smooth:
+            mask = unpad(edt(im_padded) >= r, 1)
+        else:
+            mask = unpad(edt(im_padded) > r, 1)
     else:
         mask = edt(im) > r
 
     # Finalize the mask of valid insertion points
     inlets = np.zeros_like(im)
-    inlets[-1, ...] = True
+    inlets[-r:, ...] = True
     s = ball(1) if im.ndim == 3 else disk(1)
     mask = trim_disconnected_blobs(im=mask, inlets=inlets, strel=s)
 
     # Generate elevation values to initialize queue
     from porespy.generators import ramp
     h = ramp(im.shape, inlet=0, outlet=im.shape[0], axis=0)*mask
-    h = h + np.random.rand(len(h))
+    h = h*1.0 + np.random.rand(len(h))
     tmp = np.arange(h.size)[mask.flatten()]
     inds = np.vstack(np.unravel_index(tmp, im.shape)).T
     h = h.flatten()[mask.flatten()]
@@ -222,7 +224,7 @@ def pseudo_gravity_packing(
         maxiter = min(int(np.round(phi*Vbulk/Vsph)), maxiter)
 
     if return_spheres:
-        im_new = np.zeros_like(im).astype(type(value))
+        im_new = np.ones_like(im).astype(type(value))
     else:
         im_new = np.copy(im).astype(type(value))
     im_new, count = _do_packing(im_new, mask, q, r, value, clearance, smooth, maxiter)
@@ -325,11 +327,11 @@ def pseudo_electrostatic_packing(
     if smooth:
         r = r + 1
 
-    mask = im > 0
-    if protrusion > 0:  # Dilate foreground
+    mask = im > 0  # Find mask of valid points
+    if protrusion > 0:  # Dilate mask
         dt = edt(~mask)
         mask = dt <= protrusion
-    elif protrusion < 0:  # Erode foreground
+    elif protrusion < 0:  # Erode mask
         dt = edt(mask)
         mask = dt >= abs(protrusion)
 
@@ -346,12 +348,13 @@ def pseudo_electrostatic_packing(
     dt = edt(mask + sites)
     dt2 = edt(~sites)
     mask = mask * (dt2 > r) * (dt > r)
+    mask = mask.astype(bool)
 
     # Initialize queue
     tmp = np.arange(im.size)[mask.flatten()]
     inds = np.vstack(np.unravel_index(tmp, im.shape)).T
-    dt = dt + 0.1*np.random.rand(*dt.shape)*mask
-    order = np.argsort(-dt.flatten()[mask.flatten()])
+    dt2 = dt2 + 0.5*np.random.rand(*dt2.shape)*mask
+    order = np.argsort(dt2[mask])
     q = inds[order, :]
 
     # Compute maxiter
@@ -362,7 +365,7 @@ def pseudo_electrostatic_packing(
 
     # Finally run it
     if return_spheres:
-        im_new = np.zeros_like(im).astype(type(value))
+        im_new = np.ones_like(im).astype(type(value))
     else:
         im_new = np.copy(im).astype(type(value))
     im_new, count = _do_packing(im_new, mask, q, r, value, clearance, smooth, maxiter)
@@ -388,7 +391,7 @@ def _do_packing(im, mask, q, r, value, clearance, smooth, maxiter):
             mask = _insert_disk_at_point(
                 im=mask,
                 coords=cen,
-                r=2*r + 2*clearance,
+                r=2*r + clearance,
                 v=False,
                 overwrite=True,
                 smooth=smooth,
@@ -406,6 +409,15 @@ if __name__ == "__main__":
 
 
 # %% Electrostatic packing
+
+    if 0:
+        np.random.seed(0)
+        im = np.ones([100, 100], dtype=bool)
+        sites = np.zeros_like(im)
+        sites[50, 50] = True
+        im = ps.generators.pseudo_electrostatic_packing(
+            im=im, r=8, sites=sites, maxiter=14, value=0, clearance=0, smooth=True)
+        plt.imshow(im)
     if 0:
         fig, ax = plt.subplots(1, 2)
         blobs = ps.generators.blobs([400, 400], porosity=0.75)
@@ -426,9 +438,9 @@ if __name__ == "__main__":
             im=blobs,
             sites=im == 2,
             r=5,
-            clearance=0,
+            clearance=1,
             protrusion=0,
-            edges='contained',
+            edges='extended',
             seed=0,
             phi=1.0,
             smooth=True,
@@ -445,7 +457,6 @@ if __name__ == "__main__":
             r=16,
             clearance=0,
             edges='contained',
-            seed=0,
             phi=.1,
             smooth=False,
             value=-4,
@@ -455,7 +466,7 @@ if __name__ == "__main__":
             im=im,
             r=8,
             clearance=0,
-            edges='contained',
+            edges='extended',
             seed=0,
             phi=0.25,
             maxiter=1000,
@@ -466,8 +477,8 @@ if __name__ == "__main__":
         im = pseudo_gravity_packing(
             im=im,
             r=12,
-            clearance=0,
-            edges='extended',
+            clearance=2,
+            edges='contained',
             seed=0,
             smooth=True,
             value=-2,
