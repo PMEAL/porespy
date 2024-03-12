@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.ndimage as spim
 import scipy.stats as spst
-from nanomesh import Mesher2D
 
 from porespy.generators import borders, lattice_spheres, spheres_from_coords
 from porespy.tools import _insert_disks_at_points_parallel, extend_slice
@@ -286,6 +285,12 @@ def cylindrical_pillars_mesh(
         to view online example.
 
     """
+    try:
+        from nanomesh import Mesher2D
+    except ModuleNotFoundError:
+        msg = "The nanomesh package can be installed with `pip install nanomesh`"
+        raise ModuleNotFoundError(msg)
+
     if len(shape) != 2:
         raise Exception('shape must be 2D for this function')
     if n is None:

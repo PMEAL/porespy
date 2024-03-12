@@ -3,7 +3,7 @@
 </p>
 
 [![image](https://img.shields.io/pypi/v/porespy.svg)](https://pypi.python.org/pypi/porespy/)
-[![Pyversions](https://img.shields.io/pypi/pyversions/porespy.svg?style=flat-square&label=Python%20Versions)](https://pypi.python.org/pypi/porespy)
+[![image](https://codecov.io/gh/PMEAL/PoreSpy/branch/dev/graph/badge.svg)](https://codecov.io/gh/PMEAL/PoreSpy)
 
 # What is PoreSpy?
 
