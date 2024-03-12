@@ -38,7 +38,6 @@ dependencies = [
     "scipy",
     "tqdm",
     "pywavelets",
-    "nanomesh",
     "setuptools",
 ]
 readme = "README.md"
@@ -58,6 +57,7 @@ test = [
 ]
 extras = [
     "imageio",
+    "nanomesh",
     "numpy-stl",
     "pyevtk",
     "scikit-fmm",
@@ -137,8 +137,6 @@ python_classes = "*Test"
 python_functions = "test_*"
 testpaths = ["test", "examples"]
 norecursedirs = [".git", ".github", ".ipynb_checkpoints", "build", "dist"]
-# filterwarnings = ["error", "ignore::UserWarning", "ignore::DeprecationWarning"]
-# -p no:warnings
 
 [tool.coverage.run]
 source = ["src/porespy"]
