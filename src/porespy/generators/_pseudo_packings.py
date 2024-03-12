@@ -210,7 +210,7 @@ def pseudo_gravity_packing(
     # Generate elevation values to initialize queue
     from porespy.generators import ramp
     h = ramp(im.shape, inlet=0, outlet=im.shape[0], axis=0)*mask
-    h = h*1.0 + np.random.rand(len(h))
+    h = h*1.0 + np.random.rand(*im.shape)
     tmp = np.arange(h.size)[mask.flatten()]
     inds = np.vstack(np.unravel_index(tmp, im.shape)).T
     h = h.flatten()[mask.flatten()]
