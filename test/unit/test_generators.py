@@ -442,6 +442,21 @@ class GeneratorTest():
         assert np.all(im1 == im2)
         assert not np.all(im1 == im3)
 
+    def test_random_spheres2(self):
+        s = [200, 200]
+        im1 = ps.generators.random_spheres2(shape=s, r=10, edges='contained', seed=0)
+        im2 = ps.generators.random_spheres2(shape=s, r=10, edges='extended', seed=0)
+        assert im1.sum() < im2.sum()
+        im = ps.generators.random_spheres2(shape=s, r=10, edges='contained', value=2)
+        assert im.max() == 2
+        im1 = ps.generators.random_spheres2(shape=s, r=10, clearance=1, seed=0)
+        im2 = ps.generators.random_spheres2(shape=s, r=10, clearance=5, seed=0)
+        assert im1.sum() > im2.sum()
+        im = np.ones(s, dtype=bool)
+        im1 = ps.generators.random_spheres2(im=im, r=10, seed=0)
+        im2 = ps.generators.random_spheres2(shape=s, r=10, seed=0)
+        assert im1.sum() == im2.sum()
+
     def test_faces(self):
         im = ps.generators.faces(shape=[10, 10], inlet=0)
         assert im.sum() == 10
@@ -467,17 +482,17 @@ class GeneratorTest():
         assert np.linalg.norm(im1) == np.linalg.norm(im2)
         # Ensure different images are returned even if seed is same
         im1 = ps.generators.fractal_noise(shape=s, mode='perlin',
-                                            seed=0, octaves=2, cores=1)
+                                          seed=0, octaves=2, cores=1)
         im2 = ps.generators.fractal_noise(shape=s, mode='perlin',
-                                            seed=0, octaves=4, cores=1)
+                                          seed=0, octaves=4, cores=1)
         assert np.linalg.norm(im1) != np.linalg.norm(im2)
         # Check uniformization
         im1 = ps.generators.fractal_noise(shape=s, mode='cubic',
-                                            uniform=True, cores=1)
+                                          uniform=True, cores=1)
         assert im1.min() >= 0
         assert im1.max() <= 1
         im2 = ps.generators.fractal_noise(shape=s, mode='cubic',
-                                            uniform=False, cores=1)
+                                          uniform=False, cores=1)
         assert im2.min() < 0
 
     def test_cantor_dust(self):

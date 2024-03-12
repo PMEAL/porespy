@@ -16,7 +16,7 @@ from typing import Literal, List
 __all__ = [
     "pseudo_gravity_packing",
     "pseudo_electrostatic_packing",
-    "random_packing",
+    "random_spheres2",
 ]
 
 
@@ -29,7 +29,7 @@ def _set_seed(a):
     np.random.seed(a)
 
 
-def random_packing(
+def random_spheres2(
     shape: List = None,
     im: npt.ArrayLike = None,
     r: int = 5,
@@ -40,7 +40,7 @@ def random_packing(
     phi: float = 1.0,
     seed: float = None,
     smooth: bool = True,
-    value: int = 1,
+    value: int = True,
     return_spheres: bool = True,
 ) -> np.ndarray:
 
@@ -517,7 +517,7 @@ if __name__ == "__main__":
 # %% Random packing
     if 0:
         fig, ax = plt.subplots(1, 3)
-        im = random_packing(
+        im = random_spheres2(
             im=np.ones(shape, dtype=bool),
             r=16,
             clearance=0,
@@ -528,7 +528,7 @@ if __name__ == "__main__":
             value=-4,
         )
         ax[0].imshow(im, origin='lower')
-        im = random_packing(
+        im = random_spheres2(
             im=im,
             r=8,
             clearance=0,
@@ -540,7 +540,7 @@ if __name__ == "__main__":
             value=-3,
         )
         ax[1].imshow(im, origin='lower')
-        im = random_packing(
+        im = random_spheres2(
             im=im,
             r=12,
             clearance=0,
