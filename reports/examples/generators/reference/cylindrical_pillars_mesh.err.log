@@ -1,0 +1,69 @@
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/nbclient/client.py", line 1314, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+  File "/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+fig, ax = plt.subplots(1, 2, figsize=(10, 5))
+np.random.seed(0)
+im1 = ps.generators.cylindrical_pillars_mesh(
+    shape=[401, 601],
+    a=500,
+)
+im2 = ps.generators.cylindrical_pillars_mesh(
+    shape=[401, 601], 
+    a=5000,
+)
+
+ax[0].imshow(im1, origin='lower', interpolation='none')
+ax[0].set_title('a=500')
+ax[1].imshow(im2, origin='lower', interpolation='none')
+ax[1].set_title('a=5000');
+------------------
+
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
+File [0;32m~/work/porespy/porespy/src/porespy/generators/_micromodels.py:289[0m, in [0;36mcylindrical_pillars_mesh[0;34m(shape, f, a, n, truncate)[0m
+[1;32m    288[0m [38;5;28;01mtry[39;00m:
+[0;32m--> 289[0m     [38;5;28;01mfrom[39;00m [38;5;21;01mnanomesh[39;00m [38;5;28;01mimport[39;00m Mesher2D
+[1;32m    290[0m [38;5;28;01mexcept[39;00m [38;5;167;01mModuleNotFoundError[39;00m:
+
+[0;31mModuleNotFoundError[0m: No module named 'nanomesh'
+
+During handling of the above exception, another exception occurred:
+
+[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
+Cell [0;32mIn[2], line 3[0m
+[1;32m      1[0m fig, ax [38;5;241m=[39m plt[38;5;241m.[39msubplots([38;5;241m1[39m, [38;5;241m2[39m, figsize[38;5;241m=[39m([38;5;241m10[39m, [38;5;241m5[39m))
+[1;32m      2[0m np[38;5;241m.[39mrandom[38;5;241m.[39mseed([38;5;241m0[39m)
+[0;32m----> 3[0m im1 [38;5;241m=[39m [43mps[49m[38;5;241;43m.[39;49m[43mgenerators[49m[38;5;241;43m.[39;49m[43mcylindrical_pillars_mesh[49m[43m([49m
+[1;32m      4[0m [43m    [49m[43mshape[49m[38;5;241;43m=[39;49m[43m[[49m[38;5;241;43m401[39;49m[43m,[49m[43m [49m[38;5;241;43m601[39;49m[43m][49m[43m,[49m
+[1;32m      5[0m [43m    [49m[43ma[49m[38;5;241;43m=[39;49m[38;5;241;43m500[39;49m[43m,[49m
+[1;32m      6[0m [43m)[49m
+[1;32m      7[0m im2 [38;5;241m=[39m ps[38;5;241m.[39mgenerators[38;5;241m.[39mcylindrical_pillars_mesh(
+[1;32m      8[0m     shape[38;5;241m=[39m[[38;5;241m401[39m, [38;5;241m601[39m], 
+[1;32m      9[0m     a[38;5;241m=[39m[38;5;241m5000[39m,
+[1;32m     10[0m )
+[1;32m     12[0m ax[[38;5;241m0[39m][38;5;241m.[39mimshow(im1, origin[38;5;241m=[39m[38;5;124m'[39m[38;5;124mlower[39m[38;5;124m'[39m, interpolation[38;5;241m=[39m[38;5;124m'[39m[38;5;124mnone[39m[38;5;124m'[39m)
+
+File [0;32m~/work/porespy/porespy/src/porespy/generators/_micromodels.py:292[0m, in [0;36mcylindrical_pillars_mesh[0;34m(shape, f, a, n, truncate)[0m
+[1;32m    290[0m [38;5;28;01mexcept[39;00m [38;5;167;01mModuleNotFoundError[39;00m:
+[1;32m    291[0m     msg [38;5;241m=[39m [38;5;124m"[39m[38;5;124mThe nanomesh package can be installed with `pip install nanomesh`[39m[38;5;124m"[39m
+[0;32m--> 292[0m     [38;5;28;01mraise[39;00m [38;5;167;01mModuleNotFoundError[39;00m(msg)
+[1;32m    294[0m [38;5;28;01mif[39;00m [38;5;28mlen[39m(shape) [38;5;241m!=[39m [38;5;241m2[39m:
+[1;32m    295[0m     [38;5;28;01mraise[39;00m [38;5;167;01mException[39;00m([38;5;124m'[39m[38;5;124mshape must be 2D for this function[39m[38;5;124m'[39m)
+
+[0;31mModuleNotFoundError[0m: The nanomesh package can be installed with `pip install nanomesh`
+
