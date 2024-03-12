@@ -183,12 +183,12 @@ def pseudo_gravity_packing(
         _set_seed(seed)
         np.random.seed(seed)
 
-    if im is None:
+    if im is None:  # If shape was given, generate empty im
         im = np.ones(shape, dtype=bool)
 
-    im = np.swapaxes(im, 0, axis)
+    im = np.swapaxes(im, 0, axis)  # Move specified axis to 0 position
 
-    if smooth:
+    if smooth:  # If smooth spheres are used, increase r to compensate
         r = r + 1
 
     # Deal with edges
@@ -209,12 +209,11 @@ def pseudo_gravity_packing(
 
     # Generate elevation values to initialize queue
     from porespy.generators import ramp
-    h = ramp(im.shape, inlet=0, outlet=im.shape[0], axis=0)*mask
-    h = h*1.0 + np.random.rand(*im.shape)
-    tmp = np.arange(h.size)[mask.flatten()]
+    tmp = np.arange(im.size)[mask.flatten()]
     inds = np.vstack(np.unravel_index(tmp, im.shape)).T
-    h = h.flatten()[mask.flatten()]
-    order = np.argsort(h, axis=0)
+    vals = ramp(im.shape, inlet=0, outlet=im.shape[0], axis=0)*mask
+    vals = vals.flatten()[mask.flatten()]
+    order = _randomized_argsort(inds, vals)
     q = inds[order, :]
 
     # Compute maxiter
@@ -223,6 +222,7 @@ def pseudo_gravity_packing(
         Vbulk = np.prod(im.shape)
         maxiter = min(int(np.round(phi*Vbulk/Vsph)), maxiter)
 
+    # Finally insert spheres
     if return_spheres:
         im_new = np.ones_like(im).astype(type(value))*(1 - (value == 1))
     else:
@@ -324,7 +324,10 @@ def pseudo_electrostatic_packing(
         _set_seed(seed)
         np.random.seed(seed)
 
-    if smooth:
+    if im is None:  # If shape was given, generate empty im
+        im = np.ones(shape, dtype=bool)
+
+    if smooth:  # If smooth spheres are used, increase r to compensate
         r = r + 1
 
     mask = im > 0  # Find mask of valid points
@@ -344,17 +347,22 @@ def pseudo_electrostatic_packing(
         dt = spim.gaussian_filter(dt, sigma=0.5)
         strel = ps_round(r, ndim=im.ndim, smooth=True)
         sites = (spim.maximum_filter(dt, footprint=strel) == dt)*(mask > 0)
+        if np.any(dt == np.inf):  # In case above method failed.
+            sites = np.zeros_like(im)
+            inds = tuple((np.array(im.shape)/2).astype(int))
+            sites[inds] = True
 
-    dt = edt(mask + sites)
-    dt2 = edt(~sites)
+    dt = edt(mask + sites)  # Where spheres can fit
+    dt2 = edt(~sites)  # Where spheres are attracted to
     mask = mask * (dt2 > r) * (dt > r)
     mask = mask.astype(bool)
+    # dt = edt(mask).astype(int)
 
     # Initialize queue
     tmp = np.arange(im.size)[mask.flatten()]
     inds = np.vstack(np.unravel_index(tmp, im.shape)).T
-    dt2 = dt2 + 0.5*np.random.rand(*dt2.shape)*mask
-    order = np.argsort(dt2[mask])
+    vals = dt2[mask]
+    order = _randomized_argsort(inds, vals)
     q = inds[order, :]
 
     # Compute maxiter
@@ -371,6 +379,23 @@ def pseudo_electrostatic_packing(
     im_new, count = _do_packing(im_new, mask, q, r, value, clearance, smooth, maxiter)
     logger.debug(f'A total of {count} spheres were added')
     return im_new
+
+
+def _randomized_argsort(inds, vals):
+    r"""
+    A utility function to take a sorted list and randomize the order of the elements
+    with the same value.  So if the list is [21, 44, 16, 21, 44, 37], np.argsort
+    would return [2, 0, 3, 5, 1, 4], this function will return and alternative set of
+    args [2, 0|3, 3|0, 1|5, 5|1, 4].
+    """
+    order = np.argsort(vals)
+    _, counts = np.unique(vals[order], return_counts=True)
+    counts = np.cumsum(np.hstack(([0], counts)))
+    for i in range(len(counts)-1):
+        orig_order = order[counts[i]:counts[i+1]]
+        new_order = np.random.permutation(orig_order)
+        order[counts[i]:counts[i+1]] = new_order
+    return order
 
 
 # @njit
@@ -410,17 +435,22 @@ if __name__ == "__main__":
 
 # %% Electrostatic packing
 
-    if 0:
-        np.random.seed(0)
-        im = np.ones([100, 100], dtype=bool)
-        sites = np.zeros_like(im)
-        sites[50, 50] = True
+    fig, ax = plt.subplots(2, 3)
+    if 1:
+        sites = np.zeros([300, 300], dtype=bool)
+        sites[150, 150] = True
         im = ps.generators.pseudo_electrostatic_packing(
-            im=im, r=8, sites=sites, maxiter=14, value=0, clearance=0, smooth=True)
-        plt.imshow(im)
-    if 0:
-        fig, ax = plt.subplots(1, 2)
-        blobs = ps.generators.blobs([400, 400], porosity=0.75)
+            shape=[300, 300],
+            r=15,
+            sites=sites,
+            maxiter=30,
+            edges='contained',
+            clearance=0,
+            smooth=False,
+        )
+        ax[0][0].imshow(im)
+    if 1:
+        blobs = ps.generators.blobs([400, 400], porosity=0.75, seed=0)
         im = ps.generators.pseudo_electrostatic_packing(
             im=blobs,
             r=10,
@@ -428,12 +458,11 @@ if __name__ == "__main__":
             protrusion=0,
             edges='contained',
             seed=0,
-            phi=.25,
+            phi=.3,
             smooth=True,
             value=2,
             return_spheres=True,
         )
-        ax[0].imshow(im + blobs, origin='lower')
         im2 = ps.generators.pseudo_electrostatic_packing(
             im=blobs,
             sites=im == 2,
@@ -447,11 +476,10 @@ if __name__ == "__main__":
             value=3,
             return_spheres=True,
         )
-        ax[1].imshow(im + im2 + blobs, origin='lower')
+        ax[0][1].imshow(im + im2 + blobs, origin='lower')
 
 # %% Gravity packing
     if 1:
-        fig, ax = plt.subplots(1, 3)
         im = pseudo_gravity_packing(
             im=np.ones(shape, dtype=bool),
             r=16,
@@ -460,8 +488,8 @@ if __name__ == "__main__":
             phi=.1,
             smooth=False,
             value=-4,
+            return_spheres=False,
         )
-        ax[0].imshow(im, origin='lower')
         im = pseudo_gravity_packing(
             im=im,
             r=8,
@@ -472,8 +500,8 @@ if __name__ == "__main__":
             maxiter=1000,
             smooth=False,
             value=-3,
+            return_spheres=False,
         )
-        ax[1].imshow(im, origin='lower')
         im = pseudo_gravity_packing(
             im=im,
             r=12,
@@ -482,8 +510,9 @@ if __name__ == "__main__":
             seed=0,
             smooth=True,
             value=-2,
+            return_spheres=False,
         )
-        ax[2].imshow(im, origin='lower')
+        ax[0][2].imshow(im, origin='lower')
 
 # %% Random packing
     if 0:
