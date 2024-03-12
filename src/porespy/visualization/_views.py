@@ -143,32 +143,15 @@ def sem(im, axis=0):  # pragma: no cover
         im = np.transpose(im, axes=[1, 0, 2])
     if axis == 2:
         im = np.transpose(im, axes=[2, 1, 0])
-    return sem_parallel(im)
+    return _sem_parallel(im)
 
 
 @njit(parallel=True)
-def sem_parallel(im):  # pragma: no cover
+def _sem_parallel(im):  # pragma: no cover
     r"""
-    Extracts depth values from image for SEM view
-
-    Parameters
-    ----------
-    im : array_like
-        ndarray of the porous material with the solid phase marked as 1 or
-        True
-
-    Returns
-    -------
-    image : ndarray
-        A 2D greyscale image suitable for use in matplotlib's ``imshow``
-        function.
-
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/visualization/reference/sem.html>`_
-    to view online example.
-
+    This function is called `sem` to compute the height of the first 
+    voxel in each x, y column. It uses numba for speed, and is
+    parallelized.
     """
     shape=im.shape
     depth = np.zeros(shape[:2])
