@@ -1,9 +1,7 @@
 import numpy as np
 from edt import edt
-import numba
 from porespy.filters import trim_disconnected_blobs, find_trapped_regions
-from porespy.filters import find_disconnected_voxels
-from porespy.filters import pc_to_satn, satn_to_seq, seq_to_satn
+from porespy.filters import pc_to_satn, satn_to_seq
 from porespy import settings
 from porespy.tools import _insert_disks_at_points
 from porespy.tools import get_tqdm

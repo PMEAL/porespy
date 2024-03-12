@@ -471,7 +471,7 @@ def _denorm_predict(prediction, g_train):
     '''
     from sklearn import preprocessing
     scaler = preprocessing.MinMaxScaler(feature_range=(0, 1))
-    train_N = scaler.fit_transform(g_train.reshape(-1, 1))
+    _ = scaler.fit_transform(g_train.reshape(-1, 1))
     denorm = scaler.inverse_transform(X=prediction.reshape(-1, 1))
     denorm = np.squeeze(denorm)
     return denorm

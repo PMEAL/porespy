@@ -7,7 +7,7 @@ from edt import edt
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from skimage.segmentation import watershed
-from skimage.morphology import ball, disk, square, cube
+from skimage.morphology import square, cube
 from porespy.tools import _check_for_singleton_axes
 from porespy.tools import extend_slice, ps_rect, ps_round
 from porespy.tools import Results

@@ -1,6 +1,7 @@
 name: Release Notes
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'
@@ -12,26 +13,26 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
-            fetch-depth: 0  # to retrieve entire history of refs/tags
+            fetch-depth: 0  # Retrieve entire history of refs/tags
 
-      - name: Generate release notes
+      - name: get-recent-tag
         run: |
           git fetch --all --tags --force
           chmod +x .github/workflows/logger.sh
           chmod +x .github/workflows/utils.sh
           source .github/workflows/utils.sh
           bash .github/workflows/logger.sh
-          echo "TAG=$(get_most_recent_tag)" >> $GITHUB_ENV
+          echo "TAG=$(get_most_recent_tag)" >> $GITHUB_OUTPUT
 
       - name: Create GitHub release
-        uses: Roang-zero1/github-create-release-action@master
+        uses: Roang-zero1/github-create-release-action@v3
         with:
           version_regex: ^v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+
           create_draft: true
-          created_tag: ${{ env.TAG }}
+          created_tag: ${{ steps.get-recent-tag.outputs.TAG }}
           update_existing: false
-          release_title: ${{ env.TAG }}
+          release_title: ${{ steps.get-recent-tag.outputs.TAG }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

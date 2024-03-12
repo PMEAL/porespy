@@ -7,7 +7,7 @@ Installation
 PoreSpy depends heavily on SciPy and its dependencies. The best way to get a fully
 functional environment is the `Anaconda
 distribution <https://www.anaconda.com/products/individual#Downloads>`__. Be sure to get the
-**Python 3.8+ version**.
+**Python 3.10+ version**.
 
 Once you've installed *Anaconda* you can then install ``porespy``. It is
 available on `conda-forge <https://anaconda.org/conda-forge/porespy>`__

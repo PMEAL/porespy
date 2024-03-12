@@ -1,12 +1,13 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from nanomesh import Mesher2D
-from porespy.generators import lattice_spheres, borders, spheres_from_coords
-from porespy.tools import _insert_disks_at_points_parallel, extend_slice
-import scipy.ndimage as spim
-import scipy.stats as spst
 from typing import List
 
+import matplotlib.pyplot as plt
+import numpy as np
+import scipy.ndimage as spim
+import scipy.stats as spst
+from nanomesh import Mesher2D
+
+from porespy.generators import borders, lattice_spheres, spheres_from_coords
+from porespy.tools import _insert_disks_at_points_parallel, extend_slice
 
 __all__ = [
     'rectangular_pillars_array',

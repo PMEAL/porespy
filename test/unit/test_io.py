@@ -60,21 +60,21 @@ class ExportTest():
                             [40, 25, 55],
                             [60, 0, 89]])
         ps.io.spheres_to_comsol(filename='sphere_pack', centers=centers, radii=radii)
-        # os.remove("sphere_pack.mphtxt")
+        os.remove("sphere_pack.mphtxt")
 
     def test_spheres_to_comsol_im(self):
         im = ps.generators.overlapping_spheres(shape=[100, 100, 100],
                                                r=10, porosity=0.6)
         ps.io.spheres_to_comsol(filename='sphere_pack', im=im)
-        # os.remove("sphere_pack.mphtxt")
+        os.remove("sphere_pack.mphtxt")
 
     def test_zip_to_stack_and_folder_to_stack(self):
         p = Path(os.path.realpath(__file__),
-                 '../../../test/unit/blobs_layers.zip').resolve()
+                 '../../../test/fixtures/blobs_layers.zip').resolve()
         im = ps.io.zip_to_stack(p)
         assert im.shape == (100, 100, 10)
         p = Path(os.path.realpath(__file__),
-                 '../../../test/unit/blobs_layers').resolve()
+                 '../../../test/fixtures/blobs_layers').resolve()
         im = ps.io.folder_to_stack(p)
         assert im.shape == (100, 100, 10)
 

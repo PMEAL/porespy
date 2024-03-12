@@ -1,5 +1,5 @@
 import time
-from porespy import simulations, tools, settings
+from porespy import simulations, settings
 from porespy.tools import Results
 import numpy as np
 import openpnm as op
@@ -9,7 +9,7 @@ import dask
 import edt
 
 __all__ = ['tortuosity_gdd', 'chunks_to_dataframe']
-settings.loglevel=50
+settings.loglevel = 50
 
 
 @dask.delayed
@@ -199,7 +199,7 @@ using {im.shape[0]//3} as chunk size.")
     all_gD = [result for result in all_results[::2]]
     all_tau_unfiltered = [result for result in all_results[1::2]]
 
-    all_tau = [result.tortuosity if type(result)!=int
+    all_tau = [result.tortuosity if not isinstance(result, int)
                else result for result in all_tau_unfiltered]
 
     t4 = time.perf_counter()- t0
@@ -329,9 +329,9 @@ using {im.shape[0]//3} as chunk size.")
     all_gD = [result for result in all_results[::2]]
     all_tau_unfiltered = [result for result in all_results[1::2]]
 
-    all_porosity = [result.effective_porosity if type(result)!=int
+    all_porosity = [result.effective_porosity if not isinstance(result, int)
                     else result for result in all_tau_unfiltered]
-    all_tau = [result.tortuosity if type(result)!=int
+    all_tau = [result.tortuosity if not isinstance(result, int)
                else result for result in all_tau_unfiltered]
 
     # creates opnepnm network to calculate image tortuosity
