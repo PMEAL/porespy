@@ -40,8 +40,8 @@ def random_packing(
     phi: float = 1.0,
     seed: float = None,
     smooth: bool = True,
-    value: int = 0,
-    return_spheres: bool = False,
+    value: int = 1,
+    return_spheres: bool = True,
 ) -> np.ndarray:
 
     if seed is not None:
@@ -99,8 +99,8 @@ def pseudo_gravity_packing(
     phi: float = 1.0,
     seed: int = None,
     smooth: bool = True,
-    value: int = 0,
-    return_spheres: bool = False,
+    value: int = 1,
+    return_spheres: bool = True,
 ) -> np.ndarray:
     r"""
     Iteratively inserts spheres at the lowest accessible point in an image,
@@ -224,7 +224,7 @@ def pseudo_gravity_packing(
         maxiter = min(int(np.round(phi*Vbulk/Vsph)), maxiter)
 
     if return_spheres:
-        im_new = np.ones_like(im).astype(type(value))
+        im_new = np.ones_like(im).astype(type(value))*(1 - (value == 1))
     else:
         im_new = np.copy(im).astype(type(value))
     im_new, count = _do_packing(im_new, mask, q, r, value, clearance, smooth, maxiter)
@@ -245,8 +245,8 @@ def pseudo_electrostatic_packing(
     maxiter: int = 1000,
     seed: int = None,
     smooth: bool = True,
-    value: int = False,
-    return_spheres: bool = False,
+    value: int = 1,
+    return_spheres: bool = True,
 ):
     r"""
     Iterativley inserts spheres as close to the given sites as possible.
@@ -365,7 +365,7 @@ def pseudo_electrostatic_packing(
 
     # Finally run it
     if return_spheres:
-        im_new = np.ones_like(im).astype(type(value))
+        im_new = np.ones_like(im).astype(type(value))*(1 - (value == 1))
     else:
         im_new = np.copy(im).astype(type(value))
     im_new, count = _do_packing(im_new, mask, q, r, value, clearance, smooth, maxiter)

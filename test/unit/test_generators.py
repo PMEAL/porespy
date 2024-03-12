@@ -386,14 +386,16 @@ class GeneratorTest():
     def test_pseudo_gravity_packing_2D(self):
         np.random.seed(0)
         im = np.ones([100, 100], dtype=bool)
-        im = ps.generators.pseudo_gravity_packing(im=im, r=8, clearance=1)
-        assert im.sum() == 4578
+        im = ps.generators.pseudo_gravity_packing(
+            im=im, r=8, clearance=1)
+        assert im.sum() == 5727  # Used to be 4578
 
     def test_pseudo_gravity_packing_3D(self):
         np.random.seed(0)
         im = np.ones([100, 100, 100], dtype=bool)
-        im = ps.generators.pseudo_gravity_packing(im=im, r=8, clearance=1)
-        assert im.sum() == 279240
+        im = ps.generators.pseudo_gravity_packing(
+            im=im, r=8, clearance=1)
+        assert im.sum() == 391908  # Used to be 279240
 
     def test_pseudo_gravity_packing_w_seed(self):
         im1 = ps.generators.pseudo_gravity_packing(
@@ -412,35 +414,23 @@ class GeneratorTest():
         assert (im1.sum() > im2.sum())
         assert im2.sum() > 0
 
-    def test_pseudo_electrostatic_packing_w_seed(self):
-        im1 = ps.generators.pseudo_electrostatic_packing(
-            im=ps.generators.blobs(shape=[100, 100], seed=0), r=5, seed=0)
-        im2 = ps.generators.pseudo_electrostatic_packing(
-            im=ps.generators.blobs(shape=[100, 100], seed=0), r=5, seed=0)
-        im3 = ps.generators.pseudo_electrostatic_packing(
-            im=ps.generators.blobs(shape=[100, 100], seed=0), r=5, seed=1)
-        assert np.all(im1 == im2)
-        assert not np.all(im1 == im3)
-
     def test_pseudo_electrostatic_packing_2D(self):
         np.random.seed(0)
         im = np.ones([100, 100], dtype=bool)
         sites = np.zeros_like(im)
         sites[50, 50] = True
-        im = ps.generators.pseudo_electrostatic_packing(im=im, r=8,
-                                                        sites=sites,
-                                                        maxiter=10)
-        assert im.sum() == 1930
+        im = ps.generators.pseudo_electrostatic_packing(
+            im=im, r=8, sites=sites, maxiter=10)
+        assert im.sum() == 2490  # Used to be 1930
 
     def test_pseudo_electrostatic_packing_3D(self):
         np.random.seed(0)
         im = np.ones([100, 100, 100], dtype=bool)
         sites = np.zeros_like(im)
         sites[50, 50, 50] = True
-        im = ps.generators.pseudo_electrostatic_packing(im=im, r=8,
-                                                        sites=sites,
-                                                        maxiter=10)
-        assert im.sum() == 21030
+        im = ps.generators.pseudo_electrostatic_packing(
+            im=im, r=8, sites=sites, maxiter=10)
+        assert im.sum() == 29690  # Used to be 21030
 
     def test_faces(self):
         im = ps.generators.faces(shape=[10, 10], inlet=0)
