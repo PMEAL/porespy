@@ -447,8 +447,6 @@ class GeneratorTest():
         im1 = ps.generators.random_spheres2(shape=s, r=10, edges='contained', seed=0)
         im2 = ps.generators.random_spheres2(shape=s, r=10, edges='extended', seed=0)
         assert im1.sum() < im2.sum()
-        im = ps.generators.random_spheres2(shape=s, r=10, edges='contained', value=2)
-        assert im.max() == 2
         im1 = ps.generators.random_spheres2(shape=s, r=10, clearance=1, seed=0)
         im2 = ps.generators.random_spheres2(shape=s, r=10, clearance=5, seed=0)
         assert im1.sum() > im2.sum()

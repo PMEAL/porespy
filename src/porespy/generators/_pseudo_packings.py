@@ -160,13 +160,6 @@ def pseudo_gravity_packing(
         is ``None``, which means each call will produce a new realization.
     smooth : bool, default = `True`
         Controls whether or not the spheres have the small pip each face.
-    value : scalar
-        The value to set the inserted spheres to. Using `value < 0` is a handy
-        way to repeatedly insert different sphere sizes into the same image while
-        making them easy to identify.
-    return_spheres : bool
-        Creates and returns a new image to hold the spheres, without any of the
-        other structural features of the input `im`.
 
     Returns
     -------
@@ -256,6 +249,7 @@ def pseudo_electrostatic_packing(
     maxiter: int = 1000,
     seed: int = None,
     smooth: bool = True,
+    compactness: float = 1.0,
 ):
     r"""
     Iterativley inserts spheres as close to the given sites as possible.
@@ -311,13 +305,10 @@ def pseudo_electrostatic_packing(
         has no effect. To get a repeatable image, the seed must be passed to the
         function so it can be initialized the way ``numba`` requires. The default
         is ``None``, which means each call will produce a new realization.
-    value : scalar
-        The value to set the inserted spheres to. Using `value < 0` is a handy
-        way to repeatedly insert different sphere sizes into the same image while
-        making them easy to identify.
-    return_spheres : bool
-        Creates and returns a new image to hold the spheres, without any of the
-        other structural features of the input `im`.
+    compactness : float
+        Controls how tightly the spheres are grouped together. A value of 1.0
+        (default) results in the tighest possible grouping while values < 1.0
+        give more loosely or imperfectly packed spheres.
 
     Returns
     -------
@@ -371,7 +362,7 @@ def pseudo_electrostatic_packing(
     # Initialize queue
     tmp = np.arange(im.size)[mask.flatten()]
     inds = np.vstack(np.unravel_index(tmp, im.shape)).T
-    vals = dt2[mask]
+    vals = np.digitize(dt2[mask], bins=np.arange(1, dt2.max(), int(1/compactness)))
     order = _randomized_argsort(inds, vals)
     q = inds[order, :]
 
@@ -454,6 +445,7 @@ if __name__ == "__main__":
             edges='contained',
             clearance=0,
             smooth=False,
+            compactness=0.1,
         )
         ax[0][0].imshow(im)
     if 1:
@@ -539,7 +531,7 @@ if __name__ == "__main__":
             im=im == 0,
             r=12,
             clearance=5,
-            protrusion=-5,
+            protrusion=5,
             edges='contained',
             seed=0,
             smooth=True,
