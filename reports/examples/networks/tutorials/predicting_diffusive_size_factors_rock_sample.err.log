@@ -15,33 +15,27 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-import subprocess
-import os
-import numpy as np
-import porespy as ps
-import h5py  # if there was error importing, please install the h5py package
-import importlib
-import warnings
-import openpnm as op
-import porespy as ps
-import scipy as sp
-from matplotlib import pyplot as plt
-from sklearn.metrics import r2_score
-import time
-import tensorflow as tf
-ps.visualization.set_mpl_style()
-warnings.filterwarnings("ignore")
+voxel_size = 2.25e-6
+with open('../../../test/fixtures/image_Leopard_slice100.npy', 'rb') as f:
+    im = np.load(f)
 ------------------
 
 
 [0;31m---------------------------------------------------------------------------[0m
-[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
-Cell [0;32mIn[1], line 12[0m
-[1;32m     10[0m [38;5;28;01mimport[39;00m [38;5;21;01mscipy[39;00m [38;5;28;01mas[39;00m [38;5;21;01msp[39;00m
-[1;32m     11[0m [38;5;28;01mfrom[39;00m [38;5;21;01mmatplotlib[39;00m [38;5;28;01mimport[39;00m pyplot [38;5;28;01mas[39;00m plt
-[0;32m---> 12[0m [38;5;28;01mfrom[39;00m [38;5;21;01msklearn[39;00m[38;5;21;01m.[39;00m[38;5;21;01mmetrics[39;00m [38;5;28;01mimport[39;00m r2_score
-[1;32m     13[0m [38;5;28;01mimport[39;00m [38;5;21;01mtime[39;00m
-[1;32m     14[0m [38;5;28;01mimport[39;00m [38;5;21;01mtensorflow[39;00m [38;5;28;01mas[39;00m [38;5;21;01mtf[39;00m
+[0;31mFileNotFoundError[0m                         Traceback (most recent call last)
+Cell [0;32mIn[5], line 2[0m
+[1;32m      1[0m voxel_size [38;5;241m=[39m [38;5;241m2.25e-6[39m
+[0;32m----> 2[0m [38;5;28;01mwith[39;00m [38;5;28;43mopen[39;49m[43m([49m[38;5;124;43m'[39;49m[38;5;124;43m../../../test/fixtures/image_Leopard_slice100.npy[39;49m[38;5;124;43m'[39;49m[43m,[49m[43m [49m[38;5;124;43m'[39;49m[38;5;124;43mrb[39;49m[38;5;124;43m'[39;49m[43m)[49m [38;5;28;01mas[39;00m f:
+[1;32m      3[0m     im [38;5;241m=[39m np[38;5;241m.[39mload(f)
 
-[0;31mModuleNotFoundError[0m: No module named 'sklearn'
+File [0;32m/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/IPython/core/interactiveshell.py:324[0m, in [0;36m_modified_open[0;34m(file, *args, **kwargs)[0m
+[1;32m    317[0m [38;5;28;01mif[39;00m file [38;5;129;01min[39;00m {[38;5;241m0[39m, [38;5;241m1[39m, [38;5;241m2[39m}:
+[1;32m    318[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m(
+[1;32m    319[0m         [38;5;124mf[39m[38;5;124m"[39m[38;5;124mIPython won[39m[38;5;124m'[39m[38;5;124mt let you open fd=[39m[38;5;132;01m{[39;00mfile[38;5;132;01m}[39;00m[38;5;124m by default [39m[38;5;124m"[39m
+[1;32m    320[0m         [38;5;124m"[39m[38;5;124mas it is likely to crash IPython. If you know what you are doing, [39m[38;5;124m"[39m
+[1;32m    321[0m         [38;5;124m"[39m[38;5;124myou can use builtins[39m[38;5;124m'[39m[38;5;124m open.[39m[38;5;124m"[39m
+[1;32m    322[0m     )
+[0;32m--> 324[0m [38;5;28;01mreturn[39;00m [43mio_open[49m[43m([49m[43mfile[49m[43m,[49m[43m [49m[38;5;241;43m*[39;49m[43margs[49m[43m,[49m[43m [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43mkwargs[49m[43m)[49m
+
+[0;31mFileNotFoundError[0m: [Errno 2] No such file or directory: '../../../test/fixtures/image_Leopard_slice100.npy'
 

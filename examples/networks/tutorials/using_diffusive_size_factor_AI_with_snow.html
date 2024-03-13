@@ -2987,161 +2987,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting tensorflow
-  Using cached tensorflow-2.16.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.3 kB)
-Requirement already satisfied: absl-py&gt;=1.0.0 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (2.1.0)
-Requirement already satisfied: astunparse&gt;=1.6.0 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (1.6.3)
-Requirement already satisfied: flatbuffers&gt;=23.5.26 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (24.3.7)
-Requirement already satisfied: gast!=0.5.0,!=0.5.1,!=0.5.2,&gt;=0.2.1 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (0.5.4)
-Requirement already satisfied: google-pasta&gt;=0.1.1 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (0.2.0)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-03-13 03:20:56.018942: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2024-03-13 03:20:56.021996: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2024-03-13 03:20:56.058666: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: h5py&gt;=3.10.0 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (3.10.0)
-Requirement already satisfied: libclang&gt;=13.0.0 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (16.0.6)
-Requirement already satisfied: ml-dtypes~=0.3.1 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (0.3.2)
-Requirement already satisfied: opt-einsum&gt;=2.3.2 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (3.3.0)
-Requirement already satisfied: packaging in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (24.0)
-Requirement already satisfied: protobuf!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,&lt;5.0.0dev,&gt;=3.20.3 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (4.25.3)
-Requirement already satisfied: requests&lt;3,&gt;=2.21.0 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (2.31.0)
-Requirement already satisfied: setuptools in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (65.5.0)
-Requirement already satisfied: six&gt;=1.12.0 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (1.16.0)
-Requirement already satisfied: termcolor&gt;=1.1.0 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (2.4.0)
-Requirement already satisfied: typing-extensions&gt;=3.6.6 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (4.10.0)
-Requirement already satisfied: wrapt&gt;=1.11.0 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (1.16.0)
-Requirement already satisfied: grpcio&lt;2.0,&gt;=1.24.3 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (1.62.1)
-Requirement already satisfied: tensorboard&lt;2.17,&gt;=2.16 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (2.16.2)
-Requirement already satisfied: keras&gt;=3.0.0 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (3.0.5)
-Requirement already satisfied: tensorflow-io-gcs-filesystem&gt;=0.23.1 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (0.36.0)
-Requirement already satisfied: numpy&lt;2.0.0,&gt;=1.23.5 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorflow) (1.26.4)
-Requirement already satisfied: wheel&lt;1.0,&gt;=0.23.0 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from astunparse&gt;=1.6.0-&gt;tensorflow) (0.43.0)
-Requirement already satisfied: rich in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from keras&gt;=3.0.0-&gt;tensorflow) (13.7.1)
-Requirement already satisfied: namex in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from keras&gt;=3.0.0-&gt;tensorflow) (0.0.7)
-Requirement already satisfied: dm-tree in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from keras&gt;=3.0.0-&gt;tensorflow) (0.1.8)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorflow) (3.3.2)
-Requirement already satisfied: idna&lt;4,&gt;=2.5 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorflow) (3.6)
-Requirement already satisfied: urllib3&lt;3,&gt;=1.21.1 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorflow) (2.2.1)
-Requirement already satisfied: certifi&gt;=2017.4.17 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorflow) (2024.2.2)
-Requirement already satisfied: markdown&gt;=2.6.8 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorboard&lt;2.17,&gt;=2.16-&gt;tensorflow) (3.5.2)
-Requirement already satisfied: tensorboard-data-server&lt;0.8.0,&gt;=0.7.0 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorboard&lt;2.17,&gt;=2.16-&gt;tensorflow) (0.7.2)
-Requirement already satisfied: werkzeug&gt;=1.0.1 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from tensorboard&lt;2.17,&gt;=2.16-&gt;tensorflow) (3.0.1)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: MarkupSafe&gt;=2.1.1 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from werkzeug&gt;=1.0.1-&gt;tensorboard&lt;2.17,&gt;=2.16-&gt;tensorflow) (2.1.5)
-Requirement already satisfied: markdown-it-py&gt;=2.2.0 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from rich-&gt;keras&gt;=3.0.0-&gt;tensorflow) (3.0.0)
-Requirement already satisfied: pygments&lt;3.0.0,&gt;=2.13.0 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from rich-&gt;keras&gt;=3.0.0-&gt;tensorflow) (2.17.2)
-Requirement already satisfied: mdurl~=0.1 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from markdown-it-py&gt;=2.2.0-&gt;rich-&gt;keras&gt;=3.0.0-&gt;tensorflow) (0.1.2)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using cached tensorflow-2.16.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (589.8 MB)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Installing collected packages: tensorflow
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successfully installed tensorflow-2.16.1
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> A new release of pip is available: <span class=" -Color -Color-Red">23.0.1</span> -&gt; <span class=" -Color -Color-Green">24.0</span>
-<span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> To update, run: <span class=" -Color -Color-Green">pip install --upgrade pip</span>
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting scikit-learn
-  Using cached scikit_learn-1.4.1.post1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: numpy&lt;2.0,&gt;=1.19.5 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from scikit-learn) (1.26.4)
-Requirement already satisfied: scipy&gt;=1.6.0 in /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages (from scikit-learn) (1.12.0)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting joblib&gt;=1.2.0 (from scikit-learn)
-  Using cached joblib-1.3.2-py3-none-any.whl.metadata (5.4 kB)
-Collecting threadpoolctl&gt;=2.0.0 (from scikit-learn)
-  Using cached threadpoolctl-3.3.0-py3-none-any.whl.metadata (13 kB)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using cached scikit_learn-1.4.1.post1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.1 MB)
-Using cached joblib-1.3.2-py3-none-any.whl (302 kB)
-Using cached threadpoolctl-3.3.0-py3-none-any.whl (17 kB)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Installing collected packages: threadpoolctl, joblib, scikit-learn
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successfully installed joblib-1.3.2 scikit-learn-1.4.1.post1 threadpoolctl-3.3.0
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> A new release of pip is available: <span class=" -Color -Color-Red">23.0.1</span> -&gt; <span class=" -Color -Color-Green">24.0</span>
-<span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> To update, run: <span class=" -Color -Color-Green">pip install --upgrade pip</span>
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Cloning into &#39;sf-model-lib&#39;...
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>remote: Enumerating objects: 36, done.
-remote: Counting objects:  20% (1/5)
-remote: Counting objects:  40% (2/5)
-remote: Counting objects:  60% (3/5)
-remote: Counting objects:  80% (4/5)
-remote: Counting objects: 100% (5/5)
-remote: Counting objects: 100% (5/5), done.
-remote: Compressing objects:  20% (1/5)
-remote: Compressing objects:  40% (2/5)
-remote: Compressing objects:  60% (3/5)
-remote: Compressing objects:  80% (4/5)
-remote: Compressing objects: 100% (5/5)
-remote: Compressing objects: 100% (5/5), done.
-Receiving objects:   2% (1/36)
-Receiving objects:   5% (2/36)
-Receiving objects:   8% (3/36)
-Receiving objects:  11% (4/36)
-Receiving objects:  13% (5/36)
-Receiving objects:  16% (6/36)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36), 59.37 MiB | 59.42 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 59.37 MiB | 59.42 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 122.52 MiB | 61.29 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  22% (8/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  25% (9/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  27% (10/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  30% (11/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  33% (12/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  36% (13/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  38% (14/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  41% (15/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  44% (16/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  47% (17/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  50% (18/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  52% (19/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  55% (20/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  58% (21/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  61% (22/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  63% (23/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  66% (24/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  69% (25/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  72% (26/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  75% (27/36), 153.64 MiB | 61.47 MiB/s
-Receiving objects:  77% (28/36), 153.64 MiB | 61.47 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 182.66 MiB | 60.90 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 245.60 MiB | 61.41 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 245.60 MiB | 61.41 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>^C
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-03-13 03:20:56.805884: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
 </pre></div>
 </div>
 </div>
@@ -3184,14 +3036,63 @@ Receiving objects:  77% (28/36), 153.64 MiB | 61.47 MiB/s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-03-18 21:17:30.719277: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE4.1 SSE4.2
-To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[03:20:58] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
+</pre>
+</div><div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">18</span>
+<span class="g g-Whitespace">     </span><span class="mi">16</span> <span class="n">path_weights</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;model_weights.h5&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">17</span> <span class="n">g_train</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">path_train</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)[</span><span class="s1">&#39;g_train&#39;</span><span class="p">][()]</span>
+<span class="ne">---&gt; </span><span class="mi">18</span> <span class="n">model</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">create_model</span><span class="p">()</span>
+<span class="g g-Whitespace">     </span><span class="mi">19</span> <span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="n">path_weights</span><span class="p">)</span>
+
+<span class="nn">File ~/work/porespy/porespy/src/porespy/networks/_size_factors.py:614,</span> in <span class="ni">create_model</span><span class="nt">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">612</span> <span class="kn">from</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
+<span class="g g-Whitespace">    </span><span class="mi">613</span> <span class="n">model</span> <span class="o">=</span> <span class="n">_resnet3d</span><span class="p">()</span>
+<span class="ne">--&gt; </span><span class="mi">614</span> <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mse&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">),</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mse&#39;</span><span class="p">])</span>
+<span class="g g-Whitespace">    </span><span class="mi">615</span> <span class="k">return</span> <span class="n">model</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/keras/src/optimizers/adam.py:60,</span> in <span class="ni">Adam.__init__</span><span class="nt">(self, learning_rate, beta_1, beta_2, epsilon, amsgrad, weight_decay, clipnorm, clipvalue, global_clipnorm, use_ema, ema_momentum, ema_overwrite_frequency, name, **kwargs)</span>
+<span class="g g-Whitespace">     </span><span class="mi">43</span> <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">44</span>     <span class="bp">self</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">45</span>     <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">58</span>     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">59</span> <span class="p">):</span>
+<span class="ne">---&gt; </span><span class="mi">60</span>     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">61</span>         <span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">62</span>         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">63</span>         <span class="n">weight_decay</span><span class="o">=</span><span class="n">weight_decay</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">64</span>         <span class="n">clipnorm</span><span class="o">=</span><span class="n">clipnorm</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">65</span>         <span class="n">clipvalue</span><span class="o">=</span><span class="n">clipvalue</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">66</span>         <span class="n">global_clipnorm</span><span class="o">=</span><span class="n">global_clipnorm</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">67</span>         <span class="n">use_ema</span><span class="o">=</span><span class="n">use_ema</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">68</span>         <span class="n">ema_momentum</span><span class="o">=</span><span class="n">ema_momentum</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">69</span>         <span class="n">ema_overwrite_frequency</span><span class="o">=</span><span class="n">ema_overwrite_frequency</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">70</span>         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">71</span>     <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">72</span>     <span class="bp">self</span><span class="o">.</span><span class="n">beta_1</span> <span class="o">=</span> <span class="n">beta_1</span>
+<span class="g g-Whitespace">     </span><span class="mi">73</span>     <span class="bp">self</span><span class="o">.</span><span class="n">beta_2</span> <span class="o">=</span> <span class="n">beta_2</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/keras/src/backend/tensorflow/optimizer.py:19,</span> in <span class="ni">TFOptimizer.__init__</span><span class="nt">(self, *args, **kwargs)</span>
+<span class="g g-Whitespace">     </span><span class="mi">18</span> <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="ne">---&gt; </span><span class="mi">19</span>     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">20</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_distribution_strategy</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">get_strategy</span><span class="p">()</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/keras/src/optimizers/base_optimizer.py:38,</span> in <span class="ni">BaseOptimizer.__init__</span><span class="nt">(self, learning_rate, weight_decay, clipnorm, clipvalue, global_clipnorm, use_ema, ema_momentum, ema_overwrite_frequency, loss_scale_factor, gradient_accumulation_steps, name, **kwargs)</span>
+<span class="g g-Whitespace">     </span><span class="mi">34</span>     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">35</span>         <span class="s2">&quot;Argument `decay` is no longer supported and will be ignored.&quot;</span>
+<span class="g g-Whitespace">     </span><span class="mi">36</span>     <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">37</span> <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">38</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Argument(s) not recognized: </span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">40</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">41</span>     <span class="n">name</span> <span class="o">=</span> <span class="n">auto_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="ne">ValueError</span>: Argument(s) not recognized: {&#39;lr&#39;: 0.0001}
 </pre></div>
 </div>
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[21:17:32] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> `lr` is deprecated, please use `learning_rate` instead, or use the legacy      <a href="file:///home/anaconda/mambaforge/envs/tensorflow_env/lib/python3.9/site-packages/keras/optimizers/optimizer_experimental/optimizer.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">optimizer.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/anaconda/mambaforge/envs/tensorflow_env/lib/python3.9/site-packages/keras/optimizers/optimizer_experimental/optimizer.py#106" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">106</span></a>
-<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         optimizer, e.g.,tf.keras.optimizers.legacy.Adam.                               <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
-</pre>
-</div></div>
+</div>
 </div>
 <section id="create-test-image">
 <h2>Create test image<a class="headerlink" href="#create-test-image" title="Link to this heading">#</a></h2>
