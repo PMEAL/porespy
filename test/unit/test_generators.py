@@ -267,7 +267,7 @@ class GeneratorTest():
     def test_random_spheres_2d_contained(self):
         im = np.zeros([100, 100], dtype=int)
         im = ps.generators.random_spheres(
-            im, r=10, volume_fraction=0.5, mode='contained')
+            im, r=10, volume_fraction=0.5, edges='contained')
         im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
         lt = ps.filters.local_thickness(im)
         assert len(np.unique(lt)) == 2
@@ -275,7 +275,7 @@ class GeneratorTest():
     def test_random_spheres_2d_extended(self):
         im = np.zeros([100, 100], dtype=int)
         im = ps.generators.random_spheres(
-            im, r=10, volume_fraction=0.5, mode='extended')
+            im, r=10, volume_fraction=0.5, edges='extended')
         im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
         lt = ps.filters.local_thickness(im)
         assert len(np.unique(lt)) > 2
@@ -285,7 +285,7 @@ class GeneratorTest():
         im = ps.generators.random_spheres(im, r=10,
                                           volume_fraction=0.5,
                                           clearance=2,
-                                          mode='extended')
+                                          edges='extended')
         im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
         lt = ps.filters.local_thickness(im)
         assert len(np.unique(lt)) > 2
@@ -293,14 +293,14 @@ class GeneratorTest():
     def test_random_spheres_3d_contained(self):
         im = np.zeros([100, 100, 100], dtype=int)
         im = ps.generators.random_spheres(
-            im, r=10, volume_fraction=0.5, mode='contained')
+            im, r=10, volume_fraction=0.5, edges='contained')
         lt = ps.filters.local_thickness(im, sizes=[10, 9, 8, 7, 6, 5])
         assert len(np.unique(lt)) == 2
 
     def test_random_spheres_3d_extended(self):
         im = np.zeros([100, 100, 100], dtype=int)
         im = ps.generators.random_spheres(
-            im, r=10, volume_fraction=0.5, mode='extended')
+            im, r=10, volume_fraction=0.5, edges='extended')
         im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
         lt = ps.filters.local_thickness(im, sizes=[10, 9, 8, 7, 6, 5])
         assert len(np.unique(lt)) > 2
@@ -316,15 +316,15 @@ class GeneratorTest():
     def test_random_spheres_preexisting_structure(self):
         im = ps.generators.blobs(shape=[200, 200, 200])
         phi1 = im.sum()/im.size
-        im = ps.generators.random_spheres(im, r=8, n_max=200, mode='contained')
+        im = ps.generators.random_spheres(im, r=8, n_max=200, edges='contained')
         phi2 = im.sum()/im.size
         assert phi2 > phi1
         # Ensure that 3 passes through random_spheres fills up image
-        im = ps.generators.random_spheres(im, r=8, n_max=200, mode='contained')
-        im = ps.generators.random_spheres(im, r=8, n_max=200, mode='contained')
-        im = ps.generators.random_spheres(im, r=8, n_max=200, mode='contained')
+        im = ps.generators.random_spheres(im, r=8, n_max=200, edges='contained')
+        im = ps.generators.random_spheres(im, r=8, n_max=200, edges='contained')
+        im = ps.generators.random_spheres(im, r=8, n_max=200, edges='contained')
         phi1 = im.sum()/im.size
-        im = ps.generators.random_spheres(im, r=8, n_max=200, mode='contained')
+        im = ps.generators.random_spheres(im, r=8, n_max=200, edges='contained')
         phi2 = im.sum()/im.size
         assert phi2 == phi1
 
