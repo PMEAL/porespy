@@ -34,14 +34,13 @@ def random_spheres2(
     im: npt.ArrayLike = None,
     r: int = 5,
     clearance: int = 0,
+    protrusion: int = 0,
     axis: int = 0,
     edges: Literal['contained', 'extended'] = 'contained',
     maxiter: int = 1000,
     phi: float = 1.0,
     seed: float = None,
     smooth: bool = True,
-    value: int = True,
-    return_spheres: bool = True,
 ) -> np.ndarray:
 
     if seed is not None:
@@ -56,9 +55,16 @@ def random_spheres2(
     if smooth:  # Smooth balls are 1 pixel smaller, so increase r
         r = r + 1
 
-    # Deal with edge mode
-    mask = im > 0
+    mask = im > 0  # Find mask of valid points
+    if protrusion > 0:  # Dilate mask
+        dt = edt(~mask)
+        mask = dt <= protrusion
+    elif protrusion < 0:  # Erode mask
+        dt = edt(mask)
+        mask = dt >= abs(protrusion)
+
     if edges == 'contained':
+    # Deal with edge mode
         border = get_border(im.shape, thickness=1, mode='faces')
         mask[border] = False
 
@@ -78,11 +84,8 @@ def random_spheres2(
         maxiter = min(int(np.round(phi*Vbulk/Vsph)), maxiter)
 
     # Finally run it
-    if return_spheres:
-        im_new = np.zeros_like(im).astype(type(value))
-    else:
-        im_new = np.copy(im).astype(type(value))
-    im_new, count = _do_packing(im_new, mask, q, r, value, clearance, smooth, maxiter)
+    im_new = np.zeros_like(im)
+    im_new, count = _do_packing(im_new, mask, q, r, 1, clearance, smooth, maxiter)
     logger.debug(f'A total of {count} spheres were added')
     im_new = np.swapaxes(im_new, 0, axis)
     return im_new
@@ -93,14 +96,13 @@ def pseudo_gravity_packing(
     im: npt.ArrayLike = None,
     r: int = 5,
     clearance: int = 0,
+    protrusion: int = 0,
     axis: int = 0,
     edges: Literal['contained', 'extended'] = 'contained',
     maxiter: int = 1000,
     phi: float = 1.0,
     seed: int = None,
     smooth: bool = True,
-    value: int = 1,
-    return_spheres: bool = True,
 ) -> np.ndarray:
     r"""
     Iteratively inserts spheres at the lowest accessible point in an image,
@@ -121,6 +123,9 @@ def pseudo_gravity_packing(
     clearance : int (default is 0)
         The amount space to add between neighboring spheres. The value can be
         negative for overlapping spheres, but ``abs(clearance) > r``.
+    protrusion : int (optional, default=0)
+        The amount that spheres are allowed to protrude beyond the active phase.
+        A negative number will create clearance between spheres and the background.
     axis : int (default is 0)
         The axis along which gravity acts, directed from the end (-1) towards the
         start (0).
@@ -191,15 +196,24 @@ def pseudo_gravity_packing(
     if smooth:  # If smooth spheres are used, increase r to compensate
         r = r + 1
 
+    # Shrink or grow mask to allow for clearance
+    mask = im > 0  # Find mask of valid points
+    if protrusion > 0:  # Dilate mask
+        dt = edt(~mask)
+        mask = dt <= protrusion
+    elif protrusion < 0:  # Erode mask
+        dt = edt(mask)
+        mask = dt >= abs(protrusion)
+
     # Deal with edges
     if edges == 'contained':
-        im_padded = np.pad(im, pad_width=1, mode='constant', constant_values=False)
+        im_padded = np.pad(mask, pad_width=1, mode='constant', constant_values=False)
         if smooth:
             mask = unpad(edt(im_padded) >= r, 1)
         else:
             mask = unpad(edt(im_padded) > r, 1)
     else:
-        mask = edt(im) > r
+        mask = edt(mask) > r
 
     # Finalize the mask of valid insertion points
     inlets = np.zeros_like(im)
@@ -223,11 +237,8 @@ def pseudo_gravity_packing(
         maxiter = min(int(np.round(phi*Vbulk/Vsph)), maxiter)
 
     # Finally insert spheres
-    if return_spheres:
-        im_new = np.ones_like(im).astype(type(value))*(1 - (value == 1))
-    else:
-        im_new = np.copy(im).astype(type(value))
-    im_new, count = _do_packing(im_new, mask, q, r, value, clearance, smooth, maxiter)
+    im_new = np.zeros_like(im)
+    im_new, count = _do_packing(im_new, mask, q, r, 1, clearance, smooth, maxiter)
     logger.debug(f'A total of {count} spheres were added')
     im_new = np.swapaxes(im_new, 0, axis)
     return im_new
@@ -245,8 +256,6 @@ def pseudo_electrostatic_packing(
     maxiter: int = 1000,
     seed: int = None,
     smooth: bool = True,
-    value: int = 1,
-    return_spheres: bool = True,
 ):
     r"""
     Iterativley inserts spheres as close to the given sites as possible.
@@ -273,6 +282,7 @@ def pseudo_electrostatic_packing(
         acceptable to create overlaps, but ``abs(clearance) < r``.
     protrusion : int (optional, default=0)
         The amount that spheres are allowed to protrude beyond the active phase.
+        A negative number will create clearance between spheres and the background.
     maxiter : int (optional, default=1000)
         The maximum number of spheres to insert.
     phi : float (default is 1.0)
@@ -372,11 +382,8 @@ def pseudo_electrostatic_packing(
         maxiter = min(int(np.round(phi*Vbulk/Vsph)), maxiter)
 
     # Finally run it
-    if return_spheres:
-        im_new = np.ones_like(im).astype(type(value))*(1 - (value == 1))
-    else:
-        im_new = np.copy(im).astype(type(value))
-    im_new, count = _do_packing(im_new, mask, q, r, value, clearance, smooth, maxiter)
+    im_new = np.zeros_like(im)
+    im_new, count = _do_packing(im_new, mask, q, r, 1, clearance, smooth, maxiter)
     logger.debug(f'A total of {count} spheres were added')
     return im_new
 
@@ -460,9 +467,7 @@ if __name__ == "__main__":
             seed=0,
             phi=.3,
             smooth=True,
-            value=2,
-            return_spheres=True,
-        )
+        )*2
         im2 = ps.generators.pseudo_electrostatic_packing(
             im=blobs,
             sites=im == 2,
@@ -473,9 +478,7 @@ if __name__ == "__main__":
             seed=0,
             phi=1.0,
             smooth=True,
-            value=3,
-            return_spheres=True,
-        )
+        )*3
         ax[0][1].imshow(im + im2 + blobs, origin='lower')
 
 # %% Gravity packing
@@ -487,66 +490,58 @@ if __name__ == "__main__":
             edges='contained',
             phi=.1,
             smooth=False,
-            value=-4,
-            return_spheres=False,
-        )
+        )*1
         im = pseudo_gravity_packing(
-            im=im,
+            im=im == 0,
             r=8,
-            clearance=0,
+            clearance=4,
+            protrusion=-4,
             edges='extended',
             seed=0,
             phi=0.25,
             maxiter=1000,
             smooth=False,
-            value=-3,
-            return_spheres=False,
-        )
+        )*2 + im
         im = pseudo_gravity_packing(
-            im=im,
+            im=im == 0,
             r=12,
-            clearance=2,
+            clearance=4,
+            protrusion=-4,
             edges='contained',
             seed=0,
             smooth=True,
-            value=-2,
-            return_spheres=False,
-        )
+        )*3 + im
         ax[0][2].imshow(im, origin='lower')
 
 # %% Random packing
-    if 0:
-        fig, ax = plt.subplots(1, 3)
+    if 1:
         im = random_spheres2(
             im=np.ones(shape, dtype=bool),
             r=16,
-            clearance=0,
+            clearance=5,
             edges='extended',
             seed=0,
             phi=.25,
             smooth=False,
-            value=-4,
-        )
-        ax[0].imshow(im, origin='lower')
+        )*3
         im = random_spheres2(
-            im=im,
+            im=im == 0,
             r=8,
-            clearance=0,
+            clearance=5,
+            protrusion=5,
             edges='contained',
             seed=0,
             phi=0.1,
             maxiter=1000,
             smooth=False,
-            value=-3,
-        )
-        ax[1].imshow(im, origin='lower')
+        )*2 + im
         im = random_spheres2(
-            im=im,
+            im=im == 0,
             r=12,
-            clearance=0,
+            clearance=5,
+            protrusion=-5,
             edges='contained',
             seed=0,
             smooth=True,
-            value=-2,
-        )
-        ax[2].imshow(im, origin='lower')
+        )*1 + im
+        ax[1][0].imshow(im, origin='lower')
