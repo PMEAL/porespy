@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.ndimage as spim
+from numba import njit, prange
 # from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 
@@ -142,11 +143,25 @@ def sem(im, axis=0):  # pragma: no cover
         im = np.transpose(im, axes=[1, 0, 2])
     if axis == 2:
         im = np.transpose(im, axes=[2, 1, 0])
-    t = im.shape[0]
-    depth = np.reshape(np.arange(0, t), [t, 1, 1])
-    im = im*depth
-    im = np.amax(im, axis=0)
-    return im
+    return _sem_parallel(im)
+
+
+@njit(parallel=True)
+def _sem_parallel(im):  # pragma: no cover
+    r"""
+    This function is called `sem` to compute the height of the first 
+    voxel in each x, y column. It uses numba for speed, and is
+    parallelized.
+    """
+    shape=im.shape
+    depth = np.zeros(shape[:2])
+    for x in prange(shape[0]):
+        for y in prange(shape[1]):
+            for z in range(shape[2]-1, 0, -1):
+                if not im[x][y][z]:
+                    depth[x][y]=z
+                    break
+    return depth
 
 
 def xray(im, axis=0):  # pragma: no cover
