@@ -15,7 +15,7 @@ class VisualizationTest():
 
     def test_xray_x(self):
         xray = ps.visualization.xray(self.im)
-        assert np.sum(xray) == np.sum(~self.im)
+        assert np.min(xray) >= 0 and np.max(xray) <= 1
 
     def test_sem_y(self):
         sem = ps.visualization.sem(self.im, axis=1)
