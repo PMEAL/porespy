@@ -185,21 +185,24 @@
                 
   <h1>Source code for porespy.generators._pseudo_packings</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">heapq</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
+<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
 <span class="kn">from</span> <span class="nn">edt</span> <span class="kn">import</span> <span class="n">edt</span>
 <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">disk</span><span class="p">,</span> <span class="n">ball</span>
 <span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span><span class="p">,</span> <span class="n">ps_round</span><span class="p">,</span> <span class="n">get_border</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_insert_disks_at_points</span>
-<span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">trim_disconnected_blobs</span><span class="p">,</span> <span class="n">fftmorphology</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span><span class="p">,</span> <span class="n">ps_round</span><span class="p">,</span> <span class="n">get_border</span><span class="p">,</span> <span class="n">unpad</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_insert_disk_at_point</span>
+<span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">trim_disconnected_blobs</span>
 <span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">List</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;pseudo_gravity_packing&quot;</span><span class="p">,</span>
     <span class="s2">&quot;pseudo_electrostatic_packing&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;random_spheres2&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -212,36 +215,118 @@
     <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="pseudo_gravity_packing">
-<a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.pseudo_gravity_packing.html#porespy.generators.pseudo_gravity_packing">[docs]</a>
-<span class="k">def</span> <span class="nf">pseudo_gravity_packing</span><span class="p">(</span>
-    <span class="n">im</span><span class="p">,</span>
+<span class="k">def</span> <span class="nf">random_spheres2</span><span class="p">(</span>
+    <span class="n">shape</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">r</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
     <span class="n">clearance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">protrusion</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">edges</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;contained&#39;</span><span class="p">,</span> <span class="s1">&#39;extended&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;contained&#39;</span><span class="p">,</span>
     <span class="n">maxiter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">phi</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="n">seed</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">):</span>
+    <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_set_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>  <span class="c1"># Initialize rng so numba sees it</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>  <span class="c1"># Also initialize numpys rng</span>
+
+    <span class="k">if</span> <span class="n">im</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># If shape is given instead of im</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>  <span class="c1"># Move &quot;axis&quot; to x position for processing</span>
+
+    <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>  <span class="c1"># Smooth balls are 1 pixel smaller, so increase r</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">r</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># Find mask of valid points</span>
+    <span class="k">if</span> <span class="n">protrusion</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Dilate mask</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&lt;=</span> <span class="n">protrusion</span>
+    <span class="k">elif</span> <span class="n">protrusion</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Erode mask</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">protrusion</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">edges</span> <span class="o">==</span> <span class="s1">&#39;contained&#39;</span><span class="p">:</span>
+    <span class="c1"># Deal with edge mode</span>
+        <span class="n">border</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;faces&#39;</span><span class="p">)</span>
+        <span class="n">mask</span><span class="p">[</span><span class="n">border</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># Generate mask of valid insertion points</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">mask</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">r</span>
+
+    <span class="c1"># Initialize the queue</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">size</span><span class="p">)[</span><span class="n">mask</span><span class="o">.</span><span class="n">flatten</span><span class="p">()]</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)))</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">inds</span><span class="p">[</span><span class="n">order</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="c1"># Compute maxiter</span>
+    <span class="k">if</span> <span class="n">phi</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="n">Vsph</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="mi">3</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">r</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">Vbulk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">maxiter</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">phi</span><span class="o">*</span><span class="n">Vbulk</span><span class="o">/</span><span class="n">Vsph</span><span class="p">)),</span> <span class="n">maxiter</span><span class="p">)</span>
+
+    <span class="c1"># Finally run it</span>
+    <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">im_new</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">_do_packing</span><span class="p">(</span><span class="n">im_new</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">clearance</span><span class="p">,</span> <span class="n">smooth</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;A total of </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1"> spheres were added&#39;</span><span class="p">)</span>
+    <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im_new</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">im_new</span>
+
+
+<div class="viewcode-block" id="pseudo_gravity_packing">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.pseudo_gravity_packing.html#porespy.generators.pseudo_gravity_packing">[docs]</a>
+<span class="k">def</span> <span class="nf">pseudo_gravity_packing</span><span class="p">(</span>
+    <span class="n">shape</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">r</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">clearance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">protrusion</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">edges</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;contained&#39;</span><span class="p">,</span> <span class="s1">&#39;extended&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;contained&#39;</span><span class="p">,</span>
+    <span class="n">maxiter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">phi</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iteratively inserts spheres at the lowest accessible point in an image,</span>
 <span class="sd">    mimicking a gravity packing.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    shape : list</span>
+<span class="sd">        The shape of the image to create.  This is equivalent to passing an array</span>
+<span class="sd">        of `True` values of the desired size to `im`.</span>
 <span class="sd">    im : ndarray</span>
-<span class="sd">        Image with ``True`` values indicating the phase where spheres should be</span>
-<span class="sd">        inserted. A common option would be a cylindrical plug which would</span>
-<span class="sd">        result in a tube filled with beads.</span>
+<span class="sd">        Image with values &gt; 0 indicating the voxels where spheres should be</span>
+<span class="sd">        inserted. This can be used to insert spheres into an image that already</span>
+<span class="sd">        has some features (e.g. half filled with larger spheres, or a cylindrical</span>
+<span class="sd">        plug).</span>
 <span class="sd">    r : int</span>
 <span class="sd">        The radius of the spheres to be added</span>
 <span class="sd">    clearance : int (default is 0)</span>
 <span class="sd">        The amount space to add between neighboring spheres. The value can be</span>
 <span class="sd">        negative for overlapping spheres, but ``abs(clearance) &gt; r``.</span>
+<span class="sd">    protrusion : int (optional, default=0)</span>
+<span class="sd">        The amount that spheres are allowed to protrude beyond the active phase.</span>
+<span class="sd">        A negative number will create clearance between spheres and the background.</span>
 <span class="sd">    axis : int (default is 0)</span>
-<span class="sd">        The axis along which gravity acts.</span>
+<span class="sd">        The axis along which gravity acts, directed from the end (-1) towards the</span>
+<span class="sd">        start (0).</span>
+<span class="sd">    phi : float (default is 1.0)</span>
+<span class="sd">        The &quot;solid volume fraction&quot; of spheres to add (considering spheres as solid).</span>
+<span class="sd">        This is used to calculate the discrete number of spheres, *N*, required</span>
+<span class="sd">        based on the total volume of the image. If *N* is less than `maxiter` then</span>
+<span class="sd">        `maxiter` will be set to *N*. Note that this number is not quite accurate</span>
+<span class="sd">        when the `edges=&#39;extended&#39;` since it&#39;s not possible to know how much of the</span>
+<span class="sd">        sphere will be cutoff by the edge.</span>
 <span class="sd">    maxiter : int (default is 1000)</span>
-<span class="sd">        The maximum number of spheres to add</span>
+<span class="sd">        The maximum number of spheres to add. This places a hard limit on the number</span>
+<span class="sd">        of spheres even if `phi` is specified.</span>
 <span class="sd">    edges : string (default is &#39;contained&#39;)</span>
 <span class="sd">        Controls how spheres at the edges of the image are handled.  Options are:</span>
 
@@ -250,7 +335,7 @@
 <span class="sd">        ============ ================================================================</span>
 <span class="sd">        &#39;contained&#39;  Spheres are all completely within the image</span>
 <span class="sd">        &#39;extended&#39;   Spheres are allowed to extend beyond the edge of the</span>
-<span class="sd">                     image.  In this mode the volume fraction will be less that</span>
+<span class="sd">                     image. In this mode the volume fraction will be less that</span>
 <span class="sd">                     requested since some spheres extend beyond the image, but their</span>
 <span class="sd">                     entire volume is counted as added for computational efficiency.</span>
 <span class="sd">        ============ ================================================================</span>
@@ -261,11 +346,13 @@
 <span class="sd">        has no effect. To get a repeatable image, the seed must be passed to the</span>
 <span class="sd">        function so it can be initialized the way ``numba`` requires. The default</span>
 <span class="sd">        is ``None``, which means each call will produce a new realization.</span>
+<span class="sd">    smooth : bool, default = `True`</span>
+<span class="sd">        Controls whether or not the spheres have the small pip each face.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    spheres : ndarray</span>
-<span class="sd">        An image the same size as ``im`` with spheres indicated by ``True``.</span>
+<span class="sd">        An image the same size as ``im`` with spheres indicated by ``False``.</span>
 <span class="sd">        The spheres are only inserted at locations that are accessible</span>
 <span class="sd">        from the top of the image.</span>
 
@@ -282,79 +369,114 @@
         <span class="n">_set_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
         <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 
-    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
-    <span class="n">im_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">r</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="n">strel</span> <span class="o">=</span> <span class="n">disk</span> <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">ball</span>
-    <span class="n">sites</span> <span class="o">=</span> <span class="n">fftmorphology</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="n">strel</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;erosion&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">im</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># If shape was given, generate empty im</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>  <span class="c1"># Move specified axis to 0 position</span>
+
+    <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>  <span class="c1"># If smooth spheres are used, increase r to compensate</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">r</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># Shrink or grow mask to allow for clearance</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># Find mask of valid points</span>
+    <span class="k">if</span> <span class="n">protrusion</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Dilate mask</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&lt;=</span> <span class="n">protrusion</span>
+    <span class="k">elif</span> <span class="n">protrusion</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Erode mask</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">protrusion</span><span class="p">)</span>
+
+    <span class="c1"># Deal with edges</span>
+    <span class="k">if</span> <span class="n">edges</span> <span class="o">==</span> <span class="s1">&#39;contained&#39;</span><span class="p">:</span>
+        <span class="n">im_padded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">unpad</span><span class="p">(</span><span class="n">edt</span><span class="p">(</span><span class="n">im_padded</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">r</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">unpad</span><span class="p">(</span><span class="n">edt</span><span class="p">(</span><span class="n">im_padded</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">r</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">r</span>
+
+    <span class="c1"># Finalize the mask of valid insertion points</span>
     <span class="n">inlets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-    <span class="n">inlets</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">sites</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">sites</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">)</span>
-    <span class="n">x_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sites</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-    <span class="n">n</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">maxiter</span><span class="p">),</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sites</span><span class="p">[</span><span class="n">x_min</span><span class="p">:</span><span class="n">x_min</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sites</span><span class="p">[</span><span class="n">x_min</span><span class="p">:</span><span class="n">x_min</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">break</span>
-        <span class="n">options</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">choice</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">cen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="n">options</span><span class="p">[</span><span class="n">choice</span><span class="p">]]</span> <span class="o">+</span> <span class="n">x_min</span><span class="p">,</span>
-                             <span class="n">y</span><span class="p">[</span><span class="n">options</span><span class="p">[</span><span class="n">choice</span><span class="p">]]])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">cen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="n">options</span><span class="p">[</span><span class="n">choice</span><span class="p">]]</span> <span class="o">+</span> <span class="n">x_min</span><span class="p">,</span>
-                             <span class="n">y</span><span class="p">[</span><span class="n">options</span><span class="p">[</span><span class="n">choice</span><span class="p">]],</span>
-                             <span class="n">z</span><span class="p">[</span><span class="n">options</span><span class="p">[</span><span class="n">choice</span><span class="p">]]])</span>
-        <span class="n">im_temp</span> <span class="o">=</span> <span class="n">_insert_disks_at_points</span><span class="p">(</span><span class="n">im_temp</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="n">cen</span><span class="p">,</span>
-                                          <span class="n">radii</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span> <span class="o">-</span> <span class="n">clearance</span><span class="p">]),</span>
-                                          <span class="n">v</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">sites</span> <span class="o">=</span> <span class="n">_insert_disks_at_points</span><span class="p">(</span><span class="n">sites</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="n">cen</span><span class="p">,</span>
-                                        <span class="n">radii</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="p">]),</span>
-                                        <span class="n">v</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                                        <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">x_min</span> <span class="o">+=</span> <span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;A total of </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s1"> spheres were added&#39;</span><span class="p">)</span>
-    <span class="n">im_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im_temp</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">im_temp</span></div>
+    <span class="n">inlets</span><span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">:,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">ball</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">disk</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="c1"># Generate elevation values to initialize queue</span>
+    <span class="kn">from</span> <span class="nn">porespy.generators</span> <span class="kn">import</span> <span class="n">ramp</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">)[</span><span class="n">mask</span><span class="o">.</span><span class="n">flatten</span><span class="p">()]</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">ramp</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">inlet</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">outlet</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="n">mask</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">vals</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="n">mask</span><span class="o">.</span><span class="n">flatten</span><span class="p">()]</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">_randomized_argsort</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">vals</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">inds</span><span class="p">[</span><span class="n">order</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="c1"># Compute maxiter</span>
+    <span class="k">if</span> <span class="n">phi</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="n">Vsph</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="mi">3</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">r</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">Vbulk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">maxiter</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">phi</span><span class="o">*</span><span class="n">Vbulk</span><span class="o">/</span><span class="n">Vsph</span><span class="p">)),</span> <span class="n">maxiter</span><span class="p">)</span>
+
+    <span class="c1"># Finally insert spheres</span>
+    <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">im_new</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">_do_packing</span><span class="p">(</span><span class="n">im_new</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">clearance</span><span class="p">,</span> <span class="n">smooth</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;A total of </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1"> spheres were added&#39;</span><span class="p">)</span>
+    <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im_new</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">im_new</span></div>
 
 
 
 <div class="viewcode-block" id="pseudo_electrostatic_packing">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.pseudo_electrostatic_packing.html#porespy.generators.pseudo_electrostatic_packing">[docs]</a>
 <span class="k">def</span> <span class="nf">pseudo_electrostatic_packing</span><span class="p">(</span>
-    <span class="n">im</span><span class="p">,</span>
+    <span class="n">shape</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">r</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
     <span class="n">sites</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">clearance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">protrusion</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">edges</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;extended&#39;</span><span class="p">,</span> <span class="s1">&#39;contained&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;extended&#39;</span><span class="p">,</span>
+    <span class="n">phi</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="n">maxiter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
-    <span class="n">seed</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">compactness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iterativley inserts spheres as close to the given sites as possible.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    shape : list</span>
+<span class="sd">        The shape of the image to create.  This is equivalent to passing an array</span>
+<span class="sd">        of `True` values of the desired size to `im`.</span>
 <span class="sd">    im : ndarray</span>
-<span class="sd">        Image with ``True`` values indicating the phase where spheres should be</span>
-<span class="sd">        inserted.</span>
+<span class="sd">        Image with values &gt; 0 indicating the voxels where spheres should be</span>
+<span class="sd">        inserted. This can be used to insert spheres into an image that already</span>
+<span class="sd">        has some features (e.g. half filled with larger spheres, or a cylindrical</span>
+<span class="sd">        plug).</span>
 <span class="sd">    r : int</span>
 <span class="sd">        Radius of spheres to insert.</span>
 <span class="sd">    sites : ndarray (optional)</span>
 <span class="sd">        An image with ``True`` values indicating the electrostatic attraction</span>
-<span class="sd">        points.</span>
-<span class="sd">        If this is not given then the peaks in the distance transform are used.</span>
+<span class="sd">        points. If this is not given then the peaks in the distance transform of</span>
+<span class="sd">        `im` are used, which corresponds to the center of the image for a blank</span>
+<span class="sd">        input.</span>
 <span class="sd">    clearance : int (optional, default=0)</span>
 <span class="sd">        The amount of space to put between each sphere. Negative values are</span>
 <span class="sd">        acceptable to create overlaps, but ``abs(clearance) &lt; r``.</span>
 <span class="sd">    protrusion : int (optional, default=0)</span>
 <span class="sd">        The amount that spheres are allowed to protrude beyond the active phase.</span>
+<span class="sd">        A negative number will create clearance between spheres and the background.</span>
 <span class="sd">    maxiter : int (optional, default=1000)</span>
 <span class="sd">        The maximum number of spheres to insert.</span>
+<span class="sd">    phi : float (default is 1.0)</span>
+<span class="sd">        The &quot;solid volume fraction&quot; of spheres to add (considering spheres as solid).</span>
+<span class="sd">        This is used to calculate the discrete number of spheres, *N*, required</span>
+<span class="sd">        based on the total volume of the image. If *N* is less than `maxiter` then</span>
+<span class="sd">        `maxiter` will be set to *N*. Note that this number is not quite accurate</span>
+<span class="sd">        when the `edges=&#39;extended&#39;` since it&#39;s not possible to know how much of the</span>
+<span class="sd">        sphere will be cutoff by the edge.</span>
 <span class="sd">    edges : string (default is &#39;contained&#39;)</span>
 <span class="sd">        Controls how spheres at the edges of the image are handled.  Options are:</span>
 
@@ -374,6 +496,10 @@
 <span class="sd">        has no effect. To get a repeatable image, the seed must be passed to the</span>
 <span class="sd">        function so it can be initialized the way ``numba`` requires. The default</span>
 <span class="sd">        is ``None``, which means each call will produce a new realization.</span>
+<span class="sd">    compactness : float</span>
+<span class="sd">        Controls how tightly the spheres are grouped together. A value of 1.0</span>
+<span class="sd">        (default) results in the tighest possible grouping while values &lt; 1.0</span>
+<span class="sd">        give more loosely or imperfectly packed spheres.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -391,67 +517,218 @@
         <span class="n">_set_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
         <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 
-    <span class="n">im_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="n">dt_im</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">sites</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">dt2</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="n">dt_im</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-        <span class="n">strel</span> <span class="o">=</span> <span class="n">ps_round</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">sites</span> <span class="o">=</span> <span class="p">(</span><span class="n">spim</span><span class="o">.</span><span class="n">maximum_filter</span><span class="p">(</span><span class="n">dt2</span><span class="p">,</span> <span class="n">footprint</span><span class="o">=</span><span class="n">strel</span><span class="p">)</span> <span class="o">==</span> <span class="n">dt2</span><span class="p">)</span><span class="o">*</span><span class="n">im</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">sites</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-    <span class="n">sites</span> <span class="o">=</span> <span class="p">(</span><span class="n">sites</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">dt_im</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="n">protrusion</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">dt_im</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
-        <span class="n">dtmax</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dt_im</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">dtmax</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-    <span class="n">dt</span><span class="p">[</span><span class="o">~</span><span class="n">sites</span><span class="p">]</span> <span class="o">=</span> <span class="n">dtmax</span>
-    <span class="k">if</span> <span class="n">edges</span> <span class="o">==</span> <span class="s1">&#39;contained&#39;</span><span class="p">:</span>
-        <span class="n">borders</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;faces&#39;</span><span class="p">)</span>
-        <span class="n">dt</span><span class="p">[</span><span class="n">borders</span><span class="p">]</span> <span class="o">=</span> <span class="n">dtmax</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span>
-    <span class="c1"># Get initial options</span>
-    <span class="n">options</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dt</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">maxiter</span><span class="p">),</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
-        <span class="n">hits</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">dtmax</span>
-        <span class="k">if</span> <span class="n">hits</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">==</span> <span class="n">dtmax</span><span class="p">:</span>
-                <span class="k">break</span>
-            <span class="n">options</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dt</span> <span class="o">==</span> <span class="n">dt</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
-            <span class="n">hits</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">dtmax</span>
-        <span class="k">if</span> <span class="n">hits</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">break</span>
-        <span class="n">choice</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">hits</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">cen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">options</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">choice</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
-        <span class="n">im_temp</span> <span class="o">=</span> <span class="n">_insert_disks_at_points</span><span class="p">(</span><span class="n">im_temp</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="n">cen</span><span class="p">,</span>
-                                          <span class="n">radii</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="o">-</span><span class="n">clearance</span><span class="p">]),</span>
-                                          <span class="n">v</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                          <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">_insert_disks_at_points</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="n">cen</span><span class="p">,</span>
-                                     <span class="n">radii</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="o">-</span><span class="n">clearance</span><span class="p">]),</span>
-                                     <span class="n">v</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">dtmax</span><span class="p">),</span>
-                                     <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">im_temp</span></div>
+    <span class="k">if</span> <span class="n">im</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># If shape was given, generate empty im</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>  <span class="c1"># If smooth spheres are used, increase r to compensate</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">r</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># Find mask of valid points</span>
+    <span class="k">if</span> <span class="n">protrusion</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Dilate mask</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&lt;=</span> <span class="n">protrusion</span>
+    <span class="k">elif</span> <span class="n">protrusion</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Erode mask</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">protrusion</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">edges</span> <span class="o">==</span> <span class="s1">&#39;contained&#39;</span><span class="p">:</span>
+        <span class="n">borders</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;faces&#39;</span><span class="p">)</span>
+        <span class="n">mask</span><span class="p">[</span><span class="n">borders</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">sites</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">strel</span> <span class="o">=</span> <span class="n">ps_round</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">sites</span> <span class="o">=</span> <span class="p">(</span><span class="n">spim</span><span class="o">.</span><span class="n">maximum_filter</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">footprint</span><span class="o">=</span><span class="n">strel</span><span class="p">)</span> <span class="o">==</span> <span class="n">dt</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">mask</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">dt</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">):</span>  <span class="c1"># In case above method failed.</span>
+            <span class="n">sites</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+            <span class="n">inds</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+            <span class="n">sites</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">dt2</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="o">~</span><span class="n">sites</span><span class="p">)</span>  <span class="c1"># Where spheres are attracted to</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">mask</span> <span class="o">+</span> <span class="n">sites</span><span class="p">)</span>  <span class="c1"># Where spheres can fit</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span> <span class="o">*</span> <span class="p">(</span><span class="n">dt2</span> <span class="o">&gt;</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">dt</span> <span class="o">&gt;</span> <span class="n">r</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="c1"># Initialize queue</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">)[</span><span class="n">mask</span><span class="o">.</span><span class="n">flatten</span><span class="p">()]</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">dt2</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dt2</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="nb">int</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">compactness</span><span class="p">)))</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">_randomized_argsort</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">vals</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">inds</span><span class="p">[</span><span class="n">order</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="c1"># Compute maxiter</span>
+    <span class="k">if</span> <span class="n">phi</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="n">Vsph</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="mi">3</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">r</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">Vbulk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">maxiter</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">phi</span><span class="o">*</span><span class="n">Vbulk</span><span class="o">/</span><span class="n">Vsph</span><span class="p">)),</span> <span class="n">maxiter</span><span class="p">)</span>
+
+    <span class="c1"># Finally run it</span>
+    <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">im_new</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">_do_packing</span><span class="p">(</span><span class="n">im_new</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">clearance</span><span class="p">,</span> <span class="n">smooth</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;A total of </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1"> spheres were added&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">im_new</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_randomized_argsort</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A utility function to take a sorted list and randomize the order of the elements</span>
+<span class="sd">    with the same value.  So if the list is [21, 44, 16, 21, 44, 37], np.argsort</span>
+<span class="sd">    would return [2, 0, 3, 5, 1, 4], this function will return and alternative set of</span>
+<span class="sd">    args [2, 0|3, 3|0, 1|5, 5|1, 4].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="n">order</span><span class="p">],</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(([</span><span class="mi">0</span><span class="p">],</span> <span class="n">counts</span><span class="p">)))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">orig_order</span> <span class="o">=</span> <span class="n">order</span><span class="p">[</span><span class="n">counts</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">counts</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">new_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">orig_order</span><span class="p">)</span>
+        <span class="n">order</span><span class="p">[</span><span class="n">counts</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">counts</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">new_order</span>
+    <span class="k">return</span> <span class="n">order</span>
+
+
+<span class="c1"># @njit</span>
+<span class="k">def</span> <span class="nf">_do_packing</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">clearance</span><span class="p">,</span> <span class="n">smooth</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">):</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">q</span><span class="p">)):</span>
+        <span class="n">cen</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:])</span>
+        <span class="k">if</span> <span class="n">mask</span><span class="p">[</span><span class="n">cen</span><span class="p">]:</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">_insert_disk_at_point</span><span class="p">(</span>
+                <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+                <span class="n">coords</span><span class="o">=</span><span class="n">cen</span><span class="p">,</span>
+                <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span>
+                <span class="n">v</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">_insert_disk_at_point</span><span class="p">(</span>
+                <span class="n">im</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span>
+                <span class="n">coords</span><span class="o">=</span><span class="n">cen</span><span class="p">,</span>
+                <span class="n">r</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">,</span>
+                <span class="n">v</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="n">maxiter</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">im</span><span class="p">,</span> <span class="n">count</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
     <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+    <span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
     <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">]</span>
 
-    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">pseudo_gravity_packing</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">),</span>
-                                              <span class="n">r</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">clearance</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-                                              <span class="n">edges</span><span class="o">=</span><span class="s1">&#39;contained&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
 
-    <span class="n">sites</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="n">sites</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">pseudo_electrostatic_packing</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span>
-                                                               <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">),</span>
-                                                    <span class="n">r</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sites</span><span class="o">=</span><span class="n">sites</span><span class="p">,</span>
-                                                    <span class="n">clearance</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-                                                    <span class="n">maxiter</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
+<span class="c1"># %% Electrostatic packing</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="k">if</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">sites</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">sites</span><span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">pseudo_electrostatic_packing</span><span class="p">(</span>
+            <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">],</span>
+            <span class="n">r</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+            <span class="n">sites</span><span class="o">=</span><span class="n">sites</span><span class="p">,</span>
+            <span class="n">maxiter</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+            <span class="n">edges</span><span class="o">=</span><span class="s1">&#39;contained&#39;</span><span class="p">,</span>
+            <span class="n">clearance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">compactness</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="k">if</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">blobs</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">([</span><span class="mi">400</span><span class="p">,</span> <span class="mi">400</span><span class="p">],</span> <span class="n">porosity</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">pseudo_electrostatic_packing</span><span class="p">(</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">blobs</span><span class="p">,</span>
+            <span class="n">r</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">clearance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">protrusion</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">edges</span><span class="o">=</span><span class="s1">&#39;contained&#39;</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">phi</span><span class="o">=</span><span class="mf">.3</span><span class="p">,</span>
+            <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">*</span><span class="mi">2</span>
+        <span class="n">im2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">pseudo_electrostatic_packing</span><span class="p">(</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">blobs</span><span class="p">,</span>
+            <span class="n">sites</span><span class="o">=</span><span class="n">im</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="n">r</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="n">clearance</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">protrusion</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">edges</span><span class="o">=</span><span class="s1">&#39;extended&#39;</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">phi</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+            <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">*</span><span class="mi">3</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span> <span class="o">+</span> <span class="n">im2</span> <span class="o">+</span> <span class="n">blobs</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
+
+<span class="c1"># %% Gravity packing</span>
+    <span class="k">if</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">pseudo_gravity_packing</span><span class="p">(</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">),</span>
+            <span class="n">r</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+            <span class="n">clearance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">edges</span><span class="o">=</span><span class="s1">&#39;contained&#39;</span><span class="p">,</span>
+            <span class="n">phi</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span>
+            <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">*</span><span class="mi">1</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">pseudo_gravity_packing</span><span class="p">(</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+            <span class="n">clearance</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+            <span class="n">protrusion</span><span class="o">=-</span><span class="mi">4</span><span class="p">,</span>
+            <span class="n">edges</span><span class="o">=</span><span class="s1">&#39;extended&#39;</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">phi</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
+            <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+            <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="n">im</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">pseudo_gravity_packing</span><span class="p">(</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">r</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+            <span class="n">clearance</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+            <span class="n">protrusion</span><span class="o">=-</span><span class="mi">4</span><span class="p">,</span>
+            <span class="n">edges</span><span class="o">=</span><span class="s1">&#39;contained&#39;</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">*</span><span class="mi">3</span> <span class="o">+</span> <span class="n">im</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
+
+<span class="c1"># %% Random packing</span>
+    <span class="k">if</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">random_spheres2</span><span class="p">(</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">),</span>
+            <span class="n">r</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+            <span class="n">clearance</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="n">edges</span><span class="o">=</span><span class="s1">&#39;extended&#39;</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">phi</span><span class="o">=</span><span class="mf">.25</span><span class="p">,</span>
+            <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">*</span><span class="mi">3</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">random_spheres2</span><span class="p">(</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+            <span class="n">clearance</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="n">protrusion</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="n">edges</span><span class="o">=</span><span class="s1">&#39;contained&#39;</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">phi</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+            <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+            <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="n">im</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">random_spheres2</span><span class="p">(</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">r</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+            <span class="n">clearance</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="n">protrusion</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="n">edges</span><span class="o">=</span><span class="s1">&#39;contained&#39;</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">*</span><span class="mi">1</span> <span class="o">+</span> <span class="n">im</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
 </pre></div>
 
               </article>

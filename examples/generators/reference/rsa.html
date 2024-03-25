@@ -383,6 +383,15 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="ramp.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         ramp
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="random_cantor_dust.html">
        <code class="docutils literal notranslate">
         <span class="pre">
@@ -1809,6 +1818,15 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="ramp.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ramp
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="random_cantor_dust.html">
    <code class="docutils literal notranslate">
     <span class="pre">
@@ -2975,7 +2993,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[03:19:05] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[15:23:59] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
@@ -2989,7 +3007,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(im_or_shape: &lt;built-in function array&gt;, r: int, volume_fraction: int = 1, clearance: int = 0, protrusion: int = 0, n_max: int = 100000, mode: str = &#39;contained&#39;, return_spheres: bool = False, smooth: bool = True, seed: int = None)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(im_or_shape: &lt;built-in function array&gt;, r: int, volume_fraction: int = 1, clearance: int = 0, protrusion: int = 0, n_max: int = 100000, mode: str = &#39;contained&#39;, return_spheres: bool = False, smooth: bool = True, seed: int = None, value: int = True)
 </pre></div>
 </div>
 </div>
@@ -3009,11 +3027,11 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5678/3616168134.py:3: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5921/3616168134.py:3: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
   im = ps.generators.rsa(im_or_shape=shape, r=r)
 </pre></div>
 </div>
-<img alt="../../../_images/624274d69e3ff2d4bd4618c6224d6402f9768752db305a4e807f1cea8609d78e.png" src="../../../_images/624274d69e3ff2d4bd4618c6224d6402f9768752db305a4e807f1cea8609d78e.png" />
+<img alt="../../../_images/600fd3c65e4c3b8e5a574ff7ee6cd94f9a9ba4e9fbd5f0da877a5247d84b2a57.png" src="../../../_images/600fd3c65e4c3b8e5a574ff7ee6cd94f9a9ba4e9fbd5f0da877a5247d84b2a57.png" />
 </div>
 </div>
 <p>Now let’s fill up the remaining space with as many smaller spheres as possible:</p>
@@ -3028,11 +3046,11 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5678/3742233897.py:2: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5921/3742233897.py:2: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
   im = ps.generators.rsa(im_or_shape=im, r=r)
 </pre></div>
 </div>
-<img alt="../../../_images/187ee6d4b022fcb1a38581bfd4e7bf981c61bbb8d39cedcf782378e929be16d4.png" src="../../../_images/187ee6d4b022fcb1a38581bfd4e7bf981c61bbb8d39cedcf782378e929be16d4.png" />
+<img alt="../../../_images/0dc7b01a7e114a16b351f4f440241d4d5f3f8284c7adf9053e2e870c98d76b2d.png" src="../../../_images/0dc7b01a7e114a16b351f4f440241d4d5f3f8284c7adf9053e2e870c98d76b2d.png" />
 </div>
 </div>
 </section>
@@ -3059,13 +3077,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5678/880368931.py:5: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5921/880368931.py:5: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
   im1 = ps.generators.rsa(im_or_shape=shape, r=r, mode=mode)
-/tmp/ipykernel_5678/880368931.py:11: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
+/tmp/ipykernel_5921/880368931.py:11: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
   im2 = ps.generators.rsa(im_or_shape=shape, r=r, mode=mode)
 </pre></div>
 </div>
-<img alt="../../../_images/13d8f92f11c199f85733dddf5214e0c78852fcbeb25eaf2866ff678b10f0c7d1.png" src="../../../_images/13d8f92f11c199f85733dddf5214e0c78852fcbeb25eaf2866ff678b10f0c7d1.png" />
+<img alt="../../../_images/640f08ee8b619cef1f8bc4ec7e09a9fdf77b6a5935a98eec71db481829802a73.png" src="../../../_images/640f08ee8b619cef1f8bc4ec7e09a9fdf77b6a5935a98eec71db481829802a73.png" />
 </div>
 </div>
 </section>
@@ -3091,13 +3109,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5678/2646574643.py:4: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5921/2646574643.py:4: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
   im1 = ps.generators.rsa(im_or_shape=shape, r=r, clearance=c)
-/tmp/ipykernel_5678/2646574643.py:10: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
+/tmp/ipykernel_5921/2646574643.py:10: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
   im2 = ps.generators.rsa(im_or_shape=shape, r=r, clearance=c)
 </pre></div>
 </div>
-<img alt="../../../_images/93befb5b27ae688d63ef61f6a3432593c071587e39f64d7d35cccab9008ae085.png" src="../../../_images/93befb5b27ae688d63ef61f6a3432593c071587e39f64d7d35cccab9008ae085.png" />
+<img alt="../../../_images/da642f799f4fe14ffdff16a00ce741868cc32955c429e2661ce7413a1b1f298c.png" src="../../../_images/da642f799f4fe14ffdff16a00ce741868cc32955c429e2661ce7413a1b1f298c.png" />
 </div>
 </div>
 <p>When adding additional spheres to an existing image, the clearance only applies to new spheres.  To enforce clearance between the existing spheres you can dilate them by the amount of clearance desired (or erode them if overlap is desired).  In this case you’ll want to set <code class="docutils literal notranslate"><span class="pre">return_sphers=True</span></code> to obtain an image of only the new spheres, which can be added to the original ones:</p>
@@ -3114,11 +3132,11 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5678/2892074603.py:2: DeprecationWarning: Call to deprecated function (or staticmethod) RSA. (This function has been renamed to rsa (lowercase to meet pep8))
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5921/2892074603.py:2: DeprecationWarning: Call to deprecated function (or staticmethod) RSA. (This function has been renamed to rsa (lowercase to meet pep8))
   im4 = ps.generators.RSA(im_or_shape=im3, r=5, clearance=5, return_spheres=True)
 </pre></div>
 </div>
-<img alt="../../../_images/8742fbff536bf46d72cb456902ae3bbe3223f99af2348415fd5deb65f60d6dc4.png" src="../../../_images/8742fbff536bf46d72cb456902ae3bbe3223f99af2348415fd5deb65f60d6dc4.png" />
+<img alt="../../../_images/89bd2feafd39172f8c729ae8dd91cb11c980cc51e57b2919b598e2f4d2a8ef66.png" src="../../../_images/89bd2feafd39172f8c729ae8dd91cb11c980cc51e57b2919b598e2f4d2a8ef66.png" />
 </div>
 </div>
 </section>
@@ -3144,13 +3162,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5678/1007371573.py:4: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5921/1007371573.py:4: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
   im1 = ps.generators.rsa(shape, r=r, clearance=c, n_max=n_max)
-/tmp/ipykernel_5678/1007371573.py:10: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
+/tmp/ipykernel_5921/1007371573.py:10: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
   im2 = ps.generators.rsa(shape, r=r, clearance=c, volume_fraction=vf)
 </pre></div>
 </div>
-<img alt="../../../_images/ec62b086ee4df08d617429e211edf1c8a1dcafaffc6e07879e95ad2fdb87f8c8.png" src="../../../_images/ec62b086ee4df08d617429e211edf1c8a1dcafaffc6e07879e95ad2fdb87f8c8.png" />
+<img alt="../../../_images/cedd8359dfe05d5bf0969d0f312f548984aff429054737b84758d2cd0cef4f7d.png" src="../../../_images/cedd8359dfe05d5bf0969d0f312f548984aff429054737b84758d2cd0cef4f7d.png" />
 </div>
 </div>
 <p>Note that this function returns the spheres as <code class="docutils literal notranslate"><span class="pre">True</span></code> which usually indicates the pore phase in porespy, so these will treated as images of holes.  If you intended to make an image of sphers, just invert the image:</p>
@@ -3167,7 +3185,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d2b9d61e255a7b1ce04a14f96d20c952efa2f035ffcde75b19b2790ccf5da234.png" src="../../../_images/d2b9d61e255a7b1ce04a14f96d20c952efa2f035ffcde75b19b2790ccf5da234.png" />
+<img alt="../../../_images/134ee4ed516af02457521e3d753e11d8a89434ae35e6507d2a0c041ab0d1c647.png" src="../../../_images/134ee4ed516af02457521e3d753e11d8a89434ae35e6507d2a0c041ab0d1c647.png" />
 </div>
 </div>
 </section>

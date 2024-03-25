@@ -385,6 +385,15 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/ramp.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         ramp
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../../generators/reference/random_cantor_dust.html">
        <code class="docutils literal notranslate">
         <span class="pre">
@@ -1811,6 +1820,15 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/ramp.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ramp
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../generators/reference/random_cantor_dust.html">
    <code class="docutils literal notranslate">
     <span class="pre">
@@ -2977,16 +2995,19 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[03:20:11] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[15:25:04] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
-</div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-03-13 03:20:12.536626: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
-2024-03-13 03:20:12.539618: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
-2024-03-13 03:20:12.574441: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
-To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-03-13 03:20:13.476335: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+</div><div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">12</span>
+<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="ne">---&gt; </span><span class="mi">12</span> <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">r2_score</span>
+<span class="g g-Whitespace">     </span><span class="mi">13</span> <span class="kn">import</span> <span class="nn">time</span>
+<span class="g g-Whitespace">     </span><span class="mi">14</span> <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;sklearn&#39;
 </pre></div>
 </div>
 </div>
@@ -2996,102 +3017,6 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;sf-model-lib&quot;</span><span class="p">):</span>
     <span class="o">!</span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/PMEAL/sf-model-lib
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Cloning into &#39;sf-model-lib&#39;...
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>remote: Enumerating objects: 36, done.
-remote: Counting objects:  20% (1/5)
-remote: Counting objects:  40% (2/5)
-remote: Counting objects:  60% (3/5)
-remote: Counting objects:  80% (4/5)
-remote: Counting objects: 100% (5/5)
-remote: Counting objects: 100% (5/5), done.
-remote: Compressing objects:  20% (1/5)
-remote: Compressing objects:  40% (2/5)
-remote: Compressing objects:  60% (3/5)
-remote: Compressing objects:  80% (4/5)
-remote: Compressing objects: 100% (5/5)
-remote: Compressing objects: 100% (5/5), done.
-Receiving objects:   2% (1/36)
-Receiving objects:   5% (2/36)
-Receiving objects:   8% (3/36)
-Receiving objects:  11% (4/36)
-Receiving objects:  13% (5/36)
-Receiving objects:  16% (6/36)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36), 60.10 MiB | 60.09 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 60.10 MiB | 60.09 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 122.30 MiB | 61.15 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  22% (8/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  25% (9/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  27% (10/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  30% (11/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  33% (12/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  36% (13/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  38% (14/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  41% (15/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  44% (16/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  47% (17/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  50% (18/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  52% (19/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  55% (20/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  58% (21/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  61% (22/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  63% (23/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  66% (24/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  69% (25/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  72% (26/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  75% (27/36), 153.11 MiB | 61.24 MiB/s
-Receiving objects:  77% (28/36), 153.11 MiB | 61.24 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 184.12 MiB | 61.37 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 241.44 MiB | 60.37 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 241.44 MiB | 60.37 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 305.19 MiB | 60.95 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>remote: Total 36 (delta 0), reused 2 (delta 0), pack-reused 31
-Receiving objects:  83% (30/36), 305.19 MiB | 60.95 MiB/s
-Receiving objects:  86% (31/36), 305.19 MiB | 60.95 MiB/s
-Receiving objects:  88% (32/36), 305.19 MiB | 60.95 MiB/s
-Receiving objects:  91% (33/36), 305.19 MiB | 60.95 MiB/s
-Receiving objects:  94% (34/36), 305.19 MiB | 60.95 MiB/s
-Receiving objects:  97% (35/36), 305.19 MiB | 60.95 MiB/s
-Receiving objects: 100% (36/36), 305.19 MiB | 60.95 MiB/s
-Receiving objects: 100% (36/36), 334.57 MiB | 61.00 MiB/s, done.
-Resolving deltas:   0% (0/8)
-Resolving deltas:  12% (1/8)
-Resolving deltas:  25% (2/8)
-Resolving deltas:  37% (3/8)
-Resolving deltas:  50% (4/8)
-Resolving deltas:  62% (5/8)
-Resolving deltas:  75% (6/8)
-Resolving deltas:  87% (7/8)
-Resolving deltas: 100% (8/8)
-Resolving deltas: 100% (8/8), done.
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Updating files:  87% (7/8)
-Updating files: 100% (8/8)
-Updating files: 100% (8/8), done.
 </pre></div>
 </div>
 </div>
@@ -3130,27 +3055,6 @@ the training data the wieghts. The training data is used in the backend of the <
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">voxel_size</span> <span class="o">=</span> <span class="mf">2.25e-6</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;../../../test/fixtures/image_Leopard_slice100.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">voxel_size</span> <span class="o">=</span> <span class="mf">2.25e-6</span>
-<span class="ne">----&gt; </span><span class="mi">2</span> <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;../../../test/fixtures/image_Leopard_slice100.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/IPython/core/interactiveshell.py:324,</span> in <span class="ni">_modified_open</span><span class="nt">(file, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">317</span> <span class="k">if</span> <span class="n">file</span> <span class="ow">in</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">}:</span>
-<span class="g g-Whitespace">    </span><span class="mi">318</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">319</span>         <span class="sa">f</span><span class="s2">&quot;IPython won&#39;t let you open fd=</span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2"> by default &quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">320</span>         <span class="s2">&quot;as it is likely to crash IPython. If you know what you are doing, &quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">321</span>         <span class="s2">&quot;you can use builtins&#39; open.&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">322</span>     <span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">324</span> <span class="k">return</span> <span class="n">io_open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-<span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;../../../test/fixtures/image_Leopard_slice100.npy&#39;
 </pre></div>
 </div>
 </div>
