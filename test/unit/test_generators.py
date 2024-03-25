@@ -264,88 +264,97 @@ class GeneratorTest():
         im2 = ps.generators.blobs(shape=[101, 101], seed=0, divs=2)
         assert np.all(im1 == im2)
 
-    def test_rsa_2d_contained(self):
+    def test_random_spheres_2d_contained(self):
         im = np.zeros([100, 100], dtype=int)
-        im = ps.generators.rsa(im, r=10, volume_fraction=0.5, mode='contained')
+        im = ps.generators.random_spheres(
+            im, r=10, volume_fraction=0.5, edges='contained')
         im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
         lt = ps.filters.local_thickness(im)
         assert len(np.unique(lt)) == 2
 
-    def test_rsa_2d_extended(self):
+    def test_random_spheres_2d_extended(self):
         im = np.zeros([100, 100], dtype=int)
-        im = ps.generators.rsa(im, r=10, volume_fraction=0.5, mode='extended')
+        im = ps.generators.random_spheres(
+            im, r=10, volume_fraction=0.5, edges='extended')
         im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
         lt = ps.filters.local_thickness(im)
         assert len(np.unique(lt)) > 2
 
-    def test_rsa_2d_extended_with_clearance(self):
+    def test_random_spheres_2d_extended_with_clearance(self):
         im = np.zeros([100, 100], dtype=int)
-        im = ps.generators.rsa(im, r=10,
-                               volume_fraction=0.5,
-                               clearance=2,
-                               mode='extended')
+        im = ps.generators.random_spheres(im, r=10,
+                                          volume_fraction=0.5,
+                                          clearance=2,
+                                          edges='extended')
         im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
         lt = ps.filters.local_thickness(im)
         assert len(np.unique(lt)) > 2
 
-    def test_rsa_3d_contained(self):
+    def test_random_spheres_3d_contained(self):
         im = np.zeros([100, 100, 100], dtype=int)
-        im = ps.generators.rsa(im, r=10, volume_fraction=0.5, mode='contained')
+        im = ps.generators.random_spheres(
+            im, r=10, volume_fraction=0.5, edges='contained')
         lt = ps.filters.local_thickness(im, sizes=[10, 9, 8, 7, 6, 5])
         assert len(np.unique(lt)) == 2
 
-    def test_rsa_3d_extended(self):
+    def test_random_spheres_3d_extended(self):
         im = np.zeros([100, 100, 100], dtype=int)
-        im = ps.generators.rsa(im, r=10, volume_fraction=0.5, mode='extended')
+        im = ps.generators.random_spheres(
+            im, r=10, volume_fraction=0.5, edges='extended')
         im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
         lt = ps.filters.local_thickness(im, sizes=[10, 9, 8, 7, 6, 5])
         assert len(np.unique(lt)) > 2
 
-    def test_rsa_2d_seqential_additions(self):
+    def test_random_spheres_2d_seqential_additions(self):
         im = np.zeros([100, 100], dtype=int)
-        im = ps.generators.rsa(im, r=10)
+        im = ps.generators.random_spheres(im, r=10)
         phi1 = ps.metrics.porosity(im)
-        im = ps.generators.rsa(im, r=5)
+        im = ps.generators.random_spheres(im, r=5)
         phi2 = ps.metrics.porosity(im)
         assert phi2 > phi1
 
-    def test_rsa_preexisting_structure(self):
+    def test_random_spheres_preexisting_structure(self):
         im = ps.generators.blobs(shape=[200, 200, 200])
         phi1 = im.sum()/im.size
-        im = ps.generators.rsa(im, r=8, n_max=200, mode='contained')
+        im = ps.generators.random_spheres(im, r=8, n_max=200, edges='contained')
         phi2 = im.sum()/im.size
         assert phi2 > phi1
-        # Ensure that 3 passes through rsa fills up image
-        im = ps.generators.rsa(im, r=8, n_max=200, mode='contained')
-        im = ps.generators.rsa(im, r=8, n_max=200, mode='contained')
-        im = ps.generators.rsa(im, r=8, n_max=200, mode='contained')
+        # Ensure that 3 passes through random_spheres fills up image
+        im = ps.generators.random_spheres(im, r=8, n_max=200, edges='contained')
+        im = ps.generators.random_spheres(im, r=8, n_max=200, edges='contained')
+        im = ps.generators.random_spheres(im, r=8, n_max=200, edges='contained')
         phi1 = im.sum()/im.size
-        im = ps.generators.rsa(im, r=8, n_max=200, mode='contained')
+        im = ps.generators.random_spheres(im, r=8, n_max=200, edges='contained')
         phi2 = im.sum()/im.size
         assert phi2 == phi1
 
-    def test_rsa_shape(self):
-        rsa = ps.generators.rsa(im_or_shape=[200, 200], r=10)
-        assert np.all(rsa.shape == (200, 200))
+    def test_random_spheres_shape(self):
+        random_spheres = ps.generators.random_spheres(im_or_shape=[200, 200], r=10)
+        assert np.all(random_spheres.shape == (200, 200))
 
-    def test_rsa_clearance_large_spheres(self):
-        rsa0 = ps.generators.rsa(im_or_shape=[200, 200], r=9, clearance=0, seed=0)
-        rsa2p = ps.generators.rsa(im_or_shape=[200, 200], r=9, clearance=3, seed=0)
-        assert rsa0.sum() > rsa2p.sum()
-        rsa1n = ps.generators.rsa(im_or_shape=[200, 200], r=9, clearance=-3, seed=0)
-        assert rsa0.sum() < rsa1n.sum()
+    def test_random_spheres_clearance_large_spheres(self):
+        random_spheres0 = ps.generators.random_spheres(
+            im_or_shape=[200, 200], r=9, clearance=0, seed=0)
+        random_spheres2p = ps.generators.random_spheres(
+            im_or_shape=[200, 200], r=9, clearance=3, seed=0)
+        assert random_spheres0.sum() > random_spheres2p.sum()
+        random_spheres1n = ps.generators.random_spheres(
+            im_or_shape=[200, 200], r=9, clearance=-3, seed=0)
+        assert random_spheres0.sum() < random_spheres1n.sum()
 
-    def test_rsa_clearance_small_spheres(self):
+    def test_random_spheres_clearance_small_spheres(self):
         np.random.seed(0)
-        rsa0 = ps.generators.rsa(im_or_shape=[200, 200], r=1, clearance=0)
+        random_spheres0 = ps.generators.random_spheres(
+            im_or_shape=[200, 200], r=1, clearance=0)
         np.random.seed(0)
-        rsa2p = ps.generators.rsa(im_or_shape=[200, 200], r=1, clearance=2)
-        assert rsa0.sum() > rsa2p.sum()
+        random_spheres2p = ps.generators.random_spheres(
+            im_or_shape=[200, 200], r=1, clearance=2)
+        assert random_spheres0.sum() > random_spheres2p.sum()
 
-    def test_rsa_w_seed(self):
-        im1 = ps.generators.rsa([50, 50], r=5, seed=0)
-        im2 = ps.generators.rsa([50, 50], r=5, seed=0)
-        im3 = ps.generators.rsa([50, 50], r=5, seed=1)
+    def test_random_spheres_w_seed(self):
+        im1 = ps.generators.random_spheres([50, 50], r=5, seed=0)
+        im2 = ps.generators.random_spheres([50, 50], r=5, seed=0)
+        im3 = ps.generators.random_spheres([50, 50], r=5, seed=1)
         assert np.all(im1 == im2)
         assert not np.all(im1 == im3)
 
@@ -386,14 +395,16 @@ class GeneratorTest():
     def test_pseudo_gravity_packing_2D(self):
         np.random.seed(0)
         im = np.ones([100, 100], dtype=bool)
-        im = ps.generators.pseudo_gravity_packing(im=im, r=8, clearance=1)
-        assert im.sum() == 4578
+        im = ps.generators.pseudo_gravity_packing(
+            im=im, r=8, clearance=1)
+        assert im.sum() == 5976  # Used to be 4578
 
     def test_pseudo_gravity_packing_3D(self):
         np.random.seed(0)
         im = np.ones([100, 100, 100], dtype=bool)
-        im = ps.generators.pseudo_gravity_packing(im=im, r=8, clearance=1)
-        assert im.sum() == 279240
+        im = ps.generators.pseudo_gravity_packing(
+            im=im, r=8, clearance=1)
+        assert im.sum() == 394877  # Used to be 279240
 
     def test_pseudo_gravity_packing_w_seed(self):
         im1 = ps.generators.pseudo_gravity_packing(
@@ -412,35 +423,46 @@ class GeneratorTest():
         assert (im1.sum() > im2.sum())
         assert im2.sum() > 0
 
-    def test_pseudo_electrostatic_packing_w_seed(self):
-        im1 = ps.generators.pseudo_electrostatic_packing(
-            im=ps.generators.blobs(shape=[100, 100], seed=0), r=5, seed=0)
-        im2 = ps.generators.pseudo_electrostatic_packing(
-            im=ps.generators.blobs(shape=[100, 100], seed=0), r=5, seed=0)
-        im3 = ps.generators.pseudo_electrostatic_packing(
-            im=ps.generators.blobs(shape=[100, 100], seed=0), r=5, seed=1)
-        assert np.all(im1 == im2)
-        assert not np.all(im1 == im3)
-
     def test_pseudo_electrostatic_packing_2D(self):
         np.random.seed(0)
         im = np.ones([100, 100], dtype=bool)
         sites = np.zeros_like(im)
         sites[50, 50] = True
-        im = ps.generators.pseudo_electrostatic_packing(im=im, r=8,
-                                                        sites=sites,
-                                                        maxiter=10)
-        assert im.sum() == 1930
+        im = ps.generators.pseudo_electrostatic_packing(
+            im=im, r=8, sites=sites, maxiter=10)
+        assert im.sum() == 2490  # Used to be 1930
 
     def test_pseudo_electrostatic_packing_3D(self):
         np.random.seed(0)
         im = np.ones([100, 100, 100], dtype=bool)
         sites = np.zeros_like(im)
         sites[50, 50, 50] = True
-        im = ps.generators.pseudo_electrostatic_packing(im=im, r=8,
-                                                        sites=sites,
-                                                        maxiter=10)
-        assert im.sum() == 21030
+        im = ps.generators.pseudo_electrostatic_packing(
+            im=im, r=8, sites=sites, maxiter=10)
+        assert im.sum() == 29690  # Used to be 21030
+
+    def test_pseudo_electrostatic_packing_w_seed(self):
+        im1 = ps.generators.pseudo_electrostatic_packing(
+            shape=[100, 100], r=5, seed=0)
+        im2 = ps.generators.pseudo_electrostatic_packing(
+            shape=[100, 100], r=5, seed=0)
+        im3 = ps.generators.pseudo_electrostatic_packing(
+            shape=[100, 100], r=5, seed=1)
+        assert np.all(im1 == im2)
+        assert not np.all(im1 == im3)
+
+    def test_random_spheres2(self):
+        s = [200, 200]
+        im1 = ps.generators.random_spheres2(shape=s, r=10, edges='contained', seed=0)
+        im2 = ps.generators.random_spheres2(shape=s, r=10, edges='extended', seed=0)
+        assert im1.sum() < im2.sum()
+        im1 = ps.generators.random_spheres2(shape=s, r=10, clearance=1, seed=0)
+        im2 = ps.generators.random_spheres2(shape=s, r=10, clearance=5, seed=0)
+        assert im1.sum() > im2.sum()
+        im = np.ones(s, dtype=bool)
+        im1 = ps.generators.random_spheres2(im=im, r=10, seed=0)
+        im2 = ps.generators.random_spheres2(shape=s, r=10, seed=0)
+        assert im1.sum() == im2.sum()
 
     def test_faces(self):
         im = ps.generators.faces(shape=[10, 10], inlet=0)
@@ -467,17 +489,17 @@ class GeneratorTest():
         assert np.linalg.norm(im1) == np.linalg.norm(im2)
         # Ensure different images are returned even if seed is same
         im1 = ps.generators.fractal_noise(shape=s, mode='perlin',
-                                            seed=0, octaves=2, cores=1)
+                                          seed=0, octaves=2, cores=1)
         im2 = ps.generators.fractal_noise(shape=s, mode='perlin',
-                                            seed=0, octaves=4, cores=1)
+                                          seed=0, octaves=4, cores=1)
         assert np.linalg.norm(im1) != np.linalg.norm(im2)
         # Check uniformization
         im1 = ps.generators.fractal_noise(shape=s, mode='cubic',
-                                            uniform=True, cores=1)
+                                          uniform=True, cores=1)
         assert im1.min() >= 0
         assert im1.max() <= 1
         im2 = ps.generators.fractal_noise(shape=s, mode='cubic',
-                                            uniform=False, cores=1)
+                                          uniform=False, cores=1)
         assert im2.min() < 0
 
     def test_cantor_dust(self):

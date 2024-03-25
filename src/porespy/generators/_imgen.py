@@ -26,6 +26,7 @@ __all__ = [
     "line_segment",
     "overlapping_spheres",
     "polydisperse_spheres",
+    "ramp",
     "RSA",
     "rsa",
     "random_spheres",
@@ -36,6 +37,43 @@ __all__ = [
 
 tqdm = ps.tools.get_tqdm()
 logger = logging.getLogger(__name__)
+
+
+def ramp(shape, inlet=1.0, outlet=0.0, axis=0):
+    r"""
+    Generates an array containing a linear ramp of greyscale values along the given
+    axis.
+
+    Parameter
+    ---------
+    shape : list
+        The [X, Y, Z] dimension of the desired image. Z is optional.
+    inlet : scalar
+        The values to place the beginning of the specified axis
+    outlet : scalar
+        The values to place the end of the specified axis
+    axis : scalar
+        The axis along which the ramp should be directed
+
+    Returns
+    -------
+    ramp : ndarray
+        An array of the requested shape with greyscale values changing linearly
+        from inlet to outlet in the direction specified.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/reference/ramp.html>`_
+    to view online example.
+    """
+    shape = np.array(shape)
+    vals = np.linspace(inlet, outlet, shape[axis])
+    vals = np.reshape(vals, [shape[axis]]+[1]*len(shape[1:]))
+    vals = np.swapaxes(vals, 0, axis)
+    shape[axis] = 1
+    ramp = np.tile(vals, shape)
+    return ramp
 
 
 def cylindrical_plug(shape, r=None, axis=2):
@@ -183,7 +221,7 @@ def RSA(*args, **kwargs):
 def random_spheres(
     im_or_shape: np.array,
     r: int,
-    volume_fraction: int = 1,
+    volume_fraction: float = 1.0,
     clearance: int = 0,
     protrusion: int = 0,
     n_max: int = 100000,
@@ -191,6 +229,7 @@ def random_spheres(
     return_spheres: bool = False,
     smooth: bool = True,
     seed: int = None,
+    value: int = True,
 ):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
@@ -250,6 +289,10 @@ def random_spheres(
         has no effect. To get a repeatable image, the seed must be passed to the
         function so it can be initialized the way ``numba`` requires. The default
         is ``None``, which means each call will produce a new realization.
+    value : scalar
+        The value to set the inserted spheres to. Using `value < 0` is a handy
+        way to repeatedly insert different sphere sizes into the same image while
+        making them easy to identify.
 
     Returns
     -------
@@ -291,7 +334,8 @@ def random_spheres(
         mode=edges,
         return_spheres=return_spheres,
         smooth=smooth,
-        seed=seed)
+        seed=seed,
+        value=value)
     return im
 
 
@@ -307,6 +351,7 @@ def rsa(
     return_spheres: bool = False,
     smooth: bool = True,
     seed: int = None,
+    value: int = True,
 ):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
@@ -397,14 +442,14 @@ def rsa(
     """
     logger.debug(f"rsa: Adding spheres of size {r}")
     if np.array(im_or_shape).ndim < 2:
-        im = np.zeros(shape=im_or_shape, dtype=bool)
+        im = np.zeros(shape=im_or_shape, dtype=type(value))
         input_im = np.copy(im)
     else:
         input_im = np.copy(im_or_shape)
-        im = np.zeros_like(im_or_shape, dtype=bool)
+        im = np.zeros_like(im_or_shape, dtype=type(value))
     if seed is not None:  # Initialize rng so numba sees it
         _set_seed(seed)
-    im = im.astype(bool)
+    im = im.astype(type(value))
     shape_orig = im.shape  # Store original image shape, to undo padding at the end
     if n_max is None:
         n_max = np.inf
@@ -431,6 +476,7 @@ def rsa(
     vf = vf_start
     free_sites = np.flatnonzero(options_im)
     i = 0
+    im_temp = np.copy(im).astype(type(value))
     while (vf <= vf_final) and (i < n_max) and (len(free_sites) > 0):
         # Choose a random site from free_sites
         c, count = _make_choice(options_im, free_sites=free_sites)
@@ -441,11 +487,11 @@ def rsa(
             free_sites = np.flatnonzero(options_im)
         if all(np.array(c) == -1):
             break
-        im = _insert_disk_at_points(im=im,
-                                    coords=np.vstack(c),
-                                    r=r,
-                                    v=True,
-                                    smooth=smooth)
+        im_temp = _insert_disk_at_points(im=im_temp,
+                                         coords=np.vstack(c),
+                                         r=r,
+                                         v=value,
+                                         smooth=smooth)
         options_im = _insert_disk_at_points(im=options_im,
                                             coords=np.vstack(c),
                                             r=2*r + int(np.round(clearance/2)),
@@ -455,10 +501,10 @@ def rsa(
         vf += vf_template
         i += 1
     logger.info(f"Number of spheres inserted: {i}")
-    im = extract_subsection(im, shape_orig)
+    im_temp = extract_subsection(im_temp, shape_orig)
     logger.debug("Final volume fraction:", vf)
     if not return_spheres:
-        im = im + input_im
+        im = im_temp + input_im
     return im
 
 
