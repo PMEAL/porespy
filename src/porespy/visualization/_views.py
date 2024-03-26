@@ -153,13 +153,13 @@ def _sem_parallel(im):  # pragma: no cover
     voxel in each x, y column. It uses numba for speed, and is
     parallelized.
     """
-    shape=im.shape
+    shape = im.shape
     depth = np.zeros(shape[:2])
     for x in prange(shape[0]):
         for y in prange(shape[1]):
             for z in range(shape[2]-1, 0, -1):
                 if not im[x][y][z]:
-                    depth[x][y]=z
+                    depth[x][y] = z/shape[2]
                     break
     return depth
 
@@ -198,4 +198,5 @@ def xray(im, axis=0):  # pragma: no cover
     if axis == 2:
         im = np.transpose(im, axes=[2, 1, 0])
     im = np.sum(im, axis=0, dtype=np.int64)
+    im = im/np.max(im)
     return im
