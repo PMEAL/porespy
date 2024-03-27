@@ -232,7 +232,7 @@ def random_spheres(
     edges: Literal['contained', 'extended'] = 'contained',
     smooth: bool = True,
     seed: int = None,
-    value: int = False,
+    value: int = True,
 ):
     r"""
     Generates a sphere or disk packing using random sequential addition as
@@ -242,9 +242,9 @@ def random_spheres(
     ----------
     shape : list
         The shape of the image to create.  This is equivalent to passing an array
-        of `True` values of the desired size to `im`.
+        of `False` values of the desired size to `im`.
     im : ndarray
-        Image with values > 0 indicating the voxels where spheres should be
+        Image with `False` indicating the voxels where spheres should be
         inserted. This can be used to insert spheres into an image that already
         has some features (e.g. half filled with larger spheres, or a cylindrical
         plug).
@@ -291,14 +291,14 @@ def random_spheres(
         function so it can be initialized the way ``numba`` requires. The default
         is ``None``, which means each call will produce a new realization.
     value : scalar
-        The value to set the inserted spheres to. Using `value < 0` is a handy
+        The value to set the inserted spheres to. Using `value > 1` is a handy
         way to repeatedly insert different sphere sizes into the same image while
         making them easy to identify.
 
     Returns
     -------
     image : ndarray
-        An image with spheres of specified radius *added* to the foreground.
+        An image with spheres of specified radius *added* to the background.
 
     See Also
     --------
@@ -310,7 +310,7 @@ def random_spheres(
     This algorithm ensures that spheres do not overlap but does not guarantee they
     are tightly packed.
 
-    This function adds spheres to the foreground of the received ``im``, which
+    This function adds spheres to the background of the received ``im``, which
     allows iteratively adding spheres of different radii to the unfilled space
     by repeatedly passing in the result of previous calls to the function.
 
@@ -333,10 +333,10 @@ def random_spheres(
     if (im is None) and (shape is not None):  # If shape was given, generate empty im
         if np.ndim(shape) > 1:
             raise Exception('shape must be a list like [Nx, Ny] or [Nx, Ny, Nz]')
-        im = np.ones(shape, dtype=type(value))
+        im = np.zeros(shape, dtype=type(value))
         options_im = np.ones_like(im, dtype=bool)
     elif (shape is None) and (im is not None):  # Otherwise use im
-        options_im = edt(im == 1) >= (r - protrusion)
+        options_im = edt(im == 0) >= (r - protrusion)
         im = np.copy(im).astype(type(value))
     else:
         raise Exception('Must specify either im or shape')

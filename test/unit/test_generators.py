@@ -265,59 +265,59 @@ class GeneratorTest():
         assert np.all(im1 == im2)
 
     def test_random_spheres_2d_contained(self):
-        im = np.ones([100, 100], dtype=int)
+        im = np.zeros([100, 100], dtype=int)
         im = ps.generators.random_spheres(
             im=im, r=10, phi=0.5, edges='contained')
-        im = np.pad(im, pad_width=1, mode='constant', constant_values=True)
-        lt = ps.filters.local_thickness(~im, sizes=range(1, 20))
+        im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
+        lt = ps.filters.local_thickness(im > 0, sizes=range(1, 20))
         assert len(np.unique(lt)) == 2
 
     def test_random_spheres_2d_extended(self):
-        im = np.ones([100, 100], dtype=int)
+        im = np.zeros([100, 100], dtype=int)
         im = ps.generators.random_spheres(
             im=im, r=10, phi=0.5, edges='extended')
-        im = np.pad(im, pad_width=1, mode='constant', constant_values=True)
-        lt = ps.filters.local_thickness(~im, sizes=range(1, 20))
+        im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
+        lt = ps.filters.local_thickness(im > 0, sizes=range(1, 20))
         assert len(np.unique(lt)) > 2
 
     def test_random_spheres_2d_extended_with_clearance(self):
-        im = np.ones([100, 100], dtype=int)
+        im = np.zeros([100, 100], dtype=int)
         im = ps.generators.random_spheres(
             im=im, r=10, phi=0.5, clearance=2, edges='extended')
-        im = np.pad(im, pad_width=1, mode='constant', constant_values=True)
-        lt = ps.filters.local_thickness(~im, sizes=range(1, 20))
+        im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
+        lt = ps.filters.local_thickness(im > 0, sizes=range(1, 20))
         assert len(np.unique(lt)) > 2
 
     def test_random_spheres_3d_contained(self):
-        im = np.ones([100, 100, 100], dtype=int)
+        im = np.zeros([100, 100, 100], dtype=int)
         im = ps.generators.random_spheres(
             im=im, r=10, phi=0.5, edges='contained', smooth=False)
-        im = np.pad(im, pad_width=1, mode='constant', constant_values=True)
-        lt = ps.filters.local_thickness(~im, sizes=[10, 9, 8, 7, 6, 5])
+        im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
+        lt = ps.filters.local_thickness(im > 0, sizes=[10, 9, 8, 7, 6, 5])
         assert len(np.unique(lt)) == 2
 
     def test_random_spheres_3d_extended(self):
-        im = np.ones([100, 100, 100], dtype=int)
+        im = np.zeros([100, 100, 100], dtype=int)
         im = ps.generators.random_spheres(
             im=im, r=10, phi=0.5, edges='extended', smooth=False)
-        im = np.pad(im, pad_width=1, mode='constant', constant_values=True)
-        lt = ps.filters.local_thickness(~im, sizes=[10, 9, 8, 7, 6, 5])
+        im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
+        lt = ps.filters.local_thickness(im > 0, sizes=[10, 9, 8, 7, 6, 5])
         assert len(np.unique(lt)) > 2
 
     def test_random_spheres_2d_seqential_additions(self):
-        im = np.ones([100, 100], dtype=int)
+        im = np.zeros([100, 100], dtype=int)
         im = ps.generators.random_spheres(im=im, r=10)
         phi1 = ps.metrics.porosity(im)
         im = ps.generators.random_spheres(im=im, r=5)
         phi2 = ps.metrics.porosity(im)
-        assert phi2 < phi1
+        assert phi2 > phi1
 
     def test_random_spheres_preexisting_structure(self):
         im = ps.generators.blobs(shape=[200, 200, 200])
         phi1 = im.sum()/im.size
         im = ps.generators.random_spheres(im=im, r=8, maxiter=200, edges='contained')
         phi2 = im.sum()/im.size
-        assert phi2 < phi1
+        assert phi2 > phi1
         # Ensure that 3 passes through random_spheres fills up image
         im = ps.generators.random_spheres(im=im, r=8, maxiter=200, edges='contained')
         im = ps.generators.random_spheres(im=im, r=8, maxiter=200, edges='contained')
@@ -336,19 +336,17 @@ class GeneratorTest():
             shape=[200, 200], r=9, clearance=0, seed=0)
         random_spheres2p = ps.generators.random_spheres(
             shape=[200, 200], r=9, clearance=3, seed=0)
-        assert random_spheres0.sum() < random_spheres2p.sum()
+        assert random_spheres0.sum() > random_spheres2p.sum()
         random_spheres1n = ps.generators.random_spheres(
             shape=[200, 200], r=9, clearance=-3, seed=0)
-        assert random_spheres0.sum() > random_spheres1n.sum()
+        assert random_spheres0.sum() < random_spheres1n.sum()
 
     def test_random_spheres_clearance_small_spheres(self):
-        np.random.seed(0)
         random_spheres0 = ps.generators.random_spheres(
             shape=[200, 200], r=1, clearance=0)
-        np.random.seed(0)
         random_spheres2p = ps.generators.random_spheres(
             shape=[200, 200], r=1, clearance=2)
-        assert random_spheres0.sum() < random_spheres2p.sum()
+        assert random_spheres0.sum() > random_spheres2p.sum()
 
     def test_random_spheres_w_seed(self):
         im1 = ps.generators.random_spheres(shape=[50, 50], r=5, seed=0)
@@ -372,40 +370,40 @@ class GeneratorTest():
         assert np.all(L3 == [5, 6, 7, 8, 9, 10, 11, 12, 13])
 
     def test_pseudo_gravity_packing_monodisperse(self):
-        im = np.ones([400, 400], dtype=bool)
+        im = np.zeros([400, 400], dtype=bool)
         im = ps.generators.pseudo_gravity_packing(im=im, r=20, clearance=0, seed=0)
         e1 = im.sum()/im.size
-        im = np.ones([400, 400], dtype=bool)
+        im = np.zeros([400, 400], dtype=bool)
         im = ps.generators.pseudo_gravity_packing(im=im, r=20, clearance=5, seed=0)
         e2 = im.sum()/im.size
-        assert e2 > e1
-        im = np.ones([400, 400], dtype=bool)
+        assert e2 < e1
+        im = np.zeros([400, 400], dtype=bool)
         im = ps.generators.pseudo_gravity_packing(im=im, r=20, maxiter=10, seed=0)
         e3 = im.sum()/im.size
-        im = np.ones([400, 400], dtype=bool)
+        im = np.zeros([400, 400], dtype=bool)
         im = ps.generators.pseudo_gravity_packing(im=im, r=50, maxiter=10, seed=0)
         e4 = im.sum()/im.size
-        assert e3 > e4
+        assert e3 < e4
 
     def test_pseudo_gravity_packing_2D(self):
-        im = np.ones([100, 100], dtype=bool)
+        im = np.zeros([100, 100], dtype=bool)
         im = ps.generators.pseudo_gravity_packing(
             im=im, r=8, clearance=1, seed=0)
-        assert im.sum() == 4024
+        assert im.sum() == 5976
 
     def test_pseudo_gravity_packing_3D(self):
-        im = np.ones([100, 100, 100], dtype=bool)
+        im = np.zeros([100, 100, 100], dtype=bool)
         im = ps.generators.pseudo_gravity_packing(
             im=im, r=8, clearance=1, seed=0)
-        assert im.sum() == 605123  # Used to be 279240
+        assert im.sum() == 394877
 
     def test_pseudo_gravity_packing_w_seed(self):
         im1 = ps.generators.pseudo_gravity_packing(
-            im=np.ones([50, 50], dtype=bool), r=5, seed=0)
+            shape=[50, 50], r=5, seed=0)
         im2 = ps.generators.pseudo_gravity_packing(
-            im=np.ones([50, 50], dtype=bool), r=5, seed=0)
+            shape=[50, 50], r=5, seed=0)
         im3 = ps.generators.pseudo_gravity_packing(
-            im=np.ones([50, 50], dtype=bool), r=5, seed=1)
+            shape=[50, 50], r=5, seed=1)
         assert np.all(im1 == im2)
         assert not np.all(im1 == im3)
 
@@ -413,24 +411,24 @@ class GeneratorTest():
         im1 = ps.generators.blobs(shape=[100, 100])
         im2 = ps.generators.pseudo_electrostatic_packing(
             im=im1, r=3, clearance=1, protrusion=1)
-        assert (im1.sum() > im2.sum())
+        assert (im2.sum() > im1.sum())
         assert im2.sum() > 0
 
     def test_pseudo_electrostatic_packing_2D(self):
-        im = np.ones([100, 100], dtype=bool)
+        im = np.zeros([100, 100], dtype=bool)
         sites = np.zeros_like(im)
         sites[50, 50] = True
         im = ps.generators.pseudo_electrostatic_packing(
             im=im, r=8, sites=sites, maxiter=10, seed=0)
-        assert im.sum() == 7510
+        assert im.sum() == 2490
 
     def test_pseudo_electrostatic_packing_3D(self):
-        im = np.ones([100, 100, 100], dtype=bool)
+        im = np.zeros([100, 100, 100], dtype=bool)
         sites = np.zeros_like(im)
         sites[50, 50, 50] = True
         im = ps.generators.pseudo_electrostatic_packing(
             im=im, r=8, sites=sites, maxiter=10, seed=0)
-        assert im.sum() == 970310  # Used to be 21030
+        assert im.sum() == 29690
 
     def test_pseudo_electrostatic_packing_w_seed(self):
         im1 = ps.generators.pseudo_electrostatic_packing(
