@@ -327,12 +327,19 @@ def random_spheres(
     """
     logger.debug(f"random_spheres: Adding spheres of size {r}")
 
-    if im is None:  # If shape was given, generate empty im
+    if smooth:
+        r = r + 1
+
+    if (im is None) and (shape is not None):  # If shape was given, generate empty im
+        if np.ndim(shape) > 1:
+            raise Exception('shape must be a list like [Nx, Ny] or [Nx, Ny, Nz]')
         im = np.ones(shape, dtype=type(value))
         options_im = np.ones_like(im, dtype=bool)
-    else:  # Otherwise use im
-        options_im = edt(im > 0) >= (r - protrusion)
+    elif (shape is None) and (im is not None):  # Otherwise use im
+        options_im = edt(im == 1) >= (r - protrusion)
         im = np.copy(im).astype(type(value))
+    else:
+        raise Exception('Must specify either im or shape')
 
     if seed is not None:  # Initialize rng so numba sees it
         _set_seed(seed)
@@ -345,9 +352,6 @@ def random_spheres(
         pass
     else:
         raise Exception("Unrecognized mode: ", edges)
-
-    if smooth:
-        r = r + 1
 
     # Compute maxiter if a phi was specified
     if phi < 1.0:

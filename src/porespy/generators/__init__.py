@@ -13,7 +13,6 @@ debugging, and illustration purposes.
    :template: mybase.rst
    :toctree: generated/
 
-    generators.rsa
     generators.random_spheres
     generators.blobs
     generators.borders
