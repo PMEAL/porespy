@@ -230,10 +230,9 @@ def random_spheres(
     maxiter: int = 100000,
     phi: float = 1.0,
     edges: Literal['contained', 'extended'] = 'contained',
-    return_spheres: bool = False,
     smooth: bool = True,
     seed: int = None,
-    value: int = True,
+    value: int = False,
 ):
     r"""
     Generates a sphere or disk packing using random sequential addition as
@@ -282,10 +281,6 @@ def random_spheres(
                      entire volume is counted as added for computational efficiency.
         ============ ===============================================================
 
-    return_spheres : bool
-        If ``True`` then an image containing only the spheres is returned
-        rather than the input image with the spheres added, which is the
-        default behavior.
     smooth : bool
         Indicates whether balls should have smooth faces (``True``) or should
         include the bumps on the extremities (``False``).
@@ -387,10 +382,8 @@ def random_spheres(
                                             smooth=smooth,
                                             overwrite=True)
     logger.info(f"Number of spheres inserted: {i}")
-    if not return_spheres:
-        im[spheres] = value
-        return im
-    return spheres*value
+    im[spheres] = value
+    return im
 
 
 @njit

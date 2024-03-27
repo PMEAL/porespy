@@ -16,7 +16,7 @@ from typing import Literal, List
 __all__ = [
     "pseudo_gravity_packing",
     "pseudo_electrostatic_packing",
-    "random_spheres2",
+    "_random_spheres2",
 ]
 
 
@@ -29,7 +29,7 @@ def _set_seed(a):
     np.random.seed(a)
 
 
-def random_spheres2(
+def _random_spheres2(
     shape: List = None,
     im: npt.ArrayLike = None,
     r: int = 5,
@@ -41,7 +41,13 @@ def random_spheres2(
     phi: float = 1.0,
     seed: float = None,
     smooth: bool = True,
+    value: int = 0,
 ) -> np.ndarray:
+    r"""
+    This is an alternative implementation of random_spheres that uses the same
+    machinery as the pseudo packing generators.  It is not as fast as the original
+    though.
+    """
 
     if seed is not None:
         _set_seed(seed)  # Initialize rng so numba sees it
@@ -63,8 +69,8 @@ def random_spheres2(
         dt = edt(mask)
         mask = dt >= abs(protrusion)
 
-    if edges == 'contained':
     # Deal with edge mode
+    if edges == 'contained':
         border = get_border(im.shape, thickness=1, mode='faces')
         mask[border] = False
 
@@ -88,7 +94,9 @@ def random_spheres2(
     im_new, count = _do_packing(im_new, mask, q, r, 1, clearance, smooth, maxiter)
     logger.debug(f'A total of {count} spheres were added')
     im_new = np.swapaxes(im_new, 0, axis)
-    return im_new
+    im = np.copy(im).astype(type(value))
+    im[im_new] = value
+    return im
 
 
 def pseudo_gravity_packing(
@@ -103,6 +111,7 @@ def pseudo_gravity_packing(
     phi: float = 1.0,
     seed: int = None,
     smooth: bool = True,
+    value: int = 0,
 ) -> np.ndarray:
     r"""
     Iteratively inserts spheres at the lowest accessible point in an image,
@@ -160,11 +169,15 @@ def pseudo_gravity_packing(
         is ``None``, which means each call will produce a new realization.
     smooth : bool, default = `True`
         Controls whether or not the spheres have the small pip each face.
+    value : int, default = 0
+        The value of insert for the spheres. The default is 0, which puts solid
+        inclusions into to the foreground. Values other than 1 (Foreground) make
+        it easy to add spheres repeated and identify which were added on each step.
 
     Returns
     -------
     spheres : ndarray
-        An image the same size as ``im`` with spheres indicated by ``False``.
+        An image the same size as `im` with spheres indicated by `value`.
         The spheres are only inserted at locations that are accessible
         from the top of the image.
 
@@ -233,8 +246,10 @@ def pseudo_gravity_packing(
     im_new = np.zeros_like(im)
     im_new, count = _do_packing(im_new, mask, q, r, 1, clearance, smooth, maxiter)
     logger.debug(f'A total of {count} spheres were added')
-    im_new = np.swapaxes(im_new, 0, axis)
-    return im_new
+    im = np.copy(im).astype(type(value))
+    im[im_new] = value
+    im = np.swapaxes(im, 0, axis)
+    return im
 
 
 def pseudo_electrostatic_packing(
@@ -250,6 +265,7 @@ def pseudo_electrostatic_packing(
     seed: int = None,
     smooth: bool = True,
     compactness: float = 1.0,
+    value: int = 0,
 ):
     r"""
     Iterativley inserts spheres as close to the given sites as possible.
@@ -309,6 +325,10 @@ def pseudo_electrostatic_packing(
         Controls how tightly the spheres are grouped together. A value of 1.0
         (default) results in the tighest possible grouping while values < 1.0
         give more loosely or imperfectly packed spheres.
+    value : int, default = 0
+        The value of insert for the spheres. The default is 0, which puts solid
+        inclusions into to the foreground. Values other than 1 (Foreground) make
+        it easy to add spheres repeated and identify which were added on each step.
 
     Returns
     -------
@@ -376,7 +396,9 @@ def pseudo_electrostatic_packing(
     im_new = np.zeros_like(im)
     im_new, count = _do_packing(im_new, mask, q, r, 1, clearance, smooth, maxiter)
     logger.debug(f'A total of {count} spheres were added')
-    return im_new
+    im = np.copy(im).astype(type(value))
+    im[im_new] = value
+    return im
 
 
 def _randomized_argsort(inds, vals):
