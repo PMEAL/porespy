@@ -61,7 +61,7 @@ def _random_spheres2(
     if smooth:  # Smooth balls are 1 pixel smaller, so increase r
         r = r + 1
 
-    mask = im > 0  # Find mask of valid points
+    mask = im == 1  # Find mask of valid points
     if protrusion > 0:  # Dilate mask
         dt = edt(~mask)
         mask = dt <= protrusion
@@ -90,8 +90,8 @@ def _random_spheres2(
         maxiter = min(int(np.round(phi*Vbulk/Vsph)), maxiter)
 
     # Finally run it
-    im_new = np.zeros_like(im)
-    im_new, count = _do_packing(im_new, mask, q, r, 1, clearance, smooth, maxiter)
+    im_new = np.zeros_like(im, dtype=bool)
+    im_new, count = _do_packing(im_new, mask, q, r, True, clearance, smooth, maxiter)
     logger.debug(f'A total of {count} spheres were added')
     im_new = np.swapaxes(im_new, 0, axis)
     im = np.copy(im).astype(type(value))
@@ -203,7 +203,7 @@ def pseudo_gravity_packing(
         r = r + 1
 
     # Shrink or grow mask to allow for clearance
-    mask = im > 0  # Find mask of valid points
+    mask = im == 1  # Find mask of valid points
     if protrusion > 0:  # Dilate mask
         dt = edt(~mask)
         mask = dt <= protrusion
@@ -243,8 +243,8 @@ def pseudo_gravity_packing(
         maxiter = min(int(np.round(phi*Vbulk/Vsph)), maxiter)
 
     # Finally insert spheres
-    im_new = np.zeros_like(im)
-    im_new, count = _do_packing(im_new, mask, q, r, 1, clearance, smooth, maxiter)
+    im_new = np.zeros_like(im, dtype=bool)
+    im_new, count = _do_packing(im_new, mask, q, r, True, clearance, smooth, maxiter)
     logger.debug(f'A total of {count} spheres were added')
     im = np.copy(im).astype(type(value))
     im[im_new] = value
@@ -393,8 +393,8 @@ def pseudo_electrostatic_packing(
         maxiter = min(int(np.round(phi*Vbulk/Vsph)), maxiter)
 
     # Finally run it
-    im_new = np.zeros_like(im)
-    im_new, count = _do_packing(im_new, mask, q, r, 1, clearance, smooth, maxiter)
+    im_new = np.zeros_like(im, dtype=bool)
+    im_new, count = _do_packing(im_new, mask, q, r, True, clearance, smooth, maxiter)
     logger.debug(f'A total of {count} spheres were added')
     im = np.copy(im).astype(type(value))
     im[im_new] = value
@@ -455,7 +455,7 @@ if __name__ == "__main__":
 
 # %% Electrostatic packing
 
-    fig, ax = plt.subplots(2, 3)
+    fig, ax = plt.subplots(2, 2)
     if 1:
         sites = np.zeros([300, 300], dtype=bool)
         sites[150, 150] = True
@@ -481,9 +481,10 @@ if __name__ == "__main__":
             seed=0,
             phi=.3,
             smooth=True,
-        )*2
+            value=2,
+        )
         im2 = ps.generators.pseudo_electrostatic_packing(
-            im=blobs,
+            im=im == 1,
             sites=im == 2,
             r=5,
             clearance=1,
@@ -492,54 +493,59 @@ if __name__ == "__main__":
             seed=0,
             phi=1.0,
             smooth=True,
-        )*3
-        ax[0][1].imshow(im + im2 + blobs, origin='lower')
+            value=3,
+        )
+        ax[0][1].imshow(im2 + (im == 2)*2, origin='lower')
 
 # %% Gravity packing
     if 1:
         im = pseudo_gravity_packing(
-            im=np.ones(shape, dtype=bool),
+            shape=shape,
             r=16,
             clearance=0,
             edges='contained',
-            phi=.1,
+            phi=.2,
             smooth=False,
-        )*1
+            value=2,
+        )
         im = pseudo_gravity_packing(
-            im=im == 0,
+            im=im,
             r=8,
-            clearance=4,
-            protrusion=-4,
+            clearance=2,
+            protrusion=-2,
             edges='extended',
             seed=0,
             phi=0.25,
             maxiter=1000,
             smooth=False,
-        )*2 + im
+            value=3,
+        )
         im = pseudo_gravity_packing(
-            im=im == 0,
+            im=im,
             r=12,
             clearance=4,
             protrusion=-4,
             edges='contained',
             seed=0,
             smooth=True,
-        )*3 + im
-        ax[0][2].imshow(im, origin='lower')
+            value=4,
+        )
+        ax[1][0].imshow(im, origin='lower')
 
 # %% Random packing
     if 1:
-        im = random_spheres2(
-            im=np.ones(shape, dtype=bool),
+        im = _random_spheres2(
+            shape=shape,
             r=16,
             clearance=5,
             edges='extended',
             seed=0,
             phi=.25,
             smooth=False,
-        )*3
-        im = random_spheres2(
-            im=im == 0,
+            value=3,
+        )
+        im = _random_spheres2(
+            im=im,
             r=8,
             clearance=5,
             protrusion=5,
@@ -548,14 +554,16 @@ if __name__ == "__main__":
             phi=0.1,
             maxiter=1000,
             smooth=False,
-        )*2 + im
-        im = random_spheres2(
-            im=im == 0,
+            value=2,
+        )
+        im = _random_spheres2(
+            im=im,
             r=12,
             clearance=5,
             protrusion=5,
             edges='contained',
             seed=0,
             smooth=True,
-        )*1 + im
-        ax[1][0].imshow(im, origin='lower')
+            value=4
+        )
+        ax[1][1].imshow(im, origin='lower')
