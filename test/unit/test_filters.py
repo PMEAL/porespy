@@ -273,9 +273,8 @@ class FilterTest():
 
     def test_local_thickness_known_sizes(self):
         im = np.zeros(shape=[300, 300])
-        im = ps.generators.RSA(im, r=20)
-        im = ps.generators.RSA(im, r=10)
-        im = im > 0
+        im = ps.generators.random_spheres(im=im, r=20)
+        im = ps.generators.random_spheres(im=im, r=10)
         lt = ps.filters.local_thickness(im, sizes=[20, 10])
         assert np.all(np.unique(lt) == [0, 10, 20])
 
