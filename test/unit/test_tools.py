@@ -428,6 +428,18 @@ class ToolsTest():
         t = toc(quiet=True)
         assert t > 1
 
+    def test_points_to_spheres_3D(self):
+        im=np.full((41,41,41),0)
+        im[20,20,20]=10
+        res_ps_3D=ps.tools.points_to_spheres(im=im)
+        assert np.sum(res_ps_3D) == 4169
+        
+    def test_points_to_spheres_2D(self):
+        im=np.full((41,41),0)
+        im[20,20]=10
+        res_ps_2D=ps.tools.points_to_spheres(im=im)
+        assert np.sum(res_ps_2D) == 317
+
 
 if __name__ == '__main__':
     t = ToolsTest()

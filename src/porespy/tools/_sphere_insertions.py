@@ -36,7 +36,7 @@ def points_to_spheres(im):
     from scipy.spatial import distance_matrix
     if im.ndim == 3:
         x, y, z = np.where(im > 0)
-        coords = np.vstack((x, y, z)).T
+        coords = np.vstack((x, y, z))
     else:
         x, y = np.where(im > 0)
         coords = np.vstack((x, y))
@@ -46,7 +46,10 @@ def points_to_spheres(im):
         dmap[mask] = np.inf
         r = np.around(dmap.min(axis=0)/2, decimals=0).astype(int)
     else:
-        r = im[x, y].flatten()
+        if im.ndim == 3:
+            r = im[x, y, z].flatten()
+        else:
+            r = im[x, y].flatten()
     im_spheres = np.zeros_like(im, dtype=bool)
     im_spheres = _insert_disks_at_points_parallel(
         im_spheres,
