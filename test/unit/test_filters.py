@@ -272,7 +272,7 @@ class FilterTest():
         np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
 
     def test_local_thickness_known_sizes(self):
-        im = np.ones(shape=[300, 300])
+        im = np.zeros(shape=[300, 300])
         im = ps.generators.random_spheres(im=im, r=20)
         im = ps.generators.random_spheres(im=im, r=10)
         lt = ps.filters.local_thickness(~im, sizes=[20, 10])
