@@ -42,7 +42,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="blobs" href="porespy.generators.blobs.html" />
-    <link rel="prev" title="rsa" href="porespy.generators.rsa.html" />
+    <link rel="prev" title="generators" href="../porespy.generators.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="en">
   </head>
@@ -174,11 +174,6 @@
    </i>
   </label>
   <ul class="current">
-   <li class="toctree-l2">
-    <a class="reference internal" href="porespy.generators.rsa.html">
-     rsa
-    </a>
-   </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      random_spheres
@@ -1048,18 +1043,20 @@
 <h1>random_spheres<a class="headerlink" href="#random-spheres" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.generators.random_spheres">
-<span class="sig-name descname"><span class="pre">random_spheres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im_or_shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume_fraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clearance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protrusion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'contained'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_spheres</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/generators/_imgen.html#random_spheres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.generators.random_spheres" title="Link to this definition">#</a></dt>
-<dd><p>Generates a sphere or disk packing using Random Sequential Addition</p>
+<span class="sig-name descname"><span class="pre">random_spheres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_SupportsArray</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_NestedSequence</span><span class="p"><span class="pre">[</span></span><span class="pre">_SupportsArray</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_NestedSequence</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clearance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protrusion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'contained'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'extended'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'contained'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/generators/_imgen.html#random_spheres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.generators.random_spheres" title="Link to this definition">#</a></dt>
+<dd><p>Generates a sphere or disk packing using random sequential addition as
+described by Torquato <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>im_or_shape</strong> (<em>ndarray</em><em> or </em><em>list</em>) – To provide flexibility, this argument accepts either an image into
-which the spheres are inserted, or a shape which is used to create an
-empty image.  In both cases the spheres are added as <code class="docutils literal notranslate"><span class="pre">True</span></code> values
-to the background.  Since <code class="docutils literal notranslate"><span class="pre">True</span></code> is considered the pore space, then
-the added spheres represent holes.</p></li>
-<li><p><strong>r</strong> (<em>int</em>) – The radius of the disk or sphere to insert.</p></li>
-<li><p><strong>volume_fraction</strong> (<em>scalar</em><em> (</em><em>default is 1.0</em><em>)</em>) – The fraction of the image that should be filled with spheres.  The
+<li><p><strong>shape</strong> (<em>list</em>) – The shape of the image to create.  This is equivalent to passing an array
+of <cite>False</cite> values of the desired size to <cite>im</cite>.</p></li>
+<li><p><strong>im</strong> (<em>ndarray</em>) – Image with <cite>False</cite> indicating the voxels where spheres should be
+inserted. This can be used to insert spheres into an image that already
+has some features (e.g. half filled with larger spheres, or a cylindrical
+plug).</p></li>
+<li><p><strong>r</strong> (<em>int</em>) – The radius of the disk or sphere to insert. The default is 5.</p></li>
+<li><p><strong>phi</strong> (<em>scalar</em><em> (</em><em>default is 1.0</em><em>)</em>) – The fraction of the image that should be filled with spheres.  The
 spheres are added as <code class="docutils literal notranslate"><span class="pre">True</span></code>’s, so each sphere addition increases the
 <code class="docutils literal notranslate"><span class="pre">volume_fraction</span></code> until the specified limit is reached.  Note that if
 <code class="docutils literal notranslate"><span class="pre">n_max</span></code> is reached first, then <code class="docutils literal notranslate"><span class="pre">volume_fraction</span></code> will not be
@@ -1068,17 +1065,16 @@ achieved.  Also, <code class="docutils literal notranslate"><span class="pre">vo
 <li><p><strong>clearance</strong> (<em>int</em><em> (</em><em>optional</em><em>, </em><em>default = 0</em><em>)</em>) – The amount of space to put between each sphere. Negative values are
 acceptable to create overlaps, so long as <code class="docutils literal notranslate"><span class="pre">abs(clearance)</span> <span class="pre">&lt;</span> <span class="pre">r</span></code>.</p></li>
 <li><p><strong>protrusion</strong> (<em>int</em><em> (</em><em>optional</em><em>, </em><em>default = 0</em><em>)</em>) – The amount by which inserted spheres are allowed to protrude outside of
-the given background.  If set to 0 (the default) then all spheres will
-be fully inside the region marked <code class="docutils literal notranslate"><span class="pre">False</span></code> in the input image. If &gt; 0, then
-spheres will extend into the region marked <code class="docutils literal notranslate"><span class="pre">True</span></code> in the input image.</p></li>
-<li><p><strong>n_max</strong> (<em>int</em><em> (</em><em>default is 100</em><em>,</em><em>000</em><em>)</em>) – The maximum number of spheres to add.  Using a low value may halt
-the addition process prior to reaching the specified
-<code class="docutils literal notranslate"><span class="pre">volume_fraction</span></code>.  If <code class="docutils literal notranslate"><span class="pre">None</span></code> is given, then no limit is used.</p></li>
+the given forground.  If set to 0 (the default) then all spheres will
+be fully inside the region marked <code class="docutils literal notranslate"><span class="pre">False</span></code> in the input image.</p></li>
+<li><p><strong>maxiter</strong> (<em>int</em><em> (</em><em>default is 100</em><em>,</em><em>000</em><em>)</em>) – The maximum number of spheres to add.  Using a low value may halt
+the addition process prior to reaching the specified <code class="docutils literal notranslate"><span class="pre">phi</span></code>.  If
+<code class="docutils literal notranslate"><span class="pre">None</span></code> is given, then no limit is used.</p></li>
 <li><p><strong>edges</strong> (<em>string</em><em> (</em><em>default is 'contained'</em><em>)</em>) – <p>Controls how the edges of the image are handled.  Options are:</p>
 <table class="table">
 <thead>
-<tr class="row-odd"><th class="head"><p>edges</p></th>
-<th class="head"><p>description</p></th>
+<tr class="row-odd"><th class="head"><p>Edge Mode</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
@@ -1094,9 +1090,6 @@ entire volume is counted as added for computational efficiency.</p></td>
 </tbody>
 </table>
 </p></li>
-<li><p><strong>return_spheres</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then an image containing only the spheres is returned
-rather than the input image with the spheres added, which is the
-default behavior.</p></li>
 <li><p><strong>smooth</strong> (<em>bool</em>) – Indicates whether balls should have smooth faces (<code class="docutils literal notranslate"><span class="pre">True</span></code>) or should
 include the bumps on the extremities (<code class="docutils literal notranslate"><span class="pre">False</span></code>).</p></li>
 <li><p><strong>seed</strong> (<em>int</em>) – The seed to supply to the random number generators. Because this function
@@ -1104,7 +1097,7 @@ uses <code class="docutils literal notranslate"><span class="pre">numba</span></
 has no effect. To get a repeatable image, the seed must be passed to the
 function so it can be initialized the way <code class="docutils literal notranslate"><span class="pre">numba</span></code> requires. The default
 is <code class="docutils literal notranslate"><span class="pre">None</span></code>, which means each call will produce a new realization.</p></li>
-<li><p><strong>value</strong> (<em>scalar</em>) – The value to set the inserted spheres to. Using <cite>value &lt; 0</cite> is a handy
+<li><p><strong>value</strong> (<em>scalar</em>) – The value to set the inserted spheres to. Using <cite>value &gt; 1</cite> is a handy
 way to repeatedly insert different sphere sizes into the same image while
 making them easy to identify.</p></li>
 </ul>
@@ -1121,13 +1114,18 @@ making them easy to identify.</p></li>
 <p><a class="reference internal" href="porespy.generators.pseudo_gravity_packing.html#porespy.generators.pseudo_gravity_packing" title="porespy.generators.pseudo_gravity_packing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pseudo_gravity_packing</span></code></a>, <a class="reference internal" href="porespy.generators.pseudo_electrostatic_packing.html#porespy.generators.pseudo_electrostatic_packing" title="porespy.generators.pseudo_electrostatic_packing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pseudo_electrostatic_packing</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
-<p>This algorithm ensures that spheres do not overlap but does not
-guarantee they are tightly packed.</p>
+<p>This algorithm ensures that spheres do not overlap but does not guarantee they
+are tightly packed.</p>
 <p>This function adds spheres to the background of the received <code class="docutils literal notranslate"><span class="pre">im</span></code>, which
 allows iteratively adding spheres of different radii to the unfilled space
-by repeatedly passing in the result of previous calls to RSA.</p>
+by repeatedly passing in the result of previous calls to the function.</p>
 <p class="rubric">References</p>
-<p>[1] Random Heterogeneous Materials, S. Torquato (2001)</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Random Heterogeneous Materials, S. Torquato (2001)</p>
+</aside>
+</aside>
 <p class="rubric">Examples</p>
 <p><a class="reference external" href="https://porespy.org/examples/generators/reference/random_spheres.html">Click here</a>
 to view online example.</p>

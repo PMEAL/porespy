@@ -202,7 +202,7 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;pseudo_gravity_packing&quot;</span><span class="p">,</span>
     <span class="s2">&quot;pseudo_electrostatic_packing&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;random_spheres2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_random_spheres2&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -215,7 +215,7 @@
     <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">random_spheres2</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">_random_spheres2</span><span class="p">(</span>
     <span class="n">shape</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">r</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
@@ -227,21 +227,27 @@
     <span class="n">phi</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="n">seed</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is an alternative implementation of random_spheres that uses the same</span>
+<span class="sd">    machinery as the pseudo packing generators.  It is not as fast as the original</span>
+<span class="sd">    though.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">_set_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>  <span class="c1"># Initialize rng so numba sees it</span>
         <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>  <span class="c1"># Also initialize numpys rng</span>
 
     <span class="k">if</span> <span class="n">im</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># If shape is given instead of im</span>
-        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
 
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>  <span class="c1"># Move &quot;axis&quot; to x position for processing</span>
 
     <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>  <span class="c1"># Smooth balls are 1 pixel smaller, so increase r</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">r</span> <span class="o">+</span> <span class="mi">1</span>
 
-    <span class="n">mask</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># Find mask of valid points</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">im</span> <span class="o">==</span> <span class="mi">0</span>  <span class="c1"># Find mask of valid points</span>
     <span class="k">if</span> <span class="n">protrusion</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Dilate mask</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">)</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&lt;=</span> <span class="n">protrusion</span>
@@ -249,8 +255,8 @@
         <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">protrusion</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">edges</span> <span class="o">==</span> <span class="s1">&#39;contained&#39;</span><span class="p">:</span>
     <span class="c1"># Deal with edge mode</span>
+    <span class="k">if</span> <span class="n">edges</span> <span class="o">==</span> <span class="s1">&#39;contained&#39;</span><span class="p">:</span>
         <span class="n">border</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;faces&#39;</span><span class="p">)</span>
         <span class="n">mask</span><span class="p">[</span><span class="n">border</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -270,11 +276,13 @@
         <span class="n">maxiter</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">phi</span><span class="o">*</span><span class="n">Vbulk</span><span class="o">/</span><span class="n">Vsph</span><span class="p">)),</span> <span class="n">maxiter</span><span class="p">)</span>
 
     <span class="c1"># Finally run it</span>
-    <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-    <span class="n">im_new</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">_do_packing</span><span class="p">(</span><span class="n">im_new</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">clearance</span><span class="p">,</span> <span class="n">smooth</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">)</span>
+    <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">im_new</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">_do_packing</span><span class="p">(</span><span class="n">im_new</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">clearance</span><span class="p">,</span> <span class="n">smooth</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;A total of </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1"> spheres were added&#39;</span><span class="p">)</span>
     <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im_new</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">im_new</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="n">im</span><span class="p">[</span><span class="n">im_new</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="n">im</span>
 
 
 <div class="viewcode-block" id="pseudo_gravity_packing">
@@ -291,6 +299,7 @@
     <span class="n">phi</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iteratively inserts spheres at the lowest accessible point in an image,</span>
@@ -300,9 +309,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    shape : list</span>
 <span class="sd">        The shape of the image to create.  This is equivalent to passing an array</span>
-<span class="sd">        of `True` values of the desired size to `im`.</span>
+<span class="sd">        of `False` values of the desired size to `im`.</span>
 <span class="sd">    im : ndarray</span>
-<span class="sd">        Image with values &gt; 0 indicating the voxels where spheres should be</span>
+<span class="sd">        Image with `False` indicating the voxels where spheres should be</span>
 <span class="sd">        inserted. This can be used to insert spheres into an image that already</span>
 <span class="sd">        has some features (e.g. half filled with larger spheres, or a cylindrical</span>
 <span class="sd">        plug).</span>
@@ -348,11 +357,15 @@
 <span class="sd">        is ``None``, which means each call will produce a new realization.</span>
 <span class="sd">    smooth : bool, default = `True`</span>
 <span class="sd">        Controls whether or not the spheres have the small pip each face.</span>
+<span class="sd">    value : int, default = 1</span>
+<span class="sd">        The value of insert for the spheres. The default is 1, which puts holes into</span>
+<span class="sd">        the background. Values other than 1 make it easy to add spheres repeatedly</span>
+<span class="sd">        and identify which were added on each step.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    spheres : ndarray</span>
-<span class="sd">        An image the same size as ``im`` with spheres indicated by ``False``.</span>
+<span class="sd">        An image the same size as `im` with spheres indicated by `value`.</span>
 <span class="sd">        The spheres are only inserted at locations that are accessible</span>
 <span class="sd">        from the top of the image.</span>
 
@@ -370,7 +383,7 @@
         <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">im</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># If shape was given, generate empty im</span>
-        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
 
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>  <span class="c1"># Move specified axis to 0 position</span>
 
@@ -378,7 +391,7 @@
         <span class="n">r</span> <span class="o">=</span> <span class="n">r</span> <span class="o">+</span> <span class="mi">1</span>
 
     <span class="c1"># Shrink or grow mask to allow for clearance</span>
-    <span class="n">mask</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># Find mask of valid points</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">im</span> <span class="o">==</span> <span class="mi">0</span>  <span class="c1"># Find mask of valid points</span>
     <span class="k">if</span> <span class="n">protrusion</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Dilate mask</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">)</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&lt;=</span> <span class="n">protrusion</span>
@@ -418,11 +431,13 @@
         <span class="n">maxiter</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">phi</span><span class="o">*</span><span class="n">Vbulk</span><span class="o">/</span><span class="n">Vsph</span><span class="p">)),</span> <span class="n">maxiter</span><span class="p">)</span>
 
     <span class="c1"># Finally insert spheres</span>
-    <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-    <span class="n">im_new</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">_do_packing</span><span class="p">(</span><span class="n">im_new</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">clearance</span><span class="p">,</span> <span class="n">smooth</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">)</span>
+    <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">im_new</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">_do_packing</span><span class="p">(</span><span class="n">im_new</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">clearance</span><span class="p">,</span> <span class="n">smooth</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;A total of </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1"> spheres were added&#39;</span><span class="p">)</span>
-    <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im_new</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">im_new</span></div>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="n">im</span><span class="p">[</span><span class="n">im_new</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">im</span></div>
 
 
 
@@ -441,6 +456,7 @@
     <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">compactness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iterativley inserts spheres as close to the given sites as possible.</span>
@@ -449,9 +465,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    shape : list</span>
 <span class="sd">        The shape of the image to create.  This is equivalent to passing an array</span>
-<span class="sd">        of `True` values of the desired size to `im`.</span>
+<span class="sd">        of `False` values of the desired size to `im`.</span>
 <span class="sd">    im : ndarray</span>
-<span class="sd">        Image with values &gt; 0 indicating the voxels where spheres should be</span>
+<span class="sd">        Image with `False` indicating the voxels where spheres should be</span>
 <span class="sd">        inserted. This can be used to insert spheres into an image that already</span>
 <span class="sd">        has some features (e.g. half filled with larger spheres, or a cylindrical</span>
 <span class="sd">        plug).</span>
@@ -500,6 +516,10 @@
 <span class="sd">        Controls how tightly the spheres are grouped together. A value of 1.0</span>
 <span class="sd">        (default) results in the tighest possible grouping while values &lt; 1.0</span>
 <span class="sd">        give more loosely or imperfectly packed spheres.</span>
+<span class="sd">    value : int, default = 1</span>
+<span class="sd">        The value of insert for the spheres. The default is 1, which puts holes</span>
+<span class="sd">        into to the background. Values other than 1 (Foreground) make</span>
+<span class="sd">        it easy to add spheres repeated and identify which were added on each step.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -518,12 +538,12 @@
         <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">im</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># If shape was given, generate empty im</span>
-        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>  <span class="c1"># If smooth spheres are used, increase r to compensate</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">r</span> <span class="o">+</span> <span class="mi">1</span>
 
-    <span class="n">mask</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># Find mask of valid points</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">im</span> <span class="o">==</span> <span class="mi">0</span>  <span class="c1"># Find mask of valid points</span>
     <span class="k">if</span> <span class="n">protrusion</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Dilate mask</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">)</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&lt;=</span> <span class="n">protrusion</span>
@@ -564,10 +584,12 @@
         <span class="n">maxiter</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">phi</span><span class="o">*</span><span class="n">Vbulk</span><span class="o">/</span><span class="n">Vsph</span><span class="p">)),</span> <span class="n">maxiter</span><span class="p">)</span>
 
     <span class="c1"># Finally run it</span>
-    <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-    <span class="n">im_new</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">_do_packing</span><span class="p">(</span><span class="n">im_new</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">clearance</span><span class="p">,</span> <span class="n">smooth</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">)</span>
+    <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">im_new</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">_do_packing</span><span class="p">(</span><span class="n">im_new</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">clearance</span><span class="p">,</span> <span class="n">smooth</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;A total of </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1"> spheres were added&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">im_new</span></div>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="n">im</span><span class="p">[</span><span class="n">im_new</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="n">im</span></div>
 
 
 
@@ -625,7 +647,7 @@
 
 <span class="c1"># %% Electrostatic packing</span>
 
-    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
     <span class="k">if</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">sites</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
         <span class="n">sites</span><span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
@@ -643,7 +665,7 @@
     <span class="k">if</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">blobs</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">([</span><span class="mi">400</span><span class="p">,</span> <span class="mi">400</span><span class="p">],</span> <span class="n">porosity</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">pseudo_electrostatic_packing</span><span class="p">(</span>
-            <span class="n">im</span><span class="o">=</span><span class="n">blobs</span><span class="p">,</span>
+            <span class="n">im</span><span class="o">=~</span><span class="n">blobs</span><span class="p">,</span>
             <span class="n">r</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
             <span class="n">clearance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">protrusion</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -651,9 +673,10 @@
             <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">phi</span><span class="o">=</span><span class="mf">.3</span><span class="p">,</span>
             <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span><span class="o">*</span><span class="mi">2</span>
+            <span class="n">value</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">im2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">pseudo_electrostatic_packing</span><span class="p">(</span>
-            <span class="n">im</span><span class="o">=</span><span class="n">blobs</span><span class="p">,</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
             <span class="n">sites</span><span class="o">=</span><span class="n">im</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span>
             <span class="n">r</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
             <span class="n">clearance</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -662,54 +685,59 @@
             <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">phi</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
             <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span><span class="o">*</span><span class="mi">3</span>
-        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span> <span class="o">+</span> <span class="n">im2</span> <span class="o">+</span> <span class="n">blobs</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
+            <span class="n">value</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im2</span> <span class="o">+</span> <span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
 
 <span class="c1"># %% Gravity packing</span>
     <span class="k">if</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">pseudo_gravity_packing</span><span class="p">(</span>
-            <span class="n">im</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">),</span>
+            <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
             <span class="n">r</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
             <span class="n">clearance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">edges</span><span class="o">=</span><span class="s1">&#39;contained&#39;</span><span class="p">,</span>
-            <span class="n">phi</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span>
+            <span class="n">phi</span><span class="o">=</span><span class="mf">.2</span><span class="p">,</span>
             <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span><span class="o">*</span><span class="mi">1</span>
+            <span class="n">value</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">pseudo_gravity_packing</span><span class="p">(</span>
-            <span class="n">im</span><span class="o">=</span><span class="n">im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
             <span class="n">r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
-            <span class="n">clearance</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-            <span class="n">protrusion</span><span class="o">=-</span><span class="mi">4</span><span class="p">,</span>
+            <span class="n">clearance</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">protrusion</span><span class="o">=-</span><span class="mi">2</span><span class="p">,</span>
             <span class="n">edges</span><span class="o">=</span><span class="s1">&#39;extended&#39;</span><span class="p">,</span>
             <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">phi</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
             <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
             <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span><span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="n">im</span>
+            <span class="n">value</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">pseudo_gravity_packing</span><span class="p">(</span>
-            <span class="n">im</span><span class="o">=</span><span class="n">im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
             <span class="n">r</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
             <span class="n">clearance</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
             <span class="n">protrusion</span><span class="o">=-</span><span class="mi">4</span><span class="p">,</span>
             <span class="n">edges</span><span class="o">=</span><span class="s1">&#39;contained&#39;</span><span class="p">,</span>
             <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span><span class="o">*</span><span class="mi">3</span> <span class="o">+</span> <span class="n">im</span>
-        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
+            <span class="n">value</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
 
 <span class="c1"># %% Random packing</span>
     <span class="k">if</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">im</span> <span class="o">=</span> <span class="n">random_spheres2</span><span class="p">(</span>
-            <span class="n">im</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">),</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">_random_spheres2</span><span class="p">(</span>
+            <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
             <span class="n">r</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
             <span class="n">clearance</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
             <span class="n">edges</span><span class="o">=</span><span class="s1">&#39;extended&#39;</span><span class="p">,</span>
             <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">phi</span><span class="o">=</span><span class="mf">.25</span><span class="p">,</span>
             <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span><span class="o">*</span><span class="mi">3</span>
-        <span class="n">im</span> <span class="o">=</span> <span class="n">random_spheres2</span><span class="p">(</span>
-            <span class="n">im</span><span class="o">=</span><span class="n">im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">_random_spheres2</span><span class="p">(</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
             <span class="n">r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
             <span class="n">clearance</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
             <span class="n">protrusion</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
@@ -718,17 +746,19 @@
             <span class="n">phi</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
             <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
             <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span><span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="n">im</span>
-        <span class="n">im</span> <span class="o">=</span> <span class="n">random_spheres2</span><span class="p">(</span>
-            <span class="n">im</span><span class="o">=</span><span class="n">im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">_random_spheres2</span><span class="p">(</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
             <span class="n">r</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
             <span class="n">clearance</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
             <span class="n">protrusion</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
             <span class="n">edges</span><span class="o">=</span><span class="s1">&#39;contained&#39;</span><span class="p">,</span>
             <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span><span class="o">*</span><span class="mi">1</span> <span class="o">+</span> <span class="n">im</span>
-        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
+            <span class="n">value</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
 </pre></div>
 
               </article>
