@@ -16,3 +16,5 @@ ax[0][0].imshow(im)
 ax[0][1].imshow(chords)
 ax[1][0].imshow(colored_chords, cmap=plt.cm.jet)
 ax[1][1].bar(h.L, h.pdf, width=h.bin_widths, edgecolor="k")
+
+plt.show()

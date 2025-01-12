@@ -164,3 +164,6 @@ plt.ylabel('volume fraction invaded [voxels]')
   <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/fig5.png" width="50%"></img>
   <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/fig6.png" width="50%"></img>
 </p>
+
+# debug
+日本語で失礼しますが、version関連でbugが起こってたので、requirements.txtの追加をしてdebugをしました。

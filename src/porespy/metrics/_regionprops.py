@@ -5,7 +5,7 @@ import scipy.ndimage as spim
 from pandas import DataFrame
 from skimage.measure import mesh_surface_area, regionprops
 from skimage.measure._regionprops import RegionProperties
-from skimage.morphology import ball, skeletonize_3d
+from skimage.morphology import ball, skeletonize
 
 from porespy.tools import bbox_to_slices, extract_subsection
 
