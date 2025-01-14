@@ -3,7 +3,7 @@ import numpy as np
 from edt import edt
 import porespy as ps
 import scipy.ndimage as spim
-from skimage.morphology import disk, ball, skeletonize_3d
+from skimage.morphology import disk, ball, skeletonize
 from skimage.util import random_noise
 from scipy.stats import norm
 ps.settings.tqdm['disable'] = True
@@ -467,13 +467,13 @@ class FilterTest():
 
     def test_prune_branches(self):
         im = ps.generators.lattice_spheres(shape=[100, 100, 100], r=4)
-        skel1 = skeletonize_3d(im)
+        skel1 = skeletonize(im)
         skel2 = ps.filters.prune_branches(skel1)
         assert skel1.sum() > skel2.sum()
 
     def test_prune_branches_n2(self):
         im = ps.generators.lattice_spheres(shape=[100, 100, 100], r=4)
-        skel1 = skeletonize_3d(im)
+        skel1 = skeletonize(im)
         skel2 = ps.filters.prune_branches(skel1, iterations=1)
         skel3 = ps.filters.prune_branches(skel1, iterations=2)
         assert skel1.sum() > skel2.sum()
@@ -481,9 +481,9 @@ class FilterTest():
 
     def test_apply_padded(self):
         im = ps.generators.blobs(shape=[100, 100])
-        skel1 = skeletonize_3d(im)
+        skel1 = skeletonize(im)
         skel2 = ps.filters.apply_padded(im=im, pad_width=20, pad_val=1,
-                                        func=skeletonize_3d)
+                                        func=skeletonize)
         assert (skel1.astype(bool)).sum() != (skel2.astype(bool)).sum()
 
     def test_trim_small_clusters(self):

@@ -169,7 +169,7 @@ def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
 
     Notes
     -----
-    A use case for this is when using ``skimage.morphology.skeletonize_3d``
+    A use case for this is when using ``skimage.morphology.skeletonize``
     to ensure that the skeleton extends beyond the edges of the image.
 
     Examples

@@ -62,7 +62,7 @@ def unpad(im, pad_width):
 
     Notes
     -----
-    A use case for this is when using ``skimage.morphology.skeletonize_3d``
+    A use case for this is when using ``skimage.morphology.skeletonize``
     to ensure that the skeleton extends beyond the edges of the image, but the
     padding should be subsequently removed.
 

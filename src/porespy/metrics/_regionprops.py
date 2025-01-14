@@ -7,7 +7,7 @@ try:
     from skimage.measure import marching_cubes
 except ImportError:
     from skimage.measure import marching_cubes_lewiner as marching_cubes
-from skimage.morphology import skeletonize_3d, ball
+from skimage.morphology import skeletonize, ball
 from skimage.measure import regionprops
 from skimage.measure._regionprops import RegionProperties
 from pandas import DataFrame
@@ -191,7 +191,7 @@ def regionprops_3D(im):
             as the region to the actual surface area of the region.
 
         'skeleton'
-            The medial axis of the region obtained using the ``skeletonize_3D``
+            The medial axis of the region obtained using the ``skeletonize``
             method from **skimage**.
 
         'convex_volume'
@@ -274,7 +274,7 @@ class RegionPropertiesPS(RegionProperties):
 
     @property
     def skeleton(self):
-        return skeletonize_3d(self.mask)
+        return skeletonize(self.mask)
 
     @property
     def surface_area(self):

@@ -2,7 +2,7 @@ import numpy as np
 from edt import edt
 import porespy as ps
 import scipy.ndimage as spim
-from skimage.morphology import skeletonize_3d
+from skimage.morphology import skeletonize
 ps.settings.loglevel = "CRITICAL"
 ps.settings.tqdm['disable'] = True
 
