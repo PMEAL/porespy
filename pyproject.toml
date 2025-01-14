@@ -137,6 +137,8 @@ python_classes = "*Test"
 python_functions = "test_*"
 testpaths = ["test", "examples"]
 norecursedirs = [".git", ".github", ".ipynb_checkpoints", "build", "dist"]
+addopts = "--assert=plain"
+
 
 [tool.coverage.run]
 source = ["src/porespy"]
