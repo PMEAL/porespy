@@ -22,7 +22,7 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -32,7 +32,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=30646c52"></script>
@@ -184,27 +184,27 @@
               <article class="bd-article" role="main">
                 
   <h1>Source code for porespy.filters._funcs</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">inspect</span> <span class="k">as</span> <span class="nn">insp</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">dask</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
-<span class="kn">import</span> <span class="nn">operator</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
-<span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">reconstruction</span>
-<span class="kn">from</span> <span class="nn">skimage.segmentation</span> <span class="kn">import</span> <span class="n">clear_border</span>
-<span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">ball</span><span class="p">,</span> <span class="n">disk</span><span class="p">,</span> <span class="n">square</span><span class="p">,</span> <span class="n">cube</span><span class="p">,</span> <span class="n">diamond</span><span class="p">,</span> <span class="n">octahedron</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_check_for_singleton_axes</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_border</span><span class="p">,</span> <span class="n">subdivide</span><span class="p">,</span> <span class="n">recombine</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">unpad</span><span class="p">,</span> <span class="n">extract_subsection</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">ps_disk</span><span class="p">,</span> <span class="n">ps_ball</span><span class="p">,</span> <span class="n">ps_round</span>
-<span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">insp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dask</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spim</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">skimage.morphology</span><span class="w"> </span><span class="kn">import</span> <span class="n">reconstruction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">skimage.segmentation</span><span class="w"> </span><span class="kn">import</span> <span class="n">clear_border</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">skimage.morphology</span><span class="w"> </span><span class="kn">import</span> <span class="n">ball</span><span class="p">,</span> <span class="n">disk</span><span class="p">,</span> <span class="n">square</span><span class="p">,</span> <span class="n">cube</span><span class="p">,</span> <span class="n">diamond</span><span class="p">,</span> <span class="n">octahedron</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">_check_for_singleton_axes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_border</span><span class="p">,</span> <span class="n">subdivide</span><span class="p">,</span> <span class="n">recombine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">unpad</span><span class="p">,</span> <span class="n">extract_subsection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">ps_disk</span><span class="p">,</span> <span class="n">ps_ball</span><span class="p">,</span> <span class="n">ps_round</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_tqdm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">pyedt</span> <span class="kn">import</span> <span class="n">edt</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyedt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
 <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">edt</span> <span class="kn">import</span> <span class="n">edt</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">edt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -238,7 +238,7 @@
 
 <div class="viewcode-block" id="apply_padded">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.apply_padded.html#porespy.filters.apply_padded">[docs]</a>
-<span class="k">def</span> <span class="nf">apply_padded</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">pad_val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_padded</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">pad_val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Applies padding to an image before sending to ``func``, then extracts</span>
 <span class="sd">    the result corresponding to the original image shape.</span>
@@ -260,7 +260,7 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    A use case for this is when using ``skimage.morphology.skeletonize_3d``</span>
+<span class="sd">    A use case for this is when using ``skimage.morphology.skeletonize``</span>
 <span class="sd">    to ensure that the skeleton extends beyond the edges of the image.</span>
 
 <span class="sd">    Examples</span>
@@ -280,7 +280,7 @@
 
 <div class="viewcode-block" id="trim_small_clusters">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.trim_small_clusters.html#porespy.filters.trim_small_clusters">[docs]</a>
-<span class="k">def</span> <span class="nf">trim_small_clusters</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trim_small_clusters</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove isolated voxels or clusters of a given size or smaller</span>
 
@@ -318,7 +318,7 @@
 
 <div class="viewcode-block" id="hold_peaks">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.hold_peaks.html#porespy.filters.hold_peaks">[docs]</a>
-<span class="k">def</span> <span class="nf">hold_peaks</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hold_peaks</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replaces each voxel with the highest value along the given axis.</span>
 
@@ -374,7 +374,7 @@
 
 <div class="viewcode-block" id="distance_transform_lin">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.distance_transform_lin.html#porespy.filters.distance_transform_lin">[docs]</a>
-<span class="k">def</span> <span class="nf">distance_transform_lin</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">distance_transform_lin</span><span class="p">(</span>
     <span class="n">im</span><span class="p">,</span>
     <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="s1">&#39;backward&#39;</span><span class="p">,</span> <span class="s1">&#39;both&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;both&quot;</span>
@@ -451,7 +451,7 @@
 
 <div class="viewcode-block" id="find_disconnected_voxels">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.find_disconnected_voxels.html#porespy.filters.find_disconnected_voxels">[docs]</a>
-<span class="k">def</span> <span class="nf">find_disconnected_voxels</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_disconnected_voxels</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Identifies all voxels that are not connected to the edge of the image.</span>
 
@@ -524,7 +524,7 @@
 
 <div class="viewcode-block" id="fill_blind_pores">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.fill_blind_pores.html#porespy.filters.fill_blind_pores">[docs]</a>
-<span class="k">def</span> <span class="nf">fill_blind_pores</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fill_blind_pores</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fills all blind pores that are isolated from the main void space.</span>
 
@@ -570,7 +570,7 @@
 
 <div class="viewcode-block" id="trim_floating_solid">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.trim_floating_solid.html#porespy.filters.trim_floating_solid">[docs]</a>
-<span class="k">def</span> <span class="nf">trim_floating_solid</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trim_floating_solid</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Removes all solid that that is not attached to main solid structure.</span>
 
@@ -616,7 +616,7 @@
 
 <div class="viewcode-block" id="trim_nonpercolating_paths">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.trim_nonpercolating_paths.html#porespy.filters.trim_nonpercolating_paths">[docs]</a>
-<span class="k">def</span> <span class="nf">trim_nonpercolating_paths</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">inlets</span><span class="p">,</span> <span class="n">outlets</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trim_nonpercolating_paths</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">inlets</span><span class="p">,</span> <span class="n">outlets</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove all nonpercolating paths between specified locations</span>
 
@@ -670,7 +670,7 @@
 
 <div class="viewcode-block" id="trim_extrema">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.trim_extrema.html#porespy.filters.trim_extrema">[docs]</a>
-<span class="k">def</span> <span class="nf">trim_extrema</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;maxima&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trim_extrema</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;maxima&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Trims local extrema in greyscale values by a specified amount.</span>
 
@@ -720,7 +720,7 @@
 
 <div class="viewcode-block" id="flood">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.flood.html#porespy.filters.flood">[docs]</a>
-<span class="k">def</span> <span class="nf">flood</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">flood</span><span class="p">(</span>
     <span class="n">im</span><span class="p">,</span>
     <span class="n">labels</span><span class="p">,</span>
     <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;maximum&#39;</span><span class="p">,</span> <span class="s1">&#39;minimum&#39;</span><span class="p">,</span> <span class="s1">&#39;median&#39;</span><span class="p">,</span> <span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">,</span>
@@ -795,7 +795,7 @@
 
 <div class="viewcode-block" id="flood_func">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.flood_func.html#porespy.filters.flood_func">[docs]</a>
-<span class="k">def</span> <span class="nf">flood_func</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">flood_func</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Flood each isolated region in an image with a constant value calculated by</span>
 <span class="sd">    the given function.</span>
@@ -855,7 +855,7 @@
 
 <div class="viewcode-block" id="find_dt_artifacts">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.find_dt_artifacts.html#porespy.filters.find_dt_artifacts">[docs]</a>
-<span class="k">def</span> <span class="nf">find_dt_artifacts</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_dt_artifacts</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Label points in a distance transform that are closer to image boundary</span>
 <span class="sd">    than solid</span>
@@ -901,7 +901,7 @@
 
 <div class="viewcode-block" id="region_size">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.region_size.html#porespy.filters.region_size">[docs]</a>
-<span class="k">def</span> <span class="nf">region_size</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">region_size</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replace each voxel with the size of the region to which it belongs</span>
 
@@ -949,7 +949,7 @@
 
 <div class="viewcode-block" id="apply_chords">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.apply_chords.html#porespy.filters.apply_chords">[docs]</a>
-<span class="k">def</span> <span class="nf">apply_chords</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_chords</span><span class="p">(</span>
     <span class="n">im</span><span class="p">,</span>
     <span class="n">spacing</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -1021,7 +1021,7 @@
 
 <div class="viewcode-block" id="apply_chords_3D">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.apply_chords_3D.html#porespy.filters.apply_chords_3D">[docs]</a>
-<span class="k">def</span> <span class="nf">apply_chords_3D</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">trim_edges</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_chords_3D</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">trim_edges</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Adds chords to the void space in all three principle directions.</span>
 
@@ -1082,7 +1082,7 @@
 
 <div class="viewcode-block" id="local_thickness">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.local_thickness.html#porespy.filters.local_thickness">[docs]</a>
-<span class="k">def</span> <span class="nf">local_thickness</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">local_thickness</span><span class="p">(</span>
     <span class="n">im</span><span class="p">,</span>
     <span class="n">sizes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span>
     <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hybrid&#39;</span><span class="p">,</span> <span class="s1">&#39;dt&#39;</span><span class="p">,</span> <span class="s1">&#39;mio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;hybrid&quot;</span><span class="p">,</span>
@@ -1170,7 +1170,7 @@
 
 <div class="viewcode-block" id="porosimetry">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.porosimetry.html#porespy.filters.porosimetry">[docs]</a>
-<span class="k">def</span> <span class="nf">porosimetry</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">porosimetry</span><span class="p">(</span>
     <span class="n">im</span><span class="p">,</span>
     <span class="n">sizes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span>
     <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1262,7 +1262,7 @@
 <span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">fftmorphology</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">porespy.filters</span><span class="w"> </span><span class="kn">import</span> <span class="n">fftmorphology</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
     <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
 
@@ -1356,7 +1356,7 @@
 
 <div class="viewcode-block" id="trim_disconnected_blobs">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.trim_disconnected_blobs.html#porespy.filters.trim_disconnected_blobs">[docs]</a>
-<span class="k">def</span> <span class="nf">trim_disconnected_blobs</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">inlets</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trim_disconnected_blobs</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">inlets</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Removes foreground voxels not connected to specified inlets.</span>
 
@@ -1415,7 +1415,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_get_axial_shifts</span><span class="p">(</span><span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">include_diagonals</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_axial_shifts</span><span class="p">(</span><span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">include_diagonals</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function to generate the axial shifts that will be performed on</span>
 <span class="sd">    the image to identify bordering pixels/voxels</span>
@@ -1443,7 +1443,7 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
 
 
-<span class="k">def</span> <span class="nf">_make_stack</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">include_diagonals</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_stack</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">include_diagonals</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a stack of images with one extra dimension to the input image</span>
 <span class="sd">    with length equal to the number of borders to search + 1.</span>
@@ -1477,7 +1477,7 @@
 
 <div class="viewcode-block" id="nphase_border">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.nphase_border.html#porespy.filters.nphase_border">[docs]</a>
-<span class="k">def</span> <span class="nf">nphase_border</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">include_diagonals</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">nphase_border</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">include_diagonals</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Identifies the voxels in regions that border *N* other regions.</span>
 
@@ -1536,7 +1536,7 @@
 
 <div class="viewcode-block" id="prune_branches">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.prune_branches.html#porespy.filters.prune_branches">[docs]</a>
-<span class="k">def</span> <span class="nf">prune_branches</span><span class="p">(</span><span class="n">skel</span><span class="p">,</span> <span class="n">branch_points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">prune_branches</span><span class="p">(</span><span class="n">skel</span><span class="p">,</span> <span class="n">branch_points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove all dangling ends or tails of a skeleton</span>
 
@@ -1567,9 +1567,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">skel</span> <span class="o">=</span> <span class="n">skel</span> <span class="o">&gt;</span> <span class="mi">0</span>
     <span class="k">if</span> <span class="n">skel</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">square</span> <span class="k">as</span> <span class="n">cube</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">skimage.morphology</span><span class="w"> </span><span class="kn">import</span> <span class="n">square</span> <span class="k">as</span> <span class="n">cube</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">cube</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">skimage.morphology</span><span class="w"> </span><span class="kn">import</span> <span class="n">cube</span>
     <span class="c1"># Create empty image to house results</span>
     <span class="n">im_result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">skel</span><span class="p">)</span>
     <span class="c1"># If branch points are not supplied, attempt to find them</span>
@@ -1611,7 +1611,7 @@
 
 <div class="viewcode-block" id="chunked_func">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.chunked_func.html#porespy.filters.chunked_func">[docs]</a>
-<span class="k">def</span> <span class="nf">chunked_func</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">chunked_func</span><span class="p">(</span>
     <span class="n">func</span><span class="p">,</span>
     <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">divs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
@@ -1697,7 +1697,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@dask</span><span class="o">.</span><span class="n">delayed</span>
-    <span class="k">def</span> <span class="nf">apply_func</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_func</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># Apply function on sub-slice of overall image</span>
         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -1761,13 +1761,13 @@
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2024, PMEAL.<br>
+    &copy; Copyright 2025, PMEAL.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.1.3.<br>
 </p>
   </div>
   

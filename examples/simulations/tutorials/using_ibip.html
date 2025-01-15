@@ -23,7 +23,7 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -33,7 +33,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=30646c52"></script>
@@ -2978,18 +2978,18 @@
 <p>Import necessary packages and functions</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">edt</span> <span class="kn">import</span> <span class="n">edt</span>
-<span class="kn">import</span> <span class="nn">imageio</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ps</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">edt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">imageio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
 <span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[01:07:55] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.5/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.5/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[04:46:16] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
@@ -3071,7 +3071,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/7262ab77530cf0cb36945806a8fa94d1ff3af64d92ed3c7f111be7ef19f6f09a.png"><img alt="../../../_images/7262ab77530cf0cb36945806a8fa94d1ff3af64d92ed3c7f111be7ef19f6f09a.png" src="../../../_images/7262ab77530cf0cb36945806a8fa94d1ff3af64d92ed3c7f111be7ef19f6f09a.png" style="width: 784px; height: 377px;" />
+<a class="reference internal image-reference" href="../../../_images/665ff7fdbdbb6ab9be88ee67aca11d3fb095e31bdd01ee9235a4fe49e847bd70.png"><img alt="../../../_images/665ff7fdbdbb6ab9be88ee67aca11d3fb095e31bdd01ee9235a4fe49e847bd70.png" src="../../../_images/665ff7fdbdbb6ab9be88ee67aca11d3fb095e31bdd01ee9235a4fe49e847bd70.png" style="width: 784px; height: 377px;" />
 </a>
 </div>
 </div>
@@ -3105,7 +3105,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/38d854da6a5e11e5c8014b8681d45cd9b74c7d9b1ee94f024e5c8f66683612b3.png"><img alt="../../../_images/38d854da6a5e11e5c8014b8681d45cd9b74c7d9b1ee94f024e5c8f66683612b3.png" src="../../../_images/38d854da6a5e11e5c8014b8681d45cd9b74c7d9b1ee94f024e5c8f66683612b3.png" style="width: 780px; height: 384px;" />
+<a class="reference internal image-reference" href="../../../_images/af0769357cf936d9a61477e7dda3d153ee17544777e70543ebd74b192cbc07df.png"><img alt="../../../_images/af0769357cf936d9a61477e7dda3d153ee17544777e70543ebd74b192cbc07df.png" src="../../../_images/af0769357cf936d9a61477e7dda3d153ee17544777e70543ebd74b192cbc07df.png" style="width: 780px; height: 384px;" />
 </a>
 </div>
 </div>
@@ -3156,7 +3156,7 @@
 <span class="ne">NameError</span>: name &#39;pc_curve_mio&#39; is not defined
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="../../../_images/0e01917b53cfe03d96f1c644ae9f78fc77a9a1c6e4325b3d516d2e200b83939d.png"><img alt="../../../_images/0e01917b53cfe03d96f1c644ae9f78fc77a9a1c6e4325b3d516d2e200b83939d.png" src="../../../_images/0e01917b53cfe03d96f1c644ae9f78fc77a9a1c6e4325b3d516d2e200b83939d.png" style="width: 623px; height: 464px;" />
+<a class="reference internal image-reference" href="../../../_images/f09e3ecedb9b261e94c6a706fe99b814c696bef05595b13fb5d8cde5e298c14a.png"><img alt="../../../_images/f09e3ecedb9b261e94c6a706fe99b814c696bef05595b13fb5d8cde5e298c14a.png" src="../../../_images/f09e3ecedb9b261e94c6a706fe99b814c696bef05595b13fb5d8cde5e298c14a.png" style="width: 623px; height: 464px;" />
 </a>
 </div>
 </div>
@@ -3169,7 +3169,7 @@
 <p>The image below is a sample of the animated output:</p>
 <p><img alt="" src="https://cdn.substack.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2Ffdfb8881-2e28-410f-a36b-e0bcb906629b_500x501.gif" /></p>
 <p>Obtaining a movie such as the one above can be accomplished with something like the following, which creates an interactive widget in a jupyter notebook.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTML</span>
 <span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;animation.html&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;jshtml&quot;</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;animation.embed_limit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">100.0</span>
@@ -3199,13 +3199,13 @@
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2024, PMEAL.<br>
+    &copy; Copyright 2025, PMEAL.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.1.3.<br>
 </p>
   </div>
   

@@ -23,7 +23,7 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -33,7 +33,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=30646c52"></script>
@@ -2989,17 +2989,17 @@
 <p>Adds chords to the void space in the specified direction</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
-<span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
-<span class="kn">import</span> <span class="nn">skimage</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ps</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spim</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">skimage</span>
 <span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[01:01:07] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.5/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.5/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[04:39:47] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
@@ -3017,7 +3017,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/f46557dfb5eb3be16e5159e9e282ddca0f7839dd11a0a22b839c7c75e2d570b1.png"><img alt="../../../_images/f46557dfb5eb3be16e5159e9e282ddca0f7839dd11a0a22b839c7c75e2d570b1.png" src="../../../_images/f46557dfb5eb3be16e5159e9e282ddca0f7839dd11a0a22b839c7c75e2d570b1.png" style="width: 383px; height: 383px;" />
+<a class="reference internal image-reference" href="../../../_images/9c2cecad6ee5fde305334462e75dca3835f1fa082b6dc755943d37c0fdbe36a8.png"><img alt="../../../_images/9c2cecad6ee5fde305334462e75dca3835f1fa082b6dc755943d37c0fdbe36a8.png" src="../../../_images/9c2cecad6ee5fde305334462e75dca3835f1fa082b6dc755943d37c0fdbe36a8.png" style="width: 383px; height: 383px;" />
 </a>
 </div>
 </div>
@@ -3042,7 +3042,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/313d29ee2c87db1080b17e5b33d06f440679bd6b00a6f99ebef9ee897a721a35.png"><img alt="../../../_images/313d29ee2c87db1080b17e5b33d06f440679bd6b00a6f99ebef9ee897a721a35.png" src="../../../_images/313d29ee2c87db1080b17e5b33d06f440679bd6b00a6f99ebef9ee897a721a35.png" style="width: 744px; height: 384px;" />
+<a class="reference internal image-reference" href="../../../_images/e4328504dfd9cfaef4c785d0da9bd599b4dd47fe73cd75046ded0c45b54749d4.png"><img alt="../../../_images/e4328504dfd9cfaef4c785d0da9bd599b4dd47fe73cd75046ded0c45b54749d4.png" src="../../../_images/e4328504dfd9cfaef4c785d0da9bd599b4dd47fe73cd75046ded0c45b54749d4.png" style="width: 744px; height: 384px;" />
 </a>
 </div>
 </div>
@@ -3065,7 +3065,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/6eb2f4e8bd20f2c72f7d73b3e35581ac914be3e42b252d8b2bd68f23fdaf794f.png"><img alt="../../../_images/6eb2f4e8bd20f2c72f7d73b3e35581ac914be3e42b252d8b2bd68f23fdaf794f.png" src="../../../_images/6eb2f4e8bd20f2c72f7d73b3e35581ac914be3e42b252d8b2bd68f23fdaf794f.png" style="width: 744px; height: 384px;" />
+<a class="reference internal image-reference" href="../../../_images/fb4ec53db33957388a1ded085a7696490c5dddec8d10cd3120beed7692451db2.png"><img alt="../../../_images/fb4ec53db33957388a1ded085a7696490c5dddec8d10cd3120beed7692451db2.png" src="../../../_images/fb4ec53db33957388a1ded085a7696490c5dddec8d10cd3120beed7692451db2.png" style="width: 744px; height: 384px;" />
 </a>
 </div>
 </div>
@@ -3088,7 +3088,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/242ef48dc98b7f0556d3af96953478ec4912e212f8504bf1222b3a9bdaa1b044.png"><img alt="../../../_images/242ef48dc98b7f0556d3af96953478ec4912e212f8504bf1222b3a9bdaa1b044.png" src="../../../_images/242ef48dc98b7f0556d3af96953478ec4912e212f8504bf1222b3a9bdaa1b044.png" style="width: 744px; height: 384px;" />
+<a class="reference internal image-reference" href="../../../_images/fd666e09c71220c1c1879f1b527952ee4b2e816d5b1a5075b32ea5ff587b2395.png"><img alt="../../../_images/fd666e09c71220c1c1879f1b527952ee4b2e816d5b1a5075b32ea5ff587b2395.png" src="../../../_images/fd666e09c71220c1c1879f1b527952ee4b2e816d5b1a5075b32ea5ff587b2395.png" style="width: 744px; height: 384px;" />
 </a>
 </div>
 </div>
@@ -3111,7 +3111,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/55f3388abb5db2cde7c5ae3135c8493b6e69d80b525896d2db23701b24e3af6c.png"><img alt="../../../_images/55f3388abb5db2cde7c5ae3135c8493b6e69d80b525896d2db23701b24e3af6c.png" src="../../../_images/55f3388abb5db2cde7c5ae3135c8493b6e69d80b525896d2db23701b24e3af6c.png" style="width: 744px; height: 384px;" />
+<a class="reference internal image-reference" href="../../../_images/0936888fc13115e6ac04b15b459a2a11fd357a85311a1a59fbe6e6b50e6d509b.png"><img alt="../../../_images/0936888fc13115e6ac04b15b459a2a11fd357a85311a1a59fbe6e6b50e6d509b.png" src="../../../_images/0936888fc13115e6ac04b15b459a2a11fd357a85311a1a59fbe6e6b50e6d509b.png" style="width: 744px; height: 384px;" />
 </a>
 </div>
 </div>
@@ -3137,13 +3137,13 @@
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2024, PMEAL.<br>
+    &copy; Copyright 2025, PMEAL.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.1.3.<br>
 </p>
   </div>
   

@@ -23,7 +23,7 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -33,7 +33,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=30646c52"></script>
@@ -3024,17 +3024,17 @@
 <p>The <code class="docutils literal notranslate"><span class="pre">snow2</span></code> function has quite a few arguments, which will be explored and explained in this example.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
-<span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">edt</span> <span class="kn">import</span> <span class="n">edt</span>
-<span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ps</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">openpnm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">edt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spim</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[01:06:03] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.5/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.5/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[04:44:28] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
@@ -3047,7 +3047,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/7e7e658b39432f44a22e007e062421f40d002a0e37cc84bb98011babd6b4f568.png" src="../../../_images/7e7e658b39432f44a22e007e062421f40d002a0e37cc84bb98011babd6b4f568.png" />
+<img alt="../../../_images/07d5acc859204912d69135678f5dc2ba8cc0c9ed175c42e6ec943473dcb9c403.png" src="../../../_images/07d5acc859204912d69135678f5dc2ba8cc0c9ed175c42e6ec943473dcb9c403.png" />
 </div>
 </div>
 <section id="phases">
@@ -3067,7 +3067,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>False
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.False_
 </pre></div>
 </div>
 </div>
@@ -3090,7 +3090,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/4fbc0511beef928ee503a76bc3f8407251c33ccc825e0e2209ae3b484475a78e.png" src="../../../_images/4fbc0511beef928ee503a76bc3f8407251c33ccc825e0e2209ae3b484475a78e.png" />
+<img alt="../../../_images/16a3479eae563e89e9f854054b180d9d9f28ab2bb7cb353bfd4c007c14b4acad.png" src="../../../_images/16a3479eae563e89e9f854054b180d9d9f28ab2bb7cb353bfd4c007c14b4acad.png" />
 </div>
 </div>
 <p>On the left we can see that the spherical particles are all purple, which indicates 0, because they have not been labelled by the function.  On the right the particles each have a unique greyscale value because they have been labelled as distinct regions.</p>
@@ -3113,7 +3113,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/ad85f276b66f333233b2739449ae3ac51ec2d821eaae6d14359de1628da19c60.png" src="../../../_images/ad85f276b66f333233b2739449ae3ac51ec2d821eaae6d14359de1628da19c60.png" />
+<img alt="../../../_images/6ba4a44f63e3bfc673837a551f32ec03000893b38e03cab7e5b569979a70d9d4.png" src="../../../_images/6ba4a44f63e3bfc673837a551f32ec03000893b38e03cab7e5b569979a70d9d4.png" />
 </div>
 </div>
 <p>The image needed to be rotated so that the x and y directions lined up with the OpenPNM network.  The agreement between the image and network is pretty good.  Clearly the the red pore centers lie within each labelled regions and the black throat connections follow the topology quite well.</p>
@@ -3136,7 +3136,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/5747d36fa5236f05a4a35c16ec4dba9fac66183595061e9e9a132bfb02590e99.png" src="../../../_images/5747d36fa5236f05a4a35c16ec4dba9fac66183595061e9e9a132bfb02590e99.png" />
+<img alt="../../../_images/f10c8b91cca04775cdc627e663beed895d936feabc46bd52d8165a668f8a3d42.png" src="../../../_images/f10c8b91cca04775cdc627e663beed895d936feabc46bd52d8165a668f8a3d42.png" />
 </div>
 </div>
 <p>The above shows the additional network comprised of the solids (although they don’t actually connect in this 2D example) as well as the void-solid connections.  We can improve this plot by coloring the different types of pores and throats differently.  If we print <code class="docutils literal notranslate"><span class="pre">pn2</span></code> we can see that <code class="docutils literal notranslate"><span class="pre">snow2</span></code> has created some labels for us, by assuming phase names of “phase1” and “phase2”.</p>
@@ -3148,41 +3148,41 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Network at 0x7f3c009514f0&gt;
+net : &lt;openpnm.network.Network at 0x7f265e1afe30&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  throat.conns                                                    579 / 579
-  3  pore.coords                                                     205 / 205
-  4  pore.region_label                                               205 / 205
-  5  pore.phase                                                      205 / 205
-  6  throat.phases                                                   579 / 579
-  7  pore.region_volume                                              205 / 205
-  8  pore.equivalent_diameter                                        205 / 205
-  9  pore.local_peak                                                 205 / 205
- 10  pore.global_peak                                                205 / 205
- 11  pore.geometric_centroid                                         205 / 205
- 12  throat.global_peak                                              579 / 579
- 13  pore.inscribed_diameter                                         205 / 205
- 14  pore.extended_diameter                                          205 / 205
- 15  throat.inscribed_diameter                                       579 / 579
- 16  throat.total_length                                             579 / 579
- 17  throat.direct_length                                            579 / 579
- 18  throat.perimeter                                                579 / 579
- 19  pore.volume                                                     205 / 205
- 20  pore.surface_area                                               205 / 205
- 21  throat.cross_sectional_area                                     579 / 579
- 22  throat.equivalent_diameter                                      579 / 579
+  2  throat.conns                                                    552 / 552
+  3  pore.coords                                                     195 / 195
+  4  pore.region_label                                               195 / 195
+  5  pore.phase                                                      195 / 195
+  6  throat.phases                                                   552 / 552
+  7  pore.region_volume                                              195 / 195
+  8  pore.equivalent_diameter                                        195 / 195
+  9  pore.local_peak                                                 195 / 195
+ 10  pore.global_peak                                                195 / 195
+ 11  pore.geometric_centroid                                         195 / 195
+ 12  throat.global_peak                                              552 / 552
+ 13  pore.inscribed_diameter                                         195 / 195
+ 14  pore.extended_diameter                                          195 / 195
+ 15  throat.inscribed_diameter                                       552 / 552
+ 16  throat.total_length                                             552 / 552
+ 17  throat.direct_length                                            552 / 552
+ 18  throat.perimeter                                                552 / 552
+ 19  pore.volume                                                     195 / 195
+ 20  pore.surface_area                                               195 / 195
+ 21  throat.cross_sectional_area                                     552 / 552
+ 22  throat.equivalent_diameter                                      552 / 552
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.all                                                              205
-  3  throat.all                                                            579
-  4  pore.phase1                                                            78
-  5  throat.phase1_phase2                                                  374
-  6  pore.phase2                                                           127
-  7  throat.phase2_phase1                                                  374
-  8  throat.phase2_phase2                                                  205
+  2  pore.all                                                              195
+  3  throat.all                                                            552
+  4  pore.phase1                                                            82
+  5  throat.phase1_phase2                                                  358
+  6  pore.phase2                                                           113
+  7  throat.phase2_phase1                                                  358
+  8  throat.phase2_phase2                                                  194
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -3201,7 +3201,7 @@ net : &lt;openpnm.network.Network at 0x7f3c009514f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/f29bda77c52c44e7afb5a8eaa7cbc7dc8f14f63734427f221c736fb3bb9bd2b6.png" src="../../../_images/f29bda77c52c44e7afb5a8eaa7cbc7dc8f14f63734427f221c736fb3bb9bd2b6.png" />
+<img alt="../../../_images/9ed1e8f18e8682bf488e519cb4c56928b0cceddf878d340112652c15ebe93d84.png" src="../../../_images/9ed1e8f18e8682bf488e519cb4c56928b0cceddf878d340112652c15ebe93d84.png" />
 </div>
 </div>
 <p>Now can see the particles are indicated by a green marker, the void pores by a red marker, the solid-void interconnections are in grey, and the void-void throats are black.</p>
@@ -3225,41 +3225,41 @@ net : &lt;openpnm.network.Network at 0x7f3c009514f0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Network at 0x7f3ba84126c0&gt;
+net : &lt;openpnm.network.Network at 0x7f265cdc4eb0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  throat.conns                                                    579 / 579
-  3  pore.coords                                                     205 / 205
-  4  pore.region_label                                               205 / 205
-  5  pore.phase                                                      205 / 205
-  6  throat.phases                                                   579 / 579
-  7  pore.region_volume                                              205 / 205
-  8  pore.equivalent_diameter                                        205 / 205
-  9  pore.local_peak                                                 205 / 205
- 10  pore.global_peak                                                205 / 205
- 11  pore.geometric_centroid                                         205 / 205
- 12  throat.global_peak                                              579 / 579
- 13  pore.inscribed_diameter                                         205 / 205
- 14  pore.extended_diameter                                          205 / 205
- 15  throat.inscribed_diameter                                       579 / 579
- 16  throat.total_length                                             579 / 579
- 17  throat.direct_length                                            579 / 579
- 18  throat.perimeter                                                579 / 579
- 19  pore.volume                                                     205 / 205
- 20  pore.surface_area                                               205 / 205
- 21  throat.cross_sectional_area                                     579 / 579
- 22  throat.equivalent_diameter                                      579 / 579
+  2  throat.conns                                                    552 / 552
+  3  pore.coords                                                     195 / 195
+  4  pore.region_label                                               195 / 195
+  5  pore.phase                                                      195 / 195
+  6  throat.phases                                                   552 / 552
+  7  pore.region_volume                                              195 / 195
+  8  pore.equivalent_diameter                                        195 / 195
+  9  pore.local_peak                                                 195 / 195
+ 10  pore.global_peak                                                195 / 195
+ 11  pore.geometric_centroid                                         195 / 195
+ 12  throat.global_peak                                              552 / 552
+ 13  pore.inscribed_diameter                                         195 / 195
+ 14  pore.extended_diameter                                          195 / 195
+ 15  throat.inscribed_diameter                                       552 / 552
+ 16  throat.total_length                                             552 / 552
+ 17  throat.direct_length                                            552 / 552
+ 18  throat.perimeter                                                552 / 552
+ 19  pore.volume                                                     195 / 195
+ 20  pore.surface_area                                               195 / 195
+ 21  throat.cross_sectional_area                                     552 / 552
+ 22  throat.equivalent_diameter                                      552 / 552
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.all                                                              205
-  3  throat.all                                                            579
-  4  pore.solid                                                             78
-  5  throat.solid_void                                                     374
-  6  pore.void                                                             127
-  7  throat.void_solid                                                     374
-  8  throat.void_void                                                      205
+  2  pore.all                                                              195
+  3  throat.all                                                            552
+  4  pore.solid                                                             82
+  5  throat.solid_void                                                     358
+  6  pore.void                                                             113
+  7  throat.void_solid                                                     358
+  8  throat.void_void                                                      194
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -3290,7 +3290,7 @@ net : &lt;openpnm.network.Network at 0x7f3ba84126c0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/add1ecc54d52f02997b5127f1d9ec668728efbb30549775e62db6cffa5a4ea26.png" src="../../../_images/add1ecc54d52f02997b5127f1d9ec668728efbb30549775e62db6cffa5a4ea26.png" />
+<img alt="../../../_images/b716541b5edefc4f7745cddaa1aee9c75e74963ec6fb261a5a76d88edcdf7a88.png" src="../../../_images/b716541b5edefc4f7745cddaa1aee9c75e74963ec6fb261a5a76d88edcdf7a88.png" />
 </div>
 </div>
 <p>A few things to note:</p>
@@ -3315,7 +3315,7 @@ net : &lt;openpnm.network.Network at 0x7f3ba84126c0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/7d9b8df8fee753dd5624956faa0eb6de8e3e6ab0fa2714e68ccc3a5a19cb2c5a.png" src="../../../_images/7d9b8df8fee753dd5624956faa0eb6de8e3e6ab0fa2714e68ccc3a5a19cb2c5a.png" />
+<img alt="../../../_images/85a98d327fdb43dc0cfa692009f4b9f435ea24a2a93f9f9ae2e5eac419caede6.png" src="../../../_images/85a98d327fdb43dc0cfa692009f4b9f435ea24a2a93f9f9ae2e5eac419caede6.png" />
 </div>
 </div>
 </section>
@@ -3354,7 +3354,7 @@ net : &lt;openpnm.network.Network at 0x7f3ba84126c0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/b6b94b4a249d5389c67acf38fdd213fd5155140cb29fb31f5e3de0ec4564a89a.png" src="../../../_images/b6b94b4a249d5389c67acf38fdd213fd5155140cb29fb31f5e3de0ec4564a89a.png" />
+<img alt="../../../_images/c2f055df95537738b127b865c1070ee077556c3d83694ebccd776b43d928d8d0.png" src="../../../_images/c2f055df95537738b127b865c1070ee077556c3d83694ebccd776b43d928d8d0.png" />
 </div>
 </div>
 </section>
@@ -3381,7 +3381,7 @@ net : &lt;openpnm.network.Network at 0x7f3ba84126c0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/777f51bd5400d288480431bbd741d96be1c99b2912a7dcd6e2deeafa8f0facbc.png" src="../../../_images/777f51bd5400d288480431bbd741d96be1c99b2912a7dcd6e2deeafa8f0facbc.png" />
+<img alt="../../../_images/276e32f4aec66b3e2ba5a6ccf77cbb15b838914ed492f775667d973213f53d78.png" src="../../../_images/276e32f4aec66b3e2ba5a6ccf77cbb15b838914ed492f775667d973213f53d78.png" />
 </div>
 </div>
 <p>Clearly the image on the left is ‘over segmented’ while the image on the right seems to have identified the pores nearly perfectly, even without subsequent processing of the peaks that normally occur in <code class="docutils literal notranslate"><span class="pre">snow2</span></code> like <code class="docutils literal notranslate"><span class="pre">trim_saddle_points</span></code> and <code class="docutils literal notranslate"><span class="pre">trim_nearby_peaks</span></code>.</p>
@@ -3407,9 +3407,9 @@ net : &lt;openpnm.network.Network at 0x7f3ba84126c0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[01:06:12] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Disabling paralelization as overlap exceeds than chunk size.                      <a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_snow2.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py#213" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">213</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[04:44:36] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Disabling paralelization as overlap exceeds than chunk size.                      <a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_snow2.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py#213" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">213</span></a>
 </pre>
-</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Disabling paralelization as overlap exceeds than chunk size.                      <a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_snow2.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py#213" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">213</span></a>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[04:44:37] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Disabling paralelization as overlap exceeds than chunk size.                      <a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_snow2.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py#213" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">213</span></a>
 </pre>
 </div></div>
 </div>
@@ -3426,7 +3426,7 @@ net : &lt;openpnm.network.Network at 0x7f3ba84126c0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/1736deef25613cc24fd1363556321795b11ac3421ad5c9b77d854220b57113e4.png" src="../../../_images/1736deef25613cc24fd1363556321795b11ac3421ad5c9b77d854220b57113e4.png" />
+<img alt="../../../_images/96d4a9cd9c84381fb258b459d733a948fdbe4fcf62ac84f0ed33ca2e0a0c2e70.png" src="../../../_images/96d4a9cd9c84381fb258b459d733a948fdbe4fcf62ac84f0ed33ca2e0a0c2e70.png" />
 </div>
 </div>
 </section>
@@ -3451,13 +3451,13 @@ net : &lt;openpnm.network.Network at 0x7f3ba84126c0&gt;
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2024, PMEAL.<br>
+    &copy; Copyright 2025, PMEAL.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.1.3.<br>
 </p>
   </div>
   
