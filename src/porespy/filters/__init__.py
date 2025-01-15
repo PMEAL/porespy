@@ -5,7 +5,7 @@ Collection of functions for altering images based on structural properties
 
 This module contains a variety of functions for altering images based on
 the structural characteristics, such as pore sizes.  A definition of a
-*filter* is a function that returns an image the shape as the original
+*filter* is a function that returns an image the same shape as the original
 image, but with altered values.
 
 .. currentmodule:: porespy
@@ -62,3 +62,5 @@ from ._funcs import *
 from ._nlmeans import *
 from ._size_seq_satn import *
 from ._snows import *
+from ._transforms import *
+from ._invasion import *

@@ -1,6 +1,6 @@
 from deprecated import deprecated
-from porespy.simulations import tortuosity_fd as _tortuosity
 
+from porespy.simulations import tortuosity_fd as _tortuosity
 
 __all__ = [
     'tortuosity',

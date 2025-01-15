@@ -1,14 +1,13 @@
 import logging
+
 import numpy as np
 import scipy.ndimage as spim
-from skimage.morphology import disk, ball
 from edt import edt
-from porespy.tools import extend_slice
-from porespy import settings
-from porespy.tools import get_tqdm, make_contiguous
-from porespy.metrics import region_surface_areas, region_interface_areas
-from porespy.metrics import region_volumes
+from skimage.morphology import ball, disk
 
+from porespy import settings
+from porespy.metrics import region_interface_areas, region_surface_areas, region_volumes
+from porespy.tools import extend_slice, get_tqdm, make_contiguous
 
 __all__ = [
     "regions_to_network",
@@ -19,7 +18,13 @@ tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 
 
-def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
+def regions_to_network(
+    regions,
+    phases=None,
+    voxel_size=1,
+    accuracy='standard',
+    porosity_map=None,
+):
     r"""
     Analyzes an image that has been partitioned into pore regions and extracts
     the pore and throat geometry as well as network connectivity.
@@ -39,14 +44,21 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
     accuracy : string
         Controls how accurately certain properties are calculated. Options are:
 
-        'standard' (default)
-            Computes the surface areas and perimeters by simply counting
-            voxels.  This is *much* faster but does not properly account
-            for the rough, voxelated nature of the surfaces.
-        'high'
-            Computes surface areas using the marching cube method, and
-            perimeters using the fast marching method.  These are substantially
-            slower but better account for the voxelated nature of the images.
+        ------------ --------------------------------------------------------
+        Value        Description
+        ------------ --------------------------------------------------------
+        'standard'   Computes the surface areas and perimeters by simply
+                     counting voxels. This is *much* faster but does not
+                     properly account for the rough voxelated nature of the
+                     surfaces.
+        'high'       Computes surface areas using the marching cube method,
+                     and perimeters using the fast marching method. These
+                     are substantially slower but better account for the
+                     voxelated nature of the images.
+        ------------ --------------------------------------------------------
+
+    porosity_map : None
+        This is not supported for this version of the function.
 
     Returns
     -------

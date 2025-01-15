@@ -1,9 +1,8 @@
 import numpy as np
 import openpnm as op
-import pytest
-
 import porespy as ps
 import porespy.beta
+import pytest
 
 ps.settings.tqdm['disable'] = True
 ps.settings.loglevel = 40

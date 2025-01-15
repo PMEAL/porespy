@@ -1,7 +1,7 @@
 import numpy as np
+
 from porespy import settings
 from porespy.tools import get_tqdm
-
 
 tqdm = get_tqdm()
 
@@ -145,8 +145,9 @@ def polydisperse_cylinders(
 
 
 if __name__ == "__main__":
-    import scipy.stats as spst
     import matplotlib.pyplot as plt
+    import scipy.stats as spst
+
     import porespy as ps
 
     params = (5.65832732e+00, 1.54364793e-05, 7.37705832e+00)

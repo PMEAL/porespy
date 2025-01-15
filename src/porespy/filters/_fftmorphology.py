@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.signal import fftconvolve
 
-
 __all__ = [
     "fftmorphology",
 ]

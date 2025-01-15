@@ -65,6 +65,15 @@ extras = [
     "tensorflow",
     "trimesh",
 ]
+extras-macos = [
+    "imageio",
+    "numpy-stl",
+    "pyevtk",
+    "scikit-fmm",
+    "scikit-learn",
+    "tensorflow",
+    "trimesh",
+]
 docs = [
     "mock",
     "myst-nb",
@@ -95,15 +104,27 @@ build-backend = "hatchling.build"
 [tool.rye]
 managed = true
 dev-dependencies = [
-    "pytest",
+    # build
     "hatch",
+    # test
+    "codecov",
+    "coverage",
+    "nbval",
+    "pytest",
+    "pytest-cache",
+    "pytest-cov",
+    "pytest-custom-exit-code",
+    "pytest-split",
+    # extras
+    "imageio",
+    "nanomesh",
     "numpy-stl",
     "pyevtk",
+    "scikit-fmm",
+    "scikit-learn",
+    "tensorflow",
     "trimesh",
-    "ipykernel",
-    "pypardiso",
-    "nbval",
-    "ruff",
+    # docs
     "mock",
     "myst-nb",
     "pandoc",
@@ -111,6 +132,12 @@ dev-dependencies = [
     "sphinx",
     "sphinx-copybutton",
     "sphinx-design",
+    # interactive
+    "ipython",
+    "ipykernel",
+    "ipywidgets",
+    "jupyter",
+    "jupyterlab_widgets",
 ]
 
 [tool.hatch.metadata]
@@ -158,9 +185,3 @@ exclude_lines = [
     "raise NotImplementedError",
     "if __name__ == .__main__.:",
 ]
-
-[tool.ruff]
-exclude = [".git", ".github", ".venv", "build", "docs", "examples", "test"]
-line-length = 92
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["E402", "F401", "F403"]

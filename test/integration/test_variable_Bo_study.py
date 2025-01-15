@@ -1,7 +1,7 @@
-import pytest
+import matplotlib.pyplot as plt
 import numpy as np
 import porespy as ps
-import matplotlib.pyplot as plt
+import pytest
 
 
 @pytest.mark.skip(reason="Passes locally, fails on GitHub!")
@@ -20,7 +20,7 @@ def test_variable_Bo_study():
     plot = False
 
     # Generate image
-    im = ~ps.generators.RSA([L, W], r=int(D/2), clearance=2, volume_fraction=0.75)
+    im = ps.generators.random_spheres(shape=[L, W], r=int(D/2), clearance=2, phi=0.25, seed=2)
     inlets = np.zeros_like(im)
     inlets[-1, ...] = True
 

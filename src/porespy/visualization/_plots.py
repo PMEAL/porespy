@@ -1,8 +1,8 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-from porespy.tools import get_tqdm
 
+from porespy.tools import get_tqdm
 
 __all__ = [
     'bar',

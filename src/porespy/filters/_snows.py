@@ -1,19 +1,29 @@
-import dask.array as da
 import inspect as insp
 import logging
+
+import dask.array as da
 import numpy as np
-from numba import njit, prange
-from edt import edt
 import scipy.ndimage as spim
 import scipy.spatial as sptl
+from numba import njit, prange
+from skimage.morphology import cube, square
 from skimage.segmentation import watershed
-from skimage.morphology import square, cube
-from porespy.tools import _check_for_singleton_axes
-from porespy.tools import extend_slice, ps_rect, ps_round
-from porespy.tools import Results
-from porespy.tools import get_tqdm
-from porespy.filters import chunked_func
+
 from porespy import settings
+from porespy.filters import chunked_func
+from porespy.tools import (
+    Results,
+    _check_for_singleton_axes,
+    extend_slice,
+    get_tqdm,
+    ps_rect,
+    ps_round,
+)
+
+try:
+    from pyedt import edt
+except ModuleNotFoundError:
+    from edt import edt
 
 
 __all__ = [
@@ -106,7 +116,7 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None):
         logger.info("Converting supplied image to boolean")
         im = im > 0
     if dt is None:
-        logger.info("Peforming distance transform")
+        logger.info("Performing distance transform")
         if np.any(im_shape == 1):
             dt = edt(im.squeeze())
             dt = dt.reshape(im_shape)
@@ -356,7 +366,7 @@ def reduce_peaks(peaks):
     else:
         strel = cube
     markers, N = spim.label(input=peaks, structure=strel(3))
-    inds = spim.measurements.center_of_mass(
+    inds = spim.center_of_mass(
         input=peaks, labels=markers, index=np.arange(1, N + 1)
     )
     inds = np.floor(inds).astype(int)
@@ -564,9 +574,11 @@ def trim_nearby_peaks(peaks, dt, f=1):
         from skimage.morphology import cube
 
     labels, N = spim.label(peaks > 0, structure=cube(3))
-    crds = spim.measurements.center_of_mass(peaks > 0, labels=labels,
-                                            index=np.arange(1, N + 1))
-    crds = np.vstack(crds).astype(int)  # Convert to numpy array of ints
+    crds = spim.center_of_mass(peaks > 0, labels=labels, index=np.arange(1, N + 1))
+    try:
+        crds = np.vstack(crds).astype(int)  # Convert to numpy array of ints
+    except ValueError:
+        return peaks
     L = dt[tuple(crds.T)]  # Get distance to solid for each peak
     # Add tiny amount to joggle points to avoid equal distances to solid
     # arange was added instead of random values so the results are repeatable
@@ -597,14 +609,14 @@ def _estimate_overlap(im, mode='dt', zoom=0.25):
     if mode == 'watershed':
         rev = spim.interpolation.zoom(im, zoom=zoom, order=0)
         rev = rev > 0
-        dt = edt(rev, parallel=0)
+        dt = edt(rev)
         rev_snow = snow_partitioning(rev, dt=dt)
         labels, counts = np.unique(rev_snow, return_counts=True)
         node = np.where(counts == counts[1:].max())[0][0]
         slices = spim.find_objects(rev_snow)
         overlap = max(rev_snow[slices[node - 1]].shape) / (zoom * 2.0)
     if mode == 'dt':
-        dt = edt((im > 0), parallel=0)
+        dt = edt((im > 0))
         overlap = dt.max()
     return overlap
 
@@ -679,7 +691,7 @@ def snow_partitioning_parallel(im,
     overlap = overlap / 2.0
     logger.debug(f'Overlap thickness: {int(2 * overlap)} voxels')
 
-    dt = edt((im > 0), parallel=0)
+    dt = edt((im > 0))
 
     # Get overlap and trim depth of all image dimension
     depth = {}
@@ -1089,7 +1101,10 @@ def _snow_chunked(dt, r_max=5, sigma=0.4):
     dt2 = spim.gaussian_filter(input=dt, sigma=sigma)
     peaks = find_peaks(dt=dt2, r_max=r_max)
     peaks = trim_saddle_points(peaks=peaks, dt=dt)
-    peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
-    peaks, N = spim.label(peaks > 0)
-    regions = watershed(image=-dt, markers=peaks)
+    if len(peaks) > 0:
+        peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
+        peaks, N = spim.label(peaks > 0)
+        regions = watershed(image=-dt, markers=peaks)
+    else:
+        regions = np.ones_like(dt2)
     return regions * (dt > 0)

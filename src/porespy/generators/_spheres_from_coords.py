@@ -1,7 +1,8 @@
 import logging
-import numpy as np
-from porespy.tools import _insert_disks_at_points, find_bbox
 
+import numpy as np
+
+from porespy.tools import _insert_disks_at_points, find_bbox
 
 __all__ = [
     'spheres_from_coords',

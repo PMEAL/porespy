@@ -1,7 +1,7 @@
 import numpy as np
-from porespy.tools import make_contiguous
 from scipy.stats import rankdata
 
+from porespy.tools import make_contiguous
 
 __all__ = [
     'size_to_seq',
@@ -10,6 +10,7 @@ __all__ = [
     'pc_to_satn',
     'pc_to_seq',
     'satn_to_seq',
+    'size_to_pc',
 ]
 
 
@@ -156,7 +157,7 @@ def size_to_satn(size, im=None, bins=None, mode='drainage'):
 
 def seq_to_satn(seq, im=None, mode='drainage'):
     r"""
-    Converts an image of invasion sequence values to non-wetting phase saturation
+    Converts an image of invasion sequence values to invading phase saturation
     values.
 
     Parameters
@@ -189,7 +190,7 @@ def seq_to_satn(seq, im=None, mode='drainage'):
     Notes
     -----
     If any ``-1`` values are present in `seq` the maximum saturation will be less
-    than 1.0 since this means that not all wetting phase was displaced.
+    than 1.0 since this means that not all defending phase was displaced.
 
     Examples
     --------
@@ -203,11 +204,15 @@ def seq_to_satn(seq, im=None, mode='drainage'):
     else:
         solid_mask = im == 0
     uninvaded_mask = seq == -1  # Store uninvaded locations
-    seq[seq <= 0] = 0  # Set uninvaded to solid for next steps
     if mode.startswith('im'):
+        seq[seq < 0] = 0
         seq = seq.max() - seq + 1
         seq[solid_mask] = 0
         seq[uninvaded_mask] = 0
+    elif mode.startswith('drain'):
+        seq[seq <= 0] = 0  # Set uninvaded to solid for next steps
+    else:
+        raise Exception('Unrecognized mode')
     seq = rankdata(seq, method='dense') - 1
     b = np.bincount(seq)
     if (solid_mask.sum(dtype=np.int64) > 0) or \
@@ -259,7 +264,7 @@ def pc_to_seq(pc, im, mode='drainage'):
     seq : ndarray
         A Numpy array the same shape as `pc`, with each voxel value indicating
         the sequence at which it was invaded, according to the specified `mode`.
-        Uninvaded voxels are set to -1.
+        Uninvaded voxels are set to -1 and solids are 0.
 
     Notes
     -----
@@ -274,15 +279,17 @@ def pc_to_seq(pc, im, mode='drainage'):
     <https://porespy.org/examples/filters/reference/pc_to_seq.html>`_
     to view online example.
     """
+    pc = np.copy(pc)
     inf = pc == np.inf  # save for later
     if mode == 'drainage':
         bins = np.unique(pc)
+        a = np.digitize(pc, bins=bins, right=False)
     elif mode == 'imbibition':
         pc[pc == -np.inf] = np.inf
-        bins = np.unique(pc)[-1::-1]
-    a = np.digitize(pc, bins=bins)
-    a[~im] = 0
+        bins = np.unique(pc)[::-1]
+        a = np.digitize(pc, bins=bins, right=True)
     a[np.where(inf)] = -1
+    a[~im] = 0
     a = make_contiguous(a, mode='symmetric')
     return a
 
@@ -386,8 +393,8 @@ def satn_to_seq(satn, im=None, mode='drainage'):
     uninvaded = satn == -1
     values = np.unique(satn)
     seq = np.digitize(satn, bins=values)
-    # Set uninvaded by to -1
-    seq[satn == -1] = -1
+    # Set uninvaded to 0
+    seq[uninvaded] = 0
     # Set solids back to 0
     seq[~im] = 0
     # Ensure values are contiguous while keeping -1 and 0
@@ -397,3 +404,88 @@ def satn_to_seq(satn, im=None, mode='drainage'):
         seq[~im] = 0
     seq[uninvaded] = -1
     return seq
+
+
+def size_to_pc(im, size, f=None, **kwargs):
+    r"""
+    Converts size map into capillary pressure map
+
+    Parameters
+    ----------
+    im : ndarray
+        A Numpy array with ``True`` values indicating the void space.
+    size : ndarray
+        The image containing invasion size values in each voxel. Solid
+        should be indicated as 0's and uninvaded voxels as -1.
+    f : function handle, optional
+        A function to compute the capillary pressure which receives `size` as
+        the first argument, followed by any additional `**kwargs`. If not
+        provided then the Washburn equation is used, which requires `theta` and
+        `sigma` to be specified as `kwargs`.
+    **kwargs : Key word arguments
+        All additional keyword arguments are passed on to `f`.
+
+    Returns
+    -------
+    pc : ndarray
+        An image with each voxel containing the capillary pressure at which it was
+        invaded. Any uninvaded voxels in `size` are set to `np.inf` which is meant
+        to indicate that these voxels are never invaded.
+
+    Notes
+    -----
+    The function `f` should be of the form:
+
+    .. code-block::
+
+        def func(r, a, b):
+            pc = ...  # Some equation for capillary pressure using r, a and b
+            return pc
+
+    """
+    if f is None:
+        def f(r, sigma, theta, voxel_size):
+            pc = -2*sigma*np.cos(np.deg2rad(theta))/(r*voxel_size)
+            return pc
+    pc = f(size, **kwargs)
+    pc[~im] = 0.0
+    pc[im == -1] = np.inf
+    return pc
+
+
+# def satn_to_time(im, satn, flow_rate):
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

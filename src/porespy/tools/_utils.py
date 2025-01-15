@@ -1,23 +1,23 @@
+import importlib
+import inspect
 import logging
 import sys
-import numpy as np
-import importlib
-from dataclasses import dataclass
-import psutil
-import inspect
 import time
+from dataclasses import dataclass
 
+import numpy as np
+import psutil
 
 logger = logging.getLogger("porespy")
 
 
 __all__ = [
-    'sanitize_filename',
-    'get_tqdm',
-    'show_docstring',
-    'Results',
-    'tic',
-    'toc',
+    "sanitize_filename",
+    "get_tqdm",
+    "show_docstring",
+    "Results",
+    "tic",
+    "toc",
 ]
 
 
@@ -27,14 +27,14 @@ def _format_time(timespan, precision=3):
     if timespan >= 60.0:
         # we have more than a minute, format that in a human readable form
         # Idea from http://snipplr.com/view/5713/
-        parts = [("d", 60*60*24), ("h", 60*60), ("min", 60), ("s", 1)]
+        parts = [("d", 60 * 60 * 24), ("h", 60 * 60), ("min", 60), ("s", 1)]
         time = []
         leftover = timespan
         for suffix, length in parts:
             value = int(leftover / length)
             if value > 0:
                 leftover = leftover % length
-                time.append(u'%s%s' % (str(value), suffix))
+                time.append("%s%s" % (str(value), suffix))
             if leftover < 1:
                 break
         return " ".join(time)
@@ -44,11 +44,11 @@ def _format_time(timespan, precision=3):
     # See bug: https://bugs.launchpad.net/ipython/+bug/348466
     # Try to prevent crashes by being more secure than it needs to
     # E.g. eclipse is able to print a µ, but has no sys.stdout.encoding set.
-    units = [u"s", u"ms", u'us', "ns"]  # the save value
-    if hasattr(sys.stdout, 'encoding') and sys.stdout.encoding:
+    units = ["s", "ms", "us", "ns"]  # the save value
+    if hasattr(sys.stdout, "encoding") and sys.stdout.encoding:
         try:
-            u'\xb5'.encode(sys.stdout.encoding)
-            units = [u"s", u"ms", u'\xb5s', "ns"]
+            "\xb5".encode(sys.stdout.encoding)
+            units = ["s", "ms", "\xb5s", "ns"]
         except UnicodeEncodeError:
             pass
     scaling = [1, 1e3, 1e6, 1e9]
@@ -57,7 +57,7 @@ def _format_time(timespan, precision=3):
         order = min(-int(np.floor(np.log10(timespan)) // 3), 3)
     else:
         order = 3
-    return u"%.*g %s" % (precision, timespan * scaling[order], units[order])
+    return "%.*g %s" % (precision, timespan * scaling[order], units[order])
 
 
 def tic():
@@ -101,13 +101,13 @@ def toc(quiet=False):
 def _is_ipython_notebook():  # pragma: no cover
     try:
         shell = get_ipython().__class__.__name__
-        if shell == 'ZMQInteractiveShell':
-            return True     # Jupyter notebook or qtconsole
-        if shell == 'TerminalInteractiveShell':
-            return False    # Terminal running IPython
-        return False        # Other type (?)
+        if shell == "ZMQInteractiveShell":
+            return True  # Jupyter notebook or qtconsole
+        if shell == "TerminalInteractiveShell":
+            return False  # Terminal running IPython
+        return False  # Other type (?)
     except NameError:
-        return False        # Probably standard Python interpreter
+        return False  # Probably standard Python interpreter
 
 
 @dataclass
@@ -140,13 +140,16 @@ class Settings:  # pragma: no cover
         "ERROR" (40), "CRITICAL" (50)
 
     """
+
     __instance__ = None
     # Might need to add 'file': sys.stdout to tqdm dict
-    tqdm = {'disable': False,
-            'colour': None,
-            'ncols': None,
-            'leave': False,
-            'file': sys.stdout}
+    tqdm = {
+        "disable": True,
+        "colour": None,
+        "ncols": None,
+        "leave": False,
+        "file": sys.stdout,
+    }
     _loglevel = 40 if _is_ipython_notebook() else 30
 
     def __init__(self, *args, **kwargs):
@@ -162,13 +165,13 @@ class Settings:  # pragma: no cover
     def loglevel(self, value):
         if isinstance(value, str):
             options = {
-                "TRACE" : 5,
-                "DEBUG" : 10,
-                "INFO" : 20,
-                "SUCESS" : 25,
-                "WARNING" : 30,
-                "ERROR" : 40,
-                "CRITICAL" : 50
+                "TRACE": 5,
+                "DEBUG": 10,
+                "INFO": 20,
+                "SUCESS": 25,
+                "WARNING": 30,
+                "ERROR": 40,
+                "CRITICAL": 50,
             }
             value = options[value]
         self._loglevel = value
@@ -182,16 +185,16 @@ class Settings:  # pragma: no cover
     def __repr__(self):
         indent = 0
         for item in self.__dir__():
-            if not item.startswith('_'):
+            if not item.startswith("_"):
                 indent = max(indent, len(item) + 1)
-        s = ''
+        s = ""
         for item in self.__dir__():
-            if not item.startswith('_'):
-                s += ''.join((item, ':', ' '*(indent-len(item))))
+            if not item.startswith("_"):
+                s += "".join((item, ":", " " * (indent - len(item))))
                 attr = getattr(self, item)
-                temp = ''.join((attr.__repr__(), '\n'))
+                temp = "".join((attr.__repr__(), "\n"))
                 if isinstance(attr, dict):
-                    temp = temp.replace(',', '\n' + ' '*(indent + 1))
+                    temp = temp.replace(",", "\n" + " " * (indent + 1))
                 s += temp
         return s
 
@@ -205,7 +208,7 @@ class Settings:  # pragma: no cover
         if val is None:
             val = cpu_count
         elif val > cpu_count:
-            logger.error('Value is more than the available number of cores')
+            logger.error("Value is more than the available number of cores")
             val = cpu_count
         self._ncores = val
 
@@ -217,7 +220,7 @@ class Settings:  # pragma: no cover
         return self._notebook
 
     def _set_notebook(self, val):
-        logger.error('This value is determined automatically at runtime')
+        logger.error("This value is determined automatically at runtime")
 
     notebook = property(fget=_get_notebook, fset=_set_notebook)
 
@@ -236,9 +239,9 @@ def get_tqdm():  # pragma: no cover
 
     """
     if Settings().notebook is True:
-        tqdm = importlib.import_module('tqdm.notebook')
+        tqdm = importlib.import_module("tqdm.notebook")
     else:
-        tqdm = importlib.import_module('tqdm')
+        tqdm = importlib.import_module("tqdm")
     return tqdm.tqdm
 
 
@@ -251,7 +254,7 @@ def show_docstring(func):  # pragma: no cover
     Parameters
     ----------
     func : object
-        Function handle to function whose docstring is desired
+        Handle to function whose docstring is desired
 
     Returns
     -------
@@ -261,13 +264,17 @@ def show_docstring(func):  # pragma: no cover
         function.
 
     """
-    title = f'---\n ## Documentation for ``{func.__name__}``\n ---\n'
+    # Note: The following could work too:
+    # import pandoc
+    # Markdown(pandoc.write(pandoc.read(func, format='rst'), format='markdown'))
+    # Although the markdown conversion is not numpydoc specific so is less pretty
     try:
-        from npdoc_to_md import render_md_from_obj_docstring
-        txt = render_md_from_obj_docstring(obj=func, obj_namespace=func.__name__)
+        from npdoc_to_md import render_obj_docstring
+        name = func.__module__.rsplit('.', 1)[0] + '.' + func.__name__
+        txt = render_obj_docstring(name)
     except ModuleNotFoundError:
         txt = func.__doc__
-    return title + txt + '\n---'
+    return txt
 
 
 def sanitize_filename(filename, ext, exclude_ext=False):
@@ -310,13 +317,16 @@ class Results:
 
     """
 
+    # Resist the urge to add method to this class...the point is to keep
+    # the namespace clean!!
+
     def __init__(self, **kwargs):
         self._func = inspect.getouterframes(inspect.currentframe())[1].function
         self._time = time.asctime()
 
     def __iter__(self):
         for k, v in self.__dict__.items():
-            if not k.startswith('_'):
+            if not k.startswith("_"):
                 yield v
 
     def __getitem__(self, key):
@@ -333,12 +343,12 @@ class Results:
             header,
         ]
         for item in list(self.__dict__.keys()):
-            if item.startswith('_'):
+            if item.startswith("_"):
                 continue
-            if (isinstance(self[item], np.ndarray)):
+            if isinstance(self[item], np.ndarray):
                 s = np.shape(self[item])
                 lines.append("{0:<25s} Array of size {1}".format(item, s))
-            elif hasattr(self[item], 'keys'):
+            elif hasattr(self[item], "keys"):
                 N = len(self[item].keys())
                 lines.append("{0:<25s} Dictionary with {1} items".format(item, N))
             else:

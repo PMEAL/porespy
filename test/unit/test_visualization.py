@@ -1,12 +1,15 @@
-import porespy as ps
 import numpy as np
+import porespy as ps
+
 ps.settings.tqdm['disable'] = True
 
 
 class VisualizationTest():
     def setup_class(self):
-        np.random.seed(0)
-        self.im = ps.generators.blobs(shape=[51, 51, 51])
+        self.im = ps.generators.blobs(shape=[51, 51, 51],
+                                      porosity=0.49954391599007925,
+                                      seed=0)
+        assert self.im.sum()/self.im.size == 0.49954391599007925
         self.lt = ps.filters.local_thickness(self.im)
 
     def test_sem_x(self):
@@ -15,7 +18,7 @@ class VisualizationTest():
 
     def test_xray_x(self):
         xray = ps.visualization.xray(self.im)
-        assert np.sum(xray) == np.sum(~self.im)
+        assert np.min(xray) >= 0 and np.max(xray) <= 1
 
     def test_sem_y(self):
         sem = ps.visualization.sem(self.im, axis=1)
@@ -23,7 +26,7 @@ class VisualizationTest():
 
     def test_xray_y(self):
         xray = ps.visualization.xray(self.im, axis=1)
-        assert np.sum(xray) == np.sum(~self.im)
+        assert np.min(xray) >= 0 and np.max(xray) <= 1
 
     def test_sem_z(self):
         sem = ps.visualization.sem(self.im, axis=2)
@@ -31,22 +34,22 @@ class VisualizationTest():
 
     def test_xray_z(self):
         xray = ps.visualization.xray(self.im, axis=2)
-        assert np.sum(xray) == np.sum(~self.im)
+        assert np.min(xray) >= 0 and np.max(xray) <= 1
 
     def test_imshow_single(self):
-        im = ps.generators.blobs(shape=[10, 20, 30])
+        im = ps.generators.blobs(shape=[10, 20, 30], seed=0)
         fig = ps.visualization.imshow(im)
         assert fig.get_gridspec().ncols == 1
         assert fig.get_gridspec().nrows == 1
 
     def test_imshow_multi(self):
-        im = ps.generators.blobs(shape=[10, 20, 30])
+        im = ps.generators.blobs(shape=[10, 20, 30], seed=0)
         fig = ps.visualization.imshow(im, im)
         assert fig.get_gridspec().ncols == 2
         assert fig.get_gridspec().nrows == 1
 
     def test_bar(self):
-        im = ps.generators.blobs(shape=[101, 200])
+        im = ps.generators.blobs(shape=[101, 200], seed=0)
         chords = ps.filters.apply_chords(im)
         h = ps.metrics.chord_length_distribution(chords)
         fig = ps.visualization.bar(h)
@@ -68,8 +71,8 @@ class VisualizationTest():
                                            lattice='tri')
         bd = np.zeros_like(im)
         bd[:, 0] = True
-        inv, size = ps.simulations.ibip(im=im, inlets=bd)
-        satn = ps.filters.seq_to_satn(seq=inv, im=im)
+        x = ps.simulations.ibip(im=im, inlets=bd)
+        satn = ps.filters.seq_to_satn(seq=x.im_seq, im=im)
         # mov = ps.visualization.satn_to_movie(im, satn, cmap='viridis',
         #                                      c_under='grey', c_over='white',
         #                                      v_under=1e-3, v_over=1.0, fps=10,

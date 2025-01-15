@@ -1,42 +1,10 @@
-import numpy as np
 from scipy.signal import convolve
-from porespy.tools import ps_rect
 
+from porespy.tools import ps_rect
 
 __all__ = [
     "local_diff",
-    "ramp",
 ]
-
-
-def ramp(shape, inlet=1.0, outlet=0.0, axis=0):
-    r"""
-    Generates an array containing a linear ramp of greyscale values along the given
-    axis.
-
-    Parameter
-    ---------
-    shape : list
-        The [X, Y, Z] dimension of the desired image. Z is optional.
-    inlet : scalar
-        The values to place the beginning of the specified axis
-    outlet : scalar
-        The values to place the end of the specified axis
-    axis : scalar
-        The axis along which the ramp should be directed
-
-    Returns
-    -------
-    ramp : ndarray
-        An array of the requested shape with greyscale values changing linearly
-        from inlet to outlet in the direction specified.
-    """
-    vals = np.linspace(inlet, outlet, shape[axis])
-    vals = np.reshape(vals, [shape[axis]]+[1]*len(shape[1:]))
-    vals = np.swapaxes(vals, 0, axis)
-    shape[axis] = 1
-    ramp = np.tile(vals, shape)
-    return ramp
 
 
 def local_diff(vals, im, strel=None):

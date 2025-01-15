@@ -4,12 +4,16 @@ import subprocess
 import numpy as np
 import scipy.ndimage as nd
 import skimage.measure as ms
-from edt import edt
 from skimage.morphology import ball
 
 from porespy.filters import reduce_peaks
 from porespy.networks import generate_voxel_image
 from porespy.tools import sanitize_filename
+
+try:
+    from pyedt import edt
+except ModuleNotFoundError:
+    from edt import edt
 
 
 def dict_to_vtk(data, filename, voxel_size=1, origin=(0, 0, 0)):
@@ -159,10 +163,10 @@ def to_palabos(im, filename, solid=0):
     bin_im = bin_im.astype(int)
     # Distance Transform computes Euclidean distance in lattice units to
     # Nearest fluid for every solid voxel
-    dt = nd.distance_transform_edt(bin_im)
-    dt[dt > np.sqrt(2)] = 2
-    dt[(dt > 0) * (dt <= np.sqrt(2))] = 1
-    dt = dt.astype(int)
+    dt = edt(bin_im)
+    dt[dt > 2] = 2
+    dt[(dt > 0) * (dt <= 2)] = 1
+    dt = np.sqrt(dt).astype(int)
     # Write out data
     with open(filename, "w") as f:
         out_data = dt.flatten().tolist()

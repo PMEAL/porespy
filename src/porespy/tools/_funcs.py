@@ -1,15 +1,21 @@
 import logging
+
 import numpy as np
 import scipy.ndimage as spim
-from scipy.special import erfc
-from skimage.segmentation import relabel_sequential
-from edt import edt
+from numba import boolean, njit
 from skimage.morphology import ball, disk
+from skimage.segmentation import relabel_sequential
+
 from ._utils import Results
+
 try:
     from skimage.measure import marching_cubes
 except ImportError:
     from skimage.measure import marching_cubes_lewiner as marching_cubes
+try:
+    from pyedt import edt
+except ModuleNotFoundError:
+    from edt import edt
 
 
 logger = logging.getLogger(__name__)
@@ -34,7 +40,7 @@ __all__ = [
     'marching_map',
     'make_contiguous',
     'mesh_region',
-    'norm_to_uniform',
+    'all_to_uniform',
     'overlay',
     'randomize_colors',
     'recombine',
@@ -44,6 +50,8 @@ __all__ = [
     'ps_round',
     'subdivide',
     'unpad',
+    'jit_extend_slice',
+    'pad',
 ]
 
 
@@ -252,7 +260,7 @@ def align_image_with_openpnm(im):
     return im
 
 
-def subdivide(im, divs=2, overlap=0):
+def subdivide(im, divs=2, block_size=None, overlap=0, mode='offset'):
     r"""
     Returns slices into an image describing the specified number of sub-arrays.
 
@@ -266,20 +274,39 @@ def subdivide(im, divs=2, overlap=0):
         The image of the porous media
     divs : scalar or array_like
         The number of sub-divisions to create in each axis of the image.  If a
-        scalar is given it is assumed this value applies in all dimensions.
+        scalar is given it is assumed this value applies in all dimensions. If
+        `block_size` is given this is ignored.
+    block_size : scalar or array_like
+        The size of the divisions to create. If a scalar is given then cubic
+        blocks are created. If this argument is given then `divs` is ignored.
     overlap : scalar or array_like
         The amount of overlap to use when dividing along each axis.  If a
         scalar is given it is assumed this value applies in all dimensions.
+    mode : str
+        This argument is only used if `block_size` is given and it controls how
+        to handle the situation when block sizes is not a clean multiple of
+        the image shape. The options are:
+
+        ========== ==================================================================
+        mode       description
+        ========== ==================================================================
+        'whole'    Blocks start at the beginning of each axis, and only "whole"
+                   blocks (that fit within the image) are included in the returned
+                   list of slice objects.
+        'offset'   Only whole blocks are included, but an offset is applied to the
+                   start of each axis so that an equal amount of voxels are missed
+                   at the start and end of each axis.
+        'partial'  Blocks start at the beginning of each axis, and any blocks which
+                   partially extend beyond the end of the image are returned.
+        'strict'   Raises an Exception of the image cannot be evenly divided by the
+                   given block size.
+        ========== ==================================================================
 
     Returns
     -------
     slices : ndarray
         An ndarray containing sets of slice objects for indexing into ``im``
-        that extract subdivisions of an image.  If ``flatten`` was ``True``,
-        then this array is suitable for iterating.  If ``flatten`` was
-        ``False`` then the slice objects must be accessed by row, col, layer
-        indices.  An ndarray is the preferred container since its shape can
-        be easily queried.
+        that extract subdivisions of an image.
 
     See Also
     --------
@@ -299,33 +326,57 @@ def subdivide(im, divs=2, overlap=0):
     to view online example.
 
     """
-    divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
-    overlap = overlap * (divs > 1)
-
+    offset = np.zeros(im.ndim, dtype=int)
+    shape = np.array(im.shape, dtype=int)
+    if block_size is None:
+        divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
+        overlap = overlap * (divs > 1)
+        spacing = np.round(shape/divs, decimals=0).astype(int)
+    else:
+        block_size = np.array(block_size, dtype=int)
+        spacing = np.ones((im.ndim,), dtype=int) * block_size
+        divs = shape/spacing
+        if mode == 'offset':
+            divs = np.array(divs, dtype=int)
+            offset = ((shape - block_size*divs)/2).astype(int)
+        elif mode == 'whole':
+            divs = np.array(divs, dtype=int)
+        elif mode == 'partial':
+            divs = np.ceil(divs).astype(int)
+        elif mode == 'strict':
+            if np.any(shape % block_size):
+                m = 'The image cannot be evenly divided by the given block_size'
+                raise Exception(m)
+            divs = np.array(divs).astype(int)
+        else:
+            raise Exception('Unsupported mode')
     s = np.zeros(shape=divs, dtype=object)
-    spacing = np.round(np.array(im.shape)/divs, decimals=0).astype(int)
     for i in range(s.shape[0]):
         x = spacing[0]
-        sx = slice(x*i, min(im.shape[0], x*(i+1)), None)
+        o = offset[0]
+        sx = slice(x*i + o, min(im.shape[0], x*(i+1)) + o, None)
         for j in range(s.shape[1]):
             y = spacing[1]
-            sy = slice(y*j, min(im.shape[1], y*(j+1)), None)
+            o = offset[1]
+            sy = slice(y*j + o, min(im.shape[1], y*(j+1)) + o, None)
             if im.ndim == 3:
                 for k in range(s.shape[2]):
                     z = spacing[2]
-                    sz = slice(z*k, min(im.shape[2], z*(k+1)), None)
+                    o = offset[2]
+                    sz = slice(z*k + o, min(im.shape[2], z*(k+1)) + o, None)
                     s[i, j, k] = tuple([sx, sy, sz])
             else:
                 s[i, j] = tuple([sx, sy])
     s = s.flatten().tolist()
-    for i, item in enumerate(s):
-        s[i] = extend_slice(slices=item, shape=im.shape, pad=overlap)
+    if np.any(overlap):
+        for i, item in enumerate(s):
+            s[i] = extend_slice(slices=item, shape=im.shape, pad=overlap)
     return s
 
 
 def recombine(ims, slices, overlap):
     r"""
-    Recombines image chunks back into full image of original shape
+    Recombines image chunks back into full image
 
     Parameters
     ----------
@@ -340,8 +391,7 @@ def recombine(ims, slices, overlap):
     Returns
     -------
     im : ndarray
-        An image constituted from the chunks in ``ims`` of the same shape
-        as the original image.
+        An image constituted from the chunks in ``ims``
 
     See Also
     --------
@@ -696,6 +746,29 @@ def extend_slice(slices, shape, pad=1):
         a.append(slice(start, stop, None))
     return tuple(a)
 
+@njit
+def jit_extend_slice(slices, shape, pad=1):
+    shape = np.array(shape)
+    a = []
+    for i, s in enumerate(slices):
+        start = max(s.start - pad, 0)
+        stop = min(s.stop + pad, shape[i])
+        a.append(slice(start, stop, None))
+    return (a[0], a[1], a[2])
+
+@njit
+def pad(img):
+    """
+    Assumes pad width=1 and mode is constant = 0
+    """
+    w, h, d = img.shape
+    output = np.zeros((w+2, h+2, d+2), dtype=boolean)
+    for x in range(w):
+        for y in range(h):
+            for z in range(d):
+                output[x+1, y+1, z+1] = img[x, y, z]
+    return output
+
 
 def randomize_colors(im, keep_vals=[0]):
     r'''
@@ -925,22 +998,22 @@ def in_hull(points, hull):
     to view online example.
 
     """
-    from scipy.spatial import Delaunay, ConvexHull
+    from scipy.spatial import ConvexHull, Delaunay
     if isinstance(hull, ConvexHull):
         hull = hull.points
     hull = Delaunay(hull)
     return hull.find_simplex(points) >= 0
 
 
-def norm_to_uniform(im, scale=None):
+def all_to_uniform(im, scale=None):
     r"""
-    Take an image with normally distributed greyscale values and convert it to
+    Take an image with some distribution of greyscale values and convert it to
     a uniform (i.e. flat) distribution.
 
     Parameters
     ----------
     im : ndarray
-        The image containing the normally distributed scalar field
+        The image with the greyscale values distribution to be converted.
     scale : [low, high]
         A list or array indicating the lower and upper bounds for the new
         randomly distributed data.  The default is ``None``, which uses the
@@ -956,16 +1029,16 @@ def norm_to_uniform(im, scale=None):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/reference/norm_to_uniform.html>`_
+    <https://porespy.org/examples/tools/reference/all_to_uniform.html>`_
     to view online example.
 
     """
     if scale is None:
         scale = [im.min(), im.max()]
-    im = (im - np.mean(im)) / np.std(im)
-    im = 1 / 2 * erfc(-im / np.sqrt(2))
-    im = (im - im.min()) / (im.max() - im.min())
-    im = im * (scale[1] - scale[0]) + scale[0]
+    aargsort_im = np.argsort(np.argsort(im.flatten()))  # Twice for the inverse permutation
+    linspace_im = np.linspace(scale[0], scale[1], len(aargsort_im), endpoint=True)
+    uniform_flatten_im = linspace_im[aargsort_im]
+    im = np.reshape(uniform_flatten_im, im.shape)
     return im
 
 
@@ -1010,7 +1083,7 @@ def _functions_to_table(mod, colwidth=[27, 48]):
     return s
 
 
-def mesh_region(region: bool, strel=None):
+def mesh_region(region: bool, strel=None, voxel_size=(1.0, 1.0, 1.0)):
     r"""
     Creates a tri-mesh of the provided region using the marching cubes
     algorithm
@@ -1055,7 +1128,13 @@ def mesh_region(region: bool, strel=None):
     else:
         padded_mask = np.reshape(im, (1,) + im.shape)
         padded_mask = np.pad(padded_mask, pad_width=pad_width, mode='constant')
-    verts, faces, norm, val = marching_cubes(padded_mask)
+
+    # It seems like skimage has changed marching cubes to only accept a list of
+    # spacing values with length 3, so we are checking this here.
+    voxel_size = np.array(voxel_size, dtype=float, ndmin=1)
+    if np.size(voxel_size) < 3:
+        voxel_size = np.array([voxel_size for i in range(3)]).flatten()
+    verts, faces, norm, val = marching_cubes(padded_mask, spacing=voxel_size)
     result = Results()
     result.verts = verts - pad_width
     result.faces = faces
@@ -1281,7 +1360,7 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     # Generate sphere template within image boundaries
     blank = np.ones_like(im[s], dtype=float)
     blank[tuple(c - bbox[0:im.ndim])] = 0.0
-    sph = spim.distance_transform_edt(blank) < r
+    sph = edt(blank) < r
     if overwrite:  # Clear voxles under sphere to be zero
         temp = im[s] * sph > 0
         im[s][temp] = 0
@@ -1426,3 +1505,25 @@ def _check_for_singleton_axes(im):  # pragma: no cover
         logger.warning("Input image conains a singleton axis. Reduce"
                        " dimensionality with np.squeeze(im) to avoid"
                        " unexpected behavior.")
+
+@njit
+def center_of_mass(im):
+    w, h, d = im.shape
+    x_sum = y_sum = z_sum = np.int32(0)
+    x_mass = y_mass = z_mass = np.float32(0.)
+    for x in range(w):
+        for y in range(h):
+            for z in range(d):
+                val = im[x, y, z]
+                x_sum += val
+                y_sum += val
+                z_sum += val
+                x_mass += x * val
+                y_mass += y * val
+                z_mass += z * val
+
+    return np.array((
+        x_mass/x_sum,
+        y_mass/y_sum,
+        z_mass/z_sum,
+        ))

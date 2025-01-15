@@ -1,9 +1,10 @@
 import logging
+
 import numpy as np
 import scipy.ndimage as spim
-from porespy.tools import get_tqdm
-from porespy import settings
 
+from porespy import settings
+from porespy.tools import get_tqdm
 
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)

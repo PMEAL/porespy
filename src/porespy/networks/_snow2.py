@@ -1,10 +1,23 @@
 import logging
+
 import numpy as np
-from porespy.networks import regions_to_network
-from porespy.networks import add_boundary_regions
-from porespy.networks import label_phases, label_boundaries
-from porespy.filters import snow_partitioning, snow_partitioning_parallel
+
+from porespy.filters import (
+    snow_partitioning,
+    snow_partitioning_parallel,
+)
+from porespy.networks import (
+    add_boundary_regions,
+    label_boundaries,
+    label_phases,
+    regions_to_network,
+)
 from porespy.tools import Results
+
+try:
+    from pyedt import edt
+except ModuleNotFoundError:
+    from edt import edt
 
 
 __all__ = [
@@ -16,15 +29,38 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
-def snow2(phases,
-          phase_alias=None,
-          boundary_width=3,
-          accuracy='standard',
-          voxel_size=1,
-          sigma=0.4,
-          r_max=4,
-          peaks=None,
-          parallelization={},):
+def estimate_overlap_and_chunk(im):
+    divs = [2 for i in range(im.ndim)]
+
+    shape = []
+    for i in range(im.ndim):
+        shape.append(divs[i] * (im.shape[i] // divs[i]))
+
+    if tuple(shape) != im.shape:
+        for i in range(im.ndim):
+            im = im.swapaxes(0, i)
+            im = im[: shape[i], ...]
+            im = im.swapaxes(i, 0)
+
+    chunk_shape = (np.array(shape) / np.array(divs)).astype(int)
+    dt = edt((im > 0))
+    overlap = dt.max()
+
+    return overlap, chunk_shape
+
+
+def snow2(
+    phases,
+    phase_alias=None,
+    boundary_width=3,
+    accuracy='standard',
+    voxel_size=1,
+    sigma=0.4,
+    r_max=4,
+    peaks=None,
+    porosity_map=None,
+    parallelization={},
+):
     r"""
     Applies the SNOW algorithm to each phase indicated in ``phases``.
 
@@ -69,21 +105,23 @@ def snow2(phases,
         the analysis of regions in the ``regions_to_network`` function.
         Options are:
 
-            - 'standard' (default)
-                Computes the surface areas and perimeters by simply
-                counting voxels. This is *much* faster but does not
-                properly account for the rough voxelated nature
-                of the surfaces.
+        ------------ --------------------------------------------------------
+        Value        Description
+        ------------ --------------------------------------------------------
+        'standard'   Computes the surface areas and perimeters by simply
+                     counting voxels. This is *much* faster but does not
+                     properly account for the rough voxelated nature of the
+                     surfaces.
+        'high'       Computes surface areas using the marching cube method,
+                     and perimeters using the fast marching method. These
+                     are substantially slower but better account for the
+                     voxelated nature of the images.
+        ------------ --------------------------------------------------------
 
-            - 'high'
-                Computes surface areas using the marching cube
-                method, and perimeters using the fast marching method. These
-                are substantially slower but better account for the
-                voxelated nature of the images.
-
-    voxel_size : scalar (default = 1)
-        The resolution of the image, expressed as the length of one side
-        of a voxel, so the volume of a voxel would be **voxel_size**-cubed.
+    voxel_size : tuple (default = (1, 1, 1))
+        The resolution of the image, expressed as the length of the sides of a
+        voxel, so the volume of a voxel would be the product of **voxel_size**
+        coords.
     r_max : int
         The radius of the spherical structuring element to use in the
         Maximum filter stage that is used to find peaks. The default is 4.
@@ -169,9 +207,18 @@ def snow2(phases,
         logger.info(f"Processing phase {i}...")
         phase = phases == i
         pk = None if peaks is None else peaks*phase
+        overlap, chunk = estimate_overlap_and_chunk(phase)
+        if (overlap > (chunk//2 - 1)).any():
+            parallelization = None
+            logger.warning("Disabling paralelization as overlap exceeds than chunk size.")
         if parallelization is not None:
             snow = snow_partitioning_parallel(
-                im=phase, sigma=sigma, r_max=r_max, **parallelization)
+                im=phase,
+                sigma=sigma,
+                r_max=r_max,
+                overlap=overlap,
+                **parallelization,
+            )
         else:
             snow = snow_partitioning(im=phase, sigma=sigma, r_max=r_max,
                                      peaks=pk)
@@ -192,9 +239,16 @@ def snow2(phases,
     if np.any(boundary_width):
         regions = add_boundary_regions(regions, pad_width=boundary_width)
         phases = np.pad(phases, pad_width=boundary_width, mode='edge')
+        if porosity_map is not None:
+            porosity_map = np.pad(porosity_map, pad_width=boundary_width, mode='edge')
     # Perform actual extractcion on all regions
     net = regions_to_network(
-        regions, phases=phases, accuracy=accuracy, voxel_size=voxel_size)
+        regions,
+        phases=phases,
+        accuracy=accuracy,
+        voxel_size=voxel_size,
+        porosity_map=porosity_map,
+    )
     # If image is multiphase, label pores/throats accordingly
     if phases.max() > 1:
         phase_alias = _parse_phase_alias(phase_alias, phases)

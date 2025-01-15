@@ -4,7 +4,11 @@ from scipy.ndimage import convolve1d
 from porespy.filters import trim_nonpercolating_paths
 from porespy.generators import faces
 
-__all__ = ["flux", "tau_from_cmap"]
+
+__all__ = [
+    "flux",
+    "tau_from_cmap",
+]
 
 
 def flux(c, axis, k=None):

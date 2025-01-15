@@ -15,37 +15,29 @@ jobs:
         shell: bash -l {0}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.12'
 
-      - name: Cache pip
-        uses: actions/cache@v2
-        with:
-          # This path is specific to Ubuntu
-          path: ~/.cache/pip
-          # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            ${{ runner.os }}-
-
-      - name: Install dependencies (conda)
+      - name: Install uv for faster builds
         run: |
-          pip install -e .[docs,interactive]
+          curl -LsSf https://astral.sh/uv/install.sh | sh
 
-      # Build the documentation
+      - name: Install PoreSpy
+        run: |
+          uv pip install --system -e .[docs,interactive]
+
       - name: Build the documentation
         run: |
           cd docs
           make html
 
-      # Push the documentation's HTML to github-pages
-      - name: GitHub Pages action
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Publish the documentation to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html

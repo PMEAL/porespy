@@ -1,6 +1,7 @@
 import numpy as np
 import porespy as ps
 from edt import edt
+
 ps.settings.tqdm['disable'] = True
 
 
@@ -14,8 +15,14 @@ class SeqTest():
         bd = np.zeros_like(self.im)
         bd[:, 0] = True
         self.bd = bd
-        self.im2D = ps.generators.blobs(shape=[51, 51])
-        self.im3D = ps.generators.blobs(shape=[51, 51, 51])
+        self.im2D = ps.generators.blobs(shape=[51, 51],
+                                        seed=0,
+                                        porosity=0.48212226066897346)
+        assert self.im2D.sum()/self.im2D.size == 0.48212226066897346
+        self.im3D = ps.generators.blobs(shape=[51, 51, 51],
+                                        seed=0,
+                                        porosity=0.49954391599007925)
+        assert self.im3D.sum()/self.im3D.size == 0.49954391599007925
 
     def test_satn_to_seq(self):
         satn = np.tile(np.atleast_2d(np.arange(0, 21)), [21, 1])/20
@@ -132,6 +139,7 @@ class SeqTest():
         assert satn[0, 0] == 0.0
         assert satn[0, 1] == -1
         assert satn[0, 2] == 0.05
+
         satn = ps.filters.seq_to_satn(seq, mode='imbibition')
         assert satn.max() == 0.95
         assert satn[-1, -1] == 0.05
@@ -155,6 +163,7 @@ class SeqTest():
         assert satn[-1, -1] == 1.0
         assert sz[0, 0] == sz.min()
         assert satn[0, 0] == 0
+
         satn = ps.filters.size_to_satn(sz, mode='drainage')
         assert satn.max() == 1.0
         assert sz[-1, -1] == sz.max()
@@ -173,6 +182,7 @@ class SeqTest():
         assert satn[0, 0] == 0
         assert satn[0, 1] == -1
         assert satn[0, 2] == 0.05
+
         satn = ps.filters.size_to_satn(sz, mode='drainage')
         assert satn.max() == 0.95
         assert sz[-1, -1] == sz.max()
@@ -182,7 +192,8 @@ class SeqTest():
         assert satn[0, 2] == 0.95
 
     def test_compare_size_and_seq_to_satn(self):
-        im = ps.generators.blobs(shape=[250, 250])
+        im = ps.generators.blobs(shape=[250, 250], seed=0, porosity=0.496064)
+        assert im.sum()/im.size == 0.496064
         dt = edt(im)
         sizes = np.arange(int(dt.max())+1, 0, -1)
         mio = ps.filters.porosimetry(im, sizes=sizes)
@@ -219,6 +230,7 @@ class SeqTest():
         assert satn.min() == 0
         assert satn[0, -1] == 0.05
         assert satn[0, 1] == 1.0
+
         # set some to uninvaded
         pc[:, -1] = np.inf
         satn = ps.filters.pc_to_satn(pc=pc, im=im, mode='imbibition')
@@ -241,6 +253,7 @@ class SeqTest():
         assert satn[0, -2] == 0.9
         assert satn[0, 0] == 0.0
         assert satn[0, 1] == 0.1
+
         satn = ps.filters.pc_to_satn(pc=pc, im=im, mode='imbibition')
         assert satn.max() == 0.9
         assert satn.min() == -1
@@ -259,6 +272,14 @@ class SeqTest():
         assert seq[0, 1] == 1
         assert seq[0, -1] == 19
         assert seq[0, -5] == -1
+
+    def test_size_to_seq(self):
+        im = self.im2D
+        sz = ps.filters.porosimetry(im)
+        nsizes = np.size(np.unique(sz))
+        sq = ps.filters.size_to_seq(sz)
+        nsteps = np.size(np.unique(sq))
+        assert nsteps == nsizes
 
 
 if __name__ == '__main__':

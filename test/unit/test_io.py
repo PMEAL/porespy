@@ -1,10 +1,9 @@
 import os
 import sys
-import numpy as np
-from numpy.testing import assert_allclose
-import porespy as ps
-import openpnm as op
 from pathlib import Path
+
+import numpy as np
+import porespy as ps
 
 
 class ExportTest():

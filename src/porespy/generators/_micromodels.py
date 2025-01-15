@@ -240,7 +240,7 @@ def cylindrical_pillars_mesh(
     f: float = 0.75,
     a: int = 1000,
     n: int = None,
-    truncate : bool = True,
+    truncate: bool = True,
 ):
     r"""
     A 2D micromodel with randomly located cylindrical pillars of random radius

@@ -1,13 +1,13 @@
 import numpy as np
 from numba import njit, prange
 
-
 __all__ = [
     '_make_disk',
     '_make_disks',
     '_make_ball',
     '_make_balls',
     '_insert_disk_at_points',
+    '_insert_disk_at_point',
     '_insert_disk_at_points_parallel',
     '_insert_disks_at_points',
     '_insert_disks_at_points_serial',
@@ -35,7 +35,7 @@ def points_to_spheres(im):
     from scipy.spatial import distance_matrix
     if im.ndim == 3:
         x, y, z = np.where(im > 0)
-        coords = np.vstack((x, y, z)).T
+        coords = np.vstack((x, y, z))
     else:
         x, y = np.where(im > 0)
         coords = np.vstack((x, y))
@@ -45,7 +45,10 @@ def points_to_spheres(im):
         dmap[mask] = np.inf
         r = np.around(dmap.min(axis=0)/2, decimals=0).astype(int)
     else:
-        r = im[x, y].flatten()
+        if im.ndim == 3:
+            r = im[x, y, z].flatten()
+        else:
+            r = im[x, y].flatten()
     im_spheres = np.zeros_like(im, dtype=bool)
     im_spheres = _insert_disks_at_points_parallel(
         im_spheres,
@@ -150,6 +153,60 @@ def _insert_disks_at_points_serial(im, coords, radii, v, smooth=True,
                                     if (R <= r)*(~smooth) or (R < r)*(smooth):
                                         if overwrite or (im[x, y, z] == 0):
                                             im[x, y, z] = v
+    return im
+
+
+@njit(parallel=False)
+def _insert_disk_at_point(im, coords, r, v,
+                           smooth=True, overwrite=False):  # pragma: no cover
+    r"""
+    Insert spheres (or disks) into the given ND-image at given locations
+
+    This function uses numba to accelerate the process, and does not
+    overwrite any existing values (i.e. only writes to locations containing
+    zeros).
+
+    Parameters
+    ----------
+    im : ND-array
+        The image into which the spheres/disks should be inserted. This is an
+        'in-place' operation.
+    coords : ND-array
+        The center point of the sphere/disk
+    r : int
+        The radius of all the spheres/disks to add. It is assumed that they
+        are all the same radius.
+    v : scalar
+        The value to insert
+    smooth : boolean
+        If ``True`` (default) then the spheres/disks will not have the litte
+        nibs on the surfaces.
+
+    """
+    if im.ndim == 2:
+        xlim, ylim = im.shape
+        s = _make_disk(r, smooth)
+        pt = coords
+        for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
+            if (x >= 0) and (x < xlim):
+                for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
+                    if (y >= 0) and (y < ylim):
+                        if s[a, b] == 1:
+                            if overwrite or (im[x, y] == 0):
+                                im[x, y] = v
+    elif im.ndim == 3:
+        xlim, ylim, zlim = im.shape
+        s = _make_ball(r, smooth)
+        pt = coords
+        for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
+            if (x >= 0) and (x < xlim):
+                for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
+                    if (y >= 0) and (y < ylim):
+                        for c, z in enumerate(range(pt[2]-r, pt[2]+r+1)):
+                            if (z >= 0) and (z < zlim):
+                                if (s[a, b, c] == 1):
+                                    if overwrite or (im[x, y, z] == 0):
+                                        im[x, y, z] = v
     return im
 
 
@@ -447,6 +504,7 @@ def _make_balls(r, smooth=True):  # pragma: no cover
 
 if __name__ == "__main__":
     import numpy as np
+
     from porespy.tools import tic, toc
 
     np.random.seed(0)

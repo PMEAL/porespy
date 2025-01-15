@@ -1,8 +1,12 @@
 import numpy as np
-from edt import edt
 import porespy as ps
-import scipy.ndimage as spim
-from skimage.morphology import skeletonize
+
+try:
+    from pyedt import edt
+except ModuleNotFoundError:
+    from edt import edt
+
+
 ps.settings.loglevel = "CRITICAL"
 ps.settings.tqdm['disable'] = True
 
@@ -10,7 +14,9 @@ ps.settings.tqdm['disable'] = True
 class ParallelTest():
     def setup_class(self):
         np.random.seed(0)
-        self.im = ps.generators.blobs(shape=[100, 100, 100], blobiness=2)
+        self.im = ps.generators.blobs(shape=[100, 100, 100],
+                                      porosity=0.499829,
+                                      blobiness=2)
         # Ensure that im was generated as expeccted
         assert ps.metrics.porosity(self.im) == 0.499829
         self.im_dt = edt(self.im)

@@ -1,19 +1,32 @@
-import logging
-import numpy as np
 import inspect as insp
-from edt import edt
-import porespy as ps
-from numba import njit
-import scipy.spatial as sptl
-import scipy.ndimage as spim
-import scipy.stats as spst
-from deprecated import deprecated
-from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border, ps_round
-from porespy.tools import extract_subsection
-from porespy.tools import insert_sphere
-from porespy.tools import _insert_disk_at_points, _insert_disk_at_points_parallel
-from porespy import settings
+import logging
 from typing import List, Literal
+
+import numpy as np
+import numpy.typing as npt
+import scipy.ndimage as spim
+import scipy.spatial as sptl
+import scipy.stats as spst
+from numba import njit
+
+from porespy import metrics, settings
+from porespy.filters import chunked_func
+from porespy.tools import (
+    _insert_disk_at_points,
+    _insert_disk_at_points_parallel,
+    all_to_uniform,
+    extract_subsection,
+    get_border,
+    get_tqdm,
+    insert_sphere,
+    ps_ball,
+    ps_disk,
+)
+
+try:
+    from pyedt import edt
+except ModuleNotFoundError:
+    from edt import edt
 
 
 __all__ = [
@@ -21,21 +34,117 @@ __all__ = [
     "bundle_of_tubes",
     "cylinders",
     "cylindrical_plug",
+    "elevation",
     "insert_shape",
     "lattice_spheres",
     "line_segment",
     "overlapping_spheres",
     "polydisperse_spheres",
-    "RSA",
-    "rsa",
+    "ramp",
     "random_spheres",
     "voronoi_edges",
     "_get_Voronoi_edges",
 ]
 
 
-tqdm = ps.tools.get_tqdm()
+tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
+
+
+def elevation(
+    shape: List,
+    voxel_size: float,
+    axis: int = 0,
+):
+    r"""
+    Generates a image of distances from given axis
+
+    Parameters
+    ----------
+    shape : ndarray or list
+        This dictates the shape of the output image. If an image is supplied, then
+        it's shape is used. Otherwise, the shape should be supplied as a N-D long
+        list of the shape for each axis (i.e. `[200, 200]` or `[300, 300, 300]`).
+    voxel_size : scalar
+        The size of the voxels in physical units (i.e. `100e-6` would be 100 um per
+        voxel side).
+    axis : int, optional, default is 0
+        The direction along which the height is calculated.  The default is 0, which
+        is the 'x-axis'.
+
+    Returns
+    -------
+    elevation : ndarray
+        A numpy array of the specified shape with the values in each voxel indicating
+        the height of that voxel from the beginning of the specified axis.
+
+    See Also
+    --------
+    ramp
+
+    Examples
+    --------
+    # TODO: Create a notebook example for this function
+
+    """
+    im = np.zeros(shape, dtype=bool)
+    im = np.swapaxes(im, 0, axis)
+    a = np.arange(0, im.shape[0])
+    b = np.reshape(a, [im.shape[0], 1, 1])
+    c = np.tile(b, (1, *im.shape[1:]))
+    c = c*voxel_size
+    h = np.swapaxes(c, 0, axis)
+    return h
+
+
+def ramp(
+    shape: List,
+    inlet: float = 1.0,
+    outlet: float = 0.0,
+    axis: int = 0,
+):
+    r"""
+    Generates an array containing a linear ramp of greyscale values along the given
+    axis.
+
+    This is useful for de-trending at concentration gradient, or for computing
+    the elevation of each voxel for use in the capillary transform.
+
+    Parameter
+    ---------
+    shape : list
+        The [X, Y, Z] dimension of the desired image. Z is optional.
+    inlet : scalar
+        The values to place the beginning of the specified axis. The default is 1.0.
+    outlet : scalar
+        The values to place the end of the specified axis. The default is 0.0.
+    axis : scalar
+        The axis along which the ramp should be directed. The default is 0,
+        corresponding to the x-axis.
+
+    Returns
+    -------
+    ramp : ndarray
+        An array of the requested shape with values changing linearly from inlet
+        to outlet in the direction specified.
+
+    See Also
+    --------
+    elevation
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/reference/ramp.html>`_
+    to view online example.
+    """
+    shape = np.array(shape)
+    vals = np.linspace(inlet, outlet, shape[axis])
+    vals = np.reshape(vals, [shape[axis]]+[1]*len(shape[1:]))
+    vals = np.swapaxes(vals, 0, axis)
+    shape[axis] = 1
+    ramp = np.tile(vals, shape)
+    return ramp
 
 
 def cylindrical_plug(shape, r=None, axis=2):
@@ -175,37 +284,36 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
     return im
 
 
-@deprecated("This function has been renamed to rsa (lowercase to meet pep8)")
-def RSA(*args, **kwargs):
-    return rsa(*args, **kwargs)
-
-
 def random_spheres(
-    im_or_shape: np.array,
-    r: int,
-    volume_fraction: int = 1,
+    shape: List = None,
+    im: npt.ArrayLike = None,
+    r: int = 5,
     clearance: int = 0,
     protrusion: int = 0,
-    n_max: int = 100000,
-    edges: str = "contained",
-    return_spheres: bool = False,
+    maxiter: int = 100000,
+    phi: float = 1.0,
+    edges: Literal['contained', 'extended'] = 'contained',
     smooth: bool = True,
     seed: int = None,
+    value: int = True,
 ):
     r"""
-    Generates a sphere or disk packing using Random Sequential Addition
+    Generates a sphere or disk packing using random sequential addition as
+    described by Torquato [1]_.
 
     Parameters
     ----------
-    im_or_shape : ndarray or list
-        To provide flexibility, this argument accepts either an image into
-        which the spheres are inserted, or a shape which is used to create an
-        empty image.  In both cases the spheres are added as ``True`` values
-        to the background.  Since ``True`` is considered the pore space, then
-        the added spheres represent holes.
+    shape : list
+        The shape of the image to create.  This is equivalent to passing an array
+        of `False` values of the desired size to `im`.
+    im : ndarray
+        Image with `False` indicating the voxels where spheres should be
+        inserted. This can be used to insert spheres into an image that already
+        has some features (e.g. half filled with larger spheres, or a cylindrical
+        plug).
     r : int
-        The radius of the disk or sphere to insert.
-    volume_fraction : scalar (default is 1.0)
+        The radius of the disk or sphere to insert. The default is 5.
+    phi : scalar (default is 1.0)
         The fraction of the image that should be filled with spheres.  The
         spheres are added as ``True``'s, so each sphere addition increases the
         ``volume_fraction`` until the specified limit is reached.  Note that if
@@ -217,18 +325,17 @@ def random_spheres(
         acceptable to create overlaps, so long as ``abs(clearance) < r``.
     protrusion : int (optional, default = 0)
         The amount by which inserted spheres are allowed to protrude outside of
-        the given background.  If set to 0 (the default) then all spheres will
-        be fully inside the region marked ``False`` in the input image. If > 0, then
-        spheres will extend into the region marked ``True`` in the input image.
-    n_max : int (default is 100,000)
+        the given forground.  If set to 0 (the default) then all spheres will
+        be fully inside the region marked ``False`` in the input image.
+    maxiter : int (default is 100,000)
         The maximum number of spheres to add.  Using a low value may halt
-        the addition process prior to reaching the specified
-        ``volume_fraction``.  If ``None`` is given, then no limit is used.
+        the addition process prior to reaching the specified ``phi``.  If
+        ``None`` is given, then no limit is used.
     edges : string (default is 'contained')
         Controls how the edges of the image are handled.  Options are:
 
         ============ ===============================================================
-        edges        description
+        Edge Mode    Description
         ============ ===============================================================
         'contained'  Spheres are all completely within the image
         'extended'   Spheres are allowed to extend beyond the edge of the
@@ -237,10 +344,6 @@ def random_spheres(
                      entire volume is counted as added for computational efficiency.
         ============ ===============================================================
 
-    return_spheres : bool
-        If ``True`` then an image containing only the spheres is returned
-        rather than the input image with the spheres added, which is the
-        default behavior.
     smooth : bool
         Indicates whether balls should have smooth faces (``True``) or should
         include the bumps on the extremities (``False``).
@@ -250,6 +353,10 @@ def random_spheres(
         has no effect. To get a repeatable image, the seed must be passed to the
         function so it can be initialized the way ``numba`` requires. The default
         is ``None``, which means each call will produce a new realization.
+    value : scalar
+        The value to set the inserted spheres to. Using `value > 1` is a handy
+        way to repeatedly insert different sphere sizes into the same image while
+        making them easy to identify.
 
     Returns
     -------
@@ -263,16 +370,16 @@ def random_spheres(
 
     Notes
     -----
-    This algorithm ensures that spheres do not overlap but does not
-    guarantee they are tightly packed.
+    This algorithm ensures that spheres do not overlap but does not guarantee they
+    are tightly packed.
 
     This function adds spheres to the background of the received ``im``, which
     allows iteratively adding spheres of different radii to the unfilled space
-    by repeatedly passing in the result of previous calls to RSA.
+    by repeatedly passing in the result of previous calls to the function.
 
     References
     ----------
-    [1] Random Heterogeneous Materials, S. Torquato (2001)
+    .. [1] Random Heterogeneous Materials, S. Torquato (2001)
 
     Examples
     --------
@@ -281,157 +388,46 @@ def random_spheres(
     to view online example.
 
     """
-    im = rsa(
-        im_or_shape=im_or_shape,
-        r=r,
-        volume_fraction=volume_fraction,
-        clearance=clearance,
-        protrusion=protrusion,
-        n_max=n_max,
-        mode=edges,
-        return_spheres=return_spheres,
-        smooth=smooth,
-        seed=seed)
-    return im
+    logger.debug(f"random_spheres: Adding spheres of size {r}")
 
+    if smooth:
+        r = r + 1
 
-@deprecated("This function will be renamed random_spheres in a future version")
-def rsa(
-    im_or_shape: np.array,
-    r: int,
-    volume_fraction: int = 1,
-    clearance: int = 0,
-    protrusion: int = 0,
-    n_max: int = 100000,
-    mode: str = "contained",
-    return_spheres: bool = False,
-    smooth: bool = True,
-    seed: int = None,
-):
-    r"""
-    Generates a sphere or disk packing using Random Sequential Addition
-
-    Parameters
-    ----------
-    im_or_shape : ndarray or list
-        To provide flexibility, this argument accepts either an image into
-        which the spheres are inserted, or a shape which is used to create an
-        empty image.  In both cases the spheres are added as ``True`` values
-        to the background.  Since ``True`` is considered the pore space, then
-        the added spheres represent holes.
-    r : int
-        The radius of the disk or sphere to insert.
-    volume_fraction : scalar (default is 1.0)
-        The fraction of the image that should be filled with spheres.  The
-        spheres are added as ``True``'s, so each sphere addition increases the
-        ``volume_fraction`` until the specified limit is reached.  Note that if
-        ``n_max`` is reached first, then ``volume_fraction`` will not be
-        achieved.  Also, ``volume_fraction`` is not counted correctly if the
-        ``mode`` is ``'extended'``.
-    clearance : int (optional, default = 0)
-        The amount of space to put between each sphere. Negative values are
-        acceptable to create overlaps, so long as ``abs(clearance) < r``.
-    protrusion : int (optional, default = 0)
-        The amount by which inserted spheres are allowed to protrude outside of
-        the given background.  If set to 0 (the default) then all spheres will
-        be fully inside the region marked ``False`` in the input image. If > 0, then
-        spheres will extend into the region marked ``True`` in the input image.
-    n_max : int (default is 100,000)
-        The maximum number of spheres to add.  Using a low value may halt
-        the addition process prior to reaching the specified
-        ``volume_fraction``.  If ``None`` is given, then no limit is used.
-    mode : string (default is 'contained')
-        Controls how the edges of the image are handled.  Options are:
-
-        'contained'
-            Spheres are all completely within the image
-        'extended'
-            Spheres are allowed to extend beyond the edge of the
-            image.  In this mode the volume fraction will be less than
-            requested since some spheres extend beyond the image, but their
-            entire volume is counted as added for computational efficiency.
-
-    return_spheres : bool
-        If ``True`` then an image containing only the spheres is returned
-        rather than the input image with the spheres added, which is the
-        default behavior.
-    smooth : bool
-        Indicates whether balls should have smooth faces (``True``) or should
-        include the bumps on the extremities (``False``).
-    seed : int
-        The seed to supply to the random number generators. Because this function
-        uses ``numba`` for speed, calling the normal ``numpy.random.seed(<seed>)``
-        has no effect. To get a repeatable image, the seed must be passed to the
-        function so it can be initialized the way ``numba`` requires. The default
-        is ``None``, which means each call will produce a new realization.
-
-    Returns
-    -------
-    image : ndarray
-        An image with spheres of specified radius *added* to the background.
-
-    See Also
-    --------
-    pseudo_gravity_packing
-    pseudo_electrostatic_packing
-
-    Notes
-    -----
-    This algorithm ensures that spheres do not overlap but does not
-    guarantee they are tightly packed.
-
-    This function adds spheres to the background of the received ``im``, which
-    allows iteratively adding spheres of different radii to the unfilled space
-    by repeatedly passing in the result of previous calls to RSA.
-
-    References
-    ----------
-    [1] Random Heterogeneous Materials, S. Torquato (2001)
-
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/generators/reference/rsa.html>`_
-    to view online example.
-
-    """
-    logger.debug(f"rsa: Adding spheres of size {r}")
-    if np.array(im_or_shape).ndim < 2:
-        im = np.zeros(shape=im_or_shape, dtype=bool)
-        input_im = np.copy(im)
+    if (im is None) and (shape is not None):  # If shape was given, generate empty im
+        if np.ndim(shape) > 1:
+            raise Exception('shape must be a list like [Nx, Ny] or [Nx, Ny, Nz]')
+        im = np.zeros(shape, dtype=type(value))
+        options_im = np.ones_like(im, dtype=bool)
+    elif (shape is None) and (im is not None):  # Otherwise use im
+        options_im = edt(im == 0) >= (r - protrusion)
+        im = np.copy(im).astype(type(value))
     else:
-        input_im = np.copy(im_or_shape)
-        im = np.zeros_like(im_or_shape, dtype=bool)
+        raise Exception('Must specify either im or shape')
+
     if seed is not None:  # Initialize rng so numba sees it
         _set_seed(seed)
-    im = im.astype(bool)
-    shape_orig = im.shape  # Store original image shape, to undo padding at the end
-    if n_max is None:
-        n_max = np.inf
-    # Compute volume fraction info
-    vf_final = volume_fraction
-    vf_start = im.sum(dtype=np.int64) / im.size
-    vf_template = ps_round(r, ndim=im.ndim, smooth=smooth).sum(dtype=np.int64) / im.size
-    logger.debug(f"Initial volume fraction: {vf_start}")
-    # Dilate existing objects by strel to remove pixels near them
-    # from consideration for sphere placement
-    logger.info("Dilating foreground features by sphere radius")
-    dt = edt(input_im == 0)
-    options_im = dt >= (r - protrusion)
+
     # Depending on mode, adjust options_im to remove options around edge
-    if mode == "contained":
+    if edges == "contained":
         border = get_border(im.shape, thickness=r, mode="faces")
         options_im[border] = False
-    elif mode == "extended":
-        im = np.pad(im, pad_width=r, mode="edge")
-        options_im = np.pad(options_im, r, mode='symmetric')
+    elif edges == "extended":
+        pass
     else:
-        raise Exception("Unrecognized mode: ", mode)
+        raise Exception("Unrecognized mode: ", edges)
+
+    # Compute maxiter if a phi was specified
+    if phi < 1.0:
+        Vsph = 4/3*np.pi*(r**3) if im.ndim == 3 else np.pi*(r**2)
+        Vbulk = np.prod(im.shape)
+        maxiter = min(int(np.round(phi*Vbulk/Vsph)), maxiter)
+
     # Begin inserting the spheres
-    vf = vf_start
     free_sites = np.flatnonzero(options_im)
-    i = 0
-    while (vf <= vf_final) and (i < n_max) and (len(free_sites) > 0):
+    spheres = np.zeros_like(im, dtype=bool)
+    for i in range(maxiter):
+        if len(free_sites) <= 0:
+            break
         # Choose a random site from free_sites
         c, count = _make_choice(options_im, free_sites=free_sites)
         # The 100 below is arbitrary and may change performance
@@ -441,44 +437,39 @@ def rsa(
             free_sites = np.flatnonzero(options_im)
         if all(np.array(c) == -1):
             break
-        im = _insert_disk_at_points(im=im,
-                                    coords=np.vstack(c),
-                                    r=r,
-                                    v=True,
-                                    smooth=smooth)
+        spheres = _insert_disk_at_points(im=spheres,
+                                         coords=np.vstack(c),
+                                         r=r,
+                                         v=True,
+                                         smooth=smooth)
         options_im = _insert_disk_at_points(im=options_im,
                                             coords=np.vstack(c),
-                                            r=2*r + int(np.round(clearance/2)),
+                                            r=2*r + clearance,
                                             v=False,
                                             smooth=smooth,
                                             overwrite=True)
-        vf += vf_template
-        i += 1
     logger.info(f"Number of spheres inserted: {i}")
-    im = extract_subsection(im, shape_orig)
-    logger.debug("Final volume fraction:", vf)
-    if not return_spheres:
-        im = im + input_im
+    im[spheres] = value
     return im
 
 
 @njit
-def _set_seed(a):
+def _set_seed(a):  # pragma: no cover
     np.random.seed(a)
 
 
 @njit
-def _get_rand_float(*args):
+def _get_rand_float(*args):  # pragma: no cover
     return np.random.rand(*args)
 
 
 @njit
-def _get_rand_int(*args):
+def _get_rand_int(*args):  # pragma: no cover
     return np.random.randint(*args)
 
 
 @njit
-def _make_choice(options_im, free_sites):
+def _make_choice(options_im, free_sites):  # pragma: no cover
     r"""
     This function is called by _begin_inserting to find valid insertion
     points.
@@ -611,12 +602,13 @@ def bundle_of_tubes(
     return temp
 
 
-def polydisperse_spheres(shape,
-                         porosity: float,
-                         dist,
-                         nbins: int = 5,
-                         r_min: int = 5,
-                         seed=None):
+def polydisperse_spheres(
+    shape: List,
+    porosity: float,
+    dist,
+    nbins: int = 5,
+    r_min: int = 5,
+    seed=None):
     r"""
     Create an image of randomly placed, overlapping spheres with a
     distribution of radii.
@@ -793,12 +785,14 @@ def _get_Voronoi_edges(vor):
     return edges
 
 
-def lattice_spheres(shape,
-                    r: int = 5,
-                    spacing: int = None,
-                    offset: int = None,
-                    smooth: bool = True,
-                    lattice: Literal['sc', 'tri', 'fcc', 'bcc'] = "sc"):
+def lattice_spheres(
+    shape: List,
+    r: int = 5,
+    spacing: int = None,
+    offset: int = None,
+    smooth: bool = True,
+    lattice: Literal['sc', 'tri', 'fcc', 'bcc'] = "sc",
+):
     r"""
     Generate a cubic packing of spheres in a specified lattice arrangement.
 
@@ -1070,7 +1064,7 @@ def blobs(
 
     See Also
     --------
-    norm_to_uniform
+    all_to_uniform
 
     Notes
     -----
@@ -1109,12 +1103,12 @@ def blobs(
     im = np.random.random(shape)
     if parallel:
         overlap = max([int(s*4) for s in np.array(sigma, ndmin=1)])
-        im = ps.filters.chunked_func(func=spim.gaussian_filter,
-                                     input=im, sigma=sigma,
-                                     divs=divs, overlap=overlap)
+        im = chunked_func(func=spim.gaussian_filter,
+                          input=im, sigma=sigma,
+                          divs=divs, overlap=overlap)
     else:
         im = spim.gaussian_filter(im, sigma=sigma)
-    im = norm_to_uniform(im, scale=[0, 1])
+    im = all_to_uniform(im, scale=[0, 1])
     if porosity:
         im = im < porosity
     return im
@@ -1371,8 +1365,8 @@ def cylinders(
             im = im * tmp
         n_fibers_added += n_fibers
         # Update parameters for next iteration
-        porosity = ps.metrics.porosity(im)
-        vol_added = get_num_pixels(porosity)
+        eps = metrics.porosity(im)
+        vol_added = get_num_pixels(eps)
         vol_fiber = vol_added / n_fibers_added
 
     logger.debug(f"{n_fibers_added} fibers added to reach target porosity.")

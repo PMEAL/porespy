@@ -1,11 +1,21 @@
 import numpy as np
-from edt import edt
-from porespy.tools import get_tqdm
-from porespy.tools import get_border, make_contiguous
-from porespy.tools import _insert_disk_at_points
-from porespy.tools import Results
+import numpy.typing as npt
+from porespy.filters import seq_to_satn
 from numba import njit
 from porespy import settings
+from porespy.tools import (
+    get_tqdm,
+    get_border,
+    make_contiguous,
+    _insert_disk_at_points,
+    Results,
+)
+try:
+    from pyedt import edt
+except ModuleNotFoundError:
+    from edt import edt
+
+
 tqdm = get_tqdm()
 
 
@@ -14,9 +24,15 @@ __all__ = [
 ]
 
 
-def ibip(im, inlets=None, dt=None, maxiter=10000):
+def ibip(
+    im: npt.NDArray,
+    inlets: npt.NDArray = None,
+    dt: npt.NDArray = None,
+    maxiter: int = 10000,
+    return_sizes: bool = True,
+):
     r"""
-    Performs invasion percolation on given image using iterative image dilation
+    Performs invasion percolation on given image using the IBIP algorithm [1]_
 
     Parameters
     ----------
@@ -32,49 +48,69 @@ def ibip(im, inlets=None, dt=None, maxiter=10000):
         The number of steps to apply before stopping.  The default is to run
         for 10,000 steps which is almost certain to reach completion if the
         image is smaller than about 250-cubed.
+    return_sizes : bool
+        If `True` then an array containing the size of the sphere which first
+        overlapped each voxel is returned. This array is not computed by default
+        as it increases computation time.
 
     Returns
     -------
-    results : Results object
-        A custom object with the following two arrays as attributes:
+    results : dataclass-like
+        A dataclass-like object with the following arrays as attributes:
 
-        'inv_sequence'
-            An ndarray the same shape as ``im`` with each voxel labelled by
-            the sequence at which it was invaded.
-
-        'inv_size'
-            An ndarray the same shape as ``im`` with each voxel labelled by
-            the ``inv_size`` at which was filled.
+        ============= ===============================================================
+        Attribute     Description
+        ============= ===============================================================
+        im_seq        A numpy array with each voxel value containing the step at
+                      which it was invaded.  Uninvaded voxels are set to -1.
+        im_satn       A numpy array with each voxel value indicating the saturation
+                      present in the domain it was invaded. Solids are given 0, and
+                      uninvaded regions are given -1.
+        im_size       If `return_sizes` was set to `True`, then a numpy array with
+                      each voxel containing the radius of the sphere, in voxels,
+                      that first overlapped it.
+        ============= ===============================================================
 
     See Also
     --------
     porosimetry
+    drainage
+    qbip
+    ibop
+
+    References
+    ----------
+    .. [1] Gostick JT, Misaghian N, Yang J, Boek ES. Simulating volume-controlled
+       invasion of a non-wetting fluid in volumetric images using basic image
+       processing tools. Computers & Geosciences. 158(1), 104978 (2022). `Link.
+       <https://doi.org/10.1016/j.cageo.2021.104978>`_
+
+    Notes
+    -----
+    This function is slower and is less capable than `qbip`, which returns identical
+    results, so it is recommended to use that instead.
 
     Examples
     --------
     `Click here
     <https://porespy.org/examples/filters/reference/ibip.html>`_
-    to view online example.
+    to view an online example.
 
     """
     # Process the boundary image
     if inlets is None:
         inlets = get_border(shape=im.shape, mode='faces')
+    inlets = inlets*im
     bd = np.copy(inlets > 0)
     if dt is None:  # Find dt if not given
         dt = edt(im)
-    dt = dt.astype(int)  # Conert the dt to nearest integer
     # Initialize inv image with -1 in the solid, and 0's in the void
-    inv = -1*(~im)
-    sizes = -1*(~im)
+    seq = -1*(~im)
+    sizes = -1.0*(~im)
     scratch = np.copy(bd)
     for step in tqdm(range(1, maxiter), **settings.tqdm):
-        pt = _where(bd)
-        scratch = np.copy(bd)
-        temp = _insert_disk_at_points(im=scratch, coords=pt,
-                                       r=1, v=1, smooth=False)
-        # Reduce to only the 'new' boundary
-        edge = temp*(dt > 0)
+        # Find insertion points
+        edge = scratch*(dt > 0)
         if ~edge.any():
             break
         # Find the maximum value of the dt underlaying the new edge
@@ -83,23 +119,42 @@ def ibip(im, inlets=None, dt=None, maxiter=10000):
         dt_thresh = dt >= r_max
         # Extract the actual coordinates of the insertion sites
         pt = _where(edge*dt_thresh)
-        inv = _insert_disk_at_points(im=inv, coords=pt,
-                                      r=r_max, v=step, smooth=True)
-        sizes = _insert_disk_at_points(im=sizes, coords=pt,
-                                        r=r_max, v=r_max, smooth=True)
+        seq = _insert_disk_at_points(
+            im=seq,
+            coords=pt,
+            r=int(r_max),
+            v=step,
+            smooth=True,
+        )
+        if return_sizes:
+            sizes = _insert_disk_at_points(
+                im=sizes,
+                coords=pt,
+                r=int(r_max),
+                v=r_max,
+                smooth=True,
+            )
         dt, bd = _update_dt_and_bd(dt, bd, pt)
+        scratch = _insert_disk_at_points(
+            im=scratch,
+            coords=pt,
+            r=1,
+            v=1,
+            smooth=False,
+        )
     # Convert inv image so that uninvaded voxels are set to -1 and solid to 0
-    temp = inv == 0  # Uninvaded voxels are set to -1 after _ibip
-    inv[~im] = 0
-    inv[temp] = -1
-    inv = make_contiguous(im=inv, mode='symmetric')
+    temp = seq == 0  # Uninvaded voxels are set to -1 after _ibip
+    seq[~im] = 0
+    seq[temp] = -1
+    seq = make_contiguous(im=seq, mode='symmetric')
     # Deal with invasion sizes similarly
     temp = sizes == 0
     sizes[~im] = 0
     sizes[temp] = -1
     results = Results()
-    results.inv_sequence = inv
-    results.inv_sizes = sizes
+    results.im_size = np.copy(sizes)
+    results.im_seq = np.copy(seq)
+    results.im_satn = seq_to_satn(seq)
     return results
 
 
@@ -129,7 +184,7 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from copy import copy
 
-    # %% Run this cell to regenerate the variables in drainage
+    # %% Run this cell to regenerate the variables
     np.random.seed(6)
     bg = 'white'
     plots = True
@@ -143,7 +198,8 @@ if __name__ == "__main__":
         cmap = copy(plt.cm.plasma)
         cmap.set_under(color='black')
         cmap.set_over(color='grey')
+        cmap.set_bad('grey')
         fig, ax = plt.subplots(1, 1)
-        kw = ps.visualization.prep_for_imshow(ip.inv_sequence, im)
+        kw = ps.visualization.prep_for_imshow(ip.im_seq/im, im)
         kw['vmin'] = 0
         ax.imshow(**kw, cmap=cmap)

@@ -2,20 +2,23 @@ import inspect as insp
 import logging
 import dask
 import numpy as np
-from edt import edt
+import numpy.typing as npt
 import operator as op
 import scipy.ndimage as spim
-from deprecated import deprecated
 from skimage.morphology import reconstruction
 from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from porespy.tools import _check_for_singleton_axes
-from porespy.tools import get_border, subdivide, recombine, make_contiguous
+from porespy.tools import get_border, subdivide, recombine
 from porespy.tools import unpad, extract_subsection
 from porespy.tools import ps_disk, ps_ball, ps_round
 from porespy import settings
 from porespy.tools import get_tqdm
 from typing import Literal
+try:
+    from pyedt import edt
+except ModuleNotFoundError:
+    from edt import edt
 
 
 __all__ = [
@@ -26,13 +29,10 @@ __all__ = [
     "distance_transform_lin",
     "fill_blind_pores",
     "find_disconnected_voxels",
-    "find_trapped_regions",
     "find_dt_artifacts",
     "flood",
     "flood_func",
     "hold_peaks",
-    "ibip",
-    "ibip_gpu",
     "local_thickness",
     "nphase_border",
     "porosimetry",
@@ -48,103 +48,6 @@ __all__ = [
 
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
-
-
-@deprecated("The ibip function will be moved to the"
-            + " ``simulations`` module in a future version")
-def ibip(**kwargs):
-    r"""
-    This function has been moved to the ``simulations`` module, please use that.
-    """
-    from porespy.simulations import ibip
-    return ibip(**kwargs)
-
-
-@deprecated("The ibip_gpu function will be moved to the"
-            + " ``simulations`` module in a future version")
-def ibip_gpu(**kwargs):
-    r"""
-    This function has been moved to the ``simulations`` module, please use that.
-    """
-    from porespy.simulations import ibip_gpu
-    return ibip_gpu(**kwargs)
-
-
-def find_trapped_regions(seq, outlets=None, bins: int = 25, return_mask: bool = True):
-    r"""
-    Find the trapped regions given an invasion sequence image
-
-    Parameters
-    ----------
-    seq : ndarray
-        An image with invasion sequence values in each voxel.  Regions
-        labelled -1 are considered uninvaded, and regions labelled 0 are
-        considered solid.
-    outlets : ndarray, optional
-        An image the same size as ``seq`` with ``True`` indicating outlets
-        and ``False`` elsewhere.  If not given then all image boundaries
-        are considered outlets.
-    bins : int
-        The resolution to use when thresholding the ``seq`` image.  By default
-        the invasion sequence will be broken into 25 discrete steps and
-        trapping will be identified at each step. A higher value of ``bins``
-        will provide a more accurate trapping analysis, but is more time
-        consuming. If ``None`` is specified, then *all* the steps will
-        analyzed, providing the highest accuracy.
-    return_mask : bool
-        If ``True`` (default) then the returned image is a boolean mask
-        indicating which voxels are trapped.  If ``False``, then a copy of
-        ``seq`` is returned with the trapped voxels set to uninvaded and
-        the invasion sequence values adjusted accordingly.
-
-    Returns
-    -------
-    trapped : ND-image
-        An image, the same size as ``seq``.  If ``return_mask`` is ``True``,
-        then the image has ``True`` values indicating the trapped voxels.  If
-        ``return_mask`` is ``False``, then a copy of ``seq`` is returned with
-        trapped voxels set to 0.
-
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/filters/reference/find_trapped_regions.html>`_
-    to view online example.
-
-    """
-    seq = np.copy(seq)
-    if outlets is None:
-        outlets = get_border(seq.shape, mode='faces')
-    trapped = np.zeros_like(outlets)
-    if bins is None:
-        bins = np.unique(seq)[-1::-1]
-        bins = bins[bins > 0]
-    elif isinstance(bins, int):
-        # starting the max_bin at: minimum sequence at outlets
-        # This means soon as the fluid reaches the outlets
-        # outlet_seq = np.setdiff1d(seq[outlets], np.array([0]))
-        # bins_start = outlet_seq.min()
-        # starting the max_bin at: maximum sequence available
-        # in the image. No matter if it's after percolation
-        # threshold (reaching the outlets):
-        bins_start = seq.max()
-        bins = np.linspace(bins_start, 1, bins)
-    for i in tqdm(bins, **settings.tqdm):
-        temp = seq >= i
-        labels = spim.label(temp)[0]
-        keep = np.unique(labels[outlets])
-        # In cases where entire outlet is filled, the
-        # first indice is not necessarily the
-        # void space. Only the element with value
-        # of zero needs to be removed, if it's in keep.
-        keep = np.setdiff1d(keep, np.array([0]))
-        trapped += temp*np.isin(labels, keep, invert=True)
-    if return_mask:
-        return trapped
-    else:
-        seq[trapped] = -1
-        seq = make_contiguous(seq, mode='symmetric')
-        return seq
 
 
 def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
@@ -625,28 +528,25 @@ def flood(
         An array the same shape as ``im`` with each region labeled.
     mode : string
         Specifies how to determine the value to flood each region. Options
-        taken from the ``scipy.ndimage.measurements`` functions:
+        taken from the ``scipy.ndimage.measurements`` function include:
 
-            'maximum'
-                Floods each region with the local max in that region. The
-                keyword ``max`` is also accepted.
-            'minimum'
-                Floods each region the local minimum in that region. The
-                keyword ``min`` is also accepted.
-            'median'
-                Floods each region the local median in that region
-            'mean'
-                Floods each region the local mean in that region
-            'size'
-                Floods each region with the size of that region.  This is
-                actually accomplished with ``scipy.ndimage.sum`` by converting
-                ``im`` to a boolean image (``im = im > 0``).
-            'standard_deviation'
-                Floods each region with the value of the standard deviation
-                of the voxels in ``im``.
-            'variance'
-                Floods each region with the value of the variance of the voxels
-                in ``im``.
+        ===================== ======================================================
+        Option                Description
+        ===================== ======================================================
+        maximum               Floods each region with the local max in that region.
+                              The keyword ``max`` is also accepted.
+        minimum               Floods each region the local minimum in that region.
+                              The keyword ``min`` is also accepted.
+        median                Floods each region the local median in that region
+        mean                  Floods each region the local mean in that region
+        size                  Floods each region with the size of that region.  This
+                              is actually accomplished with ``scipy.ndimage.sum`` by
+                              converting ``im`` to a boolean image (``im = im > 0``).
+        standard_deviation    Floods each region with the value of the standard
+                              deviation of the voxels in ``im``.
+        variance              Floods each region with the value of the variance of
+                              the voxels in ``im``.
+        ===================== ======================================================
 
     Returns
     -------
@@ -665,13 +565,13 @@ def flood(
     to view online example.
 
     """
-    mask = im > 0
+    mask = labels > 0
     N = labels.max()
     mode = "sum" if mode == "size" else mode
     mode = "maximum" if mode == "max" else mode
     mode = "minimum" if mode == "min" else mode
     f = getattr(spim, mode)
-    vals = f(input=im, labels=labels, index=range(0, N + 1))
+    vals = f(input=im*mask, labels=labels, index=range(0, N + 1))
     flooded = vals[labels]
     flooded = flooded * mask
     return flooded
@@ -739,10 +639,6 @@ def find_dt_artifacts(dt):
     Label points in a distance transform that are closer to image boundary
     than solid
 
-    These points could *potentially* be erroneously high since their
-    distance values do not reflect the possibility that solid may have
-    been present beyond the border of the image but was lost by trimming.
-
     Parameters
     ----------
     dt : ndarray
@@ -758,6 +654,12 @@ def find_dt_artifacts(dt):
         that would be found if there were a solid voxel lurking just
         beyond the nearest edge of the image.  Obviously, voxels with a
         value of zero have no error.
+
+    Notes
+    -----
+    These points could *potentially* be erroneously high since their
+    distance values do not reflect the possibility that solid may have
+    been present beyond the border of the image but was lost by trimming.
 
     Examples
     --------
@@ -775,7 +677,7 @@ def find_dt_artifacts(dt):
     return result
 
 
-def region_size(im):
+def region_size(im, strel=None):
     r"""
     Replace each voxel with the size of the region to which it belongs
 
@@ -786,6 +688,9 @@ def region_size(im):
         interest, in which case ``scipy.ndimage.label`` will be applied to
         find regions, or a greyscale image with integer values indicating
         regions.
+    strel : ndarray
+        The structuring element to use for defining which connected voxels form
+        a region
 
     Returns
     -------
@@ -811,7 +716,7 @@ def region_size(im):
 
     """
     if im.dtype == bool:
-        im = spim.label(im)[0]
+        im = spim.label(im, structure=strel)[0]
     counts = np.bincount(im.flatten())
     counts[0] = 0
     return counts[im]
@@ -1183,7 +1088,7 @@ def porosimetry(
                                                  strel=strel_2(1))
             if np.any(imtemp):
                 if parallel:
-                    imtemp = chunked_func(func=edt,
+                    imtemp = chunked_func(func=lambda x: edt(x),
                                           data=~imtemp, im_arg='data',
                                           overlap=int(r) + 1, parallel=0,
                                           cores=settings.ncores, divs=divs) < r
@@ -1458,13 +1363,15 @@ def prune_branches(skel, branch_points=None, iterations: int = 1):
     return im_result
 
 
-def chunked_func(func,
-                 overlap=None,
-                 divs=2,
-                 cores=None,
-                 im_arg=["input", "image", "im"],
-                 strel_arg=["strel", "structure", "footprint"],
-                 **kwargs):
+def chunked_func(
+    func,
+    overlap=None,
+    divs=2,
+    cores=None,
+    im_arg=["input", "image", "im"],
+    strel_arg=["strel", "structure", "footprint"],
+    **kwargs,
+):
     r"""
     Performs the specfied operation "chunk-wise" in parallel using ``dask``.
 

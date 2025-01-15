@@ -1,6 +1,10 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import porespy as ps
-import matplotlib.pyplot as plt
+try:
+    from pyedt import edt
+except ModuleNotFoundError:
+    from edt import edt
 
 
 def test_drainage_from_top():
@@ -15,6 +19,7 @@ def test_drainage_from_top():
                                               outlets=outlets)
     pc = None
     lt = ps.filters.local_thickness(im)
+    dt = edt(im)
     residual = lt > 25
     bins = 25
     voxel_size = 1e-4
@@ -24,31 +29,41 @@ def test_drainage_from_top():
     g = 9.81
     bg = 'grey'
     plot = False
+    pc = ps.filters.capillary_transform(
+        im=im,
+        dt=dt,
+        sigma=sigma,
+        theta=theta,
+        rho_wp=delta_rho,
+        rho_nwp=0,
+        voxel_size=voxel_size,
+        g=0,
+    )
 
-    drn1 = ps.simulations.drainage(im=im,
-                                   voxel_size=voxel_size,
-                                   inlets=inlets,
-                                   delta_rho=delta_rho,
-                                   g=g)
-    drn2 = ps.simulations.drainage(im=im,
-                                   voxel_size=voxel_size,
-                                   inlets=inlets,
-                                   outlets=outlets,
-                                   delta_rho=delta_rho,
-                                   g=g)
-    drn3 = ps.simulations.drainage(im=im,
-                                   voxel_size=voxel_size,
-                                   inlets=inlets,
-                                   residual=residual,
-                                   delta_rho=delta_rho,
-                                   g=g)
-    drn4 = ps.simulations.drainage(im=im,
-                                   voxel_size=voxel_size,
-                                   inlets=inlets,
-                                   outlets=outlets,
-                                   residual=residual,
-                                   delta_rho=delta_rho,
-                                   g=g)
+    drn1 = ps.simulations.drainage(
+        im=im,
+        pc=pc,
+        inlets=inlets,
+    )
+    drn2 = ps.simulations.drainage(
+        im=im,
+        pc=pc,
+        inlets=inlets,
+        outlets=outlets,
+    )
+    drn3 = ps.simulations.drainage(
+        im=im,
+        pc=pc,
+        inlets=inlets,
+        residual=residual,
+    )
+    drn4 = ps.simulations.drainage(
+        im=im,
+        pc=pc,
+        inlets=inlets,
+        outlets=outlets,
+        residual=residual,
+    )
 
     # Ensure initial saturations correspond to amount of residual present
     assert drn1.snwp[0] == 0
@@ -100,3 +115,8 @@ def test_drainage_from_top():
         plt.step(np.log10(drn4.pc), drn4.snwp, 'm--o', where='post',
                  label="With trapping, with residual")
         plt.legend()
+
+
+# %%
+if __name__ == "__main__":
+    test_drainage_from_top()

@@ -1,16 +1,25 @@
 import logging
 import numpy as np
+import numpy.typing as npt
 import scipy.ndimage as spim
 import scipy.spatial as sptl
+import scipy.stats as spst
+from skimage.morphology import skeletonize_3d
+from numba import njit
 from scipy import fft as sp_ft
 from skimage.measure import regionprops
-from deprecated import deprecated
-from porespy.tools import extend_slice
-from porespy.tools import _check_for_singleton_axes
-from porespy.tools import Results
 from porespy import settings
-from porespy.tools import get_tqdm
-from numba import njit
+from porespy.filters import local_thickness
+from porespy.tools import (
+    Results,
+    _check_for_singleton_axes,
+    extend_slice,
+    get_tqdm,
+)
+try:
+    from pyedt import edt
+except ModuleNotFoundError:
+    from edt import edt
 
 
 __all__ = [
@@ -28,9 +37,8 @@ __all__ = [
     "two_point_correlation",
     "phase_fraction",
     "pc_curve",
-    "pc_curve_from_ibip",
-    "pc_curve_from_mio",
     "pc_map_to_pc_curve",
+    "bond_number",
 ]
 
 
@@ -40,34 +48,38 @@ logger = logging.getLogger(__name__)
 
 def boxcount(im, bins=10):
     r"""
-    Calculates fractal dimension of an image using the tiled box counting
+    Calculates the fractal dimension of an image using the tiled box counting
     method [1]_
 
     Parameters
     ----------
     im : ndarray
-        The image of the porous material.
+        A boolean image of the porous material with `True` values indicating the
+        phase of interest.
     bins : int or array_like, optional
-        The number of box sizes to use. The default is 10 sizes
-        logarithmically spaced between 1 and ``min(im.shape)``.
-        If an array is provided, this is used directly.
+        The number of box sizes to use. The default is 10 sizes logarithmically
+        spaced between 1 and ``min(im.shape)``. If an array is provided, this is
+        used directly.
 
     Returns
     -------
-    results
+    results : dataclass-like
         An object possessing the following attributes:
 
-        size : ndarray
-            The box sizes used
-        count : ndarray
-            The number of boxes of each size that contain both solid and void
-        slope : ndarray
-            The gradient of ``count``. This has the same number of elements as
-            ``count`` and
+        ========== =================================================================
+        Attribute  Description
+        ========== =================================================================
+        size       An array containing the specific box sizes used
+        count      An array containing the number of boxes of each size that
+                   contain both solid and void
+        slope      The gradient of ``count``. This has the same number of elements
+                   as ``count``.
+        ========== =================================================================
 
     References
     ----------
-    .. [1] See Boxcounting on `Wikipedia <https://en.wikipedia.org/wiki/Box_counting>`_
+    .. [1] See Boxcounting on `Wikipedia
+       <https://en.wikipedia.org/wiki/Box_counting>`_
 
     Examples
     --------
@@ -129,10 +141,12 @@ def representative_elementary_volume(im, npoints=1000):
     result : Results object
         A custom object with the following data added as named attributes:
 
-        'volume'
-            The total volume of each cubic subdomain tested
-        'porosity'
-            The porosity of each subdomain tested
+        ========== ==================================================================
+        Attribute  Description
+        ========== ==================================================================
+        volume     The total volume of each cubic subdomain tested
+        porosity   The porosity of each subdomain tested
+        ========== ==================================================================
 
         These attributes can be conveniently plotted by passing the Results
         object to matplotlib's ``plot`` function using the
@@ -273,7 +287,7 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
     r"""
     Computes radial density function by analyzing the histogram of voxel
     values in the distance transform.  This function is defined by
-    Torquato [1] as:
+    Torquato [1]_ as:
 
         .. math::
 
@@ -295,8 +309,7 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
     Parameters
     ----------
     dt : ndarray
-        A distance transform of the pore space (the ``edt`` package is
-        recommended).  Note that it is recommended to apply
+        A distance transform of the pore space.  Note that it is recommended to apply
         ``find_dt_artifacts`` to this image first, and set potentially
         erroneous values to 0 with ``dt[mask] = 0`` where
         ``mask = porespy.filters.find_dt_artifaces(dt)``.
@@ -342,8 +355,8 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
 
     References
     ----------
-    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
-    Macroscopic Properties. Springer, New York (2002) - See page 48 & 292
+    .. [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
+       Macroscopic Properties. Springer, New York (2002) - See page 48 & 292
 
     Examples
     --------
@@ -404,24 +417,21 @@ def lineal_path_distribution(im, bins=10, voxel_size=1, log=False):
     result : Results object
         A custom object with the following data added as named attributes:
 
-        *L* or *LogL*
-            Length, equivalent to ``bin_centers``
-        *pdf*
-            Probability density function
-        *cdf*
-            Cumulative density function
-        *relfreq*
-            Relative frequency chords in each bin.  The sum of all bin
-            heights is 1.0.  For the cumulative relativce, use *cdf* which is
-            already normalized to 1.
-        *bin_centers*
-            The center point of each bin
-        *bin_edges*
-            Locations of bin divisions, including 1 more value than
-            the number of bins
-        *bin_widths*
-            Useful for passing to the ``width`` argument of
-            ``matplotlib.pyplot.bar``
+        =============== =============================================================
+        Description     Attribute
+        =============== =============================================================
+        *L* or *LogL*   Length, equivalent to ``bin_centers``
+        *pdf*           Probability density function
+        *cdf*           Cumulative density function
+        *relfreq*       Relative frequency chords in each bin.  The sum of all bin
+                        heights is 1.0.  For the cumulative relativce, use *cdf*
+                        which is already normalized to 1.
+        *bin_centers*   The center point of each bin
+        *bin_edges*     Locations of bin divisions, including 1 more value than
+                        the number of bins
+        *bin_widths*    Useful for passing to the ``width`` argument of
+                        ``matplotlib.pyplot.bar``
+        =============== =============================================================
 
     References
     ----------
@@ -496,24 +506,21 @@ def chord_length_distribution(im, bins=10, log=False, voxel_size=1,
     result : Results object
         A custom object with the following data added as named attributes:
 
-        *L* or *LogL*
-            Chord length, equivalent to ``bin_centers``
-        *pdf*
-            Probability density function
-        *cdf*
-            Cumulative density function
-        *relfreq*
-            Relative frequency chords in each bin.  The sum of all bin
-            heights is 1.0.  For the cumulative relativce, use *cdf* which is
-            already normalized to 1.
-        *bin_centers*
-            The center point of each bin
-        *bin_edges*
-            Locations of bin divisions, including 1 more value than
-            the number of bins
-        *bin_widths*
-            Useful for passing to the ``width`` argument of
-            ``matplotlib.pyplot.bar``
+        =============== =============================================================
+        Attribute       Description
+        =============== =============================================================
+        *L* or *LogL*   Chord length, equivalent to ``bin_centers``
+        *pdf*           Probability density function
+        *cdf*           Cumulative density function
+        *relfreq*       Relative frequency chords in each bin.  The sum of all bin
+                        heights is 1.0.  For the cumulative relativce, use *cdf*
+                        which is already normalized to 1.
+        *bin_centers*   The center point of each bin
+        *bin_edges*     Locations of bin divisions, including 1 more value than
+                        the number of bins
+        *bin_widths*    Useful for passing to the ``width`` argument of
+                        ``matplotlib.pyplot.bar``
+        =============== =============================================================
 
     References
     ----------
@@ -584,30 +591,20 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
     result : Results object
         A custom object with the following data added as named attributes:
 
-        *R* or *logR*
-            Radius, equivalent to ``bin_centers``
-        *pdf*
-            Probability density function
-        *cdf*
-            Cumulative density function
-        *satn*
-            Phase saturation in differential form.  For the cumulative
-            saturation, just use *cfd* which is already normalized to 1.
-        *bin_centers*
-            The center point of each bin
-        *bin_edges*
-            Locations of bin divisions, including 1 more value than
-            the number of bins
-        *bin_widths*
-            Useful for passing to the ``width`` argument of
-            ``matplotlib.pyplot.bar``
-
-    Notes
-    -----
-    (1) To ensure the returned values represent actual sizes you can manually
-    scale the input image by the voxel size first (``im *= voxel_size``)
-
-    plt.bar(psd.R, psd.satn, width=psd.bin_widths, edgecolor='k')
+        =============== =============================================================
+        Attribute       Description
+        =============== =============================================================
+        *R* or *logR*   Radius, equivalent to ``bin_centers``
+        *pdf*           Probability density function
+        *cdf*           Cumulative density function
+        *satn*          Phase saturation in differential form.  For the cumulative
+                        saturation, just use *cfd* which is already normalized to 1.
+        *bin_centers*   The center point of each bin
+        *bin_edges*     Locations of bin divisions, including 1 more value than
+                        the number of bins
+        *bin_widths*    Useful for passing to the ``width`` argument of
+                        ``matplotlib.pyplot.bar``
+        =============== =============================================================
 
     Examples
     --------
@@ -769,13 +766,13 @@ def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
     return tpcf
 
 
-@njit(parallel=False)
+@njit(parallel=False)  # pragma: no cover
 def _get_radial_sum(dt, bins, bin_size, autocorr):
-    radial_sum = np.zeros_like(bins[:-1])
+    radial_sum = np.zeros_like(bins[:-1], dtype=np.float64)
     for i, r in enumerate(bins[:-1]):
         mask = (dt <= r) * (dt > (r - bin_size[i]))
-        radial_sum[i] = np.sum(np.ravel(autocorr)[np.ravel(mask)], dtype=np.int64) \
-            / np.sum(mask)
+        radial_sum[i] = (np.sum(np.ravel(autocorr)[np.ravel(mask)], dtype=np.int64) /
+                         np.sum(mask, dtype=np.int64))
     return radial_sum
 
 
@@ -801,24 +798,27 @@ def two_point_correlation(im, voxel_size=1, bins=100):
     Returns
     -------
     result : tpcf
-        The two-point correlation function object, with named attributes:
+        A dataclass-like object with following named attributes:
 
-        *distance*
-            The distance between two points, equivalent to bin_centers
-        *bin_centers*
-            The center point of each bin. See distance
-        *bin_edges*
-            Locations of bin divisions, including 1 more value than
-            the number of bins
-        *bin_widths*
-            Useful for passing to the ``width`` argument of
-            ``matplotlib.pyplot.bar``
-        *probability_normalized*
-            The probability that two points of the stated separation distance
-            are within the same phase normalized to 1 at r = 0
-        *probability* or *pdf*
-            The probability that two points of the stated separation distance
-            are within the same phase scaled to the phase fraction at r = 0
+        =========================== =================================================
+        Attribute                   Description
+        =========================== =================================================
+        *distance*                  The distance between two points, equivalent to
+                                    bin_centers
+        *bin_centers*               The center point of each bin. See distance
+        *bin_edges*                 Locations of bin divisions, including 1 more
+                                    value than the number of bins
+        *bin_widths*                Useful for passing to the ``width`` argument of
+                                    ``matplotlib.pyplot.bar``
+        *probability_normalized*    The probability that two points of the stated
+                                    separation distance are within the same phase
+                                    normalized to 1 at r = 0
+        *probability*               The probability that two points of the stated
+                                    separation distance are within the same phase
+                                    scaled to the phase fraction at r = 0
+        *pdf*                       Same as probability
+        =========================== =================================================
+
 
     Notes
     -----
@@ -958,27 +958,7 @@ def phase_fraction(im, normed=True):
     return results
 
 
-@deprecated("This function is deprecated, use pc_curve instead")
-def pc_curve_from_ibip(*args, **kwargs):
-    r"""
-    This function is deprecated.  Use ``pc_curve`` instead.  Note that the
-    ``stepped`` argument is no longer supported since this can be done
-    directly in matplotlib with ``plt.step(...)``.
-
-    """
-    return pc_curve(*args, **kwargs)
-
-
-@deprecated("This function is deprecated, use pc_curve instead")
-def pc_curve_from_mio(*args, **kwargs):
-    r"""
-    This function is deprecated.  Use ``pc_curve`` instead.
-    """
-    return pc_curve(*args, **kwargs)
-
-
-def pc_curve(im, sizes=None, pc=None, seq=None,
-             sigma=0.072, theta=180, voxel_size=1):
+def pc_curve(im, pc, seq=None):
     r"""
     Produces a Pc-Snwp curve given a map of meniscus radii or capillary
     pressures at which each voxel was invaded
@@ -988,30 +968,14 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
     im : ndarray
         The voxel image of the porous media with ``True`` values indicating
         the void space
-    sizes : ndarray, optional
-        An image containing the sphere radii at which each voxel was invaded
-        during an invasion experiment.
-    pc : ndarray, optional
+    pc : ndarray
         An image containing the capillary pressures at which each voxel was
-        invaded during an invasion experiment.
+        invaded during an invasion experiment. This image can be produced
+        using `size_to_pc` if not available.
     seq : ndarray, optional
         An image containing invasion sequence values, such as that returned
-        from the ``ibip`` function.
-    sigma : float, optional
-        The surface tension of the fluid-fluid system of interest.
-        This argument is ignored if ``pc`` are specified, otherwise it
-        is used in the Washburn equation to convert ``sizes`` to capillary
-        pc.
-    theta : float
-        The contact angle measured through the invading phase in degrees.
-        This argument is ignored if ``pc`` are specified, otherwise it
-        is used in the Washburn equation to convert ``sizes`` to capillary
-        pressures.
-    voxel_size : float
-        The voxel resolution of the image.
-        This argument is ignored if ``pc`` are specified, otherwise it
-        is used in the Washburn equation to convert ``sizes`` to capillary
-        pressures.
+        from the ``ibip`` function. The curve is generated by scanning from
+        lowest to highest values and computing the corresponding saturation.
 
     Returns
     -------
@@ -1028,18 +992,6 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
                             phase at each pressure in ``pc``
         ==================  ===================================================
 
-    Notes
-    -----
-    If ``sizes`` is provided, then the Washburn equation is used to convert
-    the radii to capillary pressures, using the given ``sigma`` and ``theta``
-    values, along with the ``voxel_size`` if the values are in voxel radii.
-    For more control over how capillary pressure model, it can be computed by
-    hand, for example:
-
-        $$ pc = \frac{-2*0.072*np.cos(np.deg2rad(180))}{sizes \cdot voxel_size} $$
-
-    then passed in as the ``pc`` argument.
-
     Examples
     --------
     `Click here
@@ -1048,68 +1000,27 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
 
     """
     tqdm = get_tqdm()
-    if seq is not None:
-        seqs = np.unique(seq)[1:]
-        x = []
-        y = []
-        with tqdm(seqs, **settings.tqdm) as pbar:
-            for n in seqs:
-                pbar.update()
-                mask = seq == n
-                if (pc is not None) and (sizes is not None):
-                    raise Exception("Only one of pc or sizes can be specified")
-                elif pc is not None:
-                    pressure = pc[mask][0]
-                elif sizes is not None:
-                    r = sizes[mask][0]*voxel_size
-                    pressure = -2*sigma*np.cos(np.deg2rad(theta))/r
-                x.append(pressure)
-                snwp = ((seq <= n)*(seq > 0) *
-                        (im == 1)).sum(dtype=np.int64)/im.sum(dtype=np.int64)
-                y.append(snwp)
-        pc_curve = Results()
-        pc_curve.pc = x
-        pc_curve.snwp = y
-    elif sizes is not None:
-        if im is None:
-            im = ~(sizes == 0)
-        sz = np.unique(sizes)[:0:-1]
-        sz = np.hstack((sz[0]*2, sz))
-        x = []
-        y = []
-        with tqdm(sz, **settings.tqdm) as pbar:
-            for n in sz:
-                pbar.update()
-                r = n*voxel_size
-                pc = -2*sigma*np.cos(np.deg2rad(theta))/r
-                x.append(pc)
-                snwp = ((sizes >= n)*(im == 1)).sum(dtype=np.int64)/im.sum(dtype=np.int64)
-                y.append(snwp)
-        pc_curve = Results()
-        pc_curve.pc = x
-        pc_curve.snwp = y
-    elif pc is not None:
-        Ps = np.unique(pc[im])
-        # Utilize the fact that -inf and +inf will be at locations 0 & -1 in Ps
-        if Ps[-1] == np.inf:
-            Ps[-1] = Ps[-2]*2
-        if Ps[0] == -np.inf:
-            Ps[0] = Ps[1] - np.abs(Ps[1]/2)
-        else:
-            # Add a point at begining to ensure curve starts a 0, if no residual
-            Ps = np.hstack((Ps[0] - np.abs(Ps[0]/2), Ps))
-        y = []
-        Vp = im.sum(dtype=np.int64)
-        temp = pc[im]
-        for p in tqdm(Ps, **settings.tqdm):
-            y.append((temp <= p).sum(dtype=np.int64)/Vp)
-        pc_curve = Results()
-        pc_curve.pc = Ps
-        pc_curve.snwp = y
+    Ps = np.unique(pc[im])
+    # Utilize the fact that -inf and +inf will be at locations 0 & -1 in Ps
+    if Ps[-1] == np.inf:
+        Ps[-1] = Ps[-2]*2
+    if Ps[0] == -np.inf:
+        Ps[0] = Ps[1] - np.abs(Ps[1]/2)
+    else:
+        # Add a point at begining to ensure curve starts a 0, if no residual
+        Ps = np.hstack((Ps[0] - np.abs(Ps[0]/2), Ps))
+    y = []
+    Vp = im.sum(dtype=np.int64)
+    temp = pc[im]
+    for p in tqdm(Ps, **settings.tqdm):
+        y.append((temp <= p).sum(dtype=np.int64)/Vp)
+    pc_curve = Results()
+    pc_curve.pc = Ps
+    pc_curve.snwp = np.array(y)
     return pc_curve
 
 
-def pc_map_to_pc_curve(pc, im, seq=None):
+def pc_map_to_pc_curve(pc, im, seq=None, mode='drainage'):
     r"""
     Converts a pc map into a capillary pressure curve
 
@@ -1119,8 +1030,8 @@ def pc_map_to_pc_curve(pc, im, seq=None):
         A numpy array with each voxel containing the capillary pressure at which
         it was invaded. `-inf` indicates voxels which are already filled with
         non-wetting fluid, and `+inf` indicates voxels that are not invaded by
-        non-wetting fluid (e.g., trapped wetting phase). Solids should be
-        noted by `+inf` but this is also enforced inside the function using `im`.
+        non-wetting fluid (e.g., trapped wetting phase). Values in the solid
+        phase are masked by `im` so are ignored.
     im : ndarray
         A numpy array with `True` values indicating the void space and `False`
         elsewhere. This is necessary to define the total void volume of the domain
@@ -1130,6 +1041,8 @@ def pc_map_to_pc_curve(pc, im, seq=None):
         invaded. This is required when analyzing results from invasion percolation
         since the pressures in `pc` do not correspond to the sequence in which
         they were filled.
+    mode : str
+        Indicates whether the invasion was a drainage or an imbibition process.
 
     Returns
     -------
@@ -1150,14 +1063,18 @@ def pc_map_to_pc_curve(pc, im, seq=None):
     must be converted to a capillary pressure map first.  `drainage` and `invasion`
     both return capillary pressure maps which can be passed directly as `pc`.
     """
+    pc = np.copy(pc)
     pc[~im] = np.inf  # Ensure solid voxels are set to inf invasion pressure
     if seq is None:
         pcs, counts = np.unique(pc, return_counts=True)
     else:
+        pc[seq == -1] = np.inf
         vals, index, counts = np.unique(seq, return_index=True, return_counts=True)
         pcs = pc.flatten()[index]
     snwp = np.cumsum(counts[pcs < np.inf])/im.sum()
     pcs = pcs[pcs < np.inf]
+    if mode.startswith('im'):
+        snwp = 1 - snwp
 
     results = Results()
     results.pc = pcs
@@ -1177,7 +1094,8 @@ def satn_profile(satn, s=None, im=None, axis=0, span=10, mode='tile'):
         void space.
     s : scalar
         The global saturation value for which the profile is desired. If `satn` is
-        a pre-thresholded boolean image then this is ignored, `im` is required.
+        a pre-thresholded boolean image then this is ignored, in which case `im`
+        is required.
     im : ndarray
         A boolean image with `True` values indicating the void phase. This is used
         to compute the void volume if `satn` is given as a pre-thresholded boolean
@@ -1240,7 +1158,7 @@ def satn_profile(satn, s=None, im=None, axis=0, span=10, mode='tile'):
         for i in range(int(satn.shape[0]/span)):
             void = satn[i*span:(i+1)*span, ...] != 0
             nwp = (satn[i*span:(i+1)*span, ...] <= s) \
-                *(satn[i*span:(i+1)*span, ...] > 0)
+                * (satn[i*span:(i+1)*span, ...] > 0)
             y[i] = nwp.sum(dtype=np.int64)/void.sum(dtype=np.int64)
             z[i] = i*span + (span-1)/2
     if mode == 'slide':
@@ -1303,7 +1221,7 @@ def find_h(saturation, position=None, srange=[0.01, 0.99]):
         srange = max(min(srange), min(saturation)), min(max(srange), max(saturation))
         r.valid = False
         logger.warning(f'The requested saturation range was adjusted to {srange}'
-                        ' to accomodate data')
+                       ' to accomodate data')
     # Find zmax
     x = saturation >= max(srange)
     zmax = np.where(x)[0][-1]
@@ -1322,3 +1240,85 @@ def find_h(saturation, position=None, srange=[0.01, 0.99]):
     r.h = abs(zmax-zmin)
 
     return r
+
+
+def bond_number(
+    im: npt.NDArray,
+    delta_rho: float,
+    g: float,
+    sigma: float,
+    voxel_size: float,
+    source: str = 'lt',
+    method: str = 'median',
+    mask: bool = False,
+):
+    r"""
+    Computes the Bond number for an image
+
+    Parameters
+    ----------
+    im : ndarray
+        The image of the domain with `True` values indicating the phase of interest
+        space
+    delta_rho : float
+        The difference in the density of the non-wetting and wetting phase
+    g : float
+        The gravitational constant for the system
+    sigma : float
+        The surface tension of the fluid pair
+    voxel_size : float
+        The size of the voxels
+    source : str
+        The source of the pore size values to use when computing the characteristic
+        length *R*. Options are:
+
+        ============== =============================================================
+        Option         Description
+        ============== =============================================================
+        dt             Uses the distance transform
+        lt             Uses the local thickness
+        ============== =============================================================
+
+    method : str
+        The method to use for finding the characteristic length *R* from the
+        values in `source`. Options are:
+
+        ============== =============================================================
+        Option         Description
+        ============== =============================================================
+        mean           The arithmetic mean (using `numpy.mean`)
+        min (or amin)  The minimum value (using `numpy.amin`)
+        max (or amax)  The maximum value (using `numpy.amax`)
+        mode           The mode of the values (using `scipy.stats.mode`)
+        gmean          The geometric mean of the values (using `scipy.stats.gmean`)
+        hmean          The harmonic mean of the values (using `scipy.stats.hmean`)
+        pmean          The power mean of the values (using `scipy.stats.pmean`)
+        ============== =============================================================
+
+    mask : bool
+        If `True` then the distance values in `source` are masked by the skeleton
+        before computing the average value using the specified `method`.
+    """
+    if mask is True:
+        mask = skeletonize_3d(im)
+    else:
+        mask = im
+
+    if source == 'dt':
+        dvals = edt(im)
+    elif source == 'lt':
+        dvals = local_thickness(im)
+    else:
+        raise Exception(f"Unrecognized source {source}")
+
+    if method in ['median', 'mean', 'amin', 'amax']:
+        f = getattr(np, method)
+    elif method in ['min', 'max']:
+        f = getattr(np, 'a' + method)
+    elif method in ['pmean', 'hmean', 'gmean', 'mode']:
+        f = getattr(spst, method)
+    else:
+        raise Exception(f"Unrecognized method {method}")
+    R = f(dvals[mask])
+    Bo = abs(delta_rho*g*(R*voxel_size)**2/sigma)
+    return Bo

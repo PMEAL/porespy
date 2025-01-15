@@ -1,5 +1,5 @@
 import logging
-
+import time
 import numpy as np
 import openpnm as op
 
@@ -89,6 +89,7 @@ def tortuosity_fd(im, axis, solver=None):
     cL, cR = 1.0, 0.0
     fd.set_value_BC(pores=inlets, values=cL)
     fd.set_value_BC(pores=outlets, values=cR)
+    t = time.perf_counter_ns()
     if openpnm_v3:
         if solver is None:
             solver = op.solvers.PyamgRugeStubenSolver(tol=1e-8)
@@ -99,6 +100,7 @@ def tortuosity_fd(im, axis, solver=None):
     else:
         fd.settings.update({"solver_family": "scipy", "solver_type": "cg"})
         fd.run()
+    t = time.perf_counter_ns() - t
 
     # Calculate molar flow rate, effective diffusivity and tortuosity
     r_in = fd.rate(pores=inlets)[0]
@@ -122,7 +124,7 @@ def tortuosity_fd(im, axis, solver=None):
     conc = np.zeros(im.size, dtype=float)
     conc[net["pore.template_indices"]] = fd["pore.concentration"]
     result.concentration = conc.reshape(im.shape)
-    result.sys = fd.A, fd.b
+    result.time = t/1e9
 
     # Free memory
     ws.close_project(net.project)
