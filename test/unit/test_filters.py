@@ -3,7 +3,7 @@ import numpy as np
 from edt import edt
 import porespy as ps
 import scipy.ndimage as spim
-from skimage.morphology import disk, ball, skeletonize
+from skimage.morphology import disk, ball
 from skimage.util import random_noise
 from scipy.stats import norm
 ps.settings.tqdm['disable'] = True
@@ -466,24 +466,33 @@ class FilterTest():
                                     overlap=5)
 
     def test_prune_branches(self):
-        im = ps.generators.lattice_spheres(shape=[100, 100, 100], r=4)
+        from skimage.morphology import skeletonize
+        im = ps.generators.random_spheres([100, 100, 100], r=4, seed=0)
         skel1 = skeletonize(im)
         skel2 = ps.filters.prune_branches(skel1)
         assert skel1.sum() > skel2.sum()
 
     def test_prune_branches_n2(self):
-        im = ps.generators.lattice_spheres(shape=[100, 100, 100], r=4)
+        from skimage.morphology import skeletonize
+        im = ps.generators.random_spheres([100, 100, 100], r=4, seed=0)
         skel1 = skeletonize(im)
         skel2 = ps.filters.prune_branches(skel1, iterations=1)
         skel3 = ps.filters.prune_branches(skel1, iterations=2)
         assert skel1.sum() > skel2.sum()
-        assert skel2.sum() == skel3.sum()
+        assert skel2.sum() > skel3.sum()
+        skel4 = ps.filters.prune_branches(skel1, iterations=3)
+        assert skel3.sum() > skel4.sum()
 
     def test_apply_padded(self):
+        from skimage.morphology import skeletonize
         im = ps.generators.blobs(shape=[100, 100])
         skel1 = skeletonize(im)
-        skel2 = ps.filters.apply_padded(im=im, pad_width=20, pad_val=1,
-                                        func=skeletonize)
+        skel2 = ps.filters.apply_padded(
+            im=im,
+            pad_width=20,
+            pad_val=1,
+            func=skeletonize,
+        )
         assert (skel1.astype(bool)).sum() != (skel2.astype(bool)).sum()
 
     def test_trim_small_clusters(self):
@@ -514,7 +523,8 @@ class FilterTest():
 
     def test_nl_means_layered(self):
         im = ps.generators.blobs(shape=[50, 50, 50], blobiness=.5)
-        im2 = random_noise(im, seed=0)
+        np.random.seed(0)
+        im2 = random_noise(im)
         filt = ps.filters.nl_means_layered(im=im2)
         p1 = (filt[0, ...] > 0.5).sum()
         p2 = (im[0, ...]).sum()

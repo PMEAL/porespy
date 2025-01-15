@@ -5,8 +5,7 @@ ps.settings.tqdm['disable'] = True
 
 class NetworkSizeFactorTest():
     def setup_class(self):
-        np.random.seed(10)
-        im = ps.generators.blobs(shape=[50, 50, 50])
+        im = ps.generators.blobs(shape=[50, 50, 50], seed=10)
         self.im = im[:15, :15, :15]
         self.snow = ps.networks.snow2(self.im, boundary_width=0,
                                       parallelization=None)
@@ -15,8 +14,10 @@ class NetworkSizeFactorTest():
         regions = self.snow.regions
         net = self.snow.network
         conns = net['throat.conns']
-        size_factors = ps.networks.diffusive_size_factor_DNS(regions,
-                                                             throat_conns=conns)
+        size_factors = ps.networks.diffusive_size_factor_DNS(
+            regions,
+            throat_conns=conns,
+        )
         values = np.array([1.43456123, 0.9612569, 1.22389664,
                            0.14359343, 0.18617079, 1.30144843,
                            0.22238891, 1.32222092])
@@ -27,9 +28,11 @@ class NetworkSizeFactorTest():
         regions = self.snow.regions
         net = self.snow.network
         conns = net['throat.conns']
-        size_factors = ps.networks.diffusive_size_factor_DNS(regions,
-                                                             throat_conns=conns,
-                                                             voxel_size=voxel_size)
+        size_factors = ps.networks.diffusive_size_factor_DNS(
+            regions,
+            throat_conns=conns,
+            voxel_size=voxel_size,
+        )
         values = np.array([1.43456123, 0.9612569, 1.22389664,
                            0.14359343, 0.18617079, 1.30144843,
                            0.22238891, 1.32222092])*voxel_size
