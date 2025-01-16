@@ -3006,31 +3006,47 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-01-15 04:45:18.475897: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
-2025-01-15 04:45:18.479069: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
-2025-01-15 04:45:18.486122: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-01-16 20:06:52.121473: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2025-01-16 20:06:52.124663: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2025-01-16 20:06:52.131735: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
 WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
-E0000 00:00:1736916318.500321    9229 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
-E0000 00:00:1736916318.504684    9229 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
-2025-01-15 04:45:18.520595: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+E0000 00:00:1737058012.145847    9189 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+E0000 00:00:1737058012.150125    9189 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2025-01-16 20:06:52.166282: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
 To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting scikit-learn
-  Using cached scikit_learn-1.6.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (18 kB)
-Requirement already satisfied: numpy&gt;=1.19.5 in /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages (from scikit-learn) (2.0.2)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Downloading scikit_learn-1.6.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (18 kB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: numpy&gt;=1.19.5 in /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages (from scikit-learn) (2.0.2)
 Requirement already satisfied: scipy&gt;=1.6.0 in /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages (from scikit-learn) (1.15.1)
-Requirement already satisfied: joblib&gt;=1.2.0 in /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages (from scikit-learn) (1.4.2)
-Requirement already satisfied: threadpoolctl&gt;=3.1.0 in /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages (from scikit-learn) (3.5.0)
+Collecting joblib&gt;=1.2.0 (from scikit-learn)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using cached scikit_learn-1.6.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (13.1 MB)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Downloading joblib-1.4.2-py3-none-any.whl.metadata (5.4 kB)
+Collecting threadpoolctl&gt;=3.1.0 (from scikit-learn)
+  Downloading threadpoolctl-3.5.0-py3-none-any.whl.metadata (13 kB)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Installing collected packages: scikit-learn
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Downloading scikit_learn-1.6.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (13.1 MB)
+?25l   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.0/13.1 MB</span> <span class=" -Color -Color-Red">?</span> eta <span class=" -Color -Color-Cyan">-:--:--</span>
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successfully installed scikit-learn-1.6.1
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">13.1/13.1 MB</span> <span class=" -Color -Color-Red">89.2 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>
+?25hDownloading joblib-1.4.2-py3-none-any.whl (301 kB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Downloading threadpoolctl-3.5.0-py3-none-any.whl (18 kB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Installing collected packages: threadpoolctl, joblib, scikit-learn
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successfully installed joblib-1.4.2 scikit-learn-1.6.1 threadpoolctl-3.5.0
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Cloning into &#39;sf-model-lib&#39;...
@@ -3054,62 +3070,64 @@ Receiving objects:   5% (2/36)
 Receiving objects:   8% (3/36)
 Receiving objects:  11% (4/36)
 Receiving objects:  13% (5/36)
-Receiving objects:  16% (6/36)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36), 56.31 MiB | 56.30 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 85.58 MiB | 57.05 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36), 54.94 MiB | 54.93 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 114.54 MiB | 57.26 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 84.12 MiB | 56.08 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  22% (8/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  25% (9/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  27% (10/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  30% (11/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  33% (12/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  36% (13/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  38% (14/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  41% (15/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  44% (16/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  47% (17/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  50% (18/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  52% (19/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  55% (20/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  58% (21/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  61% (22/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  63% (23/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  66% (24/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  69% (25/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  72% (26/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  75% (27/36), 143.85 MiB | 57.54 MiB/s
-Receiving objects:  77% (28/36), 143.85 MiB | 57.54 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 114.43 MiB | 57.24 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 172.29 MiB | 57.44 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  22% (8/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  25% (9/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  27% (10/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  30% (11/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  33% (12/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  36% (13/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  38% (14/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  41% (15/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  44% (16/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  47% (17/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  50% (18/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  52% (19/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  55% (20/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  58% (21/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  61% (22/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  63% (23/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  66% (24/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  69% (25/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  72% (26/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  75% (27/36), 143.75 MiB | 57.54 MiB/s
+Receiving objects:  77% (28/36), 143.75 MiB | 57.54 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 229.55 MiB | 57.33 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 173.15 MiB | 57.75 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 229.55 MiB | 57.33 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 234.04 MiB | 58.51 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 287.96 MiB | 57.82 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 234.04 MiB | 58.51 MiB/s
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 294.09 MiB | 60.01 MiB/s
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>remote: Total 36 (delta 0), reused 2 (delta 0), pack-reused 31 (from 1)
-Receiving objects:  83% (30/36), 316.77 MiB | 57.83 MiB/s
-Receiving objects:  86% (31/36), 316.77 MiB | 57.83 MiB/s
-Receiving objects:  88% (32/36), 316.77 MiB | 57.83 MiB/s
-Receiving objects:  91% (33/36), 316.77 MiB | 57.83 MiB/s
-Receiving objects:  94% (34/36), 316.77 MiB | 57.83 MiB/s
-Receiving objects:  97% (35/36), 316.77 MiB | 57.83 MiB/s
-Receiving objects: 100% (36/36), 316.77 MiB | 57.83 MiB/s
-Receiving objects: 100% (36/36), 334.57 MiB | 57.59 MiB/s, done.
+Receiving objects:  83% (30/36), 323.28 MiB | 59.64 MiB/s
+Receiving objects:  86% (31/36), 323.28 MiB | 59.64 MiB/s
+Receiving objects:  88% (32/36), 323.28 MiB | 59.64 MiB/s
+Receiving objects:  91% (33/36), 323.28 MiB | 59.64 MiB/s
+Receiving objects:  94% (34/36), 323.28 MiB | 59.64 MiB/s
+Receiving objects:  97% (35/36), 323.28 MiB | 59.64 MiB/s
+Receiving objects: 100% (36/36), 323.28 MiB | 59.64 MiB/s
+Receiving objects: 100% (36/36), 334.57 MiB | 58.83 MiB/s, done.
 Resolving deltas:   0% (0/8)
 Resolving deltas:  12% (1/8)
 Resolving deltas:  25% (2/8)
@@ -3162,10 +3180,10 @@ Resolving deltas: 100% (8/8), done.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[04:45:31] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[20:07:05] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
-</div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-01-15 04:45:33.299162: E external/local_xla/xla/stream_executor/cuda/cuda_driver.cc:152] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: UNKNOWN ERROR (303)
+</div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-01-16 20:07:07.303982: E external/local_xla/xla/stream_executor/cuda/cuda_driver.cc:152] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: UNKNOWN ERROR (303)
 </pre></div>
 </div>
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>

@@ -2947,7 +2947,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[04:42:27] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[20:04:02] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
@@ -2979,28 +2979,6 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">props_to_DataFrame</span><span class="p">(</span><span class="n">props</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">df</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">props_to_DataFrame</span><span class="p">(</span><span class="n">props</span><span class="p">)</span>
-
-<span class="nn">File ~/work/porespy/porespy/src/porespy/metrics/_regionprops.py:73,</span> in <span class="ni">props_to_DataFrame</span><span class="nt">(regionprops)</span>
-<span class="g g-Whitespace">     </span><span class="mi">71</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">):</span>
-<span class="g g-Whitespace">     </span><span class="mi">72</span>     <span class="k">try</span><span class="p">:</span>
-<span class="ne">---&gt; </span><span class="mi">73</span>         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span> <span class="o">==</span> <span class="p">():</span>
-<span class="g g-Whitespace">     </span><span class="mi">74</span>             <span class="n">metrics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">75</span>     <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">NotImplementedError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
-
-<span class="nn">File ~/work/porespy/porespy/src/porespy/metrics/_regionprops.py:282,</span> in <span class="ni">RegionPropertiesPS.skeleton</span><span class="nt">(self)</span>
-<span class="g g-Whitespace">    </span><span class="mi">280</span> <span class="nd">@property</span>
-<span class="g g-Whitespace">    </span><span class="mi">281</span> <span class="k">def</span><span class="w"> </span><span class="nf">skeleton</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">282</span>     <span class="k">return</span> <span class="n">skeletonize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">)</span>
-
-<span class="ne">NameError</span>: name &#39;skeletonize&#39; is not defined
 </pre></div>
 </div>
 </div>
@@ -3036,10 +3014,10 @@
       <th>sphericity</th>
       <th>surface_area</th>
       <th>convex_volume</th>
+      <th>num_pixels</th>
       <th>area</th>
       <th>area_bbox</th>
       <th>area_convex</th>
-      <th>eccentricity</th>
       <th>...</th>
       <th>euler_number</th>
       <th>extent</th>
@@ -3057,23 +3035,23 @@
     <tr>
       <th>0</th>
       <td>1</td>
-      <td>270</td>
+      <td>270.0</td>
       <td>304</td>
       <td>3.377624</td>
       <td>59.811131</td>
-      <td>274</td>
+      <td>274.0</td>
       <td>270</td>
-      <td>304</td>
-      <td>274</td>
-      <td>0.535682</td>
+      <td>270.0</td>
+      <td>304.0</td>
+      <td>274.0</td>
       <td>...</td>
       <td>1</td>
       <td>0.888158</td>
       <td>20.615528</td>
-      <td>270</td>
+      <td>270.0</td>
       <td>20.302892</td>
       <td>17.144166</td>
-      <td>-1.570796</td>
+      <td>1.570796</td>
       <td>58.970563</td>
       <td>58.589116</td>
       <td>0.985401</td>
@@ -3081,20 +3059,20 @@
     <tr>
       <th>1</th>
       <td>2</td>
-      <td>292</td>
+      <td>292.0</td>
       <td>352</td>
       <td>2.966109</td>
       <td>71.760513</td>
-      <td>301</td>
+      <td>301.0</td>
       <td>292</td>
-      <td>352</td>
-      <td>301</td>
-      <td>0.668822</td>
+      <td>292.0</td>
+      <td>352.0</td>
+      <td>301.0</td>
       <td>...</td>
       <td>1</td>
       <td>0.829545</td>
       <td>24.186773</td>
-      <td>292</td>
+      <td>292.0</td>
       <td>22.792054</td>
       <td>16.944133</td>
       <td>-1.332241</td>
@@ -3105,23 +3083,23 @@
     <tr>
       <th>2</th>
       <td>3</td>
-      <td>305</td>
+      <td>305.0</td>
       <td>361</td>
       <td>2.578463</td>
       <td>84.981247</td>
-      <td>313</td>
+      <td>313.0</td>
       <td>305</td>
-      <td>361</td>
-      <td>313</td>
-      <td>0.000000</td>
+      <td>305.0</td>
+      <td>361.0</td>
+      <td>313.0</td>
       <td>...</td>
       <td>1</td>
       <td>0.844875</td>
       <td>20.808652</td>
-      <td>305</td>
+      <td>305.0</td>
       <td>19.710694</td>
       <td>19.710694</td>
-      <td>0.785398</td>
+      <td>-0.785398</td>
       <td>62.627417</td>
       <td>62.056032</td>
       <td>0.974441</td>
@@ -3129,20 +3107,20 @@
     <tr>
       <th>3</th>
       <td>4</td>
-      <td>701</td>
+      <td>701.0</td>
       <td>952</td>
       <td>1.939290</td>
       <td>196.782654</td>
-      <td>747</td>
+      <td>747.0</td>
       <td>701</td>
-      <td>952</td>
-      <td>747</td>
-      <td>0.646067</td>
+      <td>701.0</td>
+      <td>952.0</td>
+      <td>747.0</td>
       <td>...</td>
       <td>1</td>
       <td>0.736345</td>
       <td>35.440090</td>
-      <td>701</td>
+      <td>701.0</td>
       <td>34.990789</td>
       <td>26.707805</td>
       <td>1.291699</td>
@@ -3153,20 +3131,20 @@
     <tr>
       <th>4</th>
       <td>5</td>
-      <td>1237</td>
+      <td>1237.0</td>
       <td>2205</td>
       <td>1.255313</td>
       <td>443.927490</td>
-      <td>1665</td>
+      <td>1665.0</td>
       <td>1237</td>
-      <td>2205</td>
-      <td>1665</td>
-      <td>0.904394</td>
+      <td>1237.0</td>
+      <td>2205.0</td>
+      <td>1665.0</td>
       <td>...</td>
       <td>1</td>
       <td>0.560998</td>
       <td>63.788714</td>
-      <td>1237</td>
+      <td>1237.0</td>
       <td>70.153363</td>
       <td>29.934308</td>
       <td>1.478716</td>
@@ -3177,20 +3155,20 @@
     <tr>
       <th>5</th>
       <td>6</td>
-      <td>255</td>
+      <td>255.0</td>
       <td>285</td>
       <td>3.677297</td>
       <td>52.882927</td>
-      <td>259</td>
+      <td>259.0</td>
       <td>255</td>
-      <td>285</td>
-      <td>259</td>
-      <td>0.611649</td>
+      <td>255.0</td>
+      <td>285.0</td>
+      <td>259.0</td>
       <td>...</td>
       <td>1</td>
       <td>0.894737</td>
       <td>20.615528</td>
-      <td>255</td>
+      <td>255.0</td>
       <td>20.466711</td>
       <td>16.191807</td>
       <td>0.000000</td>
@@ -3201,20 +3179,20 @@
     <tr>
       <th>6</th>
       <td>7</td>
-      <td>641</td>
+      <td>641.0</td>
       <td>945</td>
       <td>1.932482</td>
       <td>186.040405</td>
-      <td>762</td>
+      <td>762.0</td>
       <td>641</td>
-      <td>945</td>
-      <td>762</td>
-      <td>0.933715</td>
+      <td>641.0</td>
+      <td>945.0</td>
+      <td>762.0</td>
       <td>...</td>
       <td>1</td>
       <td>0.678307</td>
       <td>47.434165</td>
-      <td>641</td>
+      <td>641.0</td>
       <td>52.035208</td>
       <td>18.629564</td>
       <td>-1.383012</td>
@@ -3224,7 +3202,7 @@
     </tr>
   </tbody>
 </table>
-<p>7 rows × 21 columns</p>
+<p>7 rows × 22 columns</p>
 </div></div></div>
 </div>
 </section>
