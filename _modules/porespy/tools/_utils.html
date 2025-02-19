@@ -200,11 +200,21 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;sanitize_filename&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_tqdm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_edt&quot;</span><span class="p">,</span>
     <span class="s2">&quot;show_docstring&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Results&quot;</span><span class="p">,</span>
     <span class="s2">&quot;tic&quot;</span><span class="p">,</span>
     <span class="s2">&quot;toc&quot;</span><span class="p">,</span>
 <span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_edt</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">package</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;pyedt&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">package</span><span class="o">.</span><span class="n">edt</span>
+    <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+        <span class="n">package</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;edt&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">package</span><span class="o">.</span><span class="n">edt</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_format_time</span><span class="p">(</span><span class="n">timespan</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
@@ -579,7 +589,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.1.3.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.0.<br>
 </p>
   </div>
   

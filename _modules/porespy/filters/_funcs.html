@@ -199,12 +199,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">unpad</span><span class="p">,</span> <span class="n">extract_subsection</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">ps_disk</span><span class="p">,</span> <span class="n">ps_ball</span><span class="p">,</span> <span class="n">ps_round</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_tqdm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_tqdm</span><span class="p">,</span> <span class="n">get_edt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">pyedt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
-<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">edt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -231,7 +227,7 @@
     <span class="s2">&quot;trim_small_clusters&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
-
+<span class="n">edt</span> <span class="o">=</span> <span class="n">get_edt</span><span class="p">()</span>
 <span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -1767,7 +1763,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.1.3.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.0.<br>
 </p>
   </div>
   

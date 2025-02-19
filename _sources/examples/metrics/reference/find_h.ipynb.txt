@@ -71,10 +71,10 @@
     "inv = ps.simulations.drainage(im=im, inlets=inlets, pc=pc)\n",
     "\n",
     "fig, ax = plt.subplots(1, 2, figsize=[12, 6])\n",
-    "ax[0].imshow(inv.im_satn/im, interpolation='none', origin='lower')\n",
+    "ax[0].imshow(inv.im_snwp/im, interpolation='none', origin='lower')\n",
     "ax[0].axis(False)\n",
     "ax[0].set_title('Saturation map')\n",
-    "ax[1].imshow((inv.im_satn < 0.6)*(inv.im_satn > 0)/im, interpolation='none', origin='lower')\n",
+    "ax[1].imshow((inv.im_snwp < 0.6)*(inv.im_snwp > 0)/im, interpolation='none', origin='lower')\n",
     "ax[1].axis(False)\n",
     "ax[1].set_title('Fluid distribution at saturation = 0.6');"
    ]
@@ -115,7 +115,7 @@
     }
    ],
    "source": [
-    "s_prof = ps.metrics.satn_profile(satn=inv.im_satn, s=0.6)\n",
+    "s_prof = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6)\n",
     "plt.plot(s_prof.position, s_prof.saturation, 'b-o')\n",
     "plt.xlabel(\"distance from injection face\")\n",
     "plt.ylabel(\"non-wetting phase saturation\");"

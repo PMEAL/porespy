@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>imbibition &#8212; PoreSpy  documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=723bc057" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script type="application/vnd.jupyter.widget-state+json">{"state": {"03e84e5af97f494e81efb2695ce7730d": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "12c598e15ccb43eaaba76fbaa505b9ac": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "1b69c02d478c463aa8a20e81a8dbb74b": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "280b1f7892554df7b21c6ddb23ca830e": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HBoxModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_2a043c5e9f8647629d07101cd36899fe", "IPY_MODEL_737bd7d504e64c80a139a6a869af17da", "IPY_MODEL_eaf7f31cdf1645bdaefe95cbb4ff7aba"], "layout": "IPY_MODEL_da0162033a0c4543afb2789d416ccff5"}}, "29c3943b2ab24bc19ca4f619e59db5ba": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "2a043c5e9f8647629d07101cd36899fe": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_29c3943b2ab24bc19ca4f619e59db5ba", "placeholder": "\u200b", "style": "IPY_MODEL_467bd9815a7b458ea3a242b7ea65c0d7", "value": " 13%"}}, "31b4c5423dee4e6fbeb819712580f333": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "FloatProgressModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "danger", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_1b69c02d478c463aa8a20e81a8dbb74b", "max": 9999, "min": 0, "orientation": "horizontal", "style": "IPY_MODEL_a8adf7de36ca429582c38ce6c6461b8b", "value": 896}}, "3d8b9376ee7d4be3a8db1a71b7074a05": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "3e0661efb61c413ca11a25a542cdbbbe": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "467bd9815a7b458ea3a242b7ea65c0d7": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "50d342f7e48b48efadbb809a6edd03a2": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_b27e7af6e3e84bb79fcd302971b89b6d", "placeholder": "\u200b", "style": "IPY_MODEL_3e0661efb61c413ca11a25a542cdbbbe", "value": "  9%"}}, "56ec4d6b8aef44189943d75030826d0f": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_8219fa7b6c514a73b1b679852de95ff7", "placeholder": "\u200b", "style": "IPY_MODEL_e78c6d29cf67477d957f891750537f24", "value": " 395/499 [00:00&lt;00:00, 1930.81it/s]"}}, "63f7baece5b34dc7a5048403f97eae86": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "FloatProgressModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_74c4af6aed1c48c1ae0eb8874e893f89", "max": 499, "min": 0, "orientation": "horizontal", "style": "IPY_MODEL_7d82105c86d54eaeb722665f677e9378", "value": 499}}, "737bd7d504e64c80a139a6a869af17da": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "FloatProgressModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "danger", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_df40d0ae176c4257961c7ba993cc6d3e", "max": 9999, "min": 0, "orientation": "horizontal", "style": "IPY_MODEL_f2b45bf8bb4d4820a5c527f5db7742df", "value": 1301}}, "74c4af6aed1c48c1ae0eb8874e893f89": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "77339ae2b9634cf5969a4b2ca4a8cca3": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HBoxModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_50d342f7e48b48efadbb809a6edd03a2", "IPY_MODEL_31b4c5423dee4e6fbeb819712580f333", "IPY_MODEL_77ba8d0be95b475c8843ebb786f48ede"], "layout": "IPY_MODEL_78416f81fcf34d998484e08708c97b24"}}, "77ba8d0be95b475c8843ebb786f48ede": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_b5a9bb1b52cb471bb7c42137413c4701", "placeholder": "\u200b", "style": "IPY_MODEL_f2791295f8c84e05981aec240cbf8da6", "value": " 896/9999 [00:02&lt;00:14, 630.27it/s]"}}, "78416f81fcf34d998484e08708c97b24": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "7d82105c86d54eaeb722665f677e9378": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "ProgressStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "8219fa7b6c514a73b1b679852de95ff7": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "a8adf7de36ca429582c38ce6c6461b8b": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "ProgressStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "b27e7af6e3e84bb79fcd302971b89b6d": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "b5a9bb1b52cb471bb7c42137413c4701": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "da0162033a0c4543afb2789d416ccff5": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "df40d0ae176c4257961c7ba993cc6d3e": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "e78c6d29cf67477d957f891750537f24": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "e873aa3ecfc54698bd8da51fbd8c2a29": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HBoxModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_e89f4ad5b25a4228a8eebc6c862b1026", "IPY_MODEL_63f7baece5b34dc7a5048403f97eae86", "IPY_MODEL_56ec4d6b8aef44189943d75030826d0f"], "layout": "IPY_MODEL_12c598e15ccb43eaaba76fbaa505b9ac"}}, "e89f4ad5b25a4228a8eebc6c862b1026": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_03e84e5af97f494e81efb2695ce7730d", "placeholder": "\u200b", "style": "IPY_MODEL_3d8b9376ee7d4be3a8db1a71b7074a05", "value": " 79%"}}, "e9397467356a4fbaadd28767ac959402": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "eaf7f31cdf1645bdaefe95cbb4ff7aba": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_e9397467356a4fbaadd28767ac959402", "placeholder": "\u200b", "style": "IPY_MODEL_f65c8fd8f4854b979063ce474ec027bb", "value": " 1301/9999 [00:01&lt;00:08, 1082.53it/s]"}}, "f2791295f8c84e05981aec240cbf8da6": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "f2b45bf8bb4d4820a5c527f5db7742df": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "ProgressStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "f65c8fd8f4854b979063ce474ec027bb": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}}, "version_major": 2, "version_minor": 0}</script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script crossorigin="anonymous" data-jupyter-widgets-cdn="https://cdn.jsdelivr.net/npm/" src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@1.0.6/dist/embed-amd.js"></script>
+    <script src="../../../_static/js/custom.js?v=8f303282"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">PoreSpy  documentation</p>
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../_examples/index.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/porespy" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#im">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     im
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#inlets">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     inlets
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#pc">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     pc
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#outlets">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     outlets
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#residual">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     residual
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#min-size">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     min_size
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#other-arguments">
+   Other Arguments
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#dt">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       dt
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#return-sizes">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       return_sizes
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#steps">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       steps
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="imbibition">
+<h1><code class="docutils literal notranslate"><span class="pre">imbibition</span></code><a class="headerlink" href="#imbibition" title="Link to this heading">¶</a></h1>
+<p>Simulate pressure-controlled withdrawal of non-wetting fluid into an image using image-based sphere insertion.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">edt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
+
+<span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[19:16:39] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
+</pre>
+</div></div>
+</div>
+<section id="im">
+<h2><code class="docutils literal notranslate"><span class="pre">im</span></code><a class="headerlink" href="#im" title="Link to this heading">¶</a></h2>
+<p>Can be a 2D or 3D image. To use the function properly a capillary transform should be computed and provided to <code class="docutils literal notranslate"><span class="pre">pc</span></code> argument. If <code class="docutils literal notranslate"><span class="pre">pc</span></code> is not given, however, the function will still work as <code class="docutils literal notranslate"><span class="pre">pc</span></code> is computed assuming <span class="math notranslate nohighlight">\(pc = 2/dt\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="n">porosity</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">blobiness</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">imb</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">imbibition</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The function returns a <code class="docutils literal notranslate"><span class="pre">Results</span></code> object with a images containing the invasion sequence map , the saturation map, and capillary pressure map.  These are shown below:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot_results</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+
+    <span class="n">h</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">im_seq</span><span class="o">/</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
+    <span class="n">cbar</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{x:.0f}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Invasion Sequence&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">);</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;(a) Sequence Map&#39;</span><span class="p">)</span>
+
+    <span class="n">h</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">im_snwp</span><span class="o">/</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
+    <span class="n">cbar</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{x:.1f}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Non-Wetting Phase Saturation&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">);</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;(b) Saturation Map&#39;</span><span class="p">)</span>
+
+    <span class="n">h</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">im_pc</span><span class="p">)</span><span class="o">/</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
+    <span class="n">cbar</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{x:.1f}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;log(Capillary Pressure)&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">);</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;(c) Capillary Pressure Map&#39;</span><span class="p">);</span>
+
+<span class="n">plot_results</span><span class="p">(</span><span class="n">imb</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../../../_images/9b3647528cb0db284df3deecc34f6a876eb630892047b36aec042667392625fb.png"><img alt="../../../_images/9b3647528cb0db284df3deecc34f6a876eb630892047b36aec042667392625fb.png" src="../../../_images/9b3647528cb0db284df3deecc34f6a876eb630892047b36aec042667392625fb.png" style="width: 1419px; height: 384px;" />
+</a>
+</div>
+</div>
+</section>
+<section id="inlets">
+<h2><code class="docutils literal notranslate"><span class="pre">inlets</span></code><a class="headerlink" href="#inlets" title="Link to this heading">¶</a></h2>
+<p>If <code class="docutils literal notranslate"><span class="pre">inlets</span></code> is not supplied, than the imbibition process will proceed without considering access limitations, meaning that the wetting fluid can appear at any location inside the domain that is favorable at the current capillary pressure.  If <code class="docutils literal notranslate"><span class="pre">inlets</span></code> are provided, than this will enforce an access-limited process, such that the imbibing fluid can only appear in regions that are connected to the the given <code class="docutils literal notranslate"><span class="pre">inlets</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inlets</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">faces</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">inlet</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">imb</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">imbibition</span><span class="p">(</span>
+    <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> 
+    <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">plot_results</span><span class="p">(</span><span class="n">imb</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../../../_images/0de8417c3af9b7cdde62775fd9cf690a13847b7a017a844ef2897c70793c304a.png"><img alt="../../../_images/0de8417c3af9b7cdde62775fd9cf690a13847b7a017a844ef2897c70793c304a.png" src="../../../_images/0de8417c3af9b7cdde62775fd9cf690a13847b7a017a844ef2897c70793c304a.png" style="width: 1419px; height: 384px;" />
+</a>
+</div>
+</div>
+</section>
+<section id="pc">
+<h2><code class="docutils literal notranslate"><span class="pre">pc</span></code><a class="headerlink" href="#pc" title="Link to this heading">¶</a></h2>
+<p>Supplying a capillary pressure transform as <code class="docutils literal notranslate"><span class="pre">pc</span></code> is how you tell <code class="docutils literal notranslate"><span class="pre">imbibition</span></code> what the capillary entry pressure of each voxel is. This is calculated separately (e.g. using <code class="docutils literal notranslate"><span class="pre">porespy.filters.capillary_transform</span></code>) so that you have maximum control over how this is calculated, for instance to include gravity.  In the following the effect of gravity can be noticed as the invasion preferentially occurs from the bottom left portion of the image (recall that the left edge is set as <code class="docutils literal notranslate"><span class="pre">inlets</span></code>)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pc</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">capillary_transform</span><span class="p">(</span>
+    <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+    <span class="n">sigma</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">theta</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span>
+    <span class="n">g</span><span class="o">=</span><span class="mf">9.81</span><span class="p">,</span>
+    <span class="n">rho_nwp</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">rho_wp</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">voxel_size</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">inlets</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">faces</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">inlet</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">imb</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">imbibition</span><span class="p">(</span>
+    <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> 
+    <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
+    <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">plot_results</span><span class="p">(</span><span class="n">imb</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../../../_images/e8257f738b2610c7e1dd6d282da6d11e0a4d13bbe76316db08c5b3d2fe38bc67.png"><img alt="../../../_images/e8257f738b2610c7e1dd6d282da6d11e0a4d13bbe76316db08c5b3d2fe38bc67.png" src="../../../_images/e8257f738b2610c7e1dd6d282da6d11e0a4d13bbe76316db08c5b3d2fe38bc67.png" style="width: 1411px; height: 384px;" />
+</a>
+</div>
+</div>
+</section>
+<section id="outlets">
+<h2><code class="docutils literal notranslate"><span class="pre">outlets</span></code><a class="headerlink" href="#outlets" title="Link to this heading">¶</a></h2>
+<p>Of <code class="docutils literal notranslate"><span class="pre">outlets</span></code> are specified then trapping of the wetting phase is included in the returned displacement maps. In the example below there are some blobs of trapped non-wetting phase near the bottom of the image. They cannot escape since the outlets are on the right edge.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">outlets</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">faces</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">outlet</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">imb</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">imbibition</span><span class="p">(</span>
+    <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> 
+    <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
+    <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+    <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">plot_results</span><span class="p">(</span><span class="n">imb</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../../../_images/b9551fc0a6cee18adb506b3f2c4342216857bc6f6a0f9101671907c118084e87.png"><img alt="../../../_images/b9551fc0a6cee18adb506b3f2c4342216857bc6f6a0f9101671907c118084e87.png" src="../../../_images/b9551fc0a6cee18adb506b3f2c4342216857bc6f6a0f9101671907c118084e87.png" style="width: 1424px; height: 384px;" />
+</a>
+</div>
+</div>
+</section>
+<section id="residual">
+<h2><code class="docutils literal notranslate"><span class="pre">residual</span></code><a class="headerlink" href="#residual" title="Link to this heading">¶</a></h2>
+<p>It is possible to specify the locations of any residual non-wetting phase which may be present prior to the fluid injection.  These residual blobs impact the connecting of the invading fluid as well as the trapping of wetting phase:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">residual</span> <span class="o">=</span> <span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">local_thickness</span><span class="p">(</span><span class="n">im</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">)</span><span class="o">*</span><span class="n">im</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">residual</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">borders</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;faces&#39;</span><span class="p">))</span>
+<span class="n">residual</span> <span class="o">=</span> <span class="n">residual</span> <span class="o">*</span> <span class="o">~</span><span class="n">mask</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">residual</span><span class="o">/</span><span class="n">im</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Locations of residual wetting phase&#39;</span><span class="p">)</span>
+
+<span class="n">imb</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">imbibition</span><span class="p">(</span>
+    <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> 
+    <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
+    <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+    <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
+    <span class="n">residual</span><span class="o">=</span><span class="n">residual</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">plot_results</span><span class="p">(</span><span class="n">imb</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../../../_images/935fab73c12931d0cf4a9cd12f55f0f92eec6a2d87817d88289ad5e5d1aaa4a6.png"><img alt="../../../_images/935fab73c12931d0cf4a9cd12f55f0f92eec6a2d87817d88289ad5e5d1aaa4a6.png" src="../../../_images/935fab73c12931d0cf4a9cd12f55f0f92eec6a2d87817d88289ad5e5d1aaa4a6.png" style="width: 362px; height: 384px;" />
+</a>
+<a class="reference internal image-reference" href="../../../_images/780d59bd514c952b7884a8afb597dd74f62b59d30112c16c30c5b8dfe3b25d15.png"><img alt="../../../_images/780d59bd514c952b7884a8afb597dd74f62b59d30112c16c30c5b8dfe3b25d15.png" src="../../../_images/780d59bd514c952b7884a8afb597dd74f62b59d30112c16c30c5b8dfe3b25d15.png" style="width: 1426px; height: 384px;" />
+</a>
+</div>
+</div>
+</section>
+<section id="min-size">
+<h2><code class="docutils literal notranslate"><span class="pre">min_size</span></code><a class="headerlink" href="#min-size" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">min_size</span></code> argument is passed to the <code class="docutils literal notranslate"><span class="pre">find_trapped_regions</span></code> function.  It limits the minimum size of a cluster that can be considered trapped. For instance, in the above image there can be seen many small isolated trapped pixels next to the walls.  These occur because of the digitized nature of the images, and are probably not realistic.  Supplying <code class="docutils literal notranslate"><span class="pre">min_size</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> removes these pixels:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">imb</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">imbibition</span><span class="p">(</span>
+    <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> 
+    <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
+    <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+    <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
+    <span class="n">min_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">plot_results</span><span class="p">(</span><span class="n">imb</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../../../_images/b9551fc0a6cee18adb506b3f2c4342216857bc6f6a0f9101671907c118084e87.png"><img alt="../../../_images/b9551fc0a6cee18adb506b3f2c4342216857bc6f6a0f9101671907c118084e87.png" src="../../../_images/b9551fc0a6cee18adb506b3f2c4342216857bc6f6a0f9101671907c118084e87.png" style="width: 1424px; height: 384px;" />
+</a>
+</div>
+</div>
+</section>
+<section id="other-arguments">
+<h2>Other Arguments<a class="headerlink" href="#other-arguments" title="Link to this heading">¶</a></h2>
+<section id="dt">
+<h3><code class="docutils literal notranslate"><span class="pre">dt</span></code><a class="headerlink" href="#dt" title="Link to this heading">¶</a></h3>
+<p>Like many of the functions in PoreSpy, <code class="docutils literal notranslate"><span class="pre">invasion</span></code> optionally accepts a distance transform. This is computed automatically if <code class="docutils literal notranslate"><span class="pre">dt</span></code> is not provided, but providing one can save a small amount of time if the distance transform has already been computed (which is often the case).</p>
+</section>
+<section id="return-sizes">
+<h3><code class="docutils literal notranslate"><span class="pre">return_sizes</span></code><a class="headerlink" href="#return-sizes" title="Link to this heading">¶</a></h3>
+<p>This flag indicates whether or not to compute the size map.  Setting this to <code class="docutils literal notranslate"><span class="pre">False</span></code> can save some time if this result is not required.</p>
+</section>
+<section id="steps">
+<h3><code class="docutils literal notranslate"><span class="pre">steps</span></code><a class="headerlink" href="#steps" title="Link to this heading">¶</a></h3>
+<p>Controls the pressure steps that are applied.  If an integer is supplied than that number of pressure steps between the highest and lowest values in <code class="docutils literal notranslate"><span class="pre">pc</span></code> are used. If a list is supplied, then those values are used (in ascending order).  If <code class="docutils literal notranslate"><span class="pre">None</span></code> is supplied, then every unique value in <code class="docutils literal notranslate"><span class="pre">pc</span></code> is used.  This last option is necessary when comparing to the results of <code class="docutils literal notranslate"><span class="pre">invasion</span></code> for instance.</p>
+</section>
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2025, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.0.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

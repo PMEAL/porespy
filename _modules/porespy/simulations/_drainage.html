@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.simulations._drainage &#8212; PoreSpy  documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=723bc057" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/custom.js?v=8f303282"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">PoreSpy  documentation</p>
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../_examples/index.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/porespy" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <h1>Source code for porespy.simulations._drainage</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">skimage.morphology</span><span class="w"> </span><span class="kn">import</span> <span class="n">ball</span><span class="p">,</span> <span class="n">disk</span><span class="p">,</span> <span class="n">cube</span><span class="p">,</span> <span class="n">square</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">pc_map_to_pc_curve</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_insert_disks_at_points</span><span class="p">,</span>
+    <span class="n">_insert_disks_at_points_parallel</span><span class="p">,</span>
+    <span class="n">get_tqdm</span><span class="p">,</span>
+    <span class="n">Results</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.filters</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">trim_disconnected_blobs</span><span class="p">,</span>
+    <span class="n">find_trapped_regions</span><span class="p">,</span>
+    <span class="n">pc_to_satn</span><span class="p">,</span>
+    <span class="n">pc_to_seq</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.generators</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">borders</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyedt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
+<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">edt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;drainage&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ibop&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">ibop</span><span class="p">(</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">pc</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">inlets</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">outlets</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">residual</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">return_sizes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">conn</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;min&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;min&#39;</span><span class="p">,</span>
+    <span class="n">min_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">):</span>
+
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">inlets</span> <span class="o">=</span> <span class="n">borders</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;faces&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="n">im</span>
+
+    <span class="k">if</span> <span class="n">outlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">outlets</span> <span class="o">=</span> <span class="n">outlets</span><span class="o">*</span><span class="n">im</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">inlets</span> <span class="o">*</span> <span class="n">outlets</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Specified inlets and outlets overlap&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">pc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">/</span><span class="n">dt</span>
+    <span class="n">pc</span><span class="p">[</span><span class="o">~</span><span class="n">im</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Remove any infs or nans from pc computation</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># Use values in pc for invasion steps</span>
+        <span class="n">vmax</span> <span class="o">=</span> <span class="n">pc</span><span class="p">[</span><span class="n">pc</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">vmin</span> <span class="o">=</span> <span class="n">pc</span><span class="p">[</span><span class="n">im</span><span class="p">][</span><span class="n">pc</span><span class="p">[</span><span class="n">im</span><span class="p">]</span> <span class="o">&gt;</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">*</span><span class="mf">1.1</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">pc</span><span class="p">[</span><span class="n">im</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>  <span class="c1"># To ensure they are in ascending order</span>
+
+    <span class="c1"># Initialize empty arrays to accumulate results of each loop</span>
+    <span class="n">nwp_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">im_seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">im_pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">im_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="c1"># Begin IBOP algorithm</span>
+    <span class="k">if</span> <span class="n">conn</span> <span class="o">==</span> <span class="s1">&#39;min&#39;</span><span class="p">:</span>
+        <span class="n">strel</span> <span class="o">=</span> <span class="n">ball</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">disk</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">conn</span> <span class="o">==</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span>
+        <span class="n">strel</span> <span class="o">=</span> <span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">square</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized value for conn (</span><span class="si">{</span><span class="n">conn</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">Ps</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
+        <span class="c1"># Find all locations in image invadable at current pressure</span>
+        <span class="n">invadable</span> <span class="o">=</span> <span class="p">(</span><span class="n">pc</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="p">)</span><span class="o">*</span><span class="n">im</span>
+        <span class="c1"># Trim locations not connected to the inlets</span>
+        <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">invadable</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span>
+                <span class="n">im</span><span class="o">=</span><span class="n">invadable</span><span class="p">,</span>
+                <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+                <span class="n">strel</span><span class="o">=</span><span class="n">strel</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="c1"># Isolate only newly found locations to speed up inserting</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">invadable</span><span class="o">*</span><span class="p">(</span><span class="o">~</span><span class="n">seeds</span><span class="p">)</span>
+        <span class="c1"># Find (i, j, k) coordinates of new locations</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+        <span class="c1"># Add new locations to list of invaded locations</span>
+        <span class="n">seeds</span> <span class="o">+=</span> <span class="n">invadable</span>
+        <span class="c1"># Extract the local size of sphere to insert at each new location</span>
+        <span class="n">radii</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">coords</span><span class="p">]</span>
+        <span class="c1"># Insert spheres of given radii at new locations</span>
+        <span class="n">nwp_mask</span> <span class="o">=</span> <span class="n">_insert_disks_at_points_parallel</span><span class="p">(</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">nwp_mask</span><span class="p">,</span>
+            <span class="n">coords</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">coords</span><span class="p">),</span>
+            <span class="n">radii</span><span class="o">=</span><span class="n">radii</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
+            <span class="n">v</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Values to images using mask</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">nwp_mask</span> <span class="o">*</span> <span class="p">(</span><span class="n">im_seq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">im</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+            <span class="n">im_seq</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">step</span>
+            <span class="n">im_pc</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
+            <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">return_sizes</span> <span class="ow">and</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">radii</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">im_size</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">radii</span><span class="p">)</span>
+
+        <span class="c1"># Deal with impact of residual, if present</span>
+        <span class="k">if</span> <span class="n">residual</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Find residual connected to current invasion front</span>
+            <span class="n">inv_temp</span> <span class="o">=</span> <span class="p">(</span><span class="n">im_pc</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">inv_temp</span><span class="p">):</span>
+                <span class="c1"># Find invadable pixels connected to surviving residual</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span>
+                    <span class="n">residual</span><span class="p">,</span> <span class="n">inv_temp</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="n">strel</span><span class="p">)</span><span class="o">*~</span><span class="n">inv_temp</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">temp</span><span class="p">):</span>
+                    <span class="c1"># Trim invadable pixels not connected to residual</span>
+                    <span class="n">new_seeds</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">invadable</span><span class="p">,</span> <span class="n">temp</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="n">strel</span><span class="p">)</span>
+                    <span class="c1"># Find (i, j, k) coordinates of new locations</span>
+                    <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">new_seeds</span><span class="p">)</span>
+                    <span class="c1"># Add new locations to list of invaded locations</span>
+                    <span class="n">seeds</span> <span class="o">+=</span> <span class="n">new_seeds</span>
+                    <span class="c1"># Extract the local size of sphere to insert at each new location</span>
+                    <span class="n">radii</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">coords</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+                    <span class="c1"># Insert spheres of given radii at new locations</span>
+                    <span class="n">nwp_mask</span> <span class="o">=</span> <span class="n">_insert_disks_at_points_parallel</span><span class="p">(</span>
+                        <span class="n">im</span><span class="o">=</span><span class="n">nwp_mask</span><span class="p">,</span>
+                        <span class="n">coords</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">coords</span><span class="p">),</span>
+                        <span class="n">radii</span><span class="o">=</span><span class="n">radii</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
+                        <span class="n">v</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="n">mask</span> <span class="o">=</span> <span class="n">nwp_mask</span> <span class="o">*</span> <span class="p">(</span><span class="n">im_seq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">im</span>
+                    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+                        <span class="n">im_seq</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">step</span>
+                        <span class="n">im_pc</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
+                        <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="k">if</span> <span class="n">return_sizes</span> <span class="ow">and</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">radii</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+                            <span class="n">im_size</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">radii</span><span class="p">)</span>
+
+    <span class="c1"># Set uninvaded voxels to inf</span>
+    <span class="n">im_pc</span><span class="p">[(</span><span class="n">im_pc</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="n">im</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+    <span class="c1"># Add residual if given</span>
+    <span class="k">if</span> <span class="n">residual</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">im_pc</span><span class="p">[</span><span class="n">residual</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">im_seq</span><span class="p">[</span><span class="n">residual</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Analyze trapping and adjust computed images accordingly</span>
+    <span class="n">trapped</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">outlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">trapped</span> <span class="o">=</span> <span class="n">find_trapped_regions</span><span class="p">(</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+            <span class="n">seq</span><span class="o">=</span><span class="n">im_seq</span><span class="p">,</span>
+            <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cluster&#39;</span><span class="p">,</span>
+            <span class="n">min_size</span><span class="o">=</span><span class="n">min_size</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">trapped</span><span class="p">[</span><span class="n">im_seq</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">im_pc</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>  <span class="c1"># Trapped defender only displaced as Pc -&gt; inf</span>
+        <span class="k">if</span> <span class="n">residual</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Re-add residual to inv</span>
+            <span class="n">im_pc</span><span class="p">[</span><span class="n">residual</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>  <span class="c1"># Residual defender is always present</span>
+
+    <span class="c1"># Initialize results object</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">im_snwp</span> <span class="o">=</span> <span class="n">pc_to_satn</span><span class="p">(</span><span class="n">pc</span><span class="o">=</span><span class="n">im_pc</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">im_seq</span> <span class="o">=</span> <span class="n">im_seq</span>
+    <span class="c1"># results.im_seq = pc_to_seq(pc=pc_inv, im=im, mode=&#39;drainage&#39;)</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">im_pc</span> <span class="o">=</span> <span class="n">im_pc</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">im_trapped</span> <span class="o">=</span> <span class="n">trapped</span>
+    <span class="k">if</span> <span class="n">trapped</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">im_seq</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">im_snwp</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">im_pc</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="k">if</span> <span class="n">return_sizes</span><span class="p">:</span>
+        <span class="n">im_size</span><span class="p">[</span><span class="n">im_pc</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">im_size</span><span class="p">[</span><span class="n">im_pc</span> <span class="o">==</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">im_size</span> <span class="o">=</span> <span class="n">im_size</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">pc</span><span class="p">,</span> <span class="n">results</span><span class="o">.</span><span class="n">snwp</span> <span class="o">=</span> <span class="n">pc_map_to_pc_curve</span><span class="p">(</span>
+        <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+        <span class="n">pc</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span>
+        <span class="n">seq</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">im_seq</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">results</span>
+
+
+<div class="viewcode-block" id="drainage">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.simulations.drainage.html#porespy.simulations.drainage">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">drainage</span><span class="p">(</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">pc</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">inlets</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">outlets</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">residual</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span>
+    <span class="n">return_sizes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">min_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simulate drainage using image-based sphere insertion, optionally including</span>
+<span class="sd">    gravity</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The image of the porous media with ``True`` values indicating the</span>
+<span class="sd">        void space.</span>
+<span class="sd">    pc : ndarray, optional</span>
+<span class="sd">        Precomputed capillary pressure transform which is used to determine</span>
+<span class="sd">        the invadability of each voxel. If not provided then it is calculated</span>
+<span class="sd">        as `2/dt`.</span>
+<span class="sd">    dt : ndarray (optional)</span>
+<span class="sd">        The distance transform of ``im``.  If not provided it will be</span>
+<span class="sd">        calculated, so supplying it saves time.</span>
+<span class="sd">    inlets : ndarray, optional</span>
+<span class="sd">        A boolean image the same shape as ``im``, with ``True`` values</span>
+<span class="sd">        indicating the inlet locations. If not specified then access limitations</span>
+<span class="sd">        are not applied so the result is essentially a local thickness filter.</span>
+<span class="sd">    outlets : ndarray, optional</span>
+<span class="sd">        A boolean image with ``True`` values indicating the outlet locations.</span>
+<span class="sd">        If this is provided then trapped voxels of wetting phase are found and</span>
+<span class="sd">        all the output images are adjusted accordingly. Note that trapping can</span>
+<span class="sd">        be assessed during postprocessing as well.</span>
+<span class="sd">    residual : ndarray, optional</span>
+<span class="sd">        A boolean array indicating the locations of any residual invading</span>
+<span class="sd">        phase. This is added to the intermediate image prior to trimming</span>
+<span class="sd">        disconnected clusters, so will create connections to some clusters</span>
+<span class="sd">        that would otherwise be removed. The residual phase is indicated</span>
+<span class="sd">        in the final image by ``-np.inf`` values, since these are invaded at</span>
+<span class="sd">        all applied capillary pressures.</span>
+<span class="sd">    steps : int or array_like (default = 25)</span>
+<span class="sd">        The range of pressures to apply. If an integer is given then the given</span>
+<span class="sd">        number of steps will be created between the lowest and highest values in</span>
+<span class="sd">        ``pc``. If a list is given, each value in the list is used in ascending</span>
+<span class="sd">        order. If `None` is given then all the possible values in `pc`</span>
+<span class="sd">        are used.</span>
+<span class="sd">    return_sizes : bool, default = `False`</span>
+<span class="sd">        If `True` then an array containing the size of the sphere which first</span>
+<span class="sd">        overlapped each pixel is returned. This array is not computed by default</span>
+<span class="sd">        as computing it increases computation time.</span>
+<span class="sd">    conn : str</span>
+<span class="sd">        Controls the shape of the structuring element used to find neighboring</span>
+<span class="sd">        voxels when looking connectivity of invading blobs.  Options are:</span>
+
+<span class="sd">        ========= ==================================================================</span>
+<span class="sd">        Option    Description</span>
+<span class="sd">        ========= ==================================================================</span>
+<span class="sd">        &#39;min&#39;     This corresponds to a cross with 4 neighbors in 2D and 6 neighbors</span>
+<span class="sd">                  in 3D.</span>
+<span class="sd">        &#39;max&#39;     This corresponds to a square or cube with 8 neighbors in 2D and</span>
+<span class="sd">                  26 neighbors in 3D.</span>
+<span class="sd">        ========= ==================================================================</span>
+
+<span class="sd">    min_size : int</span>
+<span class="sd">        Any clusters of trapped voxels smaller than this size will be set to not</span>
+<span class="sd">        trapped. This argument is only used if `outlets` is given. This is useful</span>
+<span class="sd">        to prevent small voxels along edges of the void space from being set to</span>
+<span class="sd">        trapped. These can appear to be trapped due to the jagged nature of the</span>
+<span class="sd">        digital image. The default is 0, meaning this adjustment is not applied,</span>
+<span class="sd">        but a value of 3 or 4 is recommended to activate this adjustment.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    results : Results object</span>
+<span class="sd">        A dataclass-like object with the following attributes:</span>
+
+<span class="sd">        ========== ============================================================</span>
+<span class="sd">        Attribute  Description</span>
+<span class="sd">        ========== ============================================================</span>
+<span class="sd">        im_seq     An ndarray with each voxel indicating the step number at</span>
+<span class="sd">                   which it was first invaded by non-wetting phase</span>
+<span class="sd">        im_satn    A numpy array with each voxel value indicating the global</span>
+<span class="sd">                   value of the non-wetting phase saturation at the point it</span>
+<span class="sd">                   was invaded</span>
+<span class="sd">        im_size    If `return_sizes` was set to `True`, then a numpy array with</span>
+<span class="sd">                   each voxel containing the radius of the sphere, in voxels, that</span>
+<span class="sd">                   first overlapped it.</span>
+<span class="sd">        im_pc      A numpy array with each voxel value indicating the</span>
+<span class="sd">                   capillary pressure at which it was invaded.</span>
+<span class="sd">        im_trapped  A numpy array with ``True`` values indicating trapped voxels if</span>
+<span class="sd">                    `outlets` was provided, otherwise will be `None`.</span>
+<span class="sd">        pc         1D array of capillary pressure values that were applied</span>
+<span class="sd">        swnp       1D array of non-wetting phase saturations for each applied</span>
+<span class="sd">                   value of capillary pressure (``pc``).</span>
+<span class="sd">        ========== ============================================================</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    drainage</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This algorithm only provides sensible results for gravity stabilized</span>
+<span class="sd">    configurations, meaning the more dense fluid is on the bottom. Be sure that</span>
+<span class="sd">    ``inlets`` are specified accordingly.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1]  Chadwick EA, Hammen LH, Schulz VP, Bazylak A, Ioannidis MA, Gostick JT.</span>
+<span class="sd">       Incorporating the effect of gravity into image-based drainage simulations on</span>
+<span class="sd">       volumetric images of porous media.</span>
+<span class="sd">       `Water Resources Research. &lt;https://doi.org/10.1029/2021WR031509&gt;`_.</span>
+<span class="sd">       58(3), e2021WR031509 (2022)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/simulations/reference/drainage.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">ibop</span><span class="p">(</span>
+        <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+        <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+        <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+        <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
+        <span class="n">residual</span><span class="o">=</span><span class="n">residual</span><span class="p">,</span>
+        <span class="n">steps</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span>
+        <span class="n">return_sizes</span><span class="o">=</span><span class="n">return_sizes</span><span class="p">,</span>
+        <span class="n">min_size</span><span class="o">=</span><span class="n">min_size</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ps</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
+    <span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
+
+    <span class="n">cm</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">turbo</span><span class="p">)</span>
+    <span class="n">cm</span><span class="o">.</span><span class="n">set_under</span><span class="p">(</span><span class="s1">&#39;grey&#39;</span><span class="p">)</span>
+    <span class="n">cm</span><span class="o">.</span><span class="n">set_over</span><span class="p">(</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+
+    <span class="c1"># %% Run this cell to regenerate the variables in drainage</span>
+    <span class="n">bg</span> <span class="o">=</span> <span class="s1">&#39;white&#39;</span>
+    <span class="n">plots</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span>
+        <span class="n">porosity</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+        <span class="n">blobiness</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+        <span class="n">seed</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">fill_blind_pores</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">inlets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">inlets</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">outlets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">outlets</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">lt</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">local_thickness</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">residual</span> <span class="o">=</span> <span class="n">lt</span> <span class="o">&gt;</span> <span class="mi">25</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="mi">25</span>
+    <span class="n">pc</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">capillary_transform</span><span class="p">(</span>
+        <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+        <span class="n">sigma</span><span class="o">=</span><span class="mf">0.072</span><span class="p">,</span>
+        <span class="n">theta</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span>
+        <span class="n">rho_nwp</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">rho_wp</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">g</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">voxel_size</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># %% Run different drainage simulations</span>
+    <span class="n">drn1</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">drainage</span><span class="p">(</span>
+        <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+        <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
+        <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+        <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">drn2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">drainage</span><span class="p">(</span>
+        <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+        <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
+        <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+        <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
+        <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">drn3</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">drainage</span><span class="p">(</span>
+        <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+        <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
+        <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+        <span class="n">residual</span><span class="o">=</span><span class="n">residual</span><span class="p">,</span>
+        <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">drn4</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">drainage</span><span class="p">(</span>
+        <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+        <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
+        <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+        <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
+        <span class="n">residual</span><span class="o">=</span><span class="n">residual</span><span class="p">,</span>
+        <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">drn5</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">drainage</span><span class="p">(</span>
+        <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+        <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
+        <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># %% Visualize the invasion configurations for each scenario</span>
+    <span class="k">if</span> <span class="n">plots</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot_mosaic</span><span class="p">(</span>
+            <span class="p">[[</span><span class="s1">&#39;(a)&#39;</span><span class="p">,</span> <span class="s1">&#39;(b)&#39;</span><span class="p">,</span> <span class="s1">&#39;(e)&#39;</span><span class="p">,</span> <span class="s1">&#39;(e)&#39;</span><span class="p">],</span>
+             <span class="p">[</span><span class="s1">&#39;(c)&#39;</span><span class="p">,</span> <span class="s1">&#39;(d)&#39;</span><span class="p">,</span> <span class="s1">&#39;(e)&#39;</span><span class="p">,</span> <span class="s1">&#39;(e)&#39;</span><span class="p">]],</span>
+             <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
+         <span class="p">)</span>
+        <span class="c1"># drn1.im_pc[~im] = -1</span>
+        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(a)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">drn1</span><span class="o">.</span><span class="n">im_seq</span><span class="o">/</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">vmax</span> <span class="o">=</span> <span class="n">drn2</span><span class="o">.</span><span class="n">im_seq</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(b)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">drn2</span><span class="o">.</span><span class="n">im_seq</span><span class="o">/</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(c)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">drn3</span><span class="o">.</span><span class="n">im_seq</span><span class="o">/</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(d)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">drn4</span><span class="o">.</span><span class="n">im_seq</span><span class="o">/</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">pc</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span><span class="n">pc</span><span class="o">=</span><span class="n">drn1</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="n">drn1</span><span class="o">.</span><span class="n">im_seq</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(e)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="s1">&#39;b-&gt;&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
+
+        <span class="n">pc</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span><span class="n">pc</span><span class="o">=</span><span class="n">drn2</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="n">drn2</span><span class="o">.</span><span class="n">im_seq</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(e)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="s1">&#39;r-&lt;&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;drainage w trapping&#39;</span><span class="p">)</span>
+
+        <span class="n">pc</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span><span class="n">pc</span><span class="o">=</span><span class="n">drn3</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="n">drn3</span><span class="o">.</span><span class="n">im_seq</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(e)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="s1">&#39;g-^&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;drainage w residual&#39;</span><span class="p">)</span>
+
+        <span class="n">pc</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span><span class="n">pc</span><span class="o">=</span><span class="n">drn4</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="n">drn4</span><span class="o">.</span><span class="n">im_seq</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(e)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="s1">&#39;m-*&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;drainage w residual &amp; trapping&#39;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(e)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+</pre></div>
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2025, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.0.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

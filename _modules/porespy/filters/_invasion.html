@@ -185,13 +185,14 @@
                 
   <h1>Source code for porespy.filters._invasion</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">heapq</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hq</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spim</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">njit</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.filters</span><span class="w"> </span><span class="kn">import</span> <span class="n">flood</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.filters</span><span class="w"> </span><span class="kn">import</span> <span class="n">flood</span><span class="p">,</span> <span class="n">find_disconnected_voxels</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">make_contiguous</span><span class="p">,</span>
     <span class="n">get_tqdm</span><span class="p">,</span>
@@ -206,6 +207,7 @@
 <span class="p">)</span>
 
 
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
 
 
@@ -426,8 +428,9 @@
         <span class="n">strel</span> <span class="o">=</span> <span class="n">ps_round</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">seq</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">conn</span> <span class="o">==</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span>
         <span class="n">strel</span> <span class="o">=</span> <span class="n">ps_rect</span><span class="p">(</span><span class="n">w</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">seq</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
-    <span class="c1"># All uninvaded regions should be given sequence number of lowest nearby fluid</span>
+    <span class="n">non_perc</span> <span class="o">=</span> <span class="n">find_disconnected_voxels</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">mask</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">&lt;</span> <span class="mi">0</span>  <span class="c1"># This is used again at the end of the function to fix seq</span>
+    <span class="c1"># All uninvaded regions should be given sequence number of lowest nearby fluid</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
         <span class="n">mask_dil</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">strel</span><span class="p">)</span><span class="o">*</span><span class="n">im</span>
         <span class="n">tmp</span> <span class="o">=</span> <span class="n">seq</span><span class="o">*</span><span class="n">mask_dil</span>
@@ -453,7 +456,9 @@
     <span class="n">seq</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">trapped</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">seq</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">seq</span><span class="p">[</span><span class="n">im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">seq</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+    <span class="n">seq</span><span class="p">[</span><span class="n">non_perc</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="k">return</span> <span class="n">seq</span>
 
 
@@ -477,13 +482,14 @@
     <span class="c1"># Note which sites have been added to heap already</span>
     <span class="n">edge</span> <span class="o">=</span> <span class="n">out_temp</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_3d</span><span class="p">(</span><span class="n">im</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_3d</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">)</span>
     <span class="c1"># seq = np.copy(np.atleast_3d(seq))</span>
-    <span class="n">trapped</span> <span class="o">=</span> <span class="n">_trapped_regions_inner_loop</span><span class="p">(</span>
+    <span class="n">trapped</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="n">_trapped_regions_inner_loop</span><span class="p">(</span>
         <span class="n">seq</span><span class="o">=</span><span class="n">seq_temp</span><span class="p">,</span>
         <span class="n">edge</span><span class="o">=</span><span class="n">edge</span><span class="p">,</span>
         <span class="n">trapped</span><span class="o">=</span><span class="n">im_trapped</span><span class="p">,</span>
         <span class="n">outlets</span><span class="o">=</span><span class="n">out_temp</span><span class="p">,</span>
         <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exited after </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2"> steps&quot;</span><span class="p">)</span>
     <span class="c1"># Finalize images</span>
     <span class="n">seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
     <span class="n">trapped</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">trapped</span><span class="p">)</span>
@@ -514,7 +520,6 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bd</span><span class="p">):</span>  <span class="c1"># Put next site into pts list</span>
             <span class="n">pts</span> <span class="o">=</span> <span class="p">[</span><span class="n">hq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="n">bd</span><span class="p">)]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exiting after </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2"> steps&quot;</span><span class="p">)</span>
             <span class="k">break</span>
         <span class="c1"># Also pop any other points in list with same value</span>
         <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">bd</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">bd</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">pts</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]):</span>
@@ -530,10 +535,8 @@
             <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">:</span>
                 <span class="n">hq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="n">bd</span><span class="p">,</span> <span class="p">[</span><span class="n">seq</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
                 <span class="n">edge</span><span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="c1"># if step % 1000 == 0:</span>
-        <span class="c1">#     print(f&#39;completed {str(step)} steps&#39;)</span>
         <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="n">trapped</span>
+    <span class="k">return</span> <span class="n">trapped</span><span class="p">,</span> <span class="n">step</span>
 
 
 <span class="nd">@njit</span>
@@ -606,7 +609,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.1.3.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.0.<br>
 </p>
   </div>
   

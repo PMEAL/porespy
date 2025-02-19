@@ -84,10 +84,10 @@
     "inv = ps.simulations.drainage(im=im, pc=pc, inlets=inlets)\n",
     "\n",
     "fig, ax = plt.subplots(1, 2, figsize=[12, 6])\n",
-    "ax[0].imshow(inv.im_satn/im, interpolation='none', origin='lower')\n",
+    "ax[0].imshow(inv.im_snwp/im, interpolation='none', origin='lower')\n",
     "ax[0].axis(False)\n",
     "ax[0].set_title('Saturation map')\n",
-    "ax[1].imshow((inv.im_satn < 0.6)*(inv.im_satn > 0)/im, interpolation='none', origin='lower')\n",
+    "ax[1].imshow((inv.im_snwp < 0.6)*(inv.im_snwp > 0)/im, interpolation='none', origin='lower')\n",
     "ax[1].axis(False)\n",
     "ax[1].set_title('Fluid distribution at saturation = 0.6');"
    ]
@@ -129,7 +129,7 @@
     }
    ],
    "source": [
-    "s_prof = ps.metrics.satn_profile(satn=inv.im_satn, s=0.6)\n",
+    "s_prof = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6)\n",
     "plt.plot(s_prof.position, s_prof.saturation, 'b-o')\n",
     "plt.xlabel(\"distance from injection face\")\n",
     "plt.ylabel(\"non-wetting phase saturation\");"
@@ -173,15 +173,15 @@
    ],
    "source": [
     "s = 0.6\n",
-    "s_prof1 = ps.metrics.satn_profile(satn=inv.im_satn, s=s)\n",
+    "s_prof1 = ps.metrics.satn_profile(satn=inv.im_snwp, s=s)\n",
     "plt.plot(s_prof1.position, s_prof1.saturation, 'b-o', label=s)\n",
     "\n",
     "s = 0.4\n",
-    "s_prof2 = ps.metrics.satn_profile(satn=inv.im_satn, s=s)\n",
+    "s_prof2 = ps.metrics.satn_profile(satn=inv.im_snwp, s=s)\n",
     "plt.plot(s_prof2.position, s_prof2.saturation, 'r-o', label=s)\n",
     "\n",
     "s = 0.1\n",
-    "s_prof3 = ps.metrics.satn_profile(satn=inv.im_satn, s=s)\n",
+    "s_prof3 = ps.metrics.satn_profile(satn=inv.im_snwp, s=s)\n",
     "plt.plot(s_prof3.position, s_prof3.saturation, 'g-o', label=s)\n",
     "\n",
     "plt.xlabel(\"distance from injection face\")\n",
@@ -227,15 +227,15 @@
    ],
    "source": [
     "s = 5\n",
-    "s_prof1 = ps.metrics.satn_profile(satn=inv.im_satn, s=0.6, span=s)\n",
+    "s_prof1 = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6, span=s)\n",
     "plt.plot(s_prof1.position, s_prof1.saturation, 'b-o', label=s)\n",
     "\n",
     "s = 10\n",
-    "s_prof2 = ps.metrics.satn_profile(satn=inv.im_satn, s=0.6, span=s)\n",
+    "s_prof2 = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6, span=s)\n",
     "plt.plot(s_prof2.position, s_prof2.saturation, 'r-o', label=s)\n",
     "\n",
     "s = 30\n",
-    "s_prof3 = ps.metrics.satn_profile(satn=inv.im_satn, s=0.6, span=s)\n",
+    "s_prof3 = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6, span=s)\n",
     "plt.plot(s_prof3.position, s_prof3.saturation, 'g-o', label=s)\n",
     "\n",
     "plt.xlabel(\"distance from injection face\")\n",
@@ -280,10 +280,10 @@
     }
    ],
    "source": [
-    "s_prof1 = ps.metrics.satn_profile(satn=inv.im_satn, s=0.6, mode='slide')\n",
+    "s_prof1 = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6, mode='slide')\n",
     "plt.plot(s_prof1.position, s_prof1.saturation, 'b-o', label=s)\n",
     "\n",
-    "s_prof2 = ps.metrics.satn_profile(satn=inv.im_satn, s=0.6, mode='tile')\n",
+    "s_prof2 = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6, mode='tile')\n",
     "plt.plot(s_prof2.position, s_prof2.saturation, 'r-o', label=s)\n",
     "\n",
     "plt.xlabel(\"distance from injection face\")\n",
@@ -328,10 +328,10 @@
     }
    ],
    "source": [
-    "s_prof1 = ps.metrics.satn_profile(satn=inv.im_satn, s=0.6, axis=0)\n",
+    "s_prof1 = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6, axis=0)\n",
     "plt.plot(s_prof1.position, s_prof1.saturation, 'b-o', label=0)\n",
     "\n",
-    "s_prof2 = ps.metrics.satn_profile(satn=inv.im_satn, s=0.6, axis=1)\n",
+    "s_prof2 = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6, axis=1)\n",
     "plt.plot(s_prof2.position, s_prof2.saturation, 'r-o', label=1)\n",
     "\n",
     "plt.xlabel(\"distance from injection face\")\n",

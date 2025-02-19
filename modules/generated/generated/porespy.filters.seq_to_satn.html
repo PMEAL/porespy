@@ -1001,17 +1001,16 @@
 <h1>seq_to_satn<a class="headerlink" href="#seq-to-satn" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.seq_to_satn">
-<span class="sig-name descname"><span class="pre">seq_to_satn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'drainage'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_size_seq_satn.html#seq_to_satn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.seq_to_satn" title="Link to this definition">¶</a></dt>
-<dd><p>Converts an image of invasion sequence values to invading phase saturation
-values.</p>
+<span class="sig-name descname"><span class="pre">seq_to_satn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'drainage'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_size_seq_satn.html#seq_to_satn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.seq_to_satn" title="Link to this definition">¶</a></dt>
+<dd><p>Converts a sequence map to a saturation map</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq</strong> (<em>ndarray</em>) – The image containing invasion sequence values in each voxel. Solid
-should be indicated as 0’s and uninvaded voxels as -1.</p></li>
-<li><p><strong>im</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – A binary image of the porous media, with <code class="docutils literal notranslate"><span class="pre">True</span></code> indicating the
-void space and <code class="docutils literal notranslate"><span class="pre">False</span></code> indicating the solid phase. If not given
-then it is assumed that the solid is identified as <code class="docutils literal notranslate"><span class="pre">seq</span> <span class="pre">==</span> <span class="pre">0</span></code>.</p></li>
+<li><p><strong>seq</strong> (<em>ndarray</em>) – The image containing invasion sequence values in each voxel. Residual phase
+should be indicated as 0’s and uninvaded (i.e. trapped) voxels as -1.
+<cite>im</cite> is used to mask to remove solid voxels from computation</p></li>
+<li><p><strong>im</strong> (<em>ndarray</em>) – A binary image of the porous media, with <code class="docutils literal notranslate"><span class="pre">True</span></code> indicating the
+void space and <code class="docutils literal notranslate"><span class="pre">False</span></code> indicating the solid phase.</p></li>
 <li><p><strong>mode</strong> (<em>str</em>) – <p>Controls how the sequences are converted to saturations. The options are:</p>
 <table class="table">
 <thead>
@@ -1034,16 +1033,19 @@ then it is assumed that the solid is identified as <code class="docutils literal
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>satn</strong> – An ndarray the same shape as <code class="docutils literal notranslate"><span class="pre">seq</span></code> but with sequence values replaced
 by the fraction of void space invaded at the sequence number, accounting
-for the specified <cite>mode</cite>. Solid voxels and uninvaded voxels are represented
-by 0 and -1, respectively.</p>
+for the specified <cite>mode</cite>. Residual fluid and uninvaded voxels are represented
+by 0 and -1, respectively.  Solie phase is also represented as 0, so <cite>im</cite>
+must be used as a mask.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If any <code class="docutils literal notranslate"><span class="pre">-1</span></code> values are present in <cite>seq</cite> the maximum saturation will be less
-than 1.0 since this means that not all defending phase was displaced.</p>
+<p>If any <cite>-1</cite> values are present in <cite>seq</cite> the maximum saturation will be less
+than 1.0 since this means that not all defending phase was displaced. If any
+<cite>0</cite> are present in <cite>seq</cite> then the minimum saturation will be greater than 0,
+since this means some invading phase was already present.</p>
 <p class="rubric">Examples</p>
 <p><a class="reference external" href="https://porespy.org/examples/filters/reference/seq_to_satn.html">Click here</a>
 to view online example.</p>
@@ -1076,7 +1078,7 @@ to view online example.</p>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.1.3.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.0.<br>
 </p>
   </div>
   

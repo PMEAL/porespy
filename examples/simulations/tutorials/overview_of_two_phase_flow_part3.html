@@ -1,0 +1,3340 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Overview of Image-Based Two-Phase Flow Simulations - Part 3: Invasion &#8212; PoreSpy  documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=723bc057" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/custom.js?v=8f303282"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Image-based invasion percoalation" href="using_invasion.html" />
+    <link rel="prev" title="Overview of Image-Based Two-Phase Flow Simulations - Part 2: Imbibition" href="overview_of_two_phase_flow_part2.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">PoreSpy  documentation</p>
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../../_examples/index.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/porespy" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../../_examples/general/index.html">
+   General
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../general/denoising_and_segmenting_images.html">
+     Converting Greyscale Images to Binary
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../general/loading_images.html">
+     Opening and Preparing Images
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../../_examples/generators/index.html">
+   Generators
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../_examples/generators/tutorials.html">
+     Tutorials
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/tutorials/creating_multiscale_images_2.html">
+       Creating Multiscale Images
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/tutorials/cylinders.html">
+       Generating fibrous mats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/tutorials/generate_spheres_packings.html">
+       Generating Sphere Packings from Digital Rocks Portal
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/tutorials/making_blobs.html">
+       Making blobs
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../_examples/generators/reference.html">
+     Reference
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+    <label for="toctree-checkbox-4">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/blobs.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         blobs
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/borders.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         borders
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/bundle_of_tubes.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         bundle_of_tubes
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/cylinders.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         cylinders
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         cylindrical_pillars_array
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         cylindrical_pillars_mesh
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/cylindrical_plug.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         cylindrical_plug
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/faces.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         faces
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/fractal_noise.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         fractal_noise
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/insert_shape.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         insert_shape
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/lattice_spheres.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         lattice_spheres
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/line_segment.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         line_segment
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/overlapping_spheres.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         overlapping_spheres
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/polydisperse_spheres.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         polydisperse_spheres
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/pseudo_electrostatic_packing.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         pseudo_electrostatic_packing
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/pseudo_gravity_packing.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         pseudo_gravity_packing
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/ramp.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         ramp
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/random_cantor_dust.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         random_cantor_dust
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/random_spheres.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         random_spheres
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/rectangular_pillars_array.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         rectangular_pillars_array
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/sierpinski_foam.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         sierpinski_foam
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/sierpinski_foam2.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         sierpinski_foam2
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/spheres_from_coords.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         spheres_from_coords
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/voronoi_edges.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         voronoi_edges
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../../_examples/filters/index.html">
+   Filters
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+  <label for="toctree-checkbox-5">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../_examples/filters/tutorials.html">
+     Tutorials
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+    <label for="toctree-checkbox-6">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/tutorials/adding_chords.html">
+       Applying chords to 2D and 3D images
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/tutorials/local_thickness.html">
+       Local thickness
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/tutorials/snow_partitioning.html">
+       SNOW partitioning
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/tutorials/snow_partitioning_parallel.html">
+       SNOW partitioning parallel
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../_examples/filters/reference.html">
+     Reference
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+    <label for="toctree-checkbox-7">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/apply_chords.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         apply_chords
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/apply_chords_3D.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         apply_chords_3D
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/apply_padded.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         apply_padded
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/chunked_func.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         chunked_func
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/distance_transform_lin.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         distance_transform_lin
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/fftmorphology.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         fftmorphology
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/fill_blind_pores.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         fill_blind_pores
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/find_disconnected_voxels.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         find_disconnected_voxels
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/find_dt_artifacts.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         find_dt_artifacts
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/find_peaks.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         find_peaks
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/find_trapped_regions.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         find_trapped_regions
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/flood.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         flood
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/flood_func.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         flood_func
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/hold_peaks.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         hold_peaks
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/local_thickness.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         local_thickness
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/nl_means_layered.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         nl_means_layered
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/nphase_border.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         nphase_border
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/pc_to_satn.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         pc_to_satn
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/porosimetry.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         porosimetry
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/prune_branches.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         prune_branches
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/reduce_peaks.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         reduce_peaks
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/region_size.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         region_size
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/satn_to_seq.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         satn_to_seq
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/seq_to_satn.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         seq_to_satn
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/size_to_satn.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         size_to_satn
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/size_to_seq.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         size_to_seq
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/snow_partitioning.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         snow_partitioning
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/snow_partitioning_n.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         snow_partitioning_n
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/snow_partitioning_parallel.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         snow_partitioning_parallel
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/trim_disconnected_blobs.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         trim_disconnected_blobs
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/trim_extrema.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         trim_extrema
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/trim_floating_solid.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         trim_floating_solid
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/trim_nearby_peaks.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         trim_nearby_peaks
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/trim_nonpercolating_paths.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         trim_nonpercolating_paths
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/trim_saddle_points.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         trim_saddle_points
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../filters/reference/trim_small_clusters.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         trim_small_clusters
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../../_examples/metrics/index.html">
+   Metrics
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../_examples/metrics/tutorials.html">
+     Tutorials
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+    <label for="toctree-checkbox-9">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">
+       Measuring fractal dimension by box-counting
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">
+       The lineal path function
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">
+       Obtaining the porosity profile along each principle axis
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">
+       Using regionprops_3d to analyze properties of each pore
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../_examples/metrics/reference.html">
+     Reference
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
+    <label for="toctree-checkbox-10">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/boxcount.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         boxcount
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/chord_counts.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         chord_counts
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/chord_length_distribution.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         chord_length_distribution
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/find_h.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         find_h
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/lineal_path_distribution.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         lineal_path_distribution
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/mesh__volume.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         mesh_volume
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/mesh_surface_area.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         mesh_surface_area
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/pc_curve.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         pc_curve
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/phase_fraction.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         phase_fraction
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/pore_size_distribution.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         pore_size_distribution
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/porosity.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         porosity
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/porosity_profile.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         porosity_profile
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/props_to_DataFrame.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         props_to_DataFrame
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/props_to_image.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         props_to_image
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/radial_density_distribution.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         radial_density_distribution
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/region_interface_areas.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         region_interface_areas
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/region_surface_areas.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         region_surface_areas
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/region_volumes.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         region_volumes
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/regionprops_3D.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         regionprops_3D
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/representative_elementary_volume.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         representative_elementary_volume
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/satn_profile.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         satn_profile
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../metrics/reference/two_point_correlation.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         two_point_correlation
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../../_examples/networks/index.html">
+   Networks
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
+  <label for="toctree-checkbox-11">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../_examples/networks/tutorials.html">
+     Tutorials
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/>
+    <label for="toctree-checkbox-12">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/tutorials/adding_boundary_pores.html">
+       Adding boundary pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/tutorials/predicting_diffusive_size_factors_rock_sample.html">
+       Predicting diffusive size factors of a rock sample
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/tutorials/snow_advanced.html">
+       SNOW network extraction (advanced)
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/tutorials/snow_basic.html">
+       SNOW network extraction
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/tutorials/using_diffusive_size_factor_AI_with_snow.html">
+       Using AI based diffusive size factors for extracted networks
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../_examples/networks/reference.html">
+     Reference
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
+    <label for="toctree-checkbox-13">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/reference/add_boundary_regions.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         add_boundary_regions
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/reference/diffusive_size_factor_AI.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         diffusive_size_factor_AI
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/reference/diffusive_size_factor_DNS.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         diffusive_size_factor_DNS
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/reference/label_boundaries.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         label_boundaries
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/reference/label_phases.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         label_phases
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/reference/map_to_regions.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         map_to_regions
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/reference/regions_to_network.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         regions_to_network
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/reference/snow2.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         snow2
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../../../_examples/simulations/index.html">
+   Simulations
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/>
+  <label for="toctree-checkbox-14">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 current active has-children">
+    <a class="reference internal" href="../../../_examples/simulations/tutorials.html">
+     Tutorials
+    </a>
+    <input checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/>
+    <label for="toctree-checkbox-15">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul class="current">
+     <li class="toctree-l3">
+      <a class="reference internal" href="drainage_with_gravity_advanced.html">
+       Details of Drainage Simulations with and without Gravity
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="drainage_with_gravity_basic.html">
+       Basics of Peforming Drainage Simulations with and without Gravity
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="finding_tortuosity_from_image.html">
+       Finding the Tortuosity (
+       <span class="math notranslate nohighlight">
+        \(\tau\)
+       </span>
+       ) of an Image Using tortuosity_fd
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="overview_of_two_phase_flow_part1.html">
+       Overview of Image-Based Two-Phase Flow Simulations - Part 1: Drainage
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="overview_of_two_phase_flow_part2.html">
+       Overview of Image-Based Two-Phase Flow Simulations - Part 2: Imbibition
+      </a>
+     </li>
+     <li class="toctree-l3 current active">
+      <a class="current reference internal" href="#">
+       Overview of Image-Based Two-Phase Flow Simulations - Part 3: Invasion
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="using_invasion.html">
+       Image-based invasion percoalation
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../../_examples/tools/index.html">
+   Tools
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/>
+  <label for="toctree-checkbox-16">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../_examples/tools/reference.html">
+     Reference
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/>
+    <label for="toctree-checkbox-17">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/align_image_with_openpnm.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         align_image_with_openpnm
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/all_to_uniform.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         all_to_uniform
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/bbox_to_slices.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         bbox_to_slices
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/extend_slice.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         extend_slice
+        </span>
+       </code>
+       [WIP]
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/extract_cylinder.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         extract_cylinder
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/extract_regions.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         extract_regions
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/extract_subsection.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         extract_subsection
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/get_border.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         get_border
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/get_planes.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         get_planes
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/insert_cylinder.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         insert_cylinder
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/insert_sphere.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         insert_sphere
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/isolate_object.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         isolate_object
+        </span>
+       </code>
+       [WIP]
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/make_contiguous.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         make_contiguous
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/marching_map.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         marching_map
+        </span>
+       </code>
+       [WIP]
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/mesh_region.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         mesh_region
+        </span>
+       </code>
+       [WIP]
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/overlay.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         overlay
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/randomize_colors.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         randomize_colors
+        </span>
+       </code>
+       [WIP]
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/recombine.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         recombine
+        </span>
+       </code>
+       [WIP]
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/subdivide.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         subdivide
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../tools/reference/unpad.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         unpad
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../../_examples/visualization/index.html">
+   Visualization
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/>
+  <label for="toctree-checkbox-18">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../_examples/visualization/tutorials.html">
+     Tutorials
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/>
+    <label for="toctree-checkbox-19">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/tutorials/visualizing_tif_in_paraveiw.html">
+       Visualizing a tif image in Paraview
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../_examples/visualization/reference.html">
+     Reference
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/>
+    <label for="toctree-checkbox-20">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/reference/bar.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         bar
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/reference/imshow.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         imshow
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/reference/prep_for_imshow.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         prep_for_imshow
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/reference/satn_to_movie.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         satn_to_movie
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/reference/satn_to_panels.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         satn_to_panels
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/reference/sem.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         sem
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/reference/set_mpl_style.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         set_mpl_style
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/reference/show_3D.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         show_3D
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/reference/show_mesh.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         show_mesh
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/reference/show_panels.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         show_panels
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/reference/show_planes.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         show_planes
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/reference/xray.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         xray
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../general/denoising_and_segmenting_images.html">
+   Converting Greyscale Images to Binary
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../general/loading_images.html">
+   Opening and Preparing Images
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/tutorials/creating_multiscale_images_2.html">
+   Creating Multiscale Images
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/tutorials/cylinders.html">
+   Generating fibrous mats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/tutorials/generate_spheres_packings.html">
+   Generating Sphere Packings from Digital Rocks Portal
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/tutorials/making_blobs.html">
+   Making blobs
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/blobs.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     blobs
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/borders.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     borders
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/bundle_of_tubes.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     bundle_of_tubes
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/cylinders.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     cylinders
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     cylindrical_pillars_array
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     cylindrical_pillars_mesh
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/cylindrical_plug.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     cylindrical_plug
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/faces.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     faces
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/fractal_noise.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     fractal_noise
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/insert_shape.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     insert_shape
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/lattice_spheres.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     lattice_spheres
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/line_segment.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     line_segment
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/overlapping_spheres.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     overlapping_spheres
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/polydisperse_spheres.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     polydisperse_spheres
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/pseudo_electrostatic_packing.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     pseudo_electrostatic_packing
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/pseudo_gravity_packing.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     pseudo_gravity_packing
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/ramp.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ramp
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/random_cantor_dust.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     random_cantor_dust
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/random_spheres.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     random_spheres
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/rectangular_pillars_array.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     rectangular_pillars_array
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/sierpinski_foam.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     sierpinski_foam
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/sierpinski_foam2.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     sierpinski_foam2
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/spheres_from_coords.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     spheres_from_coords
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/voronoi_edges.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     voronoi_edges
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/tutorials/adding_chords.html">
+   Applying chords to 2D and 3D images
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/tutorials/local_thickness.html">
+   Local thickness
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/tutorials/snow_partitioning.html">
+   SNOW partitioning
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/tutorials/snow_partitioning_parallel.html">
+   SNOW partitioning parallel
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/apply_chords.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     apply_chords
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/apply_chords_3D.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     apply_chords_3D
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/apply_padded.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     apply_padded
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/chunked_func.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     chunked_func
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/distance_transform_lin.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     distance_transform_lin
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/fftmorphology.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     fftmorphology
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/fill_blind_pores.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     fill_blind_pores
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/find_disconnected_voxels.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     find_disconnected_voxels
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/find_dt_artifacts.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     find_dt_artifacts
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/find_peaks.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     find_peaks
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/find_trapped_regions.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     find_trapped_regions
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/flood.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     flood
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/flood_func.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     flood_func
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/hold_peaks.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     hold_peaks
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/local_thickness.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     local_thickness
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/nl_means_layered.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     nl_means_layered
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/nphase_border.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     nphase_border
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/pc_to_satn.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     pc_to_satn
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/porosimetry.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     porosimetry
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/prune_branches.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     prune_branches
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/reduce_peaks.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     reduce_peaks
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/region_size.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     region_size
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/satn_to_seq.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     satn_to_seq
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/seq_to_satn.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     seq_to_satn
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/size_to_satn.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     size_to_satn
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/size_to_seq.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     size_to_seq
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/snow_partitioning.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     snow_partitioning
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/snow_partitioning_n.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     snow_partitioning_n
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/snow_partitioning_parallel.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     snow_partitioning_parallel
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/trim_disconnected_blobs.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     trim_disconnected_blobs
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/trim_extrema.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     trim_extrema
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/trim_floating_solid.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     trim_floating_solid
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/trim_nearby_peaks.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     trim_nearby_peaks
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/trim_nonpercolating_paths.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     trim_nonpercolating_paths
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/trim_saddle_points.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     trim_saddle_points
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/trim_small_clusters.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     trim_small_clusters
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">
+   Measuring fractal dimension by box-counting
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">
+   The lineal path function
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">
+   Obtaining the porosity profile along each principle axis
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">
+   Using regionprops_3d to analyze properties of each pore
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/boxcount.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     boxcount
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/chord_counts.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     chord_counts
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/chord_length_distribution.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     chord_length_distribution
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/find_h.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     find_h
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/lineal_path_distribution.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     lineal_path_distribution
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/mesh__volume.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     mesh_volume
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/mesh_surface_area.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     mesh_surface_area
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/pc_curve.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     pc_curve
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/phase_fraction.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     phase_fraction
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/pore_size_distribution.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     pore_size_distribution
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/porosity.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     porosity
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/porosity_profile.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     porosity_profile
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/props_to_DataFrame.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     props_to_DataFrame
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/props_to_image.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     props_to_image
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/radial_density_distribution.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     radial_density_distribution
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/region_interface_areas.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     region_interface_areas
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/region_surface_areas.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     region_surface_areas
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/region_volumes.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     region_volumes
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/regionprops_3D.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     regionprops_3D
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/representative_elementary_volume.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     representative_elementary_volume
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/satn_profile.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     satn_profile
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../metrics/reference/two_point_correlation.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     two_point_correlation
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/tutorials/adding_boundary_pores.html">
+   Adding boundary pores
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/tutorials/predicting_diffusive_size_factors_rock_sample.html">
+   Predicting diffusive size factors of a rock sample
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/tutorials/snow_advanced.html">
+   SNOW network extraction (advanced)
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/tutorials/snow_basic.html">
+   SNOW network extraction
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/tutorials/using_diffusive_size_factor_AI_with_snow.html">
+   Using AI based diffusive size factors for extracted networks
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/reference/add_boundary_regions.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     add_boundary_regions
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/reference/diffusive_size_factor_AI.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     diffusive_size_factor_AI
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/reference/diffusive_size_factor_DNS.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     diffusive_size_factor_DNS
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/reference/label_boundaries.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     label_boundaries
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/reference/label_phases.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     label_phases
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/reference/map_to_regions.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     map_to_regions
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/reference/regions_to_network.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     regions_to_network
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/reference/snow2.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     snow2
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="drainage_with_gravity_advanced.html">
+   Details of Drainage Simulations with and without Gravity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="drainage_with_gravity_basic.html">
+   Basics of Peforming Drainage Simulations with and without Gravity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="finding_tortuosity_from_image.html">
+   Finding the Tortuosity (
+   <span class="math notranslate nohighlight">
+    \(\tau\)
+   </span>
+   ) of an Image Using tortuosity_fd
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="overview_of_two_phase_flow_part1.html">
+   Overview of Image-Based Two-Phase Flow Simulations - Part 1: Drainage
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="overview_of_two_phase_flow_part2.html">
+   Overview of Image-Based Two-Phase Flow Simulations - Part 2: Imbibition
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Overview of Image-Based Two-Phase Flow Simulations - Part 3: Invasion
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="using_invasion.html">
+   Image-based invasion percoalation
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/align_image_with_openpnm.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     align_image_with_openpnm
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/all_to_uniform.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     all_to_uniform
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/bbox_to_slices.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     bbox_to_slices
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/extend_slice.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     extend_slice
+    </span>
+   </code>
+   [WIP]
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/extract_cylinder.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     extract_cylinder
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/extract_regions.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     extract_regions
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/extract_subsection.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     extract_subsection
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/get_border.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     get_border
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/get_planes.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     get_planes
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/insert_cylinder.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     insert_cylinder
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/insert_sphere.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     insert_sphere
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/isolate_object.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     isolate_object
+    </span>
+   </code>
+   [WIP]
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/make_contiguous.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     make_contiguous
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/marching_map.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     marching_map
+    </span>
+   </code>
+   [WIP]
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/mesh_region.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     mesh_region
+    </span>
+   </code>
+   [WIP]
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/overlay.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     overlay
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/randomize_colors.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     randomize_colors
+    </span>
+   </code>
+   [WIP]
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/recombine.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     recombine
+    </span>
+   </code>
+   [WIP]
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/subdivide.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     subdivide
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tools/reference/unpad.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     unpad
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/tutorials/visualizing_tif_in_paraveiw.html">
+   Visualizing a tif image in Paraview
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/reference/bar.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     bar
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/reference/imshow.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     imshow
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/reference/prep_for_imshow.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     prep_for_imshow
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/reference/satn_to_movie.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     satn_to_movie
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/reference/satn_to_panels.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     satn_to_panels
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/reference/sem.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     sem
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/reference/set_mpl_style.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     set_mpl_style
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/reference/show_3D.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     show_3D
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/reference/show_mesh.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     show_mesh
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/reference/show_panels.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     show_panels
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/reference/show_planes.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     show_planes
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/reference/xray.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     xray
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#setup">
+   Setup
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#define-inlets-capillary-transform-and-run-a-simulation">
+     Define Inlets, Capillary Transform, and Run A Simulation
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#inspect-displacement-maps">
+     Inspect Displacement Maps
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#obtaining-specific-fluid-configurations">
+     Obtaining Specific Fluid Configurations
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#generating-capillary-pressure-curves-from-displacement-maps">
+     Generating Capillary Pressure Curves from Displacement Maps
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#comparison-of-invasion-and-drainage">
+     Comparison of Invasion and Drainage
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#incorporating-trapping-in-invasion">
+     Incorporating Trapping in Invasion
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#plotting-capillary-pressure-curves-with-trapping">
+     Plotting Capillary Pressure Curves with Trapping
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#summary">
+   Summary
+  </a>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="overview-of-image-based-two-phase-flow-simulations-part-3-invasion">
+<h1>Overview of Image-Based Two-Phase Flow Simulations - Part 3: Invasion<a class="headerlink" href="#overview-of-image-based-two-phase-flow-simulations-part-3-invasion" title="Link to this heading">¶</a></h1>
+<p>In parts 1 and 2 of this series we looked at <code class="docutils literal notranslate"><span class="pre">drainage</span></code> and <code class="docutils literal notranslate"><span class="pre">imbibition</span></code>, which are both pressure-controlled displacement processes.  This refers to the fact that a fixed pressure is applied to the invading phase, and all the accessible pore space become filled. In the present tutorial we will look at the <code class="docutils literal notranslate"><span class="pre">invasion</span></code> algorithm, which simulates volume-controlled invasion of non-wetting fluid. In this process the invasion front moves incrementally as though being injected by positive displacement pump, like as syringe pump.</p>
+<p>The objectives of this tutorial are as follows:</p>
+<ul class="simple">
+<li><p>Give an overview of the various ways to use the <code class="docutils literal notranslate"><span class="pre">porespy.simulations.invasion</span></code> algorithm</p></li>
+<li><p>Demonstrate how the definition of inlets and outlets affects the result</p></li>
+<li><p>Explain the conventions used for dealing with trapped wetting phase in displacement maps</p></li>
+<li><p>Plot capillary pressure curves using the results of an invasion simulation, and compare it to a drainage simulation.</p></li>
+</ul>
+<section id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Link to this heading">¶</a></h2>
+<p>As usual, we start by importing the necessary packages, and creating a test image which will be used throughout.  The test image is 2D for visualization purposes, but everything discussed here applies to 3D as well.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ps</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[19:18:07] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
+</pre>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="o">~</span><span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">random_spheres</span><span class="p">([</span><span class="mi">400</span><span class="p">,</span> <span class="mi">400</span><span class="p">],</span> <span class="n">r</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">clearance</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../../../_images/1dd005db3bd628cc166ea8f70fee8fcf5b7f9b576a8990d7ada167f9620d1b1a.png"><img alt="../../../_images/1dd005db3bd628cc166ea8f70fee8fcf5b7f9b576a8990d7ada167f9620d1b1a.png" src="../../../_images/1dd005db3bd628cc166ea8f70fee8fcf5b7f9b576a8990d7ada167f9620d1b1a.png" style="width: 284px; height: 268px;" />
+</a>
+</div>
+</div>
+<section id="define-inlets-capillary-transform-and-run-a-simulation">
+<h3>Define Inlets, Capillary Transform, and Run A Simulation<a class="headerlink" href="#define-inlets-capillary-transform-and-run-a-simulation" title="Link to this heading">¶</a></h3>
+<p>The inlets specified as a Numpy array the same shape as <code class="docutils literal notranslate"><span class="pre">im</span></code> with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating inlet locations and <code class="docutils literal notranslate"><span class="pre">False</span></code> elsewhere. The capillary pressure transform can found using the <code class="docutils literal notranslate"><span class="pre">capillary_transform</span></code> function.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inlets</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">faces</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">inlet</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">capillary_transform</span><span class="p">(</span>
+    <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> 
+    <span class="n">sigma</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> 
+    <span class="n">theta</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span> 
+    <span class="n">voxel_size</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">inv1</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">invasion</span><span class="p">(</span>
+    <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+    <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
+    <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+    <span class="n">return_pressures</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="inspect-displacement-maps">
+<h3>Inspect Displacement Maps<a class="headerlink" href="#inspect-displacement-maps" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">invasion</span></code> function returns a <code class="docutils literal notranslate"><span class="pre">Results</span></code> object which is a dataclass like object with various images attached as attributes.  The main images are the sequence map, the saturation map, and the capillary pressure map.  These are shown below:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">inv1</span><span class="o">.</span><span class="n">im_seq</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">inv1</span><span class="o">.</span><span class="n">im_snwp</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">inv1</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">inv1</span><span class="o">.</span><span class="n">im_pc</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">/</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Sequence Map&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Saturation Map&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Capillary Pressure Map&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../../../_images/1f56094bb03ed3ea06affa4e859c80340c965705530a8369dd0402d57ad1383b.png"><img alt="../../../_images/1f56094bb03ed3ea06affa4e859c80340c965705530a8369dd0402d57ad1383b.png" src="../../../_images/1f56094bb03ed3ea06affa4e859c80340c965705530a8369dd0402d57ad1383b.png" style="width: 871px; height: 289px;" />
+</a>
+</div>
+</div>
+</section>
+<section id="obtaining-specific-fluid-configurations">
+<h3>Obtaining Specific Fluid Configurations<a class="headerlink" href="#obtaining-specific-fluid-configurations" title="Link to this heading">¶</a></h3>
+<p>Either the sequence map or the saturation map can be used to find specific fluid configurations. The saturation map is particularly useful since the saturation are <em>almost</em> continuous, unlike the pressure-based simulations where large jumps in saturations are ever-present.  The saturation is not <em>actually</em> continuous so technically we should still only values present the saturation map as the threshold values, but for all practical purposes we can do the following:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">((</span><span class="n">inv1</span><span class="o">.</span><span class="n">im_snwp</span> <span class="o">&lt;=</span> <span class="mf">0.2</span><span class="p">)</span><span class="o">/</span><span class="n">im</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">((</span><span class="n">inv1</span><span class="o">.</span><span class="n">im_snwp</span> <span class="o">&lt;=</span> <span class="mf">0.4</span><span class="p">)</span><span class="o">/</span><span class="n">im</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">((</span><span class="n">inv1</span><span class="o">.</span><span class="n">im_snwp</span> <span class="o">&lt;=</span> <span class="mf">0.6</span><span class="p">)</span><span class="o">/</span><span class="n">im</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">((</span><span class="n">inv1</span><span class="o">.</span><span class="n">im_snwp</span> <span class="o">&lt;=</span> <span class="mf">0.8</span><span class="p">)</span><span class="o">/</span><span class="n">im</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../../../_images/a891623472b0eac19a9e804cbd4fa5f3157c80a564f60cf2c54efd4ab41b718a.png"><img alt="../../../_images/a891623472b0eac19a9e804cbd4fa5f3157c80a564f60cf2c54efd4ab41b718a.png" src="../../../_images/a891623472b0eac19a9e804cbd4fa5f3157c80a564f60cf2c54efd4ab41b718a.png" style="width: 583px; height: 565px;" />
+</a>
+</div>
+</div>
+<p>And to confirm that we achieved fairly close to the requested saturation, we can compute the saturation of each resulting configuraiton:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">]:</span>
+    <span class="n">satn</span> <span class="o">=</span> <span class="p">(</span><span class="n">inv1</span><span class="o">.</span><span class="n">im_snwp</span> <span class="o">&lt;=</span> <span class="n">s</span><span class="p">)[</span><span class="n">im</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Requested: </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">, Actual </span><span class="si">{</span><span class="n">satn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requested: 0.2, Actual 0.19967977228251202
+Requested: 0.4, Actual 0.39999110478562533
+Requested: 0.6, Actual 0.5999644191425013
+Requested: 0.8, Actual 0.7995018679950187
+</pre></div>
+</div>
+</div>
+</div>
+<p>On a 3D image this difference will be even less since there are many more voxels so the saturation increments will be even smaller.</p>
+</section>
+<section id="generating-capillary-pressure-curves-from-displacement-maps">
+<h3>Generating Capillary Pressure Curves from Displacement Maps<a class="headerlink" href="#generating-capillary-pressure-curves-from-displacement-maps" title="Link to this heading">¶</a></h3>
+<p>Capillary pressures curves produced by a volume-controlled invasion process are not very common, and they are difficult to interpret. They are also more difficult to extract from displacement maps.  The non-wetting phase saturation (i.e. the y-axis) is easily obtained by summing the number of voxels invaded at or below each value in the sequence map.  Finding the correspond capillary pressure is the challenging part because it does not increase monotonically, but rather fluctuates up and down as fluid invades smaller and larger regions (i.e. throat constrictions and pore bodies).  This means that one cannot simply apply a threshold to the capillary pressure map, but instead we must use the sequence map to find the voxels filled at each step, then use that as a mask into the capillary pressure map to determine the capillary pressure. This is illustrated below:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Pc</span><span class="p">,</span> <span class="n">Snwp</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+<span class="n">steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">inv1</span><span class="o">.</span><span class="n">im_seq</span><span class="p">[</span><span class="n">im</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">inv1</span><span class="o">.</span><span class="n">im_seq</span> <span class="o">==</span> <span class="n">s</span>
+    <span class="n">Snwp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="n">Pc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inv1</span><span class="o">.</span><span class="n">im_pc</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">Pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Pc</span><span class="p">)</span>
+<span class="n">Snwp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">Snwp</span><span class="p">)</span><span class="o">/</span><span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Of course PoreSpy offers the <code class="docutils literal notranslate"><span class="pre">pc_map_to_pc_curve</span></code> function which works on the displacement maps produced by the <code class="docutils literal notranslate"><span class="pre">invasion</span></code> simulation, provided that the sequence map is also provided.  Note that the invasion is technically a drainage process since non-wetting phase is displacing the wetting phase, so <code class="docutils literal notranslate"><span class="pre">mode='drainage'</span></code> should be specified.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Pc1</span><span class="p">,</span> <span class="n">Snwp1</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span>
+    <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+    <span class="n">pc</span><span class="o">=</span><span class="n">inv1</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span>
+    <span class="n">seq</span><span class="o">=</span><span class="n">inv1</span><span class="o">.</span><span class="n">im_seq</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Pc1</span><span class="p">),</span> <span class="n">Snwp1</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;invasion&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;log(Capillary Pressure [Pa])&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Non-Wetting Phase Saturation&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">]);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../../../_images/692373d05f71e3271ed7a416dea73251cc252887c0d1ad3bcb88873cae884772.png"><img alt="../../../_images/692373d05f71e3271ed7a416dea73251cc252887c0d1ad3bcb88873cae884772.png" src="../../../_images/692373d05f71e3271ed7a416dea73251cc252887c0d1ad3bcb88873cae884772.png" style="width: 384px; height: 384px;" />
+</a>
+</div>
+</div>
+</section>
+<section id="comparison-of-invasion-and-drainage">
+<h3>Comparison of Invasion and Drainage<a class="headerlink" href="#comparison-of-invasion-and-drainage" title="Link to this heading">¶</a></h3>
+<p>The above plot shows the fluctuating capillary pressure due the non-wetting fluid squeezing through throat constrictions then flooding into pore bodies repeatedly.  In fact the <em>envelop</em> of peak pressures in the above curve defines the capillary pressure curve that would be obtained using pressure-based drainage.  This can be illustrated by overlaying the drainage curve:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">drn</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">drainage</span><span class="p">(</span>
+    <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+    <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
+    <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+    <span class="n">steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">Pc2</span><span class="p">,</span> <span class="n">Snwp2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span>
+    <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+    <span class="n">pc</span><span class="o">=</span><span class="n">drn</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Pc2</span><span class="p">),</span> <span class="n">Snwp2</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">display</span><span class="p">(</span><span class="n">fig</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../../../_images/474e818fede0a33a2a843046fad028d0a3b989494f3c8afb150a28f77337ced7.png"><img alt="../../../_images/474e818fede0a33a2a843046fad028d0a3b989494f3c8afb150a28f77337ced7.png" src="../../../_images/474e818fede0a33a2a843046fad028d0a3b989494f3c8afb150a28f77337ced7.png" style="width: 384px; height: 384px;" />
+</a>
+</div>
+</div>
+<p>When plotted together it becomes apparent that the drainage curve is a subset of the invasion curve, and that the pressure fluctuations in the invasion curve represent the filling of the voids made accessible at each new peak pressure.</p>
+</section>
+<section id="incorporating-trapping-in-invasion">
+<h3>Incorporating Trapping in Invasion<a class="headerlink" href="#incorporating-trapping-in-invasion" title="Link to this heading">¶</a></h3>
+<p>As with the drainage and imbibition algorithms discussed in Parts 1 and 2 of this series, the effect of trapped wetting phase can be incorporated by supplying a mask of <code class="docutils literal notranslate"><span class="pre">outlets</span></code>.  This will automatically apply trapping to the displacement maps.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">outlets</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">faces</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">outlet</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">inv2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">invasion</span><span class="p">(</span>
+    <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+    <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
+    <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+    <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
+    <span class="n">return_pressures</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">min_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">inv2</span><span class="o">.</span><span class="n">im_seq</span><span class="o">/</span><span class="n">im</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">inv2</span><span class="o">.</span><span class="n">im_snwp</span><span class="o">/</span><span class="n">im</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">inv2</span><span class="o">.</span><span class="n">im_pc</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Sequence Map&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Saturation Map&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Capillary Pressure Map&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../../../_images/96549abe404a9c9859a7ac1bb189287b7c6a88942766fe89e3fb35098c75b3fb.png"><img alt="../../../_images/96549abe404a9c9859a7ac1bb189287b7c6a88942766fe89e3fb35098c75b3fb.png" src="../../../_images/96549abe404a9c9859a7ac1bb189287b7c6a88942766fe89e3fb35098c75b3fb.png" style="width: 871px; height: 289px;" />
+</a>
+</div>
+</div>
+<p>Trapped wetting phase is marked with a <code class="docutils literal notranslate"><span class="pre">-1</span></code> in both the sequence and the saturation maps, and and <code class="docutils literal notranslate"><span class="pre">+inf</span></code> in the capillary pressure map.</p>
+</section>
+<section id="plotting-capillary-pressure-curves-with-trapping">
+<h3>Plotting Capillary Pressure Curves with Trapping<a class="headerlink" href="#plotting-capillary-pressure-curves-with-trapping" title="Link to this heading">¶</a></h3>
+<p>The non-wetting phase saturation does not reach <code class="docutils literal notranslate"><span class="pre">1.0</span></code> when trapping occurs.  Interestingly, quite a lot more trapping occurs when in an <code class="docutils literal notranslate"><span class="pre">invasion</span></code> simulation that during an otherwise equivalent <code class="docutils literal notranslate"><span class="pre">drainage</span></code> simulation.  This is because <code class="docutils literal notranslate"><span class="pre">invasion</span></code> captures all of the individual menisci movements that occur and hence there are more opportunities for trapping.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Pc3</span><span class="p">,</span> <span class="n">Snwp3</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span>
+    <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+    <span class="n">pc</span><span class="o">=</span><span class="n">inv2</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span>
+    <span class="n">seq</span><span class="o">=</span><span class="n">inv2</span><span class="o">.</span><span class="n">im_seq</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Pc3</span><span class="p">),</span> <span class="n">Snwp3</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;invasion&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;log(Capillary Pressure [Pa])&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Non-Wetting Phase Saturation&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">]);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../../../_images/684d0141446615215b6f4a006a7327fffaa707314d08260c11aa2e0f419978b3.png"><img alt="../../../_images/684d0141446615215b6f4a006a7327fffaa707314d08260c11aa2e0f419978b3.png" src="../../../_images/684d0141446615215b6f4a006a7327fffaa707314d08260c11aa2e0f419978b3.png" style="width: 384px; height: 384px;" />
+</a>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">drn2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">drainage</span><span class="p">(</span>
+    <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+    <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
+    <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+    <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
+    <span class="n">steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">Pc4</span><span class="p">,</span> <span class="n">Snwp4</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span>
+    <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+    <span class="n">pc</span><span class="o">=</span><span class="n">drn2</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Pc4</span><span class="p">),</span> <span class="n">Snwp4</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">display</span><span class="p">(</span><span class="n">fig</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../../../_images/8c6ac77c13299dfbaa59dd94a09132daa46f33eb2b21b9f92e003deeb844b423.png"><img alt="../../../_images/8c6ac77c13299dfbaa59dd94a09132daa46f33eb2b21b9f92e003deeb844b423.png" src="../../../_images/8c6ac77c13299dfbaa59dd94a09132daa46f33eb2b21b9f92e003deeb844b423.png" style="width: 384px; height: 384px;" />
+</a>
+</div>
+</div>
+</section>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">invasion</span></code> function simulates volume-controlled injection of non-wetting phase into an image. In can incorporate trapping but does net yet support inclusion of residual non-wetting phase (though this is possible and is planned).</p>
+<p>The following table illustrates how the trapped phase is indicated in the various displacement maps:</p>
+<p>+——————-+————–+—————–+————————————+
+| Displacement Map  | Trapped NWP  | Residual WP     | Code to Generate Swp               |
++——————-+————–+—————–+————————————+
+| Pc Map            | <span class="math notranslate nohighlight">\(-inf\)</span>       | N/A             | <code class="docutils literal notranslate"><span class="pre">(im_pc</span> <span class="pre">&gt;</span> <span class="pre">p)</span> <span class="pre">*</span> <span class="pre">im</span></code>                 |
++——————-+————–+—————–+————————————+
+| Sequence Map      | -1           | N/A             | <code class="docutils literal notranslate"><span class="pre">(im_seq</span> <span class="pre">&lt;</span> <span class="pre">N)</span> <span class="pre">*</span> <span class="pre">(im_seq</span> <span class="pre">&gt;=</span> <span class="pre">0)</span></code>     |
++——————-+————–+—————–+————————————+
+| Saturation Map    | -1           | N/A             | <code class="docutils literal notranslate"><span class="pre">(im_snwp</span> <span class="pre">&gt;</span> <span class="pre">s)</span></code>                    |
++——————-+————–+—————–+————————————+</p>
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2025, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.0.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>
