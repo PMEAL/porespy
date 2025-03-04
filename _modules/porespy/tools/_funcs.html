@@ -219,6 +219,7 @@
     <span class="s1">&#39;find_bbox&#39;</span><span class="p">,</span>
     <span class="s1">&#39;get_border&#39;</span><span class="p">,</span>
     <span class="s1">&#39;get_planes&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;im_to_slabs&#39;</span><span class="p">,</span>
     <span class="s1">&#39;insert_cylinder&#39;</span><span class="p">,</span>
     <span class="s1">&#39;insert_sphere&#39;</span><span class="p">,</span>
     <span class="s1">&#39;in_hull&#39;</span><span class="p">,</span>
@@ -239,6 +240,67 @@
     <span class="s1">&#39;jit_extend_slice&#39;</span><span class="p">,</span>
     <span class="s1">&#39;pad&#39;</span><span class="p">,</span>
 <span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">im_to_slabs</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">span</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;tile&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a list of slice objects which can be used to obtain slabs of an image</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The image for which the slices are desired</span>
+<span class="sd">    axis : int (Default = 0)</span>
+<span class="sd">        The axis along which the image will be sliced into slabs</span>
+<span class="sd">    span : int (Default = 50)</span>
+<span class="sd">        The thickness of the slabs</span>
+<span class="sd">    step : int (Default = None)</span>
+<span class="sd">        The spacing between the midpoints of the slabs. The default is `None` which</span>
+<span class="sd">        sets `step=1` voxel if `mode=&#39;slide&#39;` and `step=span` if `mode=&#39;tile&#39;`.</span>
+<span class="sd">        This can be used to create overlaps between slabs when `mode=&#39;tile&#39;` by</span>
+<span class="sd">        setting `step&lt;span`, or to reduce the number of slabs created when</span>
+<span class="sd">        `mode=&#39;slide&#39;` by setting `step&gt;1`.</span>
+<span class="sd">    mode : str (Default = &#39;tile&#39;)</span>
+<span class="sd">        Determines how the images is sliced into slabs. Options are:</span>
+
+<span class="sd">        =========== ================================================================</span>
+<span class="sd">        `mode`      Description</span>
+<span class="sd">        =========== ================================================================</span>
+<span class="sd">        &#39;tile&#39;      The returned slice objects produce discrete non-overlapping</span>
+<span class="sd">                    slabs with a thickness of `span`.</span>
+<span class="sd">        &#39;slide&#39;     The returned slice objects produce overlapping slabs</span>
+<span class="sd">                    representing a moving window of size `span` and the start of</span>
+<span class="sd">                    each slab is offsets from the start of the previous one by</span>
+<span class="sd">                    `step`.</span>
+<span class="sd">        =========== ================================================================</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    slices : list of tuples contains `slice` objects</span>
+<span class="sd">        The retuned list contains `tuples` for each slab, with each `tuple`</span>
+<span class="sd">        containing `ndim` slice objects. These can be used to obtain slabs of</span>
+<span class="sd">        `im` using `slab_i = im[slices[i]]`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    When `span=step` the result is identical for `mode` of `&#39;tile&#39;` or `&#39;slide&#39;`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;slide&#39;</span><span class="p">,</span> <span class="s1">&#39;tile&#39;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized mode </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;slide&#39;</span> <span class="k">else</span> <span class="n">span</span>
+    <span class="k">if</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Step size must be positive&quot;</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">)]</span>
+    <span class="n">slices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]),</span> <span class="n">step</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span><span class="o">+</span><span class="n">span</span> <span class="o">&gt;</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]:</span>
+            <span class="n">s</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">break</span>
+        <span class="n">s</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="n">span</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">slices</span>
 
 
 <div class="viewcode-block" id="unpad">
@@ -1817,7 +1879,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.3.<br>
 </p>
   </div>
   

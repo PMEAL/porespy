@@ -40,60 +40,59 @@ model.load_weights(path_weights)
 ------------------
 
 ----- stderr -----
-2025-02-19 19:16:25.596347: E external/local_xla/xla/stream_executor/cuda/cuda_driver.cc:152] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: UNKNOWN ERROR (303)
+2025-03-04 18:44:25.090766: E external/local_xla/xla/stream_executor/cuda/cuda_driver.cc:152] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: UNKNOWN ERROR (303)
 ------------------
 
-[0;31m---------------------------------------------------------------------------[0m
-[0;31mValueError[0m                                Traceback (most recent call last)
-Cell [0;32mIn[3], line 18[0m
-[1;32m     16[0m path_weights [38;5;241m=[39m os[38;5;241m.[39mpath[38;5;241m.[39mjoin(path, [38;5;124m'[39m[38;5;124mmodel_weights.h5[39m[38;5;124m'[39m)
-[1;32m     17[0m g_train [38;5;241m=[39m h5py[38;5;241m.[39mFile(path_train, [38;5;124m'[39m[38;5;124mr[39m[38;5;124m'[39m)[[38;5;124m'[39m[38;5;124mg_train[39m[38;5;124m'[39m][()]
-[0;32m---> 18[0m model [38;5;241m=[39m [43mps[49m[38;5;241;43m.[39;49m[43mnetworks[49m[38;5;241;43m.[39;49m[43mcreate_model[49m[43m([49m[43m)[49m
-[1;32m     19[0m model[38;5;241m.[39mload_weights(path_weights)
+[31m---------------------------------------------------------------------------[39m
+[31mValueError[39m                                Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[3][39m[32m, line 18[39m
+[32m     16[39m path_weights = os.path.join(path, [33m'[39m[33mmodel_weights.h5[39m[33m'[39m)
+[32m     17[39m g_train = h5py.File(path_train, [33m'[39m[33mr[39m[33m'[39m)[[33m'[39m[33mg_train[39m[33m'[39m][()]
+[32m---> [39m[32m18[39m model = [43mps[49m[43m.[49m[43mnetworks[49m[43m.[49m[43mcreate_model[49m[43m([49m[43m)[49m
+[32m     19[39m model.load_weights(path_weights)
 
-File [0;32m~/work/porespy/porespy/src/porespy/networks/_size_factors.py:616[0m, in [0;36mcreate_model[0;34m()[0m
-[1;32m    614[0m [38;5;28;01mfrom[39;00m[38;5;250m [39m[38;5;21;01mtensorflow[39;00m[38;5;21;01m.[39;00m[38;5;21;01mkeras[39;00m[38;5;21;01m.[39;00m[38;5;21;01moptimizers[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m Adam
-[1;32m    615[0m model [38;5;241m=[39m _resnet3d()
-[0;32m--> 616[0m model[38;5;241m.[39mcompile(loss[38;5;241m=[39m[38;5;124m'[39m[38;5;124mmse[39m[38;5;124m'[39m, optimizer[38;5;241m=[39m[43mAdam[49m[43m([49m[43mlr[49m[38;5;241;43m=[39;49m[38;5;241;43m1e-4[39;49m[43m)[49m, metrics[38;5;241m=[39m[[38;5;124m'[39m[38;5;124mmse[39m[38;5;124m'[39m])
-[1;32m    617[0m [38;5;28;01mreturn[39;00m model
+[36mFile [39m[32m~/work/porespy/porespy/src/porespy/networks/_size_factors.py:616[39m, in [36mcreate_model[39m[34m()[39m
+[32m    614[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mtensorflow[39;00m[34;01m.[39;00m[34;01mkeras[39;00m[34;01m.[39;00m[34;01moptimizers[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m Adam
+[32m    615[39m model = _resnet3d()
+[32m--> [39m[32m616[39m model.compile(loss=[33m'[39m[33mmse[39m[33m'[39m, optimizer=[43mAdam[49m[43m([49m[43mlr[49m[43m=[49m[32;43m1e-4[39;49m[43m)[49m, metrics=[[33m'[39m[33mmse[39m[33m'[39m])
+[32m    617[39m [38;5;28;01mreturn[39;00m model
 
-File [0;32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/keras/src/optimizers/adam.py:62[0m, in [0;36mAdam.__init__[0;34m(self, learning_rate, beta_1, beta_2, epsilon, amsgrad, weight_decay, clipnorm, clipvalue, global_clipnorm, use_ema, ema_momentum, ema_overwrite_frequency, loss_scale_factor, gradient_accumulation_steps, name, **kwargs)[0m
-[1;32m     43[0m [38;5;28;01mdef[39;00m[38;5;250m [39m[38;5;21m__init__[39m(
-[1;32m     44[0m     [38;5;28mself[39m,
-[1;32m     45[0m     learning_rate[38;5;241m=[39m[38;5;241m0.001[39m,
-[0;32m   (...)[0m
-[1;32m     60[0m     [38;5;241m*[39m[38;5;241m*[39mkwargs,
-[1;32m     61[0m ):
-[0;32m---> 62[0m     [38;5;28;43msuper[39;49m[43m([49m[43m)[49m[38;5;241;43m.[39;49m[38;5;21;43m__init__[39;49m[43m([49m
-[1;32m     63[0m [43m        [49m[43mlearning_rate[49m[38;5;241;43m=[39;49m[43mlearning_rate[49m[43m,[49m
-[1;32m     64[0m [43m        [49m[43mname[49m[38;5;241;43m=[39;49m[43mname[49m[43m,[49m
-[1;32m     65[0m [43m        [49m[43mweight_decay[49m[38;5;241;43m=[39;49m[43mweight_decay[49m[43m,[49m
-[1;32m     66[0m [43m        [49m[43mclipnorm[49m[38;5;241;43m=[39;49m[43mclipnorm[49m[43m,[49m
-[1;32m     67[0m [43m        [49m[43mclipvalue[49m[38;5;241;43m=[39;49m[43mclipvalue[49m[43m,[49m
-[1;32m     68[0m [43m        [49m[43mglobal_clipnorm[49m[38;5;241;43m=[39;49m[43mglobal_clipnorm[49m[43m,[49m
-[1;32m     69[0m [43m        [49m[43muse_ema[49m[38;5;241;43m=[39;49m[43muse_ema[49m[43m,[49m
-[1;32m     70[0m [43m        [49m[43mema_momentum[49m[38;5;241;43m=[39;49m[43mema_momentum[49m[43m,[49m
-[1;32m     71[0m [43m        [49m[43mema_overwrite_frequency[49m[38;5;241;43m=[39;49m[43mema_overwrite_frequency[49m[43m,[49m
-[1;32m     72[0m [43m        [49m[43mloss_scale_factor[49m[38;5;241;43m=[39;49m[43mloss_scale_factor[49m[43m,[49m
-[1;32m     73[0m [43m        [49m[43mgradient_accumulation_steps[49m[38;5;241;43m=[39;49m[43mgradient_accumulation_steps[49m[43m,[49m
-[1;32m     74[0m [43m        [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43mkwargs[49m[43m,[49m
-[1;32m     75[0m [43m    [49m[43m)[49m
-[1;32m     76[0m     [38;5;28mself[39m[38;5;241m.[39mbeta_1 [38;5;241m=[39m beta_1
-[1;32m     77[0m     [38;5;28mself[39m[38;5;241m.[39mbeta_2 [38;5;241m=[39m beta_2
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/keras/src/optimizers/adam.py:62[39m, in [36mAdam.__init__[39m[34m(self, learning_rate, beta_1, beta_2, epsilon, amsgrad, weight_decay, clipnorm, clipvalue, global_clipnorm, use_ema, ema_momentum, ema_overwrite_frequency, loss_scale_factor, gradient_accumulation_steps, name, **kwargs)[39m
+[32m     43[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34m__init__[39m(
+[32m     44[39m     [38;5;28mself[39m,
+[32m     45[39m     learning_rate=[32m0.001[39m,
+[32m   (...)[39m[32m     60[39m     **kwargs,
+[32m     61[39m ):
+[32m---> [39m[32m62[39m     [38;5;28;43msuper[39;49m[43m([49m[43m)[49m[43m.[49m[34;43m__init__[39;49m[43m([49m
+[32m     63[39m [43m        [49m[43mlearning_rate[49m[43m=[49m[43mlearning_rate[49m[43m,[49m
+[32m     64[39m [43m        [49m[43mname[49m[43m=[49m[43mname[49m[43m,[49m
+[32m     65[39m [43m        [49m[43mweight_decay[49m[43m=[49m[43mweight_decay[49m[43m,[49m
+[32m     66[39m [43m        [49m[43mclipnorm[49m[43m=[49m[43mclipnorm[49m[43m,[49m
+[32m     67[39m [43m        [49m[43mclipvalue[49m[43m=[49m[43mclipvalue[49m[43m,[49m
+[32m     68[39m [43m        [49m[43mglobal_clipnorm[49m[43m=[49m[43mglobal_clipnorm[49m[43m,[49m
+[32m     69[39m [43m        [49m[43muse_ema[49m[43m=[49m[43muse_ema[49m[43m,[49m
+[32m     70[39m [43m        [49m[43mema_momentum[49m[43m=[49m[43mema_momentum[49m[43m,[49m
+[32m     71[39m [43m        [49m[43mema_overwrite_frequency[49m[43m=[49m[43mema_overwrite_frequency[49m[43m,[49m
+[32m     72[39m [43m        [49m[43mloss_scale_factor[49m[43m=[49m[43mloss_scale_factor[49m[43m,[49m
+[32m     73[39m [43m        [49m[43mgradient_accumulation_steps[49m[43m=[49m[43mgradient_accumulation_steps[49m[43m,[49m
+[32m     74[39m [43m        [49m[43m*[49m[43m*[49m[43mkwargs[49m[43m,[49m
+[32m     75[39m [43m    [49m[43m)[49m
+[32m     76[39m     [38;5;28mself[39m.beta_1 = beta_1
+[32m     77[39m     [38;5;28mself[39m.beta_2 = beta_2
 
-File [0;32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/keras/src/backend/tensorflow/optimizer.py:21[0m, in [0;36mTFOptimizer.__init__[0;34m(self, *args, **kwargs)[0m
-[1;32m     20[0m [38;5;28;01mdef[39;00m[38;5;250m [39m[38;5;21m__init__[39m([38;5;28mself[39m, [38;5;241m*[39margs, [38;5;241m*[39m[38;5;241m*[39mkwargs):
-[0;32m---> 21[0m     [38;5;28;43msuper[39;49m[43m([49m[43m)[49m[38;5;241;43m.[39;49m[38;5;21;43m__init__[39;49m[43m([49m[38;5;241;43m*[39;49m[43margs[49m[43m,[49m[43m [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43mkwargs[49m[43m)[49m
-[1;32m     22[0m     [38;5;28mself[39m[38;5;241m.[39m_distribution_strategy [38;5;241m=[39m tf[38;5;241m.[39mdistribute[38;5;241m.[39mget_strategy()
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/keras/src/backend/tensorflow/optimizer.py:21[39m, in [36mTFOptimizer.__init__[39m[34m(self, *args, **kwargs)[39m
+[32m     20[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34m__init__[39m([38;5;28mself[39m, *args, **kwargs):
+[32m---> [39m[32m21[39m     [38;5;28;43msuper[39;49m[43m([49m[43m)[49m[43m.[49m[34;43m__init__[39;49m[43m([49m[43m*[49m[43margs[49m[43m,[49m[43m [49m[43m*[49m[43m*[49m[43mkwargs[49m[43m)[49m
+[32m     22[39m     [38;5;28mself[39m._distribution_strategy = tf.distribute.get_strategy()
 
-File [0;32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/keras/src/optimizers/base_optimizer.py:90[0m, in [0;36mBaseOptimizer.__init__[0;34m(self, learning_rate, weight_decay, clipnorm, clipvalue, global_clipnorm, use_ema, ema_momentum, ema_overwrite_frequency, loss_scale_factor, gradient_accumulation_steps, name, **kwargs)[0m
-[1;32m     86[0m     warnings[38;5;241m.[39mwarn(
-[1;32m     87[0m         [38;5;124m"[39m[38;5;124mArgument `decay` is no longer supported and will be ignored.[39m[38;5;124m"[39m
-[1;32m     88[0m     )
-[1;32m     89[0m [38;5;28;01mif[39;00m kwargs:
-[0;32m---> 90[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([38;5;124mf[39m[38;5;124m"[39m[38;5;124mArgument(s) not recognized: [39m[38;5;132;01m{[39;00mkwargs[38;5;132;01m}[39;00m[38;5;124m"[39m)
-[1;32m     92[0m [38;5;28;01mif[39;00m name [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
-[1;32m     93[0m     name [38;5;241m=[39m auto_name([38;5;28mself[39m[38;5;241m.[39m[38;5;18m__class__[39m[38;5;241m.[39m[38;5;18m__name__[39m)
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/keras/src/optimizers/base_optimizer.py:90[39m, in [36mBaseOptimizer.__init__[39m[34m(self, learning_rate, weight_decay, clipnorm, clipvalue, global_clipnorm, use_ema, ema_momentum, ema_overwrite_frequency, loss_scale_factor, gradient_accumulation_steps, name, **kwargs)[39m
+[32m     86[39m     warnings.warn(
+[32m     87[39m         [33m"[39m[33mArgument `decay` is no longer supported and will be ignored.[39m[33m"[39m
+[32m     88[39m     )
+[32m     89[39m [38;5;28;01mif[39;00m kwargs:
+[32m---> [39m[32m90[39m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([33mf[39m[33m"[39m[33mArgument(s) not recognized: [39m[38;5;132;01m{[39;00mkwargs[38;5;132;01m}[39;00m[33m"[39m)
+[32m     92[39m [38;5;28;01mif[39;00m name [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
+[32m     93[39m     name = auto_name([38;5;28mself[39m.[34m__class__[39m.[34m__name__[39m)
 
-[0;31mValueError[0m: Argument(s) not recognized: {'lr': 0.0001}
+[31mValueError[39m: Argument(s) not recognized: {'lr': 0.0001}
 

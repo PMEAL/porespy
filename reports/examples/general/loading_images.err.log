@@ -23,24 +23,24 @@ ax.imshow(seq[0]);
 ------------------
 
 
-[0;31m---------------------------------------------------------------------------[0m
-[0;31mIndexError[0m                                Traceback (most recent call last)
-Cell [0;32mIn[4], line 2[0m
-[1;32m      1[0m fig, ax [38;5;241m=[39m subplots(figsize[38;5;241m=[39m[[38;5;241m5[39m, [38;5;241m5[39m])
-[0;32m----> 2[0m ax[38;5;241m.[39mimshow([43mseq[49m[43m[[49m[38;5;241;43m0[39;49m[43m][49m);
+[31m---------------------------------------------------------------------------[39m
+[31mIndexError[39m                                Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[4][39m[32m, line 2[39m
+[32m      1[39m fig, ax = subplots(figsize=[[32m5[39m, [32m5[39m])
+[32m----> [39m[32m2[39m ax.imshow([43mseq[49m[43m[[49m[32;43m0[39;49m[43m][49m);
 
-File [0;32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/skimage/io/collection.py:306[0m, in [0;36mImageCollection.__getitem__[0;34m(self, n)[0m
-[1;32m    303[0m     [38;5;28;01mraise[39;00m [38;5;167;01mTypeError[39;00m([38;5;124m'[39m[38;5;124mslicing must be with an int or slice object[39m[38;5;124m'[39m)
-[1;32m    305[0m [38;5;28;01mif[39;00m [38;5;28misinstance[39m(n, [38;5;28mint[39m):
-[0;32m--> 306[0m     n [38;5;241m=[39m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_check_imgnum[49m[43m([49m[43mn[49m[43m)[49m
-[1;32m    307[0m     idx [38;5;241m=[39m n [38;5;241m%[39m [38;5;28mlen[39m([38;5;28mself[39m[38;5;241m.[39mdata)
-[1;32m    309[0m     [38;5;28;01mif[39;00m ([38;5;28mself[39m[38;5;241m.[39mconserve_memory [38;5;129;01mand[39;00m n [38;5;241m!=[39m [38;5;28mself[39m[38;5;241m.[39m_cached) [38;5;129;01mor[39;00m ([38;5;28mself[39m[38;5;241m.[39mdata[idx] [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m):
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/skimage/io/collection.py:306[39m, in [36mImageCollection.__getitem__[39m[34m(self, n)[39m
+[32m    303[39m     [38;5;28;01mraise[39;00m [38;5;167;01mTypeError[39;00m([33m'[39m[33mslicing must be with an int or slice object[39m[33m'[39m)
+[32m    305[39m [38;5;28;01mif[39;00m [38;5;28misinstance[39m(n, [38;5;28mint[39m):
+[32m--> [39m[32m306[39m     n = [38;5;28;43mself[39;49m[43m.[49m[43m_check_imgnum[49m[43m([49m[43mn[49m[43m)[49m
+[32m    307[39m     idx = n % [38;5;28mlen[39m([38;5;28mself[39m.data)
+[32m    309[39m     [38;5;28;01mif[39;00m ([38;5;28mself[39m.conserve_memory [38;5;129;01mand[39;00m n != [38;5;28mself[39m._cached) [38;5;129;01mor[39;00m ([38;5;28mself[39m.data[idx] [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m):
 
-File [0;32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/skimage/io/collection.py:361[0m, in [0;36mImageCollection._check_imgnum[0;34m(self, n)[0m
-[1;32m    359[0m     n [38;5;241m=[39m n [38;5;241m%[39m num
-[1;32m    360[0m [38;5;28;01melse[39;00m:
-[0;32m--> 361[0m     [38;5;28;01mraise[39;00m [38;5;167;01mIndexError[39;00m([38;5;124mf[39m[38;5;124m"[39m[38;5;124mThere are only [39m[38;5;132;01m{[39;00mnum[38;5;132;01m}[39;00m[38;5;124m images in the collection[39m[38;5;124m"[39m)
-[1;32m    362[0m [38;5;28;01mreturn[39;00m n
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/skimage/io/collection.py:361[39m, in [36mImageCollection._check_imgnum[39m[34m(self, n)[39m
+[32m    359[39m     n = n % num
+[32m    360[39m [38;5;28;01melse[39;00m:
+[32m--> [39m[32m361[39m     [38;5;28;01mraise[39;00m [38;5;167;01mIndexError[39;00m([33mf[39m[33m"[39m[33mThere are only [39m[38;5;132;01m{[39;00mnum[38;5;132;01m}[39;00m[33m images in the collection[39m[33m"[39m)
+[32m    362[39m [38;5;28;01mreturn[39;00m n
 
-[0;31mIndexError[0m: There are only 0 images in the collection
+[31mIndexError[39m: There are only 0 images in the collection
 

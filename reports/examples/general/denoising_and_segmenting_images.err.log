@@ -27,42 +27,42 @@ ax[2].imshow(im[0, ...].T > 0.6);
 ------------------
 
 
-[0;31m---------------------------------------------------------------------------[0m
-[0;31mFileNotFoundError[0m                         Traceback (most recent call last)
-Cell [0;32mIn[8], line 1[0m
-[0;32m----> 1[0m im [38;5;241m=[39m [43mimageio[49m[38;5;241;43m.[39;49m[43mvolread[49m[43m([49m[38;5;124;43m'[39;49m[38;5;124;43m../../docs/_static/images/Sample 1.tif[39;49m[38;5;124;43m'[39;49m[43m)[49m
-[1;32m      2[0m im [38;5;241m=[39m (im [38;5;241m-[39m im[38;5;241m.[39mmin())[38;5;241m/[39m(im[38;5;241m.[39mmax() [38;5;241m-[39m im[38;5;241m.[39mmin())
-[1;32m      3[0m fig, ax [38;5;241m=[39m subplots([38;5;241m1[39m, [38;5;241m3[39m, figsize[38;5;241m=[39m[[38;5;241m15[39m, [38;5;241m5[39m])
+[31m---------------------------------------------------------------------------[39m
+[31mFileNotFoundError[39m                         Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[8][39m[32m, line 1[39m
+[32m----> [39m[32m1[39m im = [43mimageio[49m[43m.[49m[43mvolread[49m[43m([49m[33;43m'[39;49m[33;43m../../docs/_static/images/Sample 1.tif[39;49m[33;43m'[39;49m[43m)[49m
+[32m      2[39m im = (im - im.min())/(im.max() - im.min())
+[32m      3[39m fig, ax = subplots([32m1[39m, [32m3[39m, figsize=[[32m15[39m, [32m5[39m])
 
-File [0;32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/imageio/v2.py:522[0m, in [0;36mvolread[0;34m(uri, format, **kwargs)[0m
-[1;32m    520[0m imopen_args [38;5;241m=[39m decypher_format_arg([38;5;28mformat[39m)
-[1;32m    521[0m imopen_args[[38;5;124m"[39m[38;5;124mlegacy_mode[39m[38;5;124m"[39m] [38;5;241m=[39m [38;5;28;01mTrue[39;00m
-[0;32m--> 522[0m [38;5;28;01mwith[39;00m [43mimopen[49m[43m([49m[43muri[49m[43m,[49m[43m [49m[38;5;124;43m"[39;49m[38;5;124;43mrv[39;49m[38;5;124;43m"[39;49m[43m,[49m[43m [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43mimopen_args[49m[43m)[49m [38;5;28;01mas[39;00m file:
-[1;32m    523[0m     [38;5;28;01mreturn[39;00m file[38;5;241m.[39mread(index[38;5;241m=[39m[38;5;241m0[39m, [38;5;241m*[39m[38;5;241m*[39mkwargs)
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/imageio/v2.py:522[39m, in [36mvolread[39m[34m(uri, format, **kwargs)[39m
+[32m    520[39m imopen_args = decypher_format_arg([38;5;28mformat[39m)
+[32m    521[39m imopen_args[[33m"[39m[33mlegacy_mode[39m[33m"[39m] = [38;5;28;01mTrue[39;00m
+[32m--> [39m[32m522[39m [38;5;28;01mwith[39;00m [43mimopen[49m[43m([49m[43muri[49m[43m,[49m[43m [49m[33;43m"[39;49m[33;43mrv[39;49m[33;43m"[39;49m[43m,[49m[43m [49m[43m*[49m[43m*[49m[43mimopen_args[49m[43m)[49m [38;5;28;01mas[39;00m file:
+[32m    523[39m     [38;5;28;01mreturn[39;00m file.read(index=[32m0[39m, **kwargs)
 
-File [0;32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/imageio/core/imopen.py:113[0m, in [0;36mimopen[0;34m(uri, io_mode, plugin, extension, format_hint, legacy_mode, **kwargs)[0m
-[1;32m    111[0m     request[38;5;241m.[39mformat_hint [38;5;241m=[39m format_hint
-[1;32m    112[0m [38;5;28;01melse[39;00m:
-[0;32m--> 113[0m     request [38;5;241m=[39m [43mRequest[49m[43m([49m[43muri[49m[43m,[49m[43m [49m[43mio_mode[49m[43m,[49m[43m [49m[43mformat_hint[49m[38;5;241;43m=[39;49m[43mformat_hint[49m[43m,[49m[43m [49m[43mextension[49m[38;5;241;43m=[39;49m[43mextension[49m[43m)[49m
-[1;32m    115[0m source [38;5;241m=[39m [38;5;124m"[39m[38;5;124m<bytes>[39m[38;5;124m"[39m [38;5;28;01mif[39;00m [38;5;28misinstance[39m(uri, [38;5;28mbytes[39m) [38;5;28;01melse[39;00m uri
-[1;32m    117[0m [38;5;66;03m# fast-path based on plugin[39;00m
-[1;32m    118[0m [38;5;66;03m# (except in legacy mode)[39;00m
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/imageio/core/imopen.py:113[39m, in [36mimopen[39m[34m(uri, io_mode, plugin, extension, format_hint, legacy_mode, **kwargs)[39m
+[32m    111[39m     request.format_hint = format_hint
+[32m    112[39m [38;5;28;01melse[39;00m:
+[32m--> [39m[32m113[39m     request = [43mRequest[49m[43m([49m[43muri[49m[43m,[49m[43m [49m[43mio_mode[49m[43m,[49m[43m [49m[43mformat_hint[49m[43m=[49m[43mformat_hint[49m[43m,[49m[43m [49m[43mextension[49m[43m=[49m[43mextension[49m[43m)[49m
+[32m    115[39m source = [33m"[39m[33m<bytes>[39m[33m"[39m [38;5;28;01mif[39;00m [38;5;28misinstance[39m(uri, [38;5;28mbytes[39m) [38;5;28;01melse[39;00m uri
+[32m    117[39m [38;5;66;03m# fast-path based on plugin[39;00m
+[32m    118[39m [38;5;66;03m# (except in legacy mode)[39;00m
 
-File [0;32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/imageio/core/request.py:249[0m, in [0;36mRequest.__init__[0;34m(self, uri, mode, extension, format_hint, **kwargs)[0m
-[1;32m    246[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([38;5;124mf[39m[38;5;124m"[39m[38;5;124mInvalid Request.Mode: [39m[38;5;132;01m{[39;00mmode[38;5;132;01m}[39;00m[38;5;124m"[39m)
-[1;32m    248[0m [38;5;66;03m# Parse what was given[39;00m
-[0;32m--> 249[0m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_parse_uri[49m[43m([49m[43muri[49m[43m)[49m
-[1;32m    251[0m [38;5;66;03m# Set extension[39;00m
-[1;32m    252[0m [38;5;28;01mif[39;00m extension [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/imageio/core/request.py:249[39m, in [36mRequest.__init__[39m[34m(self, uri, mode, extension, format_hint, **kwargs)[39m
+[32m    246[39m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([33mf[39m[33m"[39m[33mInvalid Request.Mode: [39m[38;5;132;01m{[39;00mmode[38;5;132;01m}[39;00m[33m"[39m)
+[32m    248[39m [38;5;66;03m# Parse what was given[39;00m
+[32m--> [39m[32m249[39m [38;5;28;43mself[39;49m[43m.[49m[43m_parse_uri[49m[43m([49m[43muri[49m[43m)[49m
+[32m    251[39m [38;5;66;03m# Set extension[39;00m
+[32m    252[39m [38;5;28;01mif[39;00m extension [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
 
-File [0;32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/imageio/core/request.py:409[0m, in [0;36mRequest._parse_uri[0;34m(self, uri)[0m
-[1;32m    406[0m [38;5;28;01mif[39;00m is_read_request:
-[1;32m    407[0m     [38;5;66;03m# Reading: check that the file exists (but is allowed a dir)[39;00m
-[1;32m    408[0m     [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m os[38;5;241m.[39mpath[38;5;241m.[39mexists(fn):
-[0;32m--> 409[0m         [38;5;28;01mraise[39;00m [38;5;167;01mFileNotFoundError[39;00m([38;5;124m"[39m[38;5;124mNo such file: [39m[38;5;124m'[39m[38;5;132;01m%s[39;00m[38;5;124m'[39m[38;5;124m"[39m [38;5;241m%[39m fn)
-[1;32m    410[0m [38;5;28;01melse[39;00m:
-[1;32m    411[0m     [38;5;66;03m# Writing: check that the directory to write to does exist[39;00m
-[1;32m    412[0m     dn [38;5;241m=[39m os[38;5;241m.[39mpath[38;5;241m.[39mdirname(fn)
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/imageio/core/request.py:409[39m, in [36mRequest._parse_uri[39m[34m(self, uri)[39m
+[32m    406[39m [38;5;28;01mif[39;00m is_read_request:
+[32m    407[39m     [38;5;66;03m# Reading: check that the file exists (but is allowed a dir)[39;00m
+[32m    408[39m     [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m os.path.exists(fn):
+[32m--> [39m[32m409[39m         [38;5;28;01mraise[39;00m [38;5;167;01mFileNotFoundError[39;00m([33m"[39m[33mNo such file: [39m[33m'[39m[38;5;132;01m%s[39;00m[33m'[39m[33m"[39m % fn)
+[32m    410[39m [38;5;28;01melse[39;00m:
+[32m    411[39m     [38;5;66;03m# Writing: check that the directory to write to does exist[39;00m
+[32m    412[39m     dn = os.path.dirname(fn)
 
-[0;31mFileNotFoundError[0m: No such file: '/home/runner/work/porespy/porespy/docs/docs/_static/images/Sample 1.tif'
+[31mFileNotFoundError[39m: No such file: '/home/runner/work/porespy/porespy/docs/docs/_static/images/Sample 1.tif'
 

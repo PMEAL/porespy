@@ -1001,16 +1001,23 @@
 <h1>porosity<a class="headerlink" href="#porosity" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.metrics.porosity">
-<span class="sig-name descname"><span class="pre">porosity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/metrics/_funcs.html#porosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.porosity" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">porosity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/metrics/_funcs.html#porosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.porosity" title="Link to this definition">¶</a></dt>
 <dd><p>Calculates the porosity of an image assuming 1’s are void space and 0’s
 are solid phase.</p>
 <p>All other values are ignored, so this can also return the relative
 fraction of a phase of interest in multiphase images.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>im</strong> (<em>ndarray</em>) – Image of the void space with 1’s indicating void phase (or <code class="docutils literal notranslate"><span class="pre">True</span></code>)
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>im</strong> (<em>ndarray</em>) – Image of the void space with 1’s indicating void phase (or <code class="docutils literal notranslate"><span class="pre">True</span></code>)
 and 0’s indicating the solid phase (or <code class="docutils literal notranslate"><span class="pre">False</span></code>). All other values
-are ignored (see Notes).</p>
+are ignored (see Notes).</p></li>
+<li><p><strong>mask</strong> (<em>ndarray</em>) – An image the same size as <cite>im</cite> with <cite>True</cite> values indicting the domain. This
+argument is optional, but can be provided for images that don’t fill the
+entire array, like cylindrical cores.  Note that setting values in <cite>im</cite>
+to 2 will also exclude them from consideration so provides the same effect
+as <cite>mask</cite>, but providing a <cite>mask</cite> is usually much easier.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>porosity</strong> – Calculated as the sum of all 1’s divided by the sum of all 1’s and 0’s.</p>
@@ -1063,7 +1070,7 @@ to view online example.</p>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.3.<br>
 </p>
   </div>
   

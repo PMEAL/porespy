@@ -204,6 +204,7 @@
     <span class="n">_check_for_singleton_axes</span><span class="p">,</span>
     <span class="n">extend_slice</span><span class="p">,</span>
     <span class="n">get_tqdm</span><span class="p">,</span>
+    <span class="n">im_to_slabs</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">pyedt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
@@ -394,7 +395,7 @@
 
 <div class="viewcode-block" id="porosity">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.porosity.html#porespy.metrics.porosity">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the porosity of an image assuming 1&#39;s are void space and 0&#39;s</span>
 <span class="sd">    are solid phase.</span>
@@ -408,6 +409,12 @@
 <span class="sd">        Image of the void space with 1&#39;s indicating void phase (or ``True``)</span>
 <span class="sd">        and 0&#39;s indicating the solid phase (or ``False``). All other values</span>
 <span class="sd">        are ignored (see Notes).</span>
+<span class="sd">    mask : ndarray</span>
+<span class="sd">        An image the same size as `im` with `True` values indicting the domain. This</span>
+<span class="sd">        argument is optional, but can be provided for images that don&#39;t fill the</span>
+<span class="sd">        entire array, like cylindrical cores.  Note that setting values in `im`</span>
+<span class="sd">        to 2 will also exclude them from consideration so provides the same effect</span>
+<span class="sd">        as `mask`, but providing a `mask` is usually much easier.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -437,7 +444,8 @@
 <span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">*</span><span class="n">mask</span>
     <span class="n">Vp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
     <span class="n">Vs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
     <span class="n">e</span> <span class="o">=</span> <span class="n">Vp</span> <span class="o">/</span> <span class="p">(</span><span class="n">Vs</span> <span class="o">+</span> <span class="n">Vp</span><span class="p">)</span>
@@ -447,7 +455,7 @@
 
 <div class="viewcode-block" id="porosity_profile">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.porosity_profile.html#porespy.metrics.porosity_profile">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">porosity_profile</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">porosity_profile</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">span</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;tile&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the porosity profile along the specified axis</span>
 
@@ -457,9 +465,34 @@
 <span class="sd">        The volumetric image for which to calculate the porosity profile.  All</span>
 <span class="sd">        voxels with a value of 1 (or ``True``) are considered as void.</span>
 <span class="sd">    axis : int</span>
-<span class="sd">        The axis (0, 1, or 2) along which to calculate the profile.  For</span>
-<span class="sd">        instance, if `axis` is 0, then the porosity in each YZ plane is</span>
-<span class="sd">        calculated and returned as 1D array with 1 value for each X position.</span>
+<span class="sd">        The axis along which to profile should be measured</span>
+<span class="sd">    span : int (Default = 1)</span>
+<span class="sd">        The thickness of layers to include in the moving average calculation.</span>
+<span class="sd">    mode : str (Default = &#39;tile&#39;)</span>
+<span class="sd">        How the moving average should be applied. Options are:</span>
+
+<span class="sd">        ======== ==============================================================</span>
+<span class="sd">        mode     description</span>
+<span class="sd">        ======== ==============================================================</span>
+<span class="sd">        &#39;tile&#39;   The average is computed for discrete non-overlapping</span>
+<span class="sd">                 tiles of a size given by ``span``</span>
+<span class="sd">        &#39;slide&#39;  The average is computed in a moving window starting at</span>
+<span class="sd">                 ``span/2`` and sliding by a single voxel. This method</span>
+<span class="sd">                 provides more data points but is slower.</span>
+<span class="sd">        ======== ==============================================================</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    results : dataclass</span>
+<span class="sd">        Results is a custom porespy class with the following attributes:</span>
+
+<span class="sd">        ============= =========================================================</span>
+<span class="sd">        Attribute     Description</span>
+<span class="sd">        ============= =========================================================</span>
+<span class="sd">        position      The position along the given axis at which porosity</span>
+<span class="sd">                      values are computed.  The units are in voxels.</span>
+<span class="sd">        porosity      The local porosity value at each position.</span>
+<span class="sd">        ============= =========================================================</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -475,12 +508,18 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="o">&gt;=</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;axis out of range&#39;</span><span class="p">)</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_3d</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">axis</span><span class="p">]))</span>
-    <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span> <span class="o">=</span> <span class="n">a</span>
-    <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">a2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">a1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-    <span class="n">prof</span> <span class="o">=</span> <span class="n">tmp</span> <span class="o">/</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">a2</span><span class="p">]</span> <span class="o">*</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">a1</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">prof</span></div>
+    <span class="n">slices</span> <span class="o">=</span> <span class="n">im_to_slabs</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">span</span><span class="o">=</span><span class="n">span</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">slices</span><span class="p">))</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">eps</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">slices</span><span class="p">):</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">denom</span> <span class="o">=</span> <span class="p">((</span><span class="n">im</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">im</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">eps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">num</span><span class="o">/</span><span class="n">denom</span>
+        <span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="n">s</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">z</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">porosity</span> <span class="o">=</span> <span class="n">eps</span>
+    <span class="k">return</span> <span class="n">results</span></div>
 
 
 
@@ -1365,7 +1404,7 @@
 <span class="sd">    axis : int</span>
 <span class="sd">        The axis along which to profile should be measured</span>
 <span class="sd">    span : int</span>
-<span class="sd">        The number of layers to include in the moving average saturation</span>
+<span class="sd">        The width of layers to include in the moving average saturation</span>
 <span class="sd">        calculation.</span>
 <span class="sd">    mode : str</span>
 <span class="sd">        How the moving average should be applied. Options are:</span>
@@ -1413,24 +1452,15 @@
         <span class="k">if</span> <span class="n">satn</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">s</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-    <span class="n">satn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">satn</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;tile&#39;</span><span class="p">:</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">satn</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">span</span><span class="p">))</span>
-        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">satn</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">span</span><span class="p">)):</span>
-            <span class="n">void</span> <span class="o">=</span> <span class="n">satn</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">span</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">span</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
-            <span class="n">nwp</span> <span class="o">=</span> <span class="p">(</span><span class="n">satn</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">span</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">span</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">s</span><span class="p">)</span> \
-                <span class="o">*</span> <span class="p">(</span><span class="n">satn</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">span</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">span</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-            <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">nwp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">/</span><span class="n">void</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-            <span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">span</span> <span class="o">+</span> <span class="p">(</span><span class="n">span</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;slide&#39;</span><span class="p">:</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">satn</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">span</span><span class="p">))</span>
-        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">satn</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">span</span><span class="p">)):</span>
-            <span class="n">void</span> <span class="o">=</span> <span class="n">satn</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">span</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
-            <span class="n">nwp</span> <span class="o">=</span> <span class="p">(</span><span class="n">satn</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">span</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">s</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">satn</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">span</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-            <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">nwp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">/</span><span class="n">void</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-            <span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="p">(</span><span class="n">span</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">slices</span> <span class="o">=</span> <span class="n">im_to_slabs</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">satn</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">span</span><span class="o">=</span><span class="n">span</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">slices</span><span class="p">))</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">slab</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">slices</span><span class="p">):</span>
+        <span class="n">void</span> <span class="o">=</span> <span class="n">satn</span><span class="p">[</span><span class="n">slab</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
+        <span class="n">nwp</span> <span class="o">=</span> <span class="p">(</span><span class="n">satn</span><span class="p">[</span><span class="n">slab</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">s</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">satn</span><span class="p">[</span><span class="n">slab</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">nwp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">/</span><span class="n">void</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+        <span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">slab</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="n">slab</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+
     <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
     <span class="n">results</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">z</span>
     <span class="n">results</span><span class="o">.</span><span class="n">saturation</span> <span class="o">=</span> <span class="n">y</span>
@@ -1614,7 +1644,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.3.<br>
 </p>
   </div>
   
