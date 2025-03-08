@@ -1284,7 +1284,15 @@
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">pc_map_to_pc_curve</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">im</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">,</span> <span class="n">pc_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pc_max</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pc_map_to_pc_curve</span><span class="p">(</span>
+    <span class="n">pc</span><span class="p">,</span>
+    <span class="n">im</span><span class="p">,</span>
+    <span class="n">seq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">,</span>
+    <span class="n">pc_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">pc_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fix_ends</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a pc map into a capillary pressure curve</span>
 
@@ -1308,6 +1316,13 @@
 <span class="sd">    mode : str</span>
 <span class="sd">        Indicates whether the invasion was a drainage or an imbibition process.</span>
 <span class="sd">        Options are &#39;drainage&#39; and &#39;imbibition&#39;.</span>
+<span class="sd">    fix_ends : bool (default is `True`)</span>
+<span class="sd">        A flag to control whether to adjust the endpoints of the curve or not.</span>
+<span class="sd">        The default is `True`, which will put add a point at the beginning and end</span>
+<span class="sd">        the curves corresponding to residual and trapped invading phase saturations.</span>
+<span class="sd">        This makes the curves look better when plotted. Disabling this correction</span>
+<span class="sd">        ensures that the (Pc, Snwp) data match the values in the displacement maps,</span>
+<span class="sd">        which is useful for making animations for instance.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1347,14 +1362,15 @@
         <span class="n">pcs</span> <span class="o">=</span> <span class="n">pc</span><span class="p">[</span><span class="n">im</span><span class="p">][</span><span class="n">index</span><span class="p">]</span>
         <span class="n">snwp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span><span class="o">/</span><span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="c1"># If pc does not have residual phase (-inf), then add new point at snwp=0</span>
-        <span class="k">if</span> <span class="n">pcs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
-            <span class="n">pcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">pcs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pcs</span><span class="p">))</span>
-            <span class="n">snwp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(([</span><span class="mi">0</span><span class="p">],</span> <span class="n">snwp</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">pcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">pcs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pcs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pcs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
-            <span class="n">snwp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">snwp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">snwp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">snwp</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
-        <span class="k">if</span> <span class="n">pcs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>  <span class="c1"># If trapping occurred, as point at +inf</span>
-            <span class="n">snwp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">snwp</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">fix_ends</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pcs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                <span class="n">pcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">pcs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pcs</span><span class="p">))</span>
+                <span class="n">snwp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(([</span><span class="mi">0</span><span class="p">],</span> <span class="n">snwp</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">pcs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pcs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pcs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+                <span class="n">snwp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">snwp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">snwp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">snwp</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+            <span class="k">if</span> <span class="n">pcs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>  <span class="c1"># If trapping occurred, as point at +inf</span>
+                <span class="n">snwp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">snwp</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
 
     <span class="k">elif</span> <span class="n">mode</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;imb&#39;</span><span class="p">):</span>
         <span class="c1"># seq[seq == -1] = -np.inf</span>
@@ -1366,10 +1382,11 @@
         <span class="n">pcs</span> <span class="o">=</span> <span class="n">pcs</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
         <span class="n">counts</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
         <span class="n">snwp</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span><span class="o">/</span><span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="n">snwp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(([</span><span class="mf">1.0</span><span class="o">-</span><span class="n">swp_r</span><span class="p">],</span> <span class="n">snwp</span><span class="p">))</span>
-        <span class="n">pcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">pcs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pcs</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">pcs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
-            <span class="n">snwp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">snwp</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">fix_ends</span><span class="p">:</span>
+            <span class="n">snwp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(([</span><span class="mf">1.0</span><span class="o">-</span><span class="n">swp_r</span><span class="p">],</span> <span class="n">snwp</span><span class="p">))</span>
+            <span class="n">pcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">pcs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pcs</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">pcs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                <span class="n">snwp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">snwp</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
 
     <span class="c1"># Apply clipping to Pc values</span>
     <span class="k">if</span> <span class="n">pc_min</span> <span class="ow">or</span> <span class="n">pc_max</span><span class="p">:</span>
