@@ -91,12 +91,6 @@
  </a>
 </li>
 
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../basic_usage.html">
-  Basic Usage
- </a>
-</li>
-
 <li class="toctree-l1 current active nav-item">
  <a class="reference internal nav-link" href="../../index.html">
   Module and Function Reference
@@ -344,11 +338,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="porespy.filters.hold_peaks.html">
      hold_peaks
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="porespy.filters.imagej.html">
-     imagej
     </a>
    </li>
    <li class="toctree-l2">
@@ -623,11 +612,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="porespy.networks.map_to_regions.html">
      map_to_regions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="porespy.networks.maximal_ball_wrapper.html">
-     maximal_ball_wrapper
     </a>
    </li>
    <li class="toctree-l2">
@@ -938,11 +922,6 @@
      open_paraview
     </a>
    </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="porespy.io.spheres_to_comsol.html">
-     spheres_to_comsol
-    </a>
-   </li>
   </ul>
  </li>
 </ul>
@@ -1009,11 +988,11 @@
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>im</strong> (<em>ndarray</em>) – A version of <code class="docutils literal notranslate"><span class="pre">im</span></code> but with all the disconnected pores removed.</p></li>
+<li><p><strong>im</strong> (<em>ndarray</em>) – A Boolean image, with <cite>True</cite> values indicating the phase of interest.</p></li>
 <li><p><strong>conn</strong> (<em>int</em>) – For 2D the options are 4 and 8 for square and diagonal neighbors,
 while for the 3D the options are 6 and 26, similarily for square
 and diagonal neighbors. The default is the maximum option.</p></li>
-<li><p><strong>surface</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, any isolated pore regions that are connected to the
+<li><p><strong>surface</strong> (<em>bool</em>) – If <cite>True</cite>, any isolated pore regions that are connected to the
 sufaces of the image are but not connected to the main percolating
 path are also removed. When this is enabled, only the voxels
 belonging to the largest region are kept. This can be
@@ -1021,6 +1000,13 @@ problematic if image contains non-intersecting tube-like structures,
 for instance, since only the largest tube will be preserved.</p></li>
 </ul>
 </p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>im</strong> – A version of <cite>im</cite> but with all the blind or disconnected pores converted
+to solid (i.e. <cite>False</cite>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ndarray</p>
 </dd>
 </dl>
 <div class="admonition seealso">

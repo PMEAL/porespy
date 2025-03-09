@@ -89,12 +89,6 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../basic_usage.html">
-  Basic Usage
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../modules/index.html">
   Module and Function Reference
  </a>
@@ -475,10 +469,6 @@
 <span class="sd">    --------</span>
 <span class="sd">    fill_blind_pores, trim_floating_solid</span>
 
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This function is just a convenient wrapper around the ``clear_border``</span>
-<span class="sd">    function of ``scikit-image``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -532,18 +522,24 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    im : ndarray</span>
-<span class="sd">        A version of ``im`` but with all the disconnected pores removed.</span>
+<span class="sd">        A Boolean image, with `True` values indicating the phase of interest.</span>
 <span class="sd">    conn : int</span>
 <span class="sd">        For 2D the options are 4 and 8 for square and diagonal neighbors,</span>
 <span class="sd">        while for the 3D the options are 6 and 26, similarily for square</span>
 <span class="sd">        and diagonal neighbors. The default is the maximum option.</span>
 <span class="sd">    surface : bool</span>
-<span class="sd">        If ``True``, any isolated pore regions that are connected to the</span>
+<span class="sd">        If `True`, any isolated pore regions that are connected to the</span>
 <span class="sd">        sufaces of the image are but not connected to the main percolating</span>
 <span class="sd">        path are also removed. When this is enabled, only the voxels</span>
 <span class="sd">        belonging to the largest region are kept. This can be</span>
 <span class="sd">        problematic if image contains non-intersecting tube-like structures,</span>
 <span class="sd">        for instance, since only the largest tube will be preserved.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        A version of `im` but with all the blind or disconnected pores converted</span>
+<span class="sd">        to solid (i.e. `False`)</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>

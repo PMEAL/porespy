@@ -447,7 +447,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "In the sequence map the trapped voxels are indicated by `-1`, which is also the case for the saturation map.  This allows for wetting phase configurations to be generated using thresholding (i.e. `Swp = im_satn > p`). In the capillary pressure map the trapped non-wetting phase is indicated by `-inf`, which is physically consistent with the fact that these voxels would be filled with non-wetting phase at all pressures.\n",
+    "In the sequence map the trapped voxels are indicated by `-1`, which is also the case for the saturation map.  This allows for wetting phase configurations to be generated using thresholding (i.e. `Swp = im_snwp > p`). In the capillary pressure map the trapped non-wetting phase is indicated by `-inf`, which is physically consistent with the fact that these voxels would be filled with non-wetting phase at all pressures.\n",
     "\n",
     "As usual generating a capillary pressure is done by applying the necessary thresholds to the capillary pressure map.  Using the built-in PoreSpy function yields:"
    ]

@@ -89,12 +89,6 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../basic_usage.html">
-  Basic Usage
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../modules/index.html">
   Module and Function Reference
  </a>
@@ -705,8 +699,6 @@
 
 
 
-<div class="viewcode-block" id="spheres_to_comsol">
-<a class="viewcode-back" href="../../../modules/generated/generated/porespy.io.spheres_to_comsol.html#porespy.io.spheres_to_comsol">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">spheres_to_comsol</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">centers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">radii</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exports a sphere pack into a Comsol geometry file.</span>
@@ -755,8 +747,7 @@
         <span class="n">peaks</span> <span class="o">=</span> <span class="n">reduce_peaks</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
         <span class="n">centers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">peaks</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
         <span class="n">radii</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">centers</span><span class="o">.</span><span class="n">T</span><span class="p">)]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-    <span class="n">_save_to_comsol</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">centers</span><span class="p">,</span> <span class="n">radii</span><span class="p">)</span></div>
-
+    <span class="n">_save_to_comsol</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">centers</span><span class="p">,</span> <span class="n">radii</span><span class="p">)</span>
 </pre></div>
 
               </article>

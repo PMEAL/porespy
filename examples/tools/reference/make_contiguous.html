@@ -92,12 +92,6 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../basic_usage.html">
-  Basic Usage
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../modules/index.html">
   Module and Function Reference
  </a>
@@ -177,6 +171,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="../../general/denoising_and_segmenting_images.html">
      Converting Greyscale Images to Binary
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../general/getting_started.html">
+     Getting Started
     </a>
    </li>
    <li class="toctree-l2">
@@ -1646,6 +1645,11 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../../general/getting_started.html">
+   Getting Started
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../general/loading_images.html">
    Opening and Preparing Images
   </a>
@@ -2972,7 +2976,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[05:18:04] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[21:26:08] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
@@ -2988,16 +2992,16 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[  1   7   8   6  -6   6   6   9   9   9]
- [  4  -6  -2  -6  -3   4   1   5  -9   8]
- [  4  -7   1  -3  -3  -7  -7   9   1   7]
- [-10  -8  -5   2  -7   6   6   4   2   0]
- [  4   2  -4 -10   3  -9   1  -4  -4   8]
- [ -1   7   8   1  -5  -1   7 -10   0   9]
- [ -8   2   6  -5   1 -10  -9   7  -2 -10]
- [  4  -4  -4   6  -4  -2   4  -1  -1  -4]
- [ -1   2   6   7 -10  -6   6  -3   9   4]
- [ -9   4   4  -1   4  -7   2  -2  -1  -6]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[  3  -1  -2   2 -10  -7   2  -9   1   6]
+ [ -8  -1  -4 -10   2  -3  -5 -10  -6   5]
+ [  3   4   3  -4   0   9  -8  -9  -9   0]
+ [ -1   1  -2   0  -9 -10   9   6   9  -6]
+ [  7  -9  -8   7  -1   9  -1   4  -6   7]
+ [-10  -4   6  -7   8   6  -1  -2   2  -7]
+ [  3  -8  -1   9  -8  -1   4   7  -6 -10]
+ [ -3  -5  -7  -1   7  -9   9  -5  -2   6]
+ [ -5  -8 -10  -5   8   7   8  -1  -8   2]
+ [-10  -7 -10   0 -10   9  -7  -6  -2  -4]]
 </pre></div>
 </div>
 </div>
@@ -3012,7 +3016,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/fd36c8539966c52c28097666b9169eee1514bc52ceb9c07b5dece87e2f905e2a.png"><img alt="../../../_images/fd36c8539966c52c28097666b9169eee1514bc52ceb9c07b5dece87e2f905e2a.png" src="../../../_images/fd36c8539966c52c28097666b9169eee1514bc52ceb9c07b5dece87e2f905e2a.png" style="width: 362px; height: 384px;" />
+<a class="reference internal image-reference" href="../../../_images/ca896ea1458ef898ca3e1339d5304d63f67c7b2e0a0ca3f70346c24cf0b90c92.png"><img alt="../../../_images/ca896ea1458ef898ca3e1339d5304d63f67c7b2e0a0ca3f70346c24cf0b90c92.png" src="../../../_images/ca896ea1458ef898ca3e1339d5304d63f67c7b2e0a0ca3f70346c24cf0b90c92.png" style="width: 362px; height: 384px;" />
 </a>
 </div>
 </div>
@@ -3036,7 +3040,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/6ef77d12482e6cf2eda94dfc4954abf45efb66681f4b968f0834533f279129b6.png"><img alt="../../../_images/6ef77d12482e6cf2eda94dfc4954abf45efb66681f4b968f0834533f279129b6.png" src="../../../_images/6ef77d12482e6cf2eda94dfc4954abf45efb66681f4b968f0834533f279129b6.png" style="width: 362px; height: 384px;" />
+<a class="reference internal image-reference" href="../../../_images/507118a306d678d71a67f7cee70d649e68566e18ccc92c2e4a76fc96c4dbd310.png"><img alt="../../../_images/507118a306d678d71a67f7cee70d649e68566e18ccc92c2e4a76fc96c4dbd310.png" src="../../../_images/507118a306d678d71a67f7cee70d649e68566e18ccc92c2e4a76fc96c4dbd310.png" style="width: 362px; height: 384px;" />
 </a>
 </div>
 </div>

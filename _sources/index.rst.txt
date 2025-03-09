@@ -50,7 +50,6 @@ PoreSpy consists of the following modules:
    :maxdepth: 0
 
    installation
-   basic_usage
    modules/index
    _examples/index
 
@@ -61,8 +60,12 @@ Gallery
 .. image:: ./_static/images/montage.svg
    :name: montage
 
-
 ----
+
+Getting Started
+###############
+
+The PoreSpy documentation is quite thorough, and includes a large number of examples on the use of individual functions as well as a variety of [tutorials](https://porespy.org/examples/general/tutorials/getting_started.html). These are probably the best way to start learning how to use PoreSpy. 
 
 How To Cite
 ###########
