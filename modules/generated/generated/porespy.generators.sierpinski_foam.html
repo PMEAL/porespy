@@ -1001,19 +1001,25 @@
 <h1>sierpinski_foam<a class="headerlink" href="#sierpinski-foam" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.generators.sierpinski_foam">
-<span class="sig-name descname"><span class="pre">sierpinski_foam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dmin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000000000.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/generators/_fractals.html#sierpinski_foam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.generators.sierpinski_foam" title="Link to this definition">¶</a></dt>
-<dd><p>Generates an image of a Sierpinski carpet or foam</p>
+<span class="sig-name descname"><span class="pre">sierpinski_foam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'upper'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/generators/_fractals.html#sierpinski_foam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.generators.sierpinski_foam" title="Link to this definition">¶</a></dt>
+<dd><p>Generates an image of a Sierpinski carpet or foam with independent control of
+image size and number of iterations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dmin</strong> (<em>int</em>) – The size of the smallest square in the final image</p></li>
-<li><p><strong>n</strong> (<em>int</em>) – The number of times to iteratively tile the image</p></li>
-<li><p><strong>ndim</strong> (<em>int</em>) – The number of dimensions of the desired image, can be 2 or 3. The
-default value is 2.</p></li>
+<li><p><strong>shape</strong> (<em>array_like</em>) – The shape of the final image to create. To create a full image with no
+cropping, use a that is a multiple of <cite>3**n</cite>.</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – The number of times to iteratively divide the image. This functions starts
+by inserting single voxels, then inserts increasingly large squares/cubes.</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – Controls the portion of the image that is returned, options are <cite>‘upper’</cite>
+which returns the upper corner, <cite>‘centered’</cite>, which returns the center
+portion of the image, and <cite>None</cite> provide the full image, in which case
+the returned image will be larger than <cite>shape</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>foam</strong> – A boolean image of a Sierpinski gasket or foam</p>
+<dd class="field-even"><p><strong>im</strong> – A boolean image with <cite>False</cite> values inserted at the center of each
+square (or cubic) sub-section.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>

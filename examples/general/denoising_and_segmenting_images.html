@@ -428,15 +428,6 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../generators/reference/sierpinski_foam2.html">
-       <code class="docutils literal notranslate">
-        <span class="pre">
-         sierpinski_foam2
-        </span>
-       </code>
-      </a>
-     </li>
-     <li class="toctree-l3">
       <a class="reference internal" href="../generators/reference/spheres_from_coords.html">
        <code class="docutils literal notranslate">
         <span class="pre">
@@ -1873,15 +1864,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../generators/reference/sierpinski_foam2.html">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     sierpinski_foam2
-    </span>
-   </code>
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../generators/reference/spheres_from_coords.html">
    <code class="docutils literal notranslate">
     <span class="pre">
@@ -3002,7 +2984,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[05:04:24] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[05:16:33] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
@@ -3019,7 +3001,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/dddaa09574ff1da0cb10cc0975d77282fd55851811c67351fa721b17b8a67862.png" src="../../_images/dddaa09574ff1da0cb10cc0975d77282fd55851811c67351fa721b17b8a67862.png" />
+<img alt="../../_images/02b13d2217642f3d3e57f626c3cd815a3a88448f3616dd55b820aa40d45d9121.png" src="../../_images/02b13d2217642f3d3e57f626c3cd815a3a88448f3616dd55b820aa40d45d9121.png" />
 </div>
 </div>
 <p>The above image now contains some noise in each phase, which is more realistic, though as we will see it not close to reality.  Let’s look at a histogram of this image:</p>
@@ -3031,7 +3013,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/1a6c1ed60e14b1c0161c1f4944af7caf0a1448ffcec14c4a1be3a41cbfb30459.png" src="../../_images/1a6c1ed60e14b1c0161c1f4944af7caf0a1448ffcec14c4a1be3a41cbfb30459.png" />
+<img alt="../../_images/0fad7c5cb9e851ef44256cfc63e5a571f32df47735cf22b9f4289826bc90daa3.png" src="../../_images/0fad7c5cb9e851ef44256cfc63e5a571f32df47735cf22b9f4289826bc90daa3.png" />
 </div>
 </div>
 <p>We can see above that all pixels with a value less than 0.5 belong to the dark phase, while the other pixels belong to the light phase.  A simple global threshold can reproduce the original image perfectly:</p>
@@ -3043,7 +3025,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/41e9cccfd7a9429ed3c2d622f125731c5d3f1ba01d56e74a30557d24fb25113a.png" src="../../_images/41e9cccfd7a9429ed3c2d622f125731c5d3f1ba01d56e74a30557d24fb25113a.png" />
+<img alt="../../_images/f8507f2ddef28566481239823094f09eb277f2a28d538cdd72fd9556f1b6716f.png" src="../../_images/f8507f2ddef28566481239823094f09eb277f2a28d538cdd72fd9556f1b6716f.png" />
 </div>
 </div>
 <p>Now let’s look at a more realistic noise distribution, though still artificially generated:</p>
@@ -3058,7 +3040,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/970e17d82a1b634f9ae8fb8bad681ac4a86c77a911b2d62f8821054c2f3450a0.png" src="../../_images/970e17d82a1b634f9ae8fb8bad681ac4a86c77a911b2d62f8821054c2f3450a0.png" />
+<img alt="../../_images/9403c44e08335010566671917c356ed1196870647529a0e84bf6c660e4e3fafa.png" src="../../_images/9403c44e08335010566671917c356ed1196870647529a0e84bf6c660e4e3fafa.png" />
 </div>
 </div>
 <p>Now we can see that the noise is much less separated, and in fact the tails of the distributions just touch each other in the middle.  Let’s see how the simple threshold we used above would work now:</p>
@@ -3070,7 +3052,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/cf2f1ab3cba361dbaa48883b3c5b72f9678f51251c38d8ee22dbeb16ad79017d.png" src="../../_images/cf2f1ab3cba361dbaa48883b3c5b72f9678f51251c38d8ee22dbeb16ad79017d.png" />
+<img alt="../../_images/3b49afeb27cf7b4403fc7ff73d9381834605e91a3e4d7ac9d167284b57b0cbe4.png" src="../../_images/3b49afeb27cf7b4403fc7ff73d9381834605e91a3e4d7ac9d167284b57b0cbe4.png" />
 </div>
 </div>
 <p>Now there are a few pixels in the dark phase which have been identified as bright and vice-versa. Let’s take this further but putting more extreme, but more realistic noise:</p>
@@ -3086,7 +3068,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/0014cda06c03fe5e7520b59513b0faec15c45018c4eaf024524c4134dc478937.png" src="../../_images/0014cda06c03fe5e7520b59513b0faec15c45018c4eaf024524c4134dc478937.png" />
+<img alt="../../_images/0d690a12af43772d99bf44b4f032da29bdf6c3cdad2507364c653f5a12913791.png" src="../../_images/0d690a12af43772d99bf44b4f032da29bdf6c3cdad2507364c653f5a12913791.png" />
 </div>
 </div>
 <p>In the above case our eyes can differentiate the light and dark phases pretty well, but the histogram is fully merged into one, and the global threshold produces a very problematic result. Just to show this is not an exageration, below is an actual slice of a tomogram taken of an electrospun flow-battery electrode:</p>
