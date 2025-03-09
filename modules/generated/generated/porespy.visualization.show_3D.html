@@ -1003,8 +1003,8 @@
 <dt class="sig sig-object py" id="porespy.visualization.show_3D">
 <span class="sig-name descname"><span class="pre">show_3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/visualization/_views.html#show_3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.visualization.show_3D" title="Link to this definition">¶</a></dt>
 <dd><p>Rotates a 3D image and creates an angled view for rough 2D visualization.</p>
-<p>Because it rotates the image it can be slow for large images, so is
-mostly meant for rough checking of small prototype images.</p>
+<p>Because it rotates the image it can be slow for large images, so is mostly
+meant for rough checking of small prototype images.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>im</strong> (<em>ndarray</em>) – The 3D array to be viewed from an angle</p>
@@ -1018,7 +1018,7 @@ mostly meant for rough checking of small prototype images.</p>
 </dl>
 <p class="rubric">Notes</p>
 <p>Although this is meant to be <em>quick</em> it can still take on the order of
-minutes to render very large images.  It uses <code class="docutils literal notranslate"><span class="pre">scipy.ndimage.rotate</span></code>
+minutes to render very large images.  It uses <cite>scipy.ndimage.rotate</cite>
 with no interpolation to view the 3D image from an angle, then casts the
 result into a 2D projection.</p>
 <p class="rubric">Examples</p>

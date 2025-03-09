@@ -242,27 +242,27 @@
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.visualization.bar.html#porespy.visualization.bar">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">bar</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convenience wrapper for matplotlib&#39;s ``bar``.</span>
+<span class="sd">    Convenience wrapper for matplotlib&#39;s `bar`.</span>
 
 <span class="sd">    This automatically:</span>
 
-<span class="sd">        * fetches the ``bin_centers``</span>
-<span class="sd">        * fetches the bin heights from the specified ``h``</span>
-<span class="sd">        * sets the bin widths</span>
-<span class="sd">        * sets the edges to black</span>
+<span class="sd">        * Fetches the `bin_centers`</span>
+<span class="sd">        * Fetches the bin heights from the specified `h`</span>
+<span class="sd">        * Sets the bin widths</span>
+<span class="sd">        * Sets the edges to black</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    results : object</span>
 <span class="sd">        The objects returned by various functions in the</span>
-<span class="sd">        ``porespy.metrics`` submodule, such as ``chord_length_distribution``.</span>
+<span class="sd">        `porespy.metrics` submodule, such as `chord_length_distribution`.</span>
 <span class="sd">    h : str</span>
-<span class="sd">        The value to use for bin heights.  The default is ``pdf``, but</span>
-<span class="sd">        ``cdf`` is another option. Depending on the function the named-tuple</span>
+<span class="sd">        The value to use for bin heights.  The default is `pdf`, but</span>
+<span class="sd">        `cdf` is another option. Depending on the function the named-tuple</span>
 <span class="sd">        may have different options.</span>
 <span class="sd">    kwargs : keyword arguments</span>
-<span class="sd">        All other keyword arguments are passed to ``bar``, including</span>
-<span class="sd">        ``edgecolor`` if you wish to overwrite the default black.</span>
+<span class="sd">        All other keyword arguments are passed to `bar`, including</span>
+<span class="sd">        `edgecolor` if you wish to overwrite the default black.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -276,20 +276,25 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="s1">&#39;edgecolor&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;edgecolor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;k&#39;</span>
-    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">bin_centers</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span>
-                  <span class="n">width</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">bin_widths</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">bin_centers</span><span class="p">,</span>
+        <span class="n">height</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span>
+        <span class="n">width</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">bin_widths</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">xlab</span> <span class="o">=</span> <span class="p">[</span><span class="n">attr</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="fm">__dir__</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">attr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">xlab</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">fig</span></div>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlab</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span></div>
 
 
 
 <div class="viewcode-block" id="imshow">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.visualization.imshow.html#porespy.visualization.imshow">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">imshow</span><span class="p">(</span><span class="o">*</span><span class="n">im</span><span class="p">,</span> <span class="n">ind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convenience wrapper for matplotlib&#39;s ``imshow``.</span>
+<span class="sd">    Convenience wrapper for matplotlib&#39;s `imshow`.</span>
 
 <span class="sd">    This automatically:</span>
 
@@ -301,22 +306,21 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    im : ndarray</span>
-<span class="sd">        The 2D or 3D image (or images) to show.  If 2D then all other</span>
-<span class="sd">        arguments are ignored.</span>
+<span class="sd">        The 2D or 3D image to show.  If 2D then all other arguments are ignored.</span>
 <span class="sd">    ind : int</span>
-<span class="sd">        The slice to show if ``im`` is 3D.  If not given then the middle of</span>
+<span class="sd">        The slice to show if `im` is 3D.  If not given then the middle of</span>
 <span class="sd">        the image is used.</span>
 <span class="sd">    axis : int</span>
-<span class="sd">        The axis to show if ``im`` is 3D.  If not given, then the last</span>
+<span class="sd">        The axis to show if `im` is 3D.  If not given, then the last</span>
 <span class="sd">        axis of the image is used, so an &#39;lower&#39; slice is shown.</span>
 
 <span class="sd">    **kwargs</span>
-<span class="sd">        All other keyword arguments are passed to ``plt.imshow``</span>
+<span class="sd">        All other keyword arguments are passed to `plt.imshow`</span>
 
 <span class="sd">    Note</span>
 <span class="sd">    ----</span>
-<span class="sd">    ``im`` can also be a series of unnamed arguments, in which case all</span>
-<span class="sd">    received images will be shown using ``subplot``.</span>
+<span class="sd">    `im` can also be a series of unnamed arguments, in which case all</span>
+<span class="sd">    received images will be shown using `subplot`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -328,19 +332,16 @@
         <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;origin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;lower&#39;</span>
     <span class="k">if</span> <span class="s1">&#39;interpolation&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;interpolation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-        <span class="n">im</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">im</span><span class="p">])</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">image</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">image</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">axis</span> <span class="o">=</span> <span class="mi">2</span>
-            <span class="k">if</span> <span class="n">ind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">ind</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
-            <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">indices</span><span class="o">=</span><span class="n">ind</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
-        <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">image</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">im</span><span class="p">),</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">fig</span></div>
+    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="n">ind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">indices</span><span class="o">=</span><span class="n">ind</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span></div>
 
 
 
@@ -348,13 +349,13 @@
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.visualization.show_mesh.html#porespy.visualization.show_mesh">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">show_mesh</span><span class="p">(</span><span class="n">mesh</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Visualizes the mesh of a region as obtained by ``get_mesh`` function in</span>
-<span class="sd">    the ``metrics`` submodule.</span>
+<span class="sd">    Visualizes the mesh of a region as obtained by `get_mesh` function in the</span>
+<span class="sd">    `metrics` submodule.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    mesh : tuple</span>
-<span class="sd">        A mesh returned by ``skimage.measure.marching_cubes``</span>
+<span class="sd">        A mesh returned by `skimage.measure.marching_cubes`</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -391,7 +392,7 @@
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">lim_min</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">lim_max</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_zlim</span><span class="p">(</span><span class="n">lim_min</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">lim_max</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 
-    <span class="k">return</span> <span class="n">fig</span></div>
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span></div>
 
 </pre></div>
 

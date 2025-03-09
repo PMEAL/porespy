@@ -254,9 +254,17 @@
 
 <div class="viewcode-block" id="satn_to_movie">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.visualization.satn_to_movie.html#porespy.visualization.satn_to_movie">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">satn_to_movie</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">satn</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span>
-                  <span class="n">c_under</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">c_over</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span>
-                  <span class="n">v_under</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">v_over</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">satn_to_movie</span><span class="p">(</span>
+    <span class="n">im</span><span class="p">,</span>
+    <span class="n">satn</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span>
+    <span class="n">c_under</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span>
+    <span class="n">c_over</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span>
+    <span class="n">v_under</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+    <span class="n">v_over</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">fps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">repeat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a saturation map into an animation that can be saved</span>
 
@@ -271,12 +279,12 @@
 <span class="sd">    cmap : str</span>
 <span class="sd">        The name of the matplotlib color map to use. These are listed on</span>
 <span class="sd">        matplotlib&#39;s website</span>
-<span class="sd">        `here &lt;https://matplotlib.org/stable/gallery/color/colormap_reference.html&gt;`__</span>
+<span class="sd">        `here &lt;https://matplotlib.org/stable/gallery/color/colormap_reference.html&gt;`_</span>
 <span class="sd">    c_under, c_over : str</span>
 <span class="sd">        The color to insert for values that are less than `v_under`</span>
 <span class="sd">        (greater than `v_over`).  The string value of colors are given on</span>
 <span class="sd">        matplotlib&#39;s website</span>
-<span class="sd">        `here &lt;https://matplotlib.org/stable/gallery/color/named_colors.html&gt;`__</span>
+<span class="sd">        `here &lt;https://matplotlib.org/stable/gallery/color/named_colors.html&gt;`_</span>
 <span class="sd">    v_under, v_over : scalar</span>
 <span class="sd">        The values in ``satn`` that should be considered the lower and upper</span>
 <span class="sd">        threshold, beyond which the colors given in `c_under` and `c_over`</span>
@@ -328,7 +336,14 @@
 
 <div class="viewcode-block" id="satn_to_panels">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.visualization.satn_to_panels.html#porespy.visualization.satn_to_panels">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">satn_to_panels</span><span class="p">(</span><span class="n">satn</span><span class="p">,</span> <span class="n">im</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">slice</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">satn_to_panels</span><span class="p">(</span>
+    <span class="n">satn</span><span class="p">,</span>
+    <span class="n">im</span><span class="p">,</span>
+    <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="nb">slice</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Produces a set of images with each panel containing one saturation</span>
 
@@ -406,7 +421,12 @@
 
 <div class="viewcode-block" id="prep_for_imshow">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.visualization.prep_for_imshow.html#porespy.visualization.prep_for_imshow">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">prep_for_imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">slice</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">prep_for_imshow</span><span class="p">(</span>
+    <span class="n">im</span><span class="p">,</span>
+    <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="nb">slice</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Adjusts the range of greyscale values in an image to improve visualization</span>
 <span class="sd">    by ``matplotlib.pyplot.imshow``</span>
@@ -439,7 +459,7 @@
 <span class="sd">        ``plt.imshow(\*\*data)``).  It contains the following key-value pairs:</span>
 
 <span class="sd">        =============== =======================================================</span>
-<span class="sd">        key               value</span>
+<span class="sd">        key             value</span>
 <span class="sd">        =============== =======================================================</span>
 <span class="sd">        &#39;X&#39;             The adjusted image with ``+inf`` replaced by</span>
 <span class="sd">                        ``vmax + 1``, and all solid voxels replacd by</span>
@@ -480,9 +500,14 @@
     <span class="n">im</span><span class="p">[(</span><span class="n">im</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)]</span> <span class="o">=</span> <span class="n">vmax</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="n">vmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">((</span><span class="n">im</span><span class="o">*</span><span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))[</span><span class="n">mask</span><span class="p">])</span>
     <span class="n">im</span><span class="p">[(</span><span class="n">im</span> <span class="o">==</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)]</span> <span class="o">=</span> <span class="n">vmin</span> <span class="o">-</span> <span class="mi">1</span>
-
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">im</span><span class="p">,</span> <span class="s1">&#39;vmin&#39;</span><span class="p">:</span> <span class="n">vmin</span><span class="p">,</span> <span class="s1">&#39;vmax&#39;</span><span class="p">:</span> <span class="n">vmax</span><span class="p">,</span>
-            <span class="s1">&#39;interpolation&#39;</span><span class="p">:</span> <span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="s1">&#39;origin&#39;</span><span class="p">:</span> <span class="s1">&#39;lower&#39;</span><span class="p">}</span></div>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">im</span><span class="p">,</span>
+        <span class="s1">&#39;vmin&#39;</span><span class="p">:</span> <span class="n">vmin</span><span class="p">,</span>
+        <span class="s1">&#39;vmax&#39;</span><span class="p">:</span> <span class="n">vmax</span><span class="p">,</span>
+        <span class="s1">&#39;interpolation&#39;</span><span class="p">:</span> <span class="s1">&#39;none&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;origin&#39;</span><span class="p">:</span> <span class="s1">&#39;lower&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">d</span></div>
 
 </pre></div>
 

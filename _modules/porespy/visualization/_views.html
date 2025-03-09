@@ -188,8 +188,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spim</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">njit</span><span class="p">,</span> <span class="n">prange</span>
 
-<span class="c1"># from mpl_toolkits.mplot3d.art3d import Poly3DCollection</span>
-
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;show_3D&quot;</span><span class="p">,</span>
@@ -205,8 +203,8 @@
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Rotates a 3D image and creates an angled view for rough 2D visualization.</span>
 
-<span class="sd">    Because it rotates the image it can be slow for large images, so is</span>
-<span class="sd">    mostly meant for rough checking of small prototype images.</span>
+<span class="sd">    Because it rotates the image it can be slow for large images, so is mostly</span>
+<span class="sd">    meant for rough checking of small prototype images.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -221,7 +219,7 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    Although this is meant to be *quick* it can still take on the order of</span>
-<span class="sd">    minutes to render very large images.  It uses ``scipy.ndimage.rotate``</span>
+<span class="sd">    minutes to render very large images.  It uses `scipy.ndimage.rotate`</span>
 <span class="sd">    with no interpolation to view the 3D image from an angle, then casts the</span>
 <span class="sd">    result into a 2D projection.</span>
 
@@ -265,7 +263,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    image : ndarray</span>
 <span class="sd">        A 2D array containing the views.  This single image can be viewed using</span>
-<span class="sd">        ``matplotlib.pyplot.imshow``.</span>
+<span class="sd">        `matplotlib.pyplot.imshow`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -283,18 +281,16 @@
     <span class="n">im_yz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">im</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
 
     <span class="n">new_x</span> <span class="o">=</span> <span class="n">im_xy</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">im_yz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">s</span>
-
     <span class="n">new_y</span> <span class="o">=</span> <span class="n">im_xy</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">im_xz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">s</span>
-
     <span class="n">new_im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">new_x</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">s</span><span class="p">,</span> <span class="n">new_y</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">s</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
 
     <span class="c1"># Add xy image to upper left corner</span>
-    <span class="n">new_im</span><span class="p">[</span><span class="n">s</span> <span class="p">:</span> <span class="n">im_xy</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">s</span><span class="p">,</span> <span class="n">s</span> <span class="p">:</span> <span class="n">im_xy</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">im_xy</span>
+    <span class="n">new_im</span><span class="p">[</span><span class="n">s</span><span class="p">:</span> <span class="n">im_xy</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="n">im_xy</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">im_xy</span>
     <span class="c1"># Add xz image to lower left coner</span>
     <span class="n">x_off</span> <span class="o">=</span> <span class="n">im_xy</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">s</span>
     <span class="n">y_off</span> <span class="o">=</span> <span class="n">im_xy</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">s</span>
-    <span class="n">new_im</span><span class="p">[</span><span class="n">s</span> <span class="p">:</span> <span class="n">s</span> <span class="o">+</span> <span class="n">im_xz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y_off</span> <span class="p">:</span> <span class="n">y_off</span> <span class="o">+</span> <span class="n">im_xz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">im_xz</span>
-    <span class="n">new_im</span><span class="p">[</span><span class="n">x_off</span> <span class="p">:</span> <span class="n">x_off</span> <span class="o">+</span> <span class="n">im_yz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span> <span class="p">:</span> <span class="n">s</span> <span class="o">+</span> <span class="n">im_yz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">im_yz</span>
+    <span class="n">new_im</span><span class="p">[</span><span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="o">+</span> <span class="n">im_xz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y_off</span><span class="p">:</span> <span class="n">y_off</span> <span class="o">+</span> <span class="n">im_xz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">im_xz</span>
+    <span class="n">new_im</span><span class="p">[</span><span class="n">x_off</span><span class="p">:</span> <span class="n">x_off</span> <span class="o">+</span> <span class="n">im_yz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="o">+</span> <span class="n">im_yz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">im_yz</span>
 
     <span class="k">return</span> <span class="n">new_im</span></div>
 
@@ -320,7 +316,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    image : ndarray</span>
-<span class="sd">        A 2D greyscale image suitable for use in matplotlib&#39;s ``imshow``</span>
+<span class="sd">        A 2D greyscale image suitable for use in matplotlib&#39;s `imshow`</span>
 <span class="sd">        function.</span>
 
 <span class="sd">    Examples</span>
@@ -369,8 +365,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    im : array_like</span>
-<span class="sd">        ndarray of the porous material with the solid phase marked as 1 or</span>
-<span class="sd">        True</span>
+<span class="sd">        ndarray of the porous material with the solid phase marked as 1 or `True`</span>
 
 <span class="sd">    axis : int</span>
 <span class="sd">        Specifes the axis along which the camera will point.</span>
@@ -378,8 +373,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    image : ndarray</span>
-<span class="sd">        A 2D greyscale image suitable for use in matplotlib\&#39;s ```imshow```</span>
-<span class="sd">        function.</span>
+<span class="sd">        A 2D greyscale image suitable for use in matplotlib&#39;s `imshow` function.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -393,7 +387,7 @@
     <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">im</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">im</span></div>
 
 </pre></div>
