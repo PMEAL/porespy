@@ -802,7 +802,8 @@
     <span class="n">dist</span><span class="p">,</span>
     <span class="n">nbins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
     <span class="n">r_min</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create an image of randomly placed, overlapping spheres with a</span>
 <span class="sd">    distribution of radii.</span>
@@ -1233,7 +1234,8 @@
     <span class="n">porosity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
     <span class="n">blobiness</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">divs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">periodic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates an image containing amorphous blobs</span>
@@ -1248,7 +1250,7 @@
 <span class="sd">        prior to returning.  If ``None`` is specified, then the scalar</span>
 <span class="sd">        noise field is converted to a uniform distribution and returned</span>
 <span class="sd">        without thresholding.</span>
-<span class="sd">    blobiness : int or list of ints(default = 1)</span>
+<span class="sd">    blobiness : int or list of ints (default = 1)</span>
 <span class="sd">        Controls the morphology of the blobs.  A higher number results in</span>
 <span class="sd">        a larger number of small blobs.  If a list is supplied then the</span>
 <span class="sd">        blobs are anisotropic.</span>
@@ -1258,10 +1260,14 @@
 <span class="sd">        equivalent to ``[2, 2, 2]`` for a 3D image.  The number of cores</span>
 <span class="sd">        used is specified in ``porespy.settings.ncores`` and defaults to</span>
 <span class="sd">        all cores.</span>
-<span class="sd">    seed : int, optional, default = `None`</span>
+<span class="sd">    seed : int, default = `None`</span>
 <span class="sd">        Initializes numpy&#39;s random number generator to the specified state. If not</span>
 <span class="sd">        provided, the current global value is used. This means calls to</span>
 <span class="sd">        ``np.random.state(seed)`` prior to calling this function will be respected.</span>
+<span class="sd">    periodic : bool, default = `True`</span>
+<span class="sd">        If `True` the blobs will be periodic, meaning that the image can be tiled</span>
+<span class="sd">        and the phases will be continuous. `False` will provide the &quot;legacy&quot; version</span>
+<span class="sd">        of an image, which has high-porosity artifacts at the image boundaries.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1299,6 +1305,7 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">blobiness</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">blobiness</span> <span class="o">=</span> <span class="p">[</span><span class="n">blobiness</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">blobiness</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">blobiness</span><span class="p">)</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;wrap&#39;</span> <span class="k">if</span> <span class="n">periodic</span> <span class="k">else</span> <span class="s1">&#39;reflect&#39;</span>
     <span class="n">parallel</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">divs</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">divs</span> <span class="o">=</span> <span class="p">[</span><span class="n">divs</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
@@ -1313,7 +1320,7 @@
                           <span class="nb">input</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span>
                           <span class="n">divs</span><span class="o">=</span><span class="n">divs</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">im</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">all_to_uniform</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">porosity</span><span class="p">:</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&lt;</span> <span class="n">porosity</span>

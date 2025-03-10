@@ -38,7 +38,7 @@ warnings.filterwarnings("ignore")
 
 
 [31m---------------------------------------------------------------------------[39m
-[31mModuleNotFoundError[39m                       Traceback (most recent call last)
+[31mImportError[39m                               Traceback (most recent call last)
 [36mCell[39m[36m [39m[32mIn[1][39m[32m, line 12[39m
 [32m     10[39m [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mscipy[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[34;01msp[39;00m
 [32m     11[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mmatplotlib[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m pyplot [38;5;28;01mas[39;00m plt
@@ -46,5 +46,19 @@ warnings.filterwarnings("ignore")
 [32m     13[39m [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mtime[39;00m
 [32m     14[39m [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mtensorflow[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[34;01mtf[39;00m
 
-[31mModuleNotFoundError[39m: No module named 'sklearn'
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/sklearn/__init__.py:69[39m
+[32m     60[39m os.environ.setdefault([33m"[39m[33mKMP_INIT_AT_FORK[39m[33m"[39m, [33m"[39m[33mFALSE[39m[33m"[39m)
+[32m     62[39m [38;5;66;03m# `_distributor_init` allows distributors to run custom init code.[39;00m
+[32m     63[39m [38;5;66;03m# For instance, for the Windows wheel, this is used to pre-load the[39;00m
+[32m     64[39m [38;5;66;03m# vcomp shared library runtime for OpenMP embedded in the sklearn/.libs[39;00m
+[32m   (...)[39m[32m     67[39m [38;5;66;03m# later is linked to the OpenMP runtime to make it possible to introspect[39;00m
+[32m     68[39m [38;5;66;03m# it and importing it first would fail if the OpenMP dll cannot be found.[39;00m
+[32m---> [39m[32m69[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01m.[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m (  [38;5;66;03m# noqa: F401 E402[39;00m
+[32m     70[39m     __check_build,
+[32m     71[39m     _distributor_init,
+[32m     72[39m )
+[32m     73[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01m.[39;00m[34;01mbase[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m clone  [38;5;66;03m# noqa: E402[39;00m
+[32m     74[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01m.[39;00m[34;01mutils[39;00m[34;01m.[39;00m[34;01m_show_versions[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m show_versions  [38;5;66;03m# noqa: E402[39;00m
+
+[31mImportError[39m: cannot import name '__check_build' from partially initialized module 'sklearn' (most likely due to a circular import) (/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/sklearn/__init__.py)
 
