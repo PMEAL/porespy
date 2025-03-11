@@ -980,11 +980,9 @@
 <h1>porosity<a class="headerlink" href="#porosity" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.metrics.porosity">
-<span class="sig-name descname"><span class="pre">porosity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/metrics/_funcs.html#porosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.porosity" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">porosity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_surface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/metrics/_funcs.html#porosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.porosity" title="Link to this definition">¶</a></dt>
 <dd><p>Calculates the porosity of an image assuming 1’s are void space and 0’s
 are solid phase.</p>
-<p>All other values are ignored, so this can also return the relative
-fraction of a phase of interest in multiphase images.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -996,6 +994,10 @@ argument is optional, but can be provided for images that don’t fill the
 entire array, like cylindrical cores.  Note that setting values in <cite>im</cite>
 to 2 will also exclude them from consideration so provides the same effect
 as <cite>mask</cite>, but providing a <cite>mask</cite> is usually much easier.</p></li>
+<li><p><strong>fill_hideen</strong> (bool (default = <cite>False</cite>)) – A flag to indicate if hidden pores (not connected to any image boundary)
+should be filled or not before computing the porosity.</p></li>
+<li><p><strong>fill_surface</strong> (bool (default = <cite>False</cite>)) – A flag to indicate if blind pores connected only to one surface should be
+filled or not befor computing the porosity.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1013,10 +1015,6 @@ as <cite>mask</cite>, but providing a <cite>mask</cite> is usually much easier.<
 <p>This function assumes void is represented by 1 and solid by 0, and all
 other values are ignored.  This is useful, for example, for images of
 cylindrical cores, where all voxels outside the core are labelled with 2.</p>
-<p>Alternatively, images can be processed with <code class="docutils literal notranslate"><span class="pre">find_disconnected_voxels</span></code>
-to get an image of only blind pores.  This can then be added to the orignal
-image such that blind pores have a value of 2, thus allowing the
-calculation of accessible porosity, rather than overall porosity.</p>
 <p class="rubric">Examples</p>
 <p><a class="reference external" href="https://porespy.org/examples/metrics/reference/porosity.html">Click here</a>
 to view online example.</p>

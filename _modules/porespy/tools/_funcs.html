@@ -231,10 +231,35 @@
     <span class="s1">&#39;ps_rect&#39;</span><span class="p">,</span>
     <span class="s1">&#39;ps_round&#39;</span><span class="p">,</span>
     <span class="s1">&#39;subdivide&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;tilde&#39;</span><span class="p">,</span>
     <span class="s1">&#39;unpad&#39;</span><span class="p">,</span>
     <span class="s1">&#39;jit_extend_slice&#39;</span><span class="p">,</span>
     <span class="s1">&#39;pad&#39;</span><span class="p">,</span>
 <span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">tilde</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inverts an image.</span>
+
+<span class="sd">    This is to replace the `~` operator which is being deprecated. It also ensures</span>
+<span class="sd">    `im` is actually a `boolean` array since inverting `1` and `0` gives different</span>
+<span class="sd">    results than `True` and `False`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The image whose boolean values are to be inverted. If image is not a boolean</span>
+<span class="sd">        it will be converted to one.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    inv : ndarray</span>
+<span class="sd">        The result of calling `np.logical_not` on `im`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">inv</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">im_to_slabs</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">span</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;tile&#39;</span><span class="p">):</span>

@@ -980,22 +980,31 @@
 <h1>region_volumes<a class="headerlink" href="#region-volumes" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.metrics.region_volumes">
-<span class="sig-name descname"><span class="pre">region_volumes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'marching_cubes'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/metrics/_meshtools.html#region_volumes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.region_volumes" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">region_volumes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'marching_cubes'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/metrics/_meshtools.html#region_volumes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.region_volumes" title="Link to this definition">¶</a></dt>
 <dd><p>Compute volume of each labelled region in an image</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>regions</strong> (<em>ndarray</em>) – An image with labelled regions</p></li>
-<li><p><strong>mode</strong> (<em>string</em>) – <p>Controls the method used. Options are:</p>
-<dl class="simple">
-<dt>’marching_cubes’ (default)</dt><dd><p>Finds a mesh for each region using the marching cubes algorithm
-from <code class="docutils literal notranslate"><span class="pre">scikit-image</span></code>, then finds the volume of the mesh using the
-<code class="docutils literal notranslate"><span class="pre">trimesh</span></code> package.</p>
-</dd>
-<dt>’voxel’</dt><dd><p>Calculates the region volume as the sum of voxels within each
-region.</p>
-</dd>
-</dl>
+<li><p><strong>method</strong> (<em>string</em>) – <p>Controls the method used. Options are:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>marching_cubes</cite></p></td>
+<td><p>(default) Finds a mesh for each region using the marching
+cubes algorithm from <code class="docutils literal notranslate"><span class="pre">scikit-image</span></code>, then finds the
+volume of the mesh using the <code class="docutils literal notranslate"><span class="pre">trimesh</span></code> package.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>voxel</cite></p></td>
+<td><p>Calculates the region volume as the sum of voxels within
+each region.</p></td>
+</tr>
+</tbody>
+</table>
 </p></li>
 </ul>
 </dd>
