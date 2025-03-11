@@ -301,8 +301,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
-     fill_blind_pores
+    <a class="reference internal" href="porespy.filters.fill_closed_pores.html">
+     fill_closed_pores
     </a>
    </li>
    <li class="toctree-l2">
@@ -980,23 +980,28 @@
 <h1>trim_nonpercolating_paths<a class="headerlink" href="#trim-nonpercolating-paths" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.trim_nonpercolating_paths">
-<span class="sig-name descname"><span class="pre">trim_nonpercolating_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inlets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#trim_nonpercolating_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_nonpercolating_paths" title="Link to this definition">¶</a></dt>
-<dd><p>Remove all nonpercolating paths between specified locations</p>
+<span class="sig-name descname"><span class="pre">trim_nonpercolating_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'max'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'min'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'min'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_fill_and_find_funcs.html#trim_nonpercolating_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_nonpercolating_paths" title="Link to this definition">¶</a></dt>
+<dd><p>Remove all nonpercolating pores between specified locations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>im</strong> (<em>ndarray</em>) – The image of the porous material with <code class="docutils literal notranslate"><span class="pre">`True</span></code> values indicating the
+<li><p><strong>im</strong> (<em>ndarray</em>) – The image of the porous material with <cite>True</cite> values indicating the
 phase of interest</p></li>
-<li><p><strong>inlets</strong> (<em>ndarray</em>) – A boolean mask indicating locations of inlets, such as produced by
-<code class="docutils literal notranslate"><span class="pre">porespy.generators.faces</span></code>.</p></li>
-<li><p><strong>outlets</strong> (<em>ndarray</em>) – A boolean mask indicating locations of outlets, such as produced by
-<code class="docutils literal notranslate"><span class="pre">porespy.generators.faces</span></code>.</p></li>
-<li><p><strong>strel</strong> (<em>ndarray</em>) – The structuring element to use when determining if regions are
-connected.  This is passed to <code class="docutils literal notranslate"><span class="pre">scipiy.ndimage.label</span></code>.</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em>) – An integer indicating that axis along which the inlet and outlet faces
+should be applied.  For instance if <cite>axis=0</cite> then the inlets will be
+at <cite>im[0, …]</cite> and the outlets will be at <cite>im[-1, …]</cite>. If this argument
+is given then <cite>inlets</cite> and <cite>outlets</cite> are ignored.</p></li>
+<li><p><strong>outlets</strong> (<em>inlets</em>) – A boolean mask indicating locations of inlets and outlets, such as produced
+by <cite>porespy.generators.faces</cite>. This can be used instead of <cite>axis</cite> to provide
+more control. This is ignored if <cite>axis</cite> is provided.</p></li>
+<li><p><strong>conn</strong> (<em>str</em>) – Can be either <cite>‘min’</cite> or <cite>‘max’</cite> and controls the shape of the structuring
+element used to determine voxel connectivity.  The default if <cite>‘min’</cite> which
+imposes the strictest criteria, so that voxels must share a face to be
+considered connected.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>image</strong> – A copy of <code class="docutils literal notranslate"><span class="pre">im</span></code> with all the nonpercolating paths removed</p>
+<dd class="field-even"><p><strong>image</strong> – A copy of <cite>im</cite> with all the nonpercolating paths removed</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
@@ -1008,7 +1013,7 @@ image since regions that do not span between the desired inlet and
 outlet do not contribute to the transport.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="porespy.filters.find_disconnected_voxels.html#porespy.filters.find_disconnected_voxels" title="porespy.filters.find_disconnected_voxels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_disconnected_voxels</span></code></a>, <a class="reference internal" href="porespy.filters.trim_floating_solid.html#porespy.filters.trim_floating_solid" title="porespy.filters.trim_floating_solid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trim_floating_solid</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">trim_blind_pores</span></code></p>
+<p><a class="reference internal" href="porespy.filters.find_disconnected_voxels.html#porespy.filters.find_disconnected_voxels" title="porespy.filters.find_disconnected_voxels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_disconnected_voxels</span></code></a>, <a class="reference internal" href="porespy.filters.trim_floating_solid.html#porespy.filters.trim_floating_solid" title="porespy.filters.trim_floating_solid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trim_floating_solid</span></code></a>, <a class="reference internal" href="porespy.filters.fill_closed_pores.html#porespy.filters.fill_closed_pores" title="porespy.filters.fill_closed_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fill_closed_pores</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <p><a class="reference external" href="https://porespy.org/examples/filters/reference/trim_nonpercolating_paths.html">Click here</a>

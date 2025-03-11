@@ -301,8 +301,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
-     fill_blind_pores
+    <a class="reference internal" href="porespy.filters.fill_closed_pores.html">
+     fill_closed_pores
     </a>
    </li>
    <li class="toctree-l2">
@@ -980,7 +980,7 @@
 <h1>nphase_border<a class="headerlink" href="#nphase-border" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.nphase_border">
-<span class="sig-name descname"><span class="pre">nphase_border</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_diagonals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#nphase_border"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.nphase_border" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">nphase_border</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'min'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'max'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'min'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#nphase_border"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.nphase_border" title="Link to this definition">¶</a></dt>
 <dd><p>Identifies the voxels in regions that border <em>N</em> other regions.</p>
 <p>Useful for finding triple-phase boundaries.</p>
 <dl class="field-list simple">
@@ -989,12 +989,14 @@
 <li><p><strong>im</strong> (<em>ndarray</em>) – An ND image of the porous material containing discrete values in
 the pore space identifying different regions. e.g. the result of a
 snow-partition</p></li>
-<li><p><strong>include_diagonals</strong> (<em>bool</em>) – When identifying bordering pixels (2D) and voxels (3D) include
-those shifted along more than one axis</p></li>
+<li><p><strong>conn</strong> (<em>str</em>) – Can be either <cite>‘min’</cite> or <cite>‘max’</cite> and controls the shape of the structuring
+element used to determine voxel connectivity.  The default if <cite>‘min’</cite> which
+imposes the strictest criteria, so that voxels must share a face to be
+considered connected.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>image</strong> – A copy of <code class="docutils literal notranslate"><span class="pre">im</span></code> with voxel values equal to the number of uniquely
+<dd class="field-even"><p><strong>image</strong> – A copy of <cite>im</cite> with voxel values equal to the number of uniquely
 different bordering values</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>

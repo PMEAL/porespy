@@ -301,8 +301,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
-     fill_blind_pores
+    <a class="reference internal" href="porespy.filters.fill_closed_pores.html">
+     fill_closed_pores
     </a>
    </li>
    <li class="toctree-l2">
@@ -980,11 +980,11 @@
 <h1>chunked_func<a class="headerlink" href="#chunked-func" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.chunked_func">
-<span class="sig-name descname"><span class="pre">chunked_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['input',</span> <span class="pre">'image',</span> <span class="pre">'im']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strel_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['strel',</span> <span class="pre">'structure',</span> <span class="pre">'footprint']</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#chunked_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.chunked_func" title="Link to this definition">¶</a></dt>
-<dd><p>Performs the specfied operation “chunk-wise” in parallel using <code class="docutils literal notranslate"><span class="pre">dask</span></code>.</p>
+<span class="sig-name descname"><span class="pre">chunked_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['input',</span> <span class="pre">'image',</span> <span class="pre">'im']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strel_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['strel',</span> <span class="pre">'structure',</span> <span class="pre">'footprint']</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#chunked_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.chunked_func" title="Link to this definition">¶</a></dt>
+<dd><p>Performs the specfied operation “chunk-wise” in parallel using <cite>dask</cite>.</p>
 <p>This can be used to save memory by doing one chunk at a time
-(<code class="docutils literal notranslate"><span class="pre">cores=1</span></code>) or to increase computation speed by spreading the work
-across multiple cores (e.g. <code class="docutils literal notranslate"><span class="pre">cores=8</span></code>)</p>
+(<cite>cores=1</cite>) or to increase computation speed by spreading the work
+across multiple cores (e.g. <cite>cores=8</cite>)</p>
 <p>This function can be used with any operation that applies a
 structuring element of some sort, since this implies that the
 operation is local and can be chunked.</p>
@@ -992,12 +992,12 @@ operation is local and can be chunked.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<em>function handle</em>) – The function which should be applied to each chunk, such as
-<code class="docutils literal notranslate"><span class="pre">spipy.ndimage.binary_dilation</span></code>.</p></li>
+<cite>spipy.ndimage.binary_dilation</cite>.</p></li>
 <li><p><strong>overlap</strong> (<em>scalar</em><em> or </em><em>list</em><em> of </em><em>scalars</em><em>, </em><em>optional</em>) – The amount of overlap to include when dividing up the image. This
 value will almost always be the size (i.e. raduis) of the
 structuring element. If not specified then the amount of overlap
 is inferred from the size of the structuring element, in which
-case the <code class="docutils literal notranslate"><span class="pre">strel_arg</span></code> must be specified.</p></li>
+case the <cite>strel_arg</cite> must be specified.</p></li>
 <li><p><strong>divs</strong> (<em>scalar</em><em> or </em><em>list</em><em> of </em><em>scalars</em><em> (</em><em>default =</em><em> [</em><em>2</em><em>, </em><em>2</em><em>, </em><em>2</em><em>]</em><em>)</em>) – The number of chunks to divide the image into in each direction.
 The default is 2 chunks in each direction, resulting in a
 quartering of the image and 8 total chunks (in 3D).  A scalar is
@@ -1006,17 +1006,17 @@ is interpreted as applying to each individual direction.</p></li>
 <li><p><strong>cores</strong> (<em>scalar</em>) – The number of cores which should be used.  By default, all cores
 will be used, or as many are needed for the given number of
 chunks, which ever is smaller.</p></li>
-<li><p><strong>im_arg</strong> (<em>str</em>) – The keyword used by <code class="docutils literal notranslate"><span class="pre">func</span></code> for the image to be operated on. By
-default this function will look for <code class="docutils literal notranslate"><span class="pre">image</span></code>, <code class="docutils literal notranslate"><span class="pre">input</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">im</span></code> which are commonly used by <em>scipy.ndimage</em> and <em>skimage</em>.</p></li>
-<li><p><strong>strel_arg</strong> (<em>str</em>) – The keyword used by <code class="docutils literal notranslate"><span class="pre">func</span></code> for the structuring element to apply.
-This is only needed if <code class="docutils literal notranslate"><span class="pre">overlap</span></code> is not specified. By default
-this function will look for <code class="docutils literal notranslate"><span class="pre">strel</span></code>, <code class="docutils literal notranslate"><span class="pre">structure</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">footprint</span></code> which are commonly used by <em>scipy.ndimage</em> and
+<li><p><strong>im_arg</strong> (<em>str</em>) – The keyword used by <cite>func</cite> for the image to be operated on. By
+default this function will look for <cite>image</cite>, <cite>input</cite>, and
+<cite>im</cite> which are commonly used by <em>scipy.ndimage</em> and <em>skimage</em>.</p></li>
+<li><p><strong>strel_arg</strong> (<em>str</em>) – The keyword used by <cite>func</cite> for the structuring element to apply.
+This is only needed if <cite>overlap</cite> is not specified. By default
+this function will look for <cite>strel</cite>, <cite>structure</cite>, and
+<cite>footprint</cite> which are commonly used by <em>scipy.ndimage</em> and
 <em>skimage</em>.</p></li>
-<li><p><strong>kwargs</strong> – All other arguments are passed to <code class="docutils literal notranslate"><span class="pre">func</span></code> as keyword arguments.
+<li><p><strong>kwargs</strong> – All other arguments are passed to <cite>func</cite> as keyword arguments.
 Note that PoreSpy will fetch the image from this list of keywords
-using the value provided to <code class="docutils literal notranslate"><span class="pre">im_arg</span></code>.</p></li>
+using the value provided to <cite>im_arg</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1035,7 +1035,7 @@ neighboring chunks. This way the operation does not have any edge
 artifacts. The amount of padding is usually equal to the radius of the
 structuring element but some functions do not use one, such as the
 distance transform and Gaussian blur.  In these cases the user can
-specify <code class="docutils literal notranslate"><span class="pre">overlap</span></code>.</p>
+specify <cite>overlap</cite>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><code class="xref py py-obj docutils literal notranslate"><span class="pre">scikit-image.util.apply_parallel</span></code></p>

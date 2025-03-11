@@ -301,8 +301,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
-     fill_blind_pores
+    <a class="reference internal" href="porespy.filters.fill_closed_pores.html">
+     fill_closed_pores
     </a>
    </li>
    <li class="toctree-l2">
@@ -980,7 +980,7 @@
 <h1>trim_extrema<a class="headerlink" href="#trim-extrema" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.trim_extrema">
-<span class="sig-name descname"><span class="pre">trim_extrema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'maxima'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#trim_extrema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_extrema" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">trim_extrema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'maxima'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#trim_extrema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_extrema" title="Link to this definition">¶</a></dt>
 <dd><p>Trims local extrema in greyscale values by a specified amount.</p>
 <p>This essentially decapitates peaks and/or floods valleys.</p>
 <dl class="field-list simple">
@@ -1003,7 +1003,7 @@ removed.</p>
 <ol class="arabic simple">
 <li><p>This function is referred to as <strong>imhmax</strong> or <strong>imhmin</strong> in Matlab.</p></li>
 </ol>
-<p>(2) If the provided <code class="docutils literal notranslate"><span class="pre">h</span></code> is larger than ALL peaks in the array, then the
+<p>(2) If the provided <cite>h</cite> is larger than ALL peaks in the array, then the
 baseline values of the array are changed as well.</p>
 <p class="rubric">Examples</p>
 <p><a class="reference external" href="https://porespy.org/examples/filters/reference/trim_extrema.html">Click here</a>

@@ -301,8 +301,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
-     fill_blind_pores
+    <a class="reference internal" href="porespy.filters.fill_closed_pores.html">
+     fill_closed_pores
     </a>
    </li>
    <li class="toctree-l2">
@@ -980,23 +980,25 @@
 <h1>region_size<a class="headerlink" href="#region-size" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.region_size">
-<span class="sig-name descname"><span class="pre">region_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#region_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.region_size" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">region_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'max'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'min'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'min'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#region_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.region_size" title="Link to this definition">¶</a></dt>
 <dd><p>Replace each voxel with the size of the region to which it belongs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>im</strong> (<em>ndarray</em>) – Either a boolean image wtih <code class="docutils literal notranslate"><span class="pre">True</span></code> indicating the features of
-interest, in which case <code class="docutils literal notranslate"><span class="pre">scipy.ndimage.label</span></code> will be applied to
+<li><p><strong>im</strong> (<em>ndarray</em>) – Either a boolean image wtih <cite>True</cite> indicating the features of
+interest, in which case <cite>scipy.ndimage.label</cite> will be applied to
 find regions, or a greyscale image with integer values indicating
 regions.</p></li>
-<li><p><strong>strel</strong> (<em>ndarray</em>) – The structuring element to use for defining which connected voxels form
-a region</p></li>
+<li><p><strong>conn</strong> (<em>str</em>) – Can be either <cite>‘min’</cite> or <cite>‘max’</cite> and controls the shape of the structuring
+element used to determine voxel connectivity.  The default if <cite>‘min’</cite> which
+imposes the strictest criteria, so that voxels must share a face to be
+considered connected.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>image</strong> – A copy of <code class="docutils literal notranslate"><span class="pre">im</span></code> with each voxel value indicating the size of the
+<dd class="field-even"><p><strong>image</strong> – A copy of <cite>im</cite> with each voxel value indicating the size of the
 region to which it belongs.  This is particularly useful for
-finding chord sizes on the image produced by <code class="docutils literal notranslate"><span class="pre">apply_chords</span></code>.</p>
+finding chord sizes on the image produced by <cite>apply_chords</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
@@ -1007,7 +1009,7 @@ finding chord sizes on the image produced by <code class="docutils literal notra
 <p><a class="reference internal" href="porespy.filters.flood.html#porespy.filters.flood" title="porespy.filters.flood"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flood</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
-<p>This function provides the same result as <code class="docutils literal notranslate"><span class="pre">flood</span></code> with <code class="docutils literal notranslate"><span class="pre">mode='size'</span></code>,
+<p>This function provides the same result as <cite>flood</cite> with <cite>mode=’size’</cite>,
 although does the computation in a different way.</p>
 <p class="rubric">Examples</p>
 <p><a class="reference external" href="https://porespy.org/examples/filters/reference/region_size.html">Click here</a>

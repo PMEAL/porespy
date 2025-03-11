@@ -42,7 +42,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="find_dt_artifacts" href="porespy.filters.find_dt_artifacts.html" />
-    <link rel="prev" title="fill_blind_pores" href="porespy.filters.fill_blind_pores.html" />
+    <link rel="prev" title="fill_closed_pores" href="porespy.filters.fill_closed_pores.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="en">
   </head>
@@ -301,8 +301,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
-     fill_blind_pores
+    <a class="reference internal" href="porespy.filters.fill_closed_pores.html">
+     fill_closed_pores
     </a>
    </li>
    <li class="toctree-l2 current active">
@@ -980,23 +980,24 @@
 <h1>find_disconnected_voxels<a class="headerlink" href="#find-disconnected-voxels" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.find_disconnected_voxels">
-<span class="sig-name descname"><span class="pre">find_disconnected_voxels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#find_disconnected_voxels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.find_disconnected_voxels" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">find_disconnected_voxels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'min'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'max'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'max'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_fill_and_find_funcs.html#find_disconnected_voxels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.find_disconnected_voxels" title="Link to this definition">¶</a></dt>
 <dd><p>Identifies all voxels that are not connected to the edge of the image.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>im</strong> (<em>ndarray</em>) – A Boolean image, with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating the phase for which
+<li><p><strong>im</strong> (<em>ndarray</em>) – A Boolean image, with <cite>True</cite> values indicating the phase for which
 disconnected voxels are sought.</p></li>
-<li><p><strong>conn</strong> (<em>int</em>) – For 2D the options are 4 and 8 for square and diagonal neighbors,
-while for the 3D the options are 6 and 26, similarily for square
-and diagonal neighbors. The default is the maximum option.</p></li>
-<li><p><strong>surface</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> any isolated regions touching the edge of the image are
+<li><p><strong>conn</strong> (<em>str</em>) – Can be either <cite>‘min’</cite> or <cite>‘max’</cite> and controls the shape of the structuring
+element used to determine voxel connectivity.  The default if <cite>‘min’</cite> which
+imposes the strictest criteria, so that voxels must share a face to be
+considered connected.</p></li>
+<li><p><strong>fill_surface</strong> (<em>bool</em>) – If <cite>True</cite> any isolated regions touching the edge of the image are
 considered disconnected.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>image</strong> – An ndarray the same size as <code class="docutils literal notranslate"><span class="pre">im</span></code>, with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating
-voxels of the phase of interest (i.e. <code class="docutils literal notranslate"><span class="pre">True</span></code> values in the original
+<dd class="field-even"><p><strong>image</strong> – An ndarray the same size as <cite>im</cite>, with <cite>True</cite> values indicating
+voxels of the phase of interest (i.e. <cite>True</cite> values in the original
 image) that are not connected to the outer edges.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -1005,7 +1006,7 @@ image) that are not connected to the outer edges.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="porespy.filters.fill_blind_pores.html#porespy.filters.fill_blind_pores" title="porespy.filters.fill_blind_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fill_blind_pores</span></code></a>, <a class="reference internal" href="porespy.filters.trim_floating_solid.html#porespy.filters.trim_floating_solid" title="porespy.filters.trim_floating_solid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trim_floating_solid</span></code></a></p>
+<p><a class="reference internal" href="porespy.filters.fill_closed_pores.html#porespy.filters.fill_closed_pores" title="porespy.filters.fill_closed_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fill_closed_pores</span></code></a>, <a class="reference internal" href="porespy.filters.trim_floating_solid.html#porespy.filters.trim_floating_solid" title="porespy.filters.trim_floating_solid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trim_floating_solid</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <p><a class="reference external" href="https://porespy.org/examples/filters/reference/find_disconnected_voxels.html">Click here</a>

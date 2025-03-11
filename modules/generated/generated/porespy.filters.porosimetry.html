@@ -301,8 +301,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
-     fill_blind_pores
+    <a class="reference internal" href="porespy.filters.fill_closed_pores.html">
+     fill_closed_pores
     </a>
    </li>
    <li class="toctree-l2">
@@ -980,63 +980,73 @@
 <h1>porosimetry<a class="headerlink" href="#porosimetry" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.porosimetry">
-<span class="sig-name descname"><span class="pre">porosimetry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sizes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_limited</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'hybrid'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dt'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'mio'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hybrid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#porosimetry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.porosimetry" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">porosimetry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sizes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_limited</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'hybrid'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dt'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'mio'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hybrid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#porosimetry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.porosimetry" title="Link to this definition">¶</a></dt>
 <dd><p>Performs a porosimetry simulution on an image.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>im</strong> (<em>ndarray</em>) – An ND image of the porous material containing <code class="docutils literal notranslate"><span class="pre">True</span></code> values in the
+<li><p><strong>im</strong> (<em>ndarray</em>) – An ND image of the porous material containing <cite>True</cite> values in the
 pore space.</p></li>
 <li><p><strong>sizes</strong> (<em>array_like</em><em> or </em><em>scalar</em>) – The sizes to invade.  If a list of values of provided they are
 used directly.  If a scalar is provided then that number of points
 spanning the min and max of the distance transform are used.</p></li>
-<li><p><strong>inlets</strong> (<em>ndarray</em><em>, </em><em>boolean</em>) – A boolean mask with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating where the invasion
+<li><p><strong>inlets</strong> (<em>ndarray</em><em>, </em><em>boolean</em>) – A boolean mask with <cite>True</cite> values indicating where the invasion
 enters the image.  By default all faces are considered inlets,
 akin to a mercury porosimetry experiment.  Users can also apply
 solid boundaries to their image externally before passing it in,
 allowing for complex inlets like circular openings, etc.
-This argument is only used if <code class="docutils literal notranslate"><span class="pre">access_limited</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+This argument is only used if <cite>access_limited</cite> is <cite>True</cite>.</p></li>
 <li><p><strong>access_limited</strong> (<em>bool</em>) – This flag indicates if the intrusion should only occur from the
-surfaces (<code class="docutils literal notranslate"><span class="pre">access_limited</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, which is the default),
+surfaces (<cite>access_limited</cite> is <cite>True</cite>, which is the default),
 or if the invading phase should be allowed to appear in the core
 of the image.  The former simulates experimental tools like
 mercury intrusion porosimetry, while the latter is useful for
 comparison to gauge the extent of shielding effects in the sample.</p></li>
 <li><p><strong>mode</strong> (<em>str</em>) – <p>Controls with method is used to compute the result. Options are:</p>
-<dl class="simple">
-<dt>’hybrid’</dt><dd><p>(default) Performs a distance tranform of the void
-space, thresholds to find voxels larger than <code class="docutils literal notranslate"><span class="pre">sizes[i]</span></code>,
-trims the resulting mask if <code class="docutils literal notranslate"><span class="pre">access_limitations</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Mode</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>’hybrid’</p></td>
+<td><p>(default) Performs a distance tranform of the void
+space, thresholds to find voxels larger than <cite>sizes[i]</cite>,
+trims the resulting mask if <cite>access_limitations</cite> is <cite>True</cite>,
 then dilates it using the efficient fft-method to obtain the
-non-wetting fluid configuration.</p>
-</dd>
-<dt>’dt’</dt><dd><p>Same as ‘hybrid’, except uses a second distance
-transform, relative to the thresholded mask, to find the
+non-wetting fluid configuration.</p></td>
+</tr>
+<tr class="row-odd"><td><p>’dt’</p></td>
+<td><p>Same as ‘hybrid’, except uses a second distance
+transform relative to the thresholded mask, to find the
 invading fluid configuration. The choice of ‘dt’ or ‘hybrid’
-depends on speed, which is system and installation specific.</p>
-</dd>
-<dt>’mio’</dt><dd><p>Uses binary erosion followed by dilation to obtain the invading
-fluid configuration directly. If <code class="docutils literal notranslate"><span class="pre">access_limitated</span></code> is
-<code class="docutils literal notranslate"><span class="pre">True</span></code> then disconnected blobs are trimmmed before the dilation.
-This is the only method that can be parallelized by chunking (see
-<code class="docutils literal notranslate"><span class="pre">divs</span></code> and <code class="docutils literal notranslate"><span class="pre">cores</span></code>).</p>
-</dd>
-</dl>
+depends on speed, which is system and installation specific.</p></td>
+</tr>
+<tr class="row-even"><td><p>’mio’</p></td>
+<td><p>Uses binary erosion followed by dilation to obtain the invading
+fluid configuration directly. If <cite>access_limitated</cite> is
+<cite>True</cite> then disconnected blobs are trimmmed before the
+dilation. This is the only method that can be parallelized by
+chunking (see <cite>divs</cite> and <cite>cores</cite>).</p></td>
+</tr>
+</tbody>
+</table>
 </p></li>
 <li><p><strong>divs</strong> (<em>int</em><em> or </em><em>array_like</em>) – The number of times to divide the image for parallel processing.
-If <code class="docutils literal notranslate"><span class="pre">1</span></code> then parallel processing does not occur.  <code class="docutils literal notranslate"><span class="pre">2</span></code> is
-equivalent to <code class="docutils literal notranslate"><span class="pre">[2,</span> <span class="pre">2,</span> <span class="pre">2]</span></code> for a 3D image.  The number of cores
-used is specified in <code class="docutils literal notranslate"><span class="pre">porespy.settings.ncores</span></code> and defaults to
+If <cite>1</cite> then parallel processing does not occur.  <cite>2</cite> is
+equivalent to <cite>[2, 2, 2]</cite> for a 3D image.  The number of cores
+used is specified in <cite>porespy.settings.ncores</cite> and defaults to
 all cores.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>image</strong> – A copy of <code class="docutils literal notranslate"><span class="pre">im</span></code> with voxel values indicating the sphere radius at
-which it becomes accessible from the <code class="docutils literal notranslate"><span class="pre">inlets</span></code>.  This image can be
+<dd class="field-even"><p><strong>image</strong> – A copy of <cite>im</cite> with voxel values indicating the sphere radius at
+which it becomes accessible from the <cite>inlets</cite>.  This image can be
 used to find invading fluid configurations as a function of
 applied capillary pressure by applying a boolean comparison:
-<code class="docutils literal notranslate"><span class="pre">inv_phase</span> <span class="pre">=</span> <span class="pre">im</span> <span class="pre">&gt;</span> <span class="pre">r</span></code> where <code class="docutils literal notranslate"><span class="pre">r</span></code> is the radius (in voxels) of
-the invading sphere.  Of course, <code class="docutils literal notranslate"><span class="pre">r</span></code> can be converted to
+<cite>inv_phase = im &gt; r</cite> where <cite>r</cite> is the radius (in voxels) of
+the invading sphere.  Of course, <cite>r</cite> can be converted to
 capillary pressure using a preferred model.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -1045,7 +1055,7 @@ capillary pressure using a preferred model.</p>
 </dl>
 <p class="rubric">Notes</p>
 <p>There are many ways to perform this filter, and PoreSpy offers 3,
-which users can choose between via the <code class="docutils literal notranslate"><span class="pre">mode</span></code> argument. These
+which users can choose between via the <cite>mode</cite> argument. These
 methods all work in a similar way by finding which foreground voxels
 can accomodate a sphere of a given radius, then repeating for smaller
 radii.</p>

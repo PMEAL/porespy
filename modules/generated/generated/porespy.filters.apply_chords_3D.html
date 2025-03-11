@@ -301,8 +301,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
-     fill_blind_pores
+    <a class="reference internal" href="porespy.filters.fill_closed_pores.html">
+     fill_closed_pores
     </a>
    </li>
    <li class="toctree-l2">
@@ -980,22 +980,22 @@
 <h1>apply_chords_3D<a class="headerlink" href="#apply-chords-3d" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.apply_chords_3D">
-<span class="sig-name descname"><span class="pre">apply_chords_3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trim_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#apply_chords_3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.apply_chords_3D" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">apply_chords_3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trim_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#apply_chords_3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.apply_chords_3D" title="Link to this definition">¶</a></dt>
 <dd><p>Adds chords to the void space in all three principle directions.</p>
 <p>Chords in the X, Y and Z directions are labelled 1, 2 and 3 resepctively.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>im</strong> (<em>ndarray</em>) – A 3D image of the porous material with void space marked as True.</p></li>
+<li><p><strong>im</strong> (<em>ndarray</em>) – A 3D image of the porous material with void space marked as <cite>True</cite>.</p></li>
 <li><p><strong>spacing</strong> (<em>int</em><em> (</em><em>default = 0</em><em>)</em>) – Chords are automatically separed by 1 voxel on all sides, and this
 argument increases the separation.</p></li>
-<li><p><strong>trim_edges</strong> (bool (default is <code class="docutils literal notranslate"><span class="pre">True</span></code>)) – Whether or not to remove chords that touch the edges of the image.
+<li><p><strong>trim_edges</strong> (bool (default is <cite>True</cite>)) – Whether or not to remove chords that touch the edges of the image.
 These chords are artifically shortened, so skew the chord length
 distribution</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>image</strong> – A copy of <code class="docutils literal notranslate"><span class="pre">im</span></code> with values of 1 indicating x-direction chords,
+<dd class="field-even"><p><strong>image</strong> – A copy of <cite>im</cite> with values of 1 indicating x-direction chords,
 2 indicating y-direction chords, and 3 indicating z-direction
 chords.</p>
 </dd>
@@ -1006,7 +1006,7 @@ chords.</p>
 <p class="rubric">Notes</p>
 <p>The chords are separated by a spacing of at least 1 voxel so that
 tools that search for connected components, such as
-<code class="docutils literal notranslate"><span class="pre">scipy.ndimage.label</span></code> can detect individual chords.</p>
+<cite>scipy.ndimage.label</cite> can detect individual chords.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="porespy.filters.apply_chords.html#porespy.filters.apply_chords" title="porespy.filters.apply_chords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_chords</span></code></a></p>

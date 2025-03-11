@@ -301,8 +301,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
-     fill_blind_pores
+    <a class="reference internal" href="porespy.filters.fill_closed_pores.html">
+     fill_closed_pores
     </a>
    </li>
    <li class="toctree-l2">
@@ -980,24 +980,24 @@
 <h1>apply_padded<a class="headerlink" href="#apply-padded" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.apply_padded">
-<span class="sig-name descname"><span class="pre">apply_padded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#apply_padded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.apply_padded" title="Link to this definition">¶</a></dt>
-<dd><p>Applies padding to an image before sending to <code class="docutils literal notranslate"><span class="pre">func</span></code>, then extracts
+<span class="sig-name descname"><span class="pre">apply_padded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#apply_padded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.apply_padded" title="Link to this definition">¶</a></dt>
+<dd><p>Applies padding to an image before sending to <cite>func</cite>, then extracts
 the result corresponding to the original image shape.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>im</strong> (<em>ndarray</em>) – The image to which <code class="docutils literal notranslate"><span class="pre">func</span></code> should be applied</p></li>
-<li><p><strong>pad_width</strong> (<em>int</em><em> or </em><em>list</em><em> of </em><em>ints</em>) – The amount of padding to apply to each axis. Refer to
-<code class="docutils literal notranslate"><span class="pre">numpy.pad</span></code> documentation for more details.</p></li>
+<li><p><strong>im</strong> (<em>ndarray</em>) – The image to which <cite>func</cite> should be applied</p></li>
+<li><p><strong>pad_width</strong> (<em>int</em><em> or </em><em>list</em><em> of </em><em>ints</em>) – The amount of padding to apply to each axis. Refer to <cite>numpy.pad</cite>
+documentation for more details.</p></li>
 <li><p><strong>pad_val</strong> (<em>scalar</em>) – The value to place into the padded voxels.  The default is 1 (or
-<code class="docutils literal notranslate"><span class="pre">True</span></code>) which extends the pore space.</p></li>
+<cite>True</cite>) which extends the pore space.</p></li>
 <li><p><strong>func</strong> (<em>function handle</em>) – The function to apply to the padded image.</p></li>
-<li><p><strong>kwargs</strong> – Additional keyword arguments are collected and passed to <code class="docutils literal notranslate"><span class="pre">func</span></code>.</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments are collected and passed to <cite>func</cite>.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>A use case for this is when using <code class="docutils literal notranslate"><span class="pre">skimage.morphology.skeletonize</span></code>
+<p>A use case for this is when using <cite>skimage.morphology.skeletonize</cite>
 to ensure that the skeleton extends beyond the edges of the image.</p>
 <p class="rubric">Examples</p>
 <p><a class="reference external" href="https://porespy.org/examples/filters/reference/apply_padded.html">Click here</a>

@@ -301,8 +301,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
-     fill_blind_pores
+    <a class="reference internal" href="porespy.filters.fill_closed_pores.html">
+     fill_closed_pores
     </a>
    </li>
    <li class="toctree-l2">
@@ -980,26 +980,25 @@
 <h1>trim_disconnected_blobs<a class="headerlink" href="#trim-disconnected-blobs" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.trim_disconnected_blobs">
-<span class="sig-name descname"><span class="pre">trim_disconnected_blobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inlets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#trim_disconnected_blobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_disconnected_blobs" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">trim_disconnected_blobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'max'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'min'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'min'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#trim_disconnected_blobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_disconnected_blobs" title="Link to this definition">¶</a></dt>
 <dd><p>Removes foreground voxels not connected to specified inlets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>im</strong> (<em>ndarray</em>) – The image containing the blobs to be trimmed</p></li>
 <li><p><strong>inlets</strong> (<em>ndarray</em><em> or </em><em>tuple</em><em> of </em><em>indices</em>) – The locations of the inlets.  Can either be a boolean mask the
-same shape as <code class="docutils literal notranslate"><span class="pre">im</span></code>, or a tuple of indices such as that returned
-by the <code class="docutils literal notranslate"><span class="pre">where</span></code> function.  Any voxels <em>not</em> connected directly to
+same shape as <cite>im</cite>, or a tuple of indices such as that returned
+by the <cite>where</cite> function.  Any voxels <em>not</em> connected directly to
 the inlets will be trimmed.</p></li>
-<li><p><strong>strel</strong> (<em>array-like</em>) – The neighborhood over which connectivity should be checked. It
-must be symmetric and the same dimensionality as the image. It is
-passed directly to the <code class="docutils literal notranslate"><span class="pre">scipy.ndimage.label</span></code> function as the
-<code class="docutils literal notranslate"><span class="pre">structure</span></code> argument so refer to that docstring for additional
-info.</p></li>
+<li><p><strong>conn</strong> (<em>str</em>) – Can be either <cite>‘min’</cite> or <cite>‘max’</cite> and controls the shape of the structuring
+element used to determine voxel connectivity.  The default if <cite>‘min’</cite> which
+imposes the strictest criteria, so that voxels must share a face to be
+considered connected.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>image</strong> – An array of the same shape as <code class="docutils literal notranslate"><span class="pre">im</span></code>, but with all foreground
-voxels not connected to the <code class="docutils literal notranslate"><span class="pre">inlets</span></code> removed.</p>
+<dd class="field-even"><p><strong>image</strong> – An array of the same shape as <cite>im</cite>, but with all foreground
+voxels not connected to the <cite>inlets</cite> removed.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>

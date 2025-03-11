@@ -301,8 +301,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
-     fill_blind_pores
+    <a class="reference internal" href="porespy.filters.fill_closed_pores.html">
+     fill_closed_pores
     </a>
    </li>
    <li class="toctree-l2">
@@ -980,19 +980,19 @@
 <h1>hold_peaks<a class="headerlink" href="#hold-peaks" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.hold_peaks">
-<span class="sig-name descname"><span class="pre">hold_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#hold_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.hold_peaks" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">hold_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#hold_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.hold_peaks" title="Link to this definition">¶</a></dt>
 <dd><p>Replaces each voxel with the highest value along the given axis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>im</strong> (<em>ndarray</em>) – A greyscale image whose peaks are to be found.</p></li>
 <li><p><strong>axis</strong> (<em>int</em>) – The axis along which the operation is to be applied.</p></li>
-<li><p><strong>ascending</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default) the given <code class="docutils literal notranslate"><span class="pre">axis</span></code> is scanned from 0 to end.
-If <code class="docutils literal notranslate"><span class="pre">False</span></code>, it is scanned in reverse order from end to 0.</p></li>
+<li><p><strong>ascending</strong> (<em>bool</em>) – If <cite>True</cite> (default) the given <cite>axis</cite> is scanned from 0 to end.
+If <cite>False</cite>, it is scanned in reverse order from end to 0.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>result</strong> – A copy of <code class="docutils literal notranslate"><span class="pre">im</span></code> with each voxel is replaced with the highest value along
+<dd class="field-even"><p><strong>result</strong> – A copy of <cite>im</cite> with each voxel is replaced with the highest value along
 the given axis.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>

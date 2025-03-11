@@ -301,8 +301,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
-     fill_blind_pores
+    <a class="reference internal" href="porespy.filters.fill_closed_pores.html">
+     fill_closed_pores
     </a>
    </li>
    <li class="toctree-l2">
@@ -980,25 +980,26 @@
 <h1>trim_floating_solid<a class="headerlink" href="#trim-floating-solid" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.trim_floating_solid">
-<span class="sig-name descname"><span class="pre">trim_floating_solid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#trim_floating_solid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_floating_solid" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">trim_floating_solid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'max'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'min'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'min'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_fill_and_find_funcs.html#trim_floating_solid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_floating_solid" title="Link to this definition">¶</a></dt>
 <dd><p>Removes all solid that that is not attached to main solid structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>im</strong> (<em>ndarray</em>) – The image of the porous material</p></li>
-<li><p><strong>conn</strong> (<em>int</em>) – For 2D the options are 4 and 8 for square and diagonal neighbors,
-while for the 3D the options are 6 and 26, similarily for square
-and diagonal neighbors. The default is the maximum option.</p></li>
-<li><p><strong>surface</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, any isolated solid regions that are connected to the
+<li><p><strong>conn</strong> (<em>str</em>) – Can be either <cite>‘min’</cite> or <cite>‘max’</cite> and controls the shape of the structuring
+element used to determine voxel connectivity.  The default if <cite>‘min’</cite> which
+imposes the strictest criteria, so that voxels must share a face to be
+considered connected.</p></li>
+<li><p><strong>fill_surface</strong> (<em>bool</em>) – If <cite>True</cite>, any isolated solid regions that are connected to the
 surfaces of the image but not the main body of the solid are also
-removed.  When this is enabled, only the voxels belonging to the
-largest region are kept. This can be problematic if the image
-contains non-intersecting tube-like structures, for instance,
-since only the largest tube will be preserved.</p></li>
+removed.  Voxels are deemed to be surface voxels if they are part of a
+cluster that does not span the domain. In other words, a cluster of voxels
+touching the <cite>x=0</cite> face but not the <cite>x=-1</cite> face will be trimmed if this
+is enabled.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>image</strong> – A version of <code class="docutils literal notranslate"><span class="pre">im</span></code> but with all the disconnected solid removed.</p>
+<dd class="field-even"><p><strong>image</strong> – A version of <cite>im</cite> but with all the disconnected solid removed.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>

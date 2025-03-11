@@ -192,7 +192,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy.filters</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">local_thickness</span><span class="p">,</span>
     <span class="n">pc_to_seq</span><span class="p">,</span>
-    <span class="n">fill_blind_pores</span><span class="p">,</span>
+    <span class="n">fill_closed_pores</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Results</span><span class="p">,</span>
@@ -390,7 +390,7 @@
 
 <div class="viewcode-block" id="porosity">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.porosity.html#porespy.metrics.porosity">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fill_hidden</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fill_surface</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fill_closed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fill_surface</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the porosity of an image assuming 1&#39;s are void space and 0&#39;s</span>
 <span class="sd">    are solid phase.</span>
@@ -407,12 +407,12 @@
 <span class="sd">        entire array, like cylindrical cores.  Note that setting values in `im`</span>
 <span class="sd">        to 2 will also exclude them from consideration so provides the same effect</span>
 <span class="sd">        as `mask`, but providing a `mask` is usually much easier.</span>
-<span class="sd">    fill_hideen : bool (default = `False`)</span>
-<span class="sd">        A flag to indicate if hidden pores (not connected to any image boundary)</span>
+<span class="sd">    fill_closed : bool (default = `False`)</span>
+<span class="sd">        A flag to indicate if closed pores (not connected to any image boundary)</span>
 <span class="sd">        should be filled or not before computing the porosity.</span>
 <span class="sd">    fill_surface : bool (default = `False`)</span>
-<span class="sd">        A flag to indicate if blind pores connected only to one surface should be</span>
-<span class="sd">        filled or not befor computing the porosity.</span>
+<span class="sd">        A flag to indicate if surface pores connected only to one surface should be</span>
+<span class="sd">        filled or not before computing the porosity.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -440,11 +440,11 @@
     <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">*</span><span class="n">mask</span>
-    <span class="k">if</span> <span class="n">fill_hidden</span> <span class="ow">or</span> <span class="n">fill_surface</span><span class="p">:</span>
-        <span class="n">hidden_pores</span> <span class="o">=</span> <span class="n">im</span> <span class="o">*</span> <span class="o">~</span><span class="n">fill_blind_pores</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">surface_pores</span> <span class="o">=</span> <span class="n">im</span> <span class="o">*</span> <span class="o">~</span><span class="n">fill_blind_pores</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">*</span> <span class="o">~</span><span class="n">hidden_pores</span>
-        <span class="k">if</span> <span class="n">fill_hidden</span><span class="p">:</span>
-            <span class="n">im</span><span class="p">[</span><span class="n">hidden_pores</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">fill_closed</span> <span class="ow">or</span> <span class="n">fill_surface</span><span class="p">:</span>
+        <span class="n">closed_pores</span> <span class="o">=</span> <span class="n">im</span> <span class="o">*</span> <span class="o">~</span><span class="n">fill_closed_pores</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">surface_pores</span> <span class="o">=</span> <span class="n">im</span> <span class="o">*</span> <span class="o">~</span><span class="n">fill_closed_pores</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">*</span> <span class="o">~</span><span class="n">closed_pores</span>
+        <span class="k">if</span> <span class="n">fill_closed</span><span class="p">:</span>
+            <span class="n">im</span><span class="p">[</span><span class="n">closed_pores</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="n">fill_surface</span><span class="p">:</span>
             <span class="n">im</span><span class="p">[</span><span class="n">surface_pores</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">Vp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>

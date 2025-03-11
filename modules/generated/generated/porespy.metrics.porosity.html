@@ -301,8 +301,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
-     fill_blind_pores
+    <a class="reference internal" href="porespy.filters.fill_closed_pores.html">
+     fill_closed_pores
     </a>
    </li>
    <li class="toctree-l2">
@@ -980,7 +980,7 @@
 <h1>porosity<a class="headerlink" href="#porosity" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.metrics.porosity">
-<span class="sig-name descname"><span class="pre">porosity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_surface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/metrics/_funcs.html#porosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.porosity" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">porosity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_closed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_surface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/metrics/_funcs.html#porosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.porosity" title="Link to this definition">¶</a></dt>
 <dd><p>Calculates the porosity of an image assuming 1’s are void space and 0’s
 are solid phase.</p>
 <dl class="field-list simple">
@@ -994,10 +994,10 @@ argument is optional, but can be provided for images that don’t fill the
 entire array, like cylindrical cores.  Note that setting values in <cite>im</cite>
 to 2 will also exclude them from consideration so provides the same effect
 as <cite>mask</cite>, but providing a <cite>mask</cite> is usually much easier.</p></li>
-<li><p><strong>fill_hideen</strong> (bool (default = <cite>False</cite>)) – A flag to indicate if hidden pores (not connected to any image boundary)
+<li><p><strong>fill_closed</strong> (bool (default = <cite>False</cite>)) – A flag to indicate if closed pores (not connected to any image boundary)
 should be filled or not before computing the porosity.</p></li>
-<li><p><strong>fill_surface</strong> (bool (default = <cite>False</cite>)) – A flag to indicate if blind pores connected only to one surface should be
-filled or not befor computing the porosity.</p></li>
+<li><p><strong>fill_surface</strong> (bool (default = <cite>False</cite>)) – A flag to indicate if surface pores connected only to one surface should be
+filled or not before computing the porosity.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

@@ -183,17 +183,25 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dask</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spim</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">skimage.morphology</span><span class="w"> </span><span class="kn">import</span> <span class="n">reconstruction</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">skimage.segmentation</span><span class="w"> </span><span class="kn">import</span> <span class="n">clear_border</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">skimage.morphology</span><span class="w"> </span><span class="kn">import</span> <span class="n">ball</span><span class="p">,</span> <span class="n">disk</span><span class="p">,</span> <span class="n">square</span><span class="p">,</span> <span class="n">cube</span><span class="p">,</span> <span class="n">diamond</span><span class="p">,</span> <span class="n">octahedron</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">_check_for_singleton_axes</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_border</span><span class="p">,</span> <span class="n">subdivide</span><span class="p">,</span> <span class="n">recombine</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">unpad</span><span class="p">,</span> <span class="n">extract_subsection</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">ps_disk</span><span class="p">,</span> <span class="n">ps_ball</span><span class="p">,</span> <span class="n">ps_round</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_check_for_singleton_axes</span><span class="p">,</span>
+    <span class="n">get_border</span><span class="p">,</span>
+    <span class="n">subdivide</span><span class="p">,</span>
+    <span class="n">recombine</span><span class="p">,</span>
+    <span class="n">unpad</span><span class="p">,</span>
+    <span class="n">extract_subsection</span><span class="p">,</span>
+    <span class="n">ps_disk</span><span class="p">,</span>
+    <span class="n">ps_ball</span><span class="p">,</span>
+    <span class="n">ps_round</span><span class="p">,</span>
+    <span class="n">get_tqdm</span><span class="p">,</span>
+    <span class="n">get_edt</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_tqdm</span><span class="p">,</span> <span class="n">get_edt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
 
 
@@ -203,8 +211,6 @@
     <span class="s2">&quot;apply_padded&quot;</span><span class="p">,</span>
     <span class="s2">&quot;chunked_func&quot;</span><span class="p">,</span>
     <span class="s2">&quot;distance_transform_lin&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fill_blind_pores&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;find_disconnected_voxels&quot;</span><span class="p">,</span>
     <span class="s2">&quot;find_dt_artifacts&quot;</span><span class="p">,</span>
     <span class="s2">&quot;flood&quot;</span><span class="p">,</span>
     <span class="s2">&quot;flood_func&quot;</span><span class="p">,</span>
@@ -216,41 +222,46 @@
     <span class="s2">&quot;region_size&quot;</span><span class="p">,</span>
     <span class="s2">&quot;trim_disconnected_blobs&quot;</span><span class="p">,</span>
     <span class="s2">&quot;trim_extrema&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;trim_floating_solid&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;trim_nonpercolating_paths&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;trim_small_clusters&quot;</span><span class="p">,</span>
 <span class="p">]</span>
+
 
 <span class="n">edt</span> <span class="o">=</span> <span class="n">get_edt</span><span class="p">()</span>
 <span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">strel</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="n">disk</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="n">square</span><span class="p">(</span><span class="mi">3</span><span class="p">)},</span> <span class="mi">3</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="n">ball</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">)}}</span>
 
 
 <div class="viewcode-block" id="apply_padded">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.apply_padded.html#porespy.filters.apply_padded">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">apply_padded</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">pad_val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_padded</span><span class="p">(</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">pad_width</span><span class="p">,</span>
+    <span class="n">func</span><span class="p">,</span>
+    <span class="n">pad_val</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Applies padding to an image before sending to ``func``, then extracts</span>
+<span class="sd">    Applies padding to an image before sending to `func`, then extracts</span>
 <span class="sd">    the result corresponding to the original image shape.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    im : ndarray</span>
-<span class="sd">        The image to which ``func`` should be applied</span>
+<span class="sd">        The image to which `func` should be applied</span>
 <span class="sd">    pad_width : int or list of ints</span>
-<span class="sd">        The amount of padding to apply to each axis. Refer to</span>
-<span class="sd">        ``numpy.pad`` documentation for more details.</span>
+<span class="sd">        The amount of padding to apply to each axis. Refer to `numpy.pad`</span>
+<span class="sd">        documentation for more details.</span>
 <span class="sd">    pad_val : scalar</span>
 <span class="sd">        The value to place into the padded voxels.  The default is 1 (or</span>
-<span class="sd">        ``True``) which extends the pore space.</span>
+<span class="sd">        `True`) which extends the pore space.</span>
 <span class="sd">    func : function handle</span>
 <span class="sd">        The function to apply to the padded image.</span>
 <span class="sd">    kwargs</span>
-<span class="sd">        Additional keyword arguments are collected and passed to ``func``.</span>
+<span class="sd">        Additional keyword arguments are collected and passed to `func`.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    A use case for this is when using ``skimage.morphology.skeletonize``</span>
+<span class="sd">    A use case for this is when using `skimage.morphology.skeletonize`</span>
 <span class="sd">    to ensure that the skeleton extends beyond the edges of the image.</span>
 
 <span class="sd">    Examples</span>
@@ -268,47 +279,13 @@
 
 
 
-<div class="viewcode-block" id="trim_small_clusters">
-<a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.trim_small_clusters.html#porespy.filters.trim_small_clusters">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">trim_small_clusters</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Remove isolated voxels or clusters of a given size or smaller</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
-<span class="sd">        The binary image from which voxels are to be removed.</span>
-<span class="sd">    size : scalar</span>
-<span class="sd">        The threshold size of clusters to trim.  As clusters with this</span>
-<span class="sd">        many voxels or fewer will be trimmed.  The default is 1 so only</span>
-<span class="sd">        single voxels are removed.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    im : ndarray</span>
-<span class="sd">        A copy of ``im`` with clusters of voxels smaller than the given</span>
-<span class="sd">        ``size`` removed.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here</span>
-<span class="sd">    &lt;https://porespy.org/examples/filters/reference/trim_small_clusters.html&gt;`_</span>
-<span class="sd">    to view online example.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">strel</span> <span class="o">=</span> <span class="n">ps_round</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">filtered_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-    <span class="n">labels</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">filtered_array</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">strel</span><span class="p">)</span>
-    <span class="n">id_sizes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spim</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span>
-    <span class="n">area_mask</span> <span class="o">=</span> <span class="n">id_sizes</span> <span class="o">&lt;=</span> <span class="n">size</span>
-    <span class="n">filtered_array</span><span class="p">[</span><span class="n">area_mask</span><span class="p">[</span><span class="n">labels</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">return</span> <span class="n">filtered_array</span></div>
-
-
-
 <div class="viewcode-block" id="hold_peaks">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.hold_peaks.html#porespy.filters.hold_peaks">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">hold_peaks</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hold_peaks</span><span class="p">(</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">ascending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replaces each voxel with the highest value along the given axis.</span>
 
@@ -319,13 +296,13 @@
 <span class="sd">    axis : int</span>
 <span class="sd">        The axis along which the operation is to be applied.</span>
 <span class="sd">    ascending : bool</span>
-<span class="sd">        If ``True`` (default) the given ``axis`` is scanned from 0 to end.</span>
-<span class="sd">        If ``False``, it is scanned in reverse order from end to 0.</span>
+<span class="sd">        If `True` (default) the given `axis` is scanned from 0 to end.</span>
+<span class="sd">        If `False`, it is scanned in reverse order from end to 0.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    result : ndarray</span>
-<span class="sd">        A copy of ``im`` with each voxel is replaced with the highest value along</span>
+<span class="sd">        A copy of `im` with each voxel is replaced with the highest value along</span>
 <span class="sd">        the given axis.</span>
 
 <span class="sd">    Notes</span>
@@ -350,10 +327,10 @@
     <span class="n">chnidx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">updown</span><span class="p">)</span>
     <span class="n">chng</span> <span class="o">=</span> <span class="n">updown</span><span class="p">[</span><span class="n">chnidx</span><span class="p">]</span>
     <span class="p">(</span><span class="n">pkidx</span><span class="p">,)</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">chng</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">chng</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">chnidx</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span>
-    <span class="n">pkidx</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="n">pkidx</span><span class="p">),</span> <span class="n">chnidx</span><span class="p">),)</span>
+    <span class="n">pkidx</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="n">pkidx</span><span class="p">),</span> <span class="n">chnidx</span><span class="p">),)</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
     <span class="n">aux</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">aux</span><span class="p">[(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)),</span> <span class="n">pkidx</span><span class="p">),)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="n">pkidx</span><span class="p">])</span>
+    <span class="n">aux</span><span class="p">[(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)),</span> <span class="n">pkidx</span><span class="p">),)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="n">pkidx</span><span class="p">])</span>
     <span class="n">aux</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">B</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ascending</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>  <span class="c1"># Flip it back</span>
@@ -365,9 +342,9 @@
 <div class="viewcode-block" id="distance_transform_lin">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.distance_transform_lin.html#porespy.filters.distance_transform_lin">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">distance_transform_lin</span><span class="p">(</span>
-    <span class="n">im</span><span class="p">,</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
     <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="s1">&#39;backward&#39;</span><span class="p">,</span> <span class="s1">&#39;both&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;both&quot;</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="s1">&#39;backward&#39;</span><span class="p">,</span> <span class="s1">&#39;both&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;both&quot;</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replaces each void voxel with the linear distance to the nearest solid</span>
@@ -376,7 +353,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    im : ndarray</span>
-<span class="sd">        The image of the porous material with ``True`` values indicating</span>
+<span class="sd">        The image of the porous material with `True` values indicating</span>
 <span class="sd">        the void phase (or phase of interest).</span>
 <span class="sd">    axis : int</span>
 <span class="sd">        The direction along which the distance should be measured, the</span>
@@ -384,21 +361,22 @@
 <span class="sd">    mode : str</span>
 <span class="sd">        Controls how the distance is measured. Options are:</span>
 
-<span class="sd">        &#39;forward&#39;</span>
-<span class="sd">            Distances are measured in the increasing direction</span>
-<span class="sd">            along the specified axis</span>
-<span class="sd">        &#39;reverse&#39;</span>
-<span class="sd">            Distances are measured in the reverse direction.</span>
-<span class="sd">            &#39;backward&#39; is also accepted.</span>
-<span class="sd">        &#39;both&#39;</span>
-<span class="sd">            Distances are calculated in both directions (by</span>
-<span class="sd">            recursively calling itself), then reporting the minimum value</span>
-<span class="sd">            of the two results.</span>
+<span class="sd">        ========== =================================================================</span>
+<span class="sd">        Mode       Description</span>
+<span class="sd">        ========== =================================================================</span>
+<span class="sd">        &#39;forward&#39;  Distances are measured in the increasing direction along the</span>
+<span class="sd">                   specified axis</span>
+<span class="sd">        &#39;reverse&#39;  Distances are measured in the reverse direction. &#39;backward&#39; is</span>
+<span class="sd">                   also accepted.</span>
+<span class="sd">        &#39;both&#39;     Distances are calculated in both directions (by recursively</span>
+<span class="sd">                   calling itself), then reporting the minimum value of the two</span>
+<span class="sd">                   results.</span>
+<span class="sd">        ========== =================================================================</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    image : ndarray</span>
-<span class="sd">        A copy of ``im`` with each foreground voxel containing the</span>
+<span class="sd">        A copy of `im` with each foreground voxel containing the</span>
 <span class="sd">        distance to the nearest background along the specified axis.</span>
 
 <span class="sd">    Examples</span>
@@ -439,232 +417,13 @@
 
 
 
-<div class="viewcode-block" id="find_disconnected_voxels">
-<a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.find_disconnected_voxels.html#porespy.filters.find_disconnected_voxels">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">find_disconnected_voxels</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Identifies all voxels that are not connected to the edge of the image.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
-<span class="sd">        A Boolean image, with ``True`` values indicating the phase for which</span>
-<span class="sd">        disconnected voxels are sought.</span>
-<span class="sd">    conn : int</span>
-<span class="sd">        For 2D the options are 4 and 8 for square and diagonal neighbors,</span>
-<span class="sd">        while for the 3D the options are 6 and 26, similarily for square</span>
-<span class="sd">        and diagonal neighbors. The default is the maximum option.</span>
-<span class="sd">    surface : bool</span>
-<span class="sd">        If ``True`` any isolated regions touching the edge of the image are</span>
-<span class="sd">        considered disconnected.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
-<span class="sd">        An ndarray the same size as ``im``, with ``True`` values indicating</span>
-<span class="sd">        voxels of the phase of interest (i.e. ``True`` values in the original</span>
-<span class="sd">        image) that are not connected to the outer edges.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    fill_blind_pores, trim_floating_solid</span>
-
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here</span>
-<span class="sd">    &lt;https://porespy.org/examples/filters/reference/find_disconnected_voxels.html&gt;`_</span>
-<span class="sd">    to view online example.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_check_for_singleton_axes</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">conn</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
-            <span class="n">strel</span> <span class="o">=</span> <span class="n">disk</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">conn</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">8</span><span class="p">]:</span>
-            <span class="n">strel</span> <span class="o">=</span> <span class="n">square</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Received conn is not valid&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">conn</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
-            <span class="n">strel</span> <span class="o">=</span> <span class="n">ball</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">conn</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">26</span><span class="p">]:</span>
-            <span class="n">strel</span> <span class="o">=</span> <span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Received conn is not valid&quot;</span><span class="p">)</span>
-    <span class="n">labels</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">strel</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">surface</span><span class="p">:</span>
-        <span class="n">holes</span> <span class="o">=</span> <span class="n">clear_border</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">keep</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
-            <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
-            <span class="n">s1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">]))</span>
-            <span class="n">s2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">...</span><span class="p">]))</span>
-            <span class="n">tmp</span> <span class="o">=</span> <span class="n">s1</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
-            <span class="n">keep</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
-            <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
-        <span class="n">holes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">keep</span><span class="p">),</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">holes</span></div>
-
-
-
-<div class="viewcode-block" id="fill_blind_pores">
-<a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.fill_blind_pores.html#porespy.filters.fill_blind_pores">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">fill_blind_pores</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Fills all blind pores that are isolated from the main void space.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
-<span class="sd">        The image of the porous material</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    im : ndarray</span>
-<span class="sd">        A Boolean image, with `True` values indicating the phase of interest.</span>
-<span class="sd">    conn : int</span>
-<span class="sd">        For 2D the options are 4 and 8 for square and diagonal neighbors,</span>
-<span class="sd">        while for the 3D the options are 6 and 26, similarily for square</span>
-<span class="sd">        and diagonal neighbors. The default is the maximum option.</span>
-<span class="sd">    surface : bool</span>
-<span class="sd">        If `True`, any isolated pore regions that are connected to the</span>
-<span class="sd">        sufaces of the image are but not connected to the main percolating</span>
-<span class="sd">        path are also removed. When this is enabled, only the voxels</span>
-<span class="sd">        belonging to the largest region are kept. This can be</span>
-<span class="sd">        problematic if image contains non-intersecting tube-like structures,</span>
-<span class="sd">        for instance, since only the largest tube will be preserved.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    im : ndarray</span>
-<span class="sd">        A version of `im` but with all the blind or disconnected pores converted</span>
-<span class="sd">        to solid (i.e. `False`)</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    find_disconnected_voxels</span>
-<span class="sd">    trim_nonpercolating_paths</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here</span>
-<span class="sd">    &lt;https://porespy.org/examples/filters/reference/fill_blind_pores.html&gt;`_</span>
-<span class="sd">    to view online example.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-    <span class="n">holes</span> <span class="o">=</span> <span class="n">find_disconnected_voxels</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="n">surface</span><span class="p">)</span>
-    <span class="n">im</span><span class="p">[</span><span class="n">holes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">return</span> <span class="n">im</span></div>
-
-
-
-<div class="viewcode-block" id="trim_floating_solid">
-<a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.trim_floating_solid.html#porespy.filters.trim_floating_solid">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">trim_floating_solid</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Removes all solid that that is not attached to main solid structure.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
-<span class="sd">        The image of the porous material</span>
-<span class="sd">    conn : int</span>
-<span class="sd">        For 2D the options are 4 and 8 for square and diagonal neighbors,</span>
-<span class="sd">        while for the 3D the options are 6 and 26, similarily for square</span>
-<span class="sd">        and diagonal neighbors. The default is the maximum option.</span>
-<span class="sd">    surface : bool</span>
-<span class="sd">        If ``True``, any isolated solid regions that are connected to the</span>
-<span class="sd">        surfaces of the image but not the main body of the solid are also</span>
-<span class="sd">        removed.  When this is enabled, only the voxels belonging to the</span>
-<span class="sd">        largest region are kept. This can be problematic if the image</span>
-<span class="sd">        contains non-intersecting tube-like structures, for instance,</span>
-<span class="sd">        since only the largest tube will be preserved.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
-<span class="sd">        A version of ``im`` but with all the disconnected solid removed.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    find_disconnected_voxels</span>
-<span class="sd">    trim_nonpercolating_paths</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here</span>
-<span class="sd">    &lt;https://porespy.org/examples/filters/reference/trim_floating_solid.html&gt;`_</span>
-<span class="sd">    to view online example.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-    <span class="n">holes</span> <span class="o">=</span> <span class="n">find_disconnected_voxels</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="n">surface</span><span class="p">)</span>
-    <span class="n">im</span><span class="p">[</span><span class="n">holes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">return</span> <span class="n">im</span></div>
-
-
-
-<div class="viewcode-block" id="trim_nonpercolating_paths">
-<a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.trim_nonpercolating_paths.html#porespy.filters.trim_nonpercolating_paths">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">trim_nonpercolating_paths</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">inlets</span><span class="p">,</span> <span class="n">outlets</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Remove all nonpercolating paths between specified locations</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
-<span class="sd">        The image of the porous material with ```True`` values indicating the</span>
-<span class="sd">        phase of interest</span>
-<span class="sd">    inlets : ndarray</span>
-<span class="sd">        A boolean mask indicating locations of inlets, such as produced by</span>
-<span class="sd">        ``porespy.generators.faces``.</span>
-<span class="sd">    outlets : ndarray</span>
-<span class="sd">        A boolean mask indicating locations of outlets, such as produced by</span>
-<span class="sd">        ``porespy.generators.faces``.</span>
-<span class="sd">    strel : ndarray</span>
-<span class="sd">        The structuring element to use when determining if regions are</span>
-<span class="sd">        connected.  This is passed to ``scipiy.ndimage.label``.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
-<span class="sd">        A copy of ``im`` with all the nonpercolating paths removed</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This function is essential when performing transport simulations on an</span>
-<span class="sd">    image since regions that do not span between the desired inlet and</span>
-<span class="sd">    outlet do not contribute to the transport.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    find_disconnected_voxels</span>
-<span class="sd">    trim_floating_solid</span>
-<span class="sd">    trim_blind_pores</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here</span>
-<span class="sd">    &lt;https://porespy.org/examples/filters/reference/trim_nonpercolating_paths.html&gt;`_</span>
-<span class="sd">    to view online example.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">labels</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">strel</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">IN</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span> <span class="o">*</span> <span class="n">inlets</span><span class="p">)</span>
-    <span class="n">OUT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span> <span class="o">*</span> <span class="n">outlets</span><span class="p">)</span>
-    <span class="n">hits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">IN</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">OUT</span><span class="p">))))</span>
-    <span class="n">new_im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">hits</span><span class="p">[</span><span class="n">hits</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">new_im</span></div>
-
-
-
 <div class="viewcode-block" id="trim_extrema">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.trim_extrema.html#porespy.filters.trim_extrema">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">trim_extrema</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;maxima&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trim_extrema</span><span class="p">(</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">h</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;maxima&quot;</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Trims local extrema in greyscale values by a specified amount.</span>
 
@@ -689,7 +448,7 @@
 <span class="sd">    -----</span>
 <span class="sd">    (1) This function is referred to as **imhmax** or **imhmin** in Matlab.</span>
 
-<span class="sd">    (2) If the provided ``h`` is larger than ALL peaks in the array, then the</span>
+<span class="sd">    (2) If the provided `h` is larger than ALL peaks in the array, then the</span>
 <span class="sd">    baseline values of the array are changed as well.</span>
 
 <span class="sd">    Examples</span>
@@ -715,16 +474,16 @@
 <div class="viewcode-block" id="flood">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.flood.html#porespy.filters.flood">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">flood</span><span class="p">(</span>
-    <span class="n">im</span><span class="p">,</span>
-    <span class="n">labels</span><span class="p">,</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">labels</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
     <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;maximum&#39;</span><span class="p">,</span> <span class="s1">&#39;minimum&#39;</span><span class="p">,</span> <span class="s1">&#39;median&#39;</span><span class="p">,</span> <span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">,</span>
-                  <span class="s1">&#39;standard_deviations&#39;</span><span class="p">,</span> <span class="s1">&#39;variance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span>
+                  <span class="s1">&#39;standard_deviations&#39;</span><span class="p">,</span>  <span class="s1">&#39;variance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Floods/fills each region in an image with a single value based on the</span>
 <span class="sd">    specific values in that region.</span>
 
-<span class="sd">    This function calls the various functions in ``scipy.ndimage.measurements``</span>
+<span class="sd">    This function calls the various functions in `scipy.ndimage.measurements`</span>
 <span class="sd">    but instead of returning a list of values, it fills each region with its</span>
 <span class="sd">    value.  This is useful for visualization and statistics.</span>
 
@@ -734,38 +493,42 @@
 <span class="sd">        An image with the numerical values of interest in each voxel,</span>
 <span class="sd">        and 0&#39;s elsewhere.</span>
 <span class="sd">    labels : array_like</span>
-<span class="sd">        An array the same shape as ``im`` with each region labeled.</span>
+<span class="sd">        An array containing labels identifying each individual region to be</span>
+<span class="sd">        flooded. If not provided then `scipy.ndimage.label` is applied to</span>
+<span class="sd">        `im &gt; 0`.</span>
 <span class="sd">    mode : string</span>
 <span class="sd">        Specifies how to determine the value to flood each region. Options</span>
-<span class="sd">        taken from the ``scipy.ndimage.measurements`` function include:</span>
+<span class="sd">        taken from the `scipy.ndimage.measurements` function include:</span>
 
 <span class="sd">        ===================== ======================================================</span>
 <span class="sd">        Option                Description</span>
 <span class="sd">        ===================== ======================================================</span>
 <span class="sd">        maximum               Floods each region with the local max in that region.</span>
-<span class="sd">                              The keyword ``max`` is also accepted.</span>
+<span class="sd">                              The keyword `max` is also accepted.</span>
 <span class="sd">        minimum               Floods each region the local minimum in that region.</span>
-<span class="sd">                              The keyword ``min`` is also accepted.</span>
+<span class="sd">                              The keyword `min` is also accepted.</span>
 <span class="sd">        median                Floods each region the local median in that region</span>
 <span class="sd">        mean                  Floods each region the local mean in that region</span>
 <span class="sd">        size                  Floods each region with the size of that region.  This</span>
-<span class="sd">                              is actually accomplished with ``scipy.ndimage.sum`` by</span>
-<span class="sd">                              converting ``im`` to a boolean image (``im = im &gt; 0``).</span>
+<span class="sd">                              is actually accomplished with `scipy.ndimage.sum` by</span>
+<span class="sd">                              converting `im` to a boolean image (`im = im &gt; 0`).</span>
 <span class="sd">        standard_deviation    Floods each region with the value of the standard</span>
-<span class="sd">                              deviation of the voxels in ``im``.</span>
+<span class="sd">                              deviation of the voxels in `im`.</span>
 <span class="sd">        variance              Floods each region with the value of the variance of</span>
-<span class="sd">                              the voxels in ``im``.</span>
+<span class="sd">                              the voxels in `im`.</span>
 <span class="sd">        ===================== ======================================================</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    flooded : ndarray</span>
-<span class="sd">        A copy of ``im`` with new values placed in each forground voxel</span>
-<span class="sd">        based on the ``mode``.</span>
+<span class="sd">        A copy of `im` with new values placed in each forground voxel</span>
+<span class="sd">        based on the `mode`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    prop_to_image, flood_func, region_size</span>
+<span class="sd">    prop_to_image</span>
+<span class="sd">    flood_func</span>
+<span class="sd">    region_size</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -789,7 +552,11 @@
 
 <div class="viewcode-block" id="flood_func">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.flood_func.html#porespy.filters.flood_func">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">flood_func</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">flood_func</span><span class="p">(</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">func</span><span class="p">,</span>
+    <span class="n">labels</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Flood each isolated region in an image with a constant value calculated by</span>
 <span class="sd">    the given function.</span>
@@ -801,19 +568,19 @@
 <span class="sd">        and 0&#39;s elsewhere.</span>
 <span class="sd">    func : Numpy function handle</span>
 <span class="sd">        The function to be applied to each region in the image.  Any Numpy</span>
-<span class="sd">        function that returns a scalar value can be passed, such as ``amin``,</span>
-<span class="sd">        ``amax``, ``sum``, ``mean``, ``median``, etc.</span>
+<span class="sd">        function that returns a scalar value can be passed, such as `amin`,</span>
+<span class="sd">        `amax`, `sum`, `mean`, `median`, etc.</span>
 <span class="sd">    labels : ndarray</span>
 <span class="sd">        An array containing labels identifying each individual region to be</span>
-<span class="sd">        flooded. If not provided then ``scipy.ndimage.label`` is applied to</span>
-<span class="sd">        ``im &gt; 0``.</span>
+<span class="sd">        flooded. If not provided then `scipy.ndimage.label` is applied to</span>
+<span class="sd">        `im &gt; 0`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    flooded : ndarray</span>
-<span class="sd">        An image the same size as ``im`` with each isolated region flooded</span>
-<span class="sd">        with a constant value based on the given ``func`` and the values</span>
-<span class="sd">        in ``im``.</span>
+<span class="sd">        An image the same size as `im` with each isolated region flooded</span>
+<span class="sd">        with a constant value based on the given `func` and the values</span>
+<span class="sd">        in `im`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -821,8 +588,8 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    Many of the functions in ``scipy.ndimage`` can be applied to</span>
-<span class="sd">    individual regions using the ``index`` argument.  This function extends</span>
+<span class="sd">    Many of the functions in `scipy.ndimage` can be applied to</span>
+<span class="sd">    individual regions using the `index` argument.  This function extends</span>
 <span class="sd">    that behavior to all numpy function, in the event you wanted to compute</span>
 <span class="sd">    the cosine of the values in each region for some reason. This function</span>
 <span class="sd">    also floods the original image instead of returning a list of values for</span>
@@ -849,7 +616,7 @@
 
 <div class="viewcode-block" id="find_dt_artifacts">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.find_dt_artifacts.html#porespy.filters.find_dt_artifacts">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">find_dt_artifacts</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_dt_artifacts</span><span class="p">(</span><span class="n">dt</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Label points in a distance transform that are closer to image boundary</span>
 <span class="sd">    than solid</span>
@@ -862,7 +629,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    image : ndarray</span>
-<span class="sd">        An ndarray the same shape as ``dt`` with numerical values</span>
+<span class="sd">        An ndarray the same shape as `dt` with numerical values</span>
 <span class="sd">        indicating the maximum amount of error in each volxel, which is</span>
 <span class="sd">        found by subtracting the distance to nearest edge of image from</span>
 <span class="sd">        the distance transform value. In other words, this is the error</span>
@@ -895,27 +662,32 @@
 
 <div class="viewcode-block" id="region_size">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.region_size.html#porespy.filters.region_size">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">region_size</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">region_size</span><span class="p">(</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">conn</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;min&#39;</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replace each voxel with the size of the region to which it belongs</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    im : ndarray</span>
-<span class="sd">        Either a boolean image wtih ``True`` indicating the features of</span>
-<span class="sd">        interest, in which case ``scipy.ndimage.label`` will be applied to</span>
+<span class="sd">        Either a boolean image wtih `True` indicating the features of</span>
+<span class="sd">        interest, in which case `scipy.ndimage.label` will be applied to</span>
 <span class="sd">        find regions, or a greyscale image with integer values indicating</span>
 <span class="sd">        regions.</span>
-<span class="sd">    strel : ndarray</span>
-<span class="sd">        The structuring element to use for defining which connected voxels form</span>
-<span class="sd">        a region</span>
+<span class="sd">    conn : str</span>
+<span class="sd">        Can be either `&#39;min&#39;` or `&#39;max&#39;` and controls the shape of the structuring</span>
+<span class="sd">        element used to determine voxel connectivity.  The default if `&#39;min&#39;` which</span>
+<span class="sd">        imposes the strictest criteria, so that voxels must share a face to be</span>
+<span class="sd">        considered connected.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    image : ndarray</span>
-<span class="sd">        A copy of ``im`` with each voxel value indicating the size of the</span>
+<span class="sd">        A copy of `im` with each voxel value indicating the size of the</span>
 <span class="sd">        region to which it belongs.  This is particularly useful for</span>
-<span class="sd">        finding chord sizes on the image produced by ``apply_chords``.</span>
+<span class="sd">        finding chord sizes on the image produced by `apply_chords`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -923,7 +695,7 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    This function provides the same result as ``flood`` with ``mode=&#39;size&#39;``,</span>
+<span class="sd">    This function provides the same result as `flood` with `mode=&#39;size&#39;`,</span>
 <span class="sd">    although does the computation in a different way.</span>
 
 <span class="sd">    Examples</span>
@@ -933,8 +705,9 @@
 <span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">se</span> <span class="o">=</span> <span class="n">strel</span><span class="p">[</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">][</span><span class="n">conn</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="n">im</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">strel</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">se</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
     <span class="n">counts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">return</span> <span class="n">counts</span><span class="p">[</span><span class="n">im</span><span class="p">]</span></div>
@@ -944,7 +717,7 @@
 <div class="viewcode-block" id="apply_chords">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.apply_chords.html#porespy.filters.apply_chords">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">apply_chords</span><span class="p">(</span>
-    <span class="n">im</span><span class="p">,</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
     <span class="n">spacing</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">trim_edges</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -956,27 +729,27 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    im : ndarray</span>
-<span class="sd">        An image of the porous material with void marked as ``True``.</span>
+<span class="sd">        An image of the porous material with void marked as `True`.</span>
 <span class="sd">    spacing : int</span>
 <span class="sd">        Separation between chords.  The default is 1 voxel.  This can be</span>
 <span class="sd">        decreased to 0, meaning that the chords all touch each other,</span>
-<span class="sd">        which automatically sets to the ``label`` argument to ``True``.</span>
+<span class="sd">        which automatically sets to the `label` argument to `True`.</span>
 <span class="sd">    axis : int (default = 0)</span>
 <span class="sd">        The axis along which the chords are drawn.</span>
-<span class="sd">    trim_edges : bool (default = ``True``)</span>
+<span class="sd">    trim_edges : bool (default = `True`)</span>
 <span class="sd">        Whether or not to remove chords that touch the edges of the image.</span>
 <span class="sd">        These chords are artifically shortened, so skew the chord length</span>
 <span class="sd">        distribution.</span>
-<span class="sd">    label : bool (default is ``False``)</span>
-<span class="sd">        If ``True`` the chords in the returned image are each given a</span>
+<span class="sd">    label : bool (default is `False`)</span>
+<span class="sd">        If `True` the chords in the returned image are each given a</span>
 <span class="sd">        unique label, such that all voxels lying on the same chord have</span>
-<span class="sd">        the same value.  This is automatically set to ``True`` if spacing</span>
-<span class="sd">        is 0, but is ``False`` otherwise.</span>
+<span class="sd">        the same value.  This is automatically set to `True` if spacing</span>
+<span class="sd">        is 0, but is `False` otherwise.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    image : ndarray</span>
-<span class="sd">        A copy of ``im`` with non-zero values indicating the chords.</span>
+<span class="sd">        A copy of `im` with non-zero values indicating the chords.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1015,7 +788,11 @@
 
 <div class="viewcode-block" id="apply_chords_3D">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.apply_chords_3D.html#porespy.filters.apply_chords_3D">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">apply_chords_3D</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">trim_edges</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_chords_3D</span><span class="p">(</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">spacing</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">trim_edges</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Adds chords to the void space in all three principle directions.</span>
 
@@ -1024,11 +801,11 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    im : ndarray</span>
-<span class="sd">        A 3D image of the porous material with void space marked as True.</span>
+<span class="sd">        A 3D image of the porous material with void space marked as `True`.</span>
 <span class="sd">    spacing : int (default = 0)</span>
 <span class="sd">        Chords are automatically separed by 1 voxel on all sides, and this</span>
 <span class="sd">        argument increases the separation.</span>
-<span class="sd">    trim_edges : bool (default is ``True``)</span>
+<span class="sd">    trim_edges : bool (default is `True`)</span>
 <span class="sd">        Whether or not to remove chords that touch the edges of the image.</span>
 <span class="sd">        These chords are artifically shortened, so skew the chord length</span>
 <span class="sd">        distribution</span>
@@ -1036,7 +813,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    image : ndarray</span>
-<span class="sd">        A copy of ``im`` with values of 1 indicating x-direction chords,</span>
+<span class="sd">        A copy of `im` with values of 1 indicating x-direction chords,</span>
 <span class="sd">        2 indicating y-direction chords, and 3 indicating z-direction</span>
 <span class="sd">        chords.</span>
 
@@ -1044,7 +821,7 @@
 <span class="sd">    -----</span>
 <span class="sd">    The chords are separated by a spacing of at least 1 voxel so that</span>
 <span class="sd">    tools that search for connected components, such as</span>
-<span class="sd">    ``scipy.ndimage.label`` can detect individual chords.</span>
+<span class="sd">    `scipy.ndimage.label` can detect individual chords.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1077,7 +854,7 @@
 <div class="viewcode-block" id="local_thickness">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.local_thickness.html#porespy.filters.local_thickness">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">local_thickness</span><span class="p">(</span>
-    <span class="n">im</span><span class="p">,</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
     <span class="n">sizes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span>
     <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hybrid&#39;</span><span class="p">,</span> <span class="s1">&#39;dt&#39;</span><span class="p">,</span> <span class="s1">&#39;mio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;hybrid&quot;</span><span class="p">,</span>
     <span class="n">divs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
@@ -1101,33 +878,34 @@
 <span class="sd">    mode : str</span>
 <span class="sd">        Controls with method is used to compute the result. Options are:</span>
 
-<span class="sd">        &#39;hybrid&#39;</span>
-<span class="sd">            (default) Performs a distance transform of the void</span>
-<span class="sd">            space, thresholds to find voxels larger than ``sizes[i]``, trims</span>
-<span class="sd">            the resulting mask if ``access_limitations`` is ``True``, then</span>
-<span class="sd">            dilates it using the efficient fft-method to obtain the</span>
-<span class="sd">            non-wetting fluid configuration.</span>
-<span class="sd">        &#39;dt&#39;</span>
-<span class="sd">            Same as &#39;hybrid&#39;, except uses a second distance transform,</span>
-<span class="sd">            relative to the thresholded mask, to find the invading fluid</span>
-<span class="sd">            configuration. The choice of &#39;dt&#39; or &#39;hybrid&#39; depends on speed,</span>
-<span class="sd">            which is system and installation specific.</span>
-<span class="sd">        &#39;mio&#39;</span>
-<span class="sd">            Using a single morphological image opening step to obtain</span>
-<span class="sd">            the invading fluid confirguration directly, *then* trims if</span>
-<span class="sd">            ``access_limitations`` is ``True``. This method is not ideal and</span>
-<span class="sd">            is included for comparison purposes.</span>
+<span class="sd">        ============ ===============================================================</span>
+<span class="sd">        Mode         Description</span>
+<span class="sd">        ============ ===============================================================</span>
+<span class="sd">        &#39;hybrid&#39;     (default) Performs a distance transform of the void space,</span>
+<span class="sd">                     thresholds to find voxels larger than `sizes[i]`, trims</span>
+<span class="sd">                     the resulting mask if `access_limitations` is `True`, then</span>
+<span class="sd">                     dilates it using the efficient fft-method to obtain the</span>
+<span class="sd">                     non-wetting fluid configuration.</span>
+<span class="sd">        &#39;dt&#39;         Same as &#39;hybrid&#39;, except uses a second distance transform,</span>
+<span class="sd">                     relative to the thresholded mask, to find the invading fluid</span>
+<span class="sd">                     configuration. The choice of &#39;dt&#39; or &#39;hybrid&#39; depends on speed,</span>
+<span class="sd">                     which is system and installation specific.</span>
+<span class="sd">        &#39;mio&#39;        Using a single morphological image opening step to obtain</span>
+<span class="sd">                     the invading fluid confirguration directly, *then* trims if</span>
+<span class="sd">                     `access_limitations` is `True`. This method is not ideal</span>
+<span class="sd">                     and is included for comparison purposes.</span>
+<span class="sd">        ============ ===============================================================</span>
 
 <span class="sd">    divs : int or array_like</span>
-<span class="sd">        The number of times to divide the image for parallel processing.  If ``1``</span>
-<span class="sd">        then parallel processing does not occur.  ``2`` is equivalent to</span>
-<span class="sd">        ``[2, 2, 2]`` for a 3D image.  The number of cores used is specified in</span>
-<span class="sd">        ``porespy.settings.ncores`` and defaults to all cores.</span>
+<span class="sd">        The number of times to divide the image for parallel processing.  If `1`</span>
+<span class="sd">        then parallel processing does not occur.  `2` is equivalent to</span>
+<span class="sd">        `[2, 2, 2]` for a 3D image.  The number of cores used is specified in</span>
+<span class="sd">        `porespy.settings.ncores` and defaults to all cores.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    image : ndarray</span>
-<span class="sd">        A copy of ``im`` with the pore size values in each voxel.</span>
+<span class="sd">        A copy of `im` with the pore size values in each voxel.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1136,18 +914,18 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The term *foreground* is used since this function can be applied to</span>
-<span class="sd">    both pore space or the solid, whichever is set to ``True``.</span>
+<span class="sd">    both pore space or the solid, whichever is set to `True`.</span>
 
-<span class="sd">    This function is identical to ``porosimetry`` with ``access_limited``</span>
-<span class="sd">    set to ``False``.</span>
+<span class="sd">    This function is identical to `porosimetry` with `access_limited`</span>
+<span class="sd">    set to `False`.</span>
 
 <span class="sd">    The way local thickness is found in PoreSpy differs from the</span>
 <span class="sd">    traditional method (i.e. used in ImageJ</span>
 <span class="sd">    `&lt;https://imagej.net/Local_Thickness&gt;`_). Our approach is probably</span>
 <span class="sd">    slower, but it allows for the same code to be used for</span>
-<span class="sd">    ``local_thickness`` and ``porosimetry``, since we can &#39;trim&#39; invaded</span>
-<span class="sd">    regions that are not connected to the inlets in the ``porosimetry``</span>
-<span class="sd">    function. This is not needed in ``local_thickness`` however.</span>
+<span class="sd">    `local_thickness` and `porosimetry`, since we can &#39;trim&#39; invaded</span>
+<span class="sd">    regions that are not connected to the inlets in the `porosimetry`</span>
+<span class="sd">    function. This is not needed in `local_thickness` however.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1162,15 +940,76 @@
 
 
 
+<div class="viewcode-block" id="trim_disconnected_blobs">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.trim_disconnected_blobs.html#porespy.filters.trim_disconnected_blobs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">trim_disconnected_blobs</span><span class="p">(</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">inlets</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">conn</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;min&#39;</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Removes foreground voxels not connected to specified inlets.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The image containing the blobs to be trimmed</span>
+<span class="sd">    inlets : ndarray or tuple of indices</span>
+<span class="sd">        The locations of the inlets.  Can either be a boolean mask the</span>
+<span class="sd">        same shape as `im`, or a tuple of indices such as that returned</span>
+<span class="sd">        by the `where` function.  Any voxels *not* connected directly to</span>
+<span class="sd">        the inlets will be trimmed.</span>
+<span class="sd">    conn : str</span>
+<span class="sd">        Can be either `&#39;min&#39;` or `&#39;max&#39;` and controls the shape of the structuring</span>
+<span class="sd">        element used to determine voxel connectivity.  The default if `&#39;min&#39;` which</span>
+<span class="sd">        imposes the strictest criteria, so that voxels must share a face to be</span>
+<span class="sd">        considered connected.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    image : ndarray</span>
+<span class="sd">        An array of the same shape as `im`, but with all foreground</span>
+<span class="sd">        voxels not connected to the `inlets` removed.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    find_disconnected_voxels</span>
+<span class="sd">    find_nonpercolating_paths</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/filters/reference/trim_disconnected_blobs.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">se</span> <span class="o">=</span> <span class="n">strel</span><span class="p">[</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">][</span><span class="n">conn</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inlets</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">inlets</span><span class="p">)</span>
+        <span class="n">inlets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">inlets</span><span class="p">[</span><span class="n">temp</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">inlets</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">inlets</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">inlets</span> <span class="o">=</span> <span class="n">inlets</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;inlets not valid, refer to docstring for info&quot;</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">inlets</span> <span class="o">+</span> <span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">),</span> <span class="n">structure</span><span class="o">=</span><span class="n">se</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">inlets</span><span class="p">])</span>
+    <span class="n">keep</span> <span class="o">=</span> <span class="n">keep</span><span class="p">[</span><span class="n">keep</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">im2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">keep</span><span class="p">)</span>
+    <span class="n">im2</span> <span class="o">=</span> <span class="n">im2</span> <span class="o">*</span> <span class="n">im</span>
+    <span class="k">return</span> <span class="n">im2</span></div>
+
+
+
 <div class="viewcode-block" id="porosimetry">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.porosimetry.html#porespy.filters.porosimetry">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">porosimetry</span><span class="p">(</span>
-    <span class="n">im</span><span class="p">,</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
     <span class="n">sizes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span>
     <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">access_limited</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;hybrid&#39;</span><span class="p">,</span> <span class="s1">&#39;dt&#39;</span><span class="p">,</span> <span class="s1">&#39;mio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;hybrid&#39;</span><span class="p">,</span>
-    <span class="n">divs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">divs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Performs a porosimetry simulution on an image.</span>
@@ -1178,22 +1017,22 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    im : ndarray</span>
-<span class="sd">        An ND image of the porous material containing ``True`` values in the</span>
+<span class="sd">        An ND image of the porous material containing `True` values in the</span>
 <span class="sd">        pore space.</span>
 <span class="sd">    sizes : array_like or scalar</span>
 <span class="sd">        The sizes to invade.  If a list of values of provided they are</span>
 <span class="sd">        used directly.  If a scalar is provided then that number of points</span>
 <span class="sd">        spanning the min and max of the distance transform are used.</span>
 <span class="sd">    inlets : ndarray, boolean</span>
-<span class="sd">        A boolean mask with ``True`` values indicating where the invasion</span>
+<span class="sd">        A boolean mask with `True` values indicating where the invasion</span>
 <span class="sd">        enters the image.  By default all faces are considered inlets,</span>
 <span class="sd">        akin to a mercury porosimetry experiment.  Users can also apply</span>
 <span class="sd">        solid boundaries to their image externally before passing it in,</span>
 <span class="sd">        allowing for complex inlets like circular openings, etc.</span>
-<span class="sd">        This argument is only used if ``access_limited`` is ``True``.</span>
+<span class="sd">        This argument is only used if `access_limited` is `True`.</span>
 <span class="sd">    access_limited : bool</span>
 <span class="sd">        This flag indicates if the intrusion should only occur from the</span>
-<span class="sd">        surfaces (``access_limited`` is ``True``, which is the default),</span>
+<span class="sd">        surfaces (`access_limited` is `True`, which is the default),</span>
 <span class="sd">        or if the invading phase should be allowed to appear in the core</span>
 <span class="sd">        of the image.  The former simulates experimental tools like</span>
 <span class="sd">        mercury intrusion porosimetry, while the latter is useful for</span>
@@ -1201,46 +1040,47 @@
 <span class="sd">    mode : str</span>
 <span class="sd">        Controls with method is used to compute the result. Options are:</span>
 
-<span class="sd">        &#39;hybrid&#39;</span>
-<span class="sd">            (default) Performs a distance tranform of the void</span>
-<span class="sd">            space, thresholds to find voxels larger than ``sizes[i]``,</span>
-<span class="sd">            trims the resulting mask if ``access_limitations`` is ``True``,</span>
-<span class="sd">            then dilates it using the efficient fft-method to obtain the</span>
-<span class="sd">            non-wetting fluid configuration.</span>
-<span class="sd">        &#39;dt&#39;</span>
-<span class="sd">            Same as &#39;hybrid&#39;, except uses a second distance</span>
-<span class="sd">            transform, relative to the thresholded mask, to find the</span>
-<span class="sd">            invading fluid configuration. The choice of &#39;dt&#39; or &#39;hybrid&#39;</span>
-<span class="sd">            depends on speed, which is system and installation specific.</span>
-<span class="sd">        &#39;mio&#39;</span>
-<span class="sd">            Uses binary erosion followed by dilation to obtain the invading</span>
-<span class="sd">            fluid configuration directly. If ``access_limitated`` is</span>
-<span class="sd">            ``True`` then disconnected blobs are trimmmed before the dilation.</span>
-<span class="sd">            This is the only method that can be parallelized by chunking (see</span>
-<span class="sd">            ``divs`` and ``cores``).</span>
+<span class="sd">        ============ ===============================================================</span>
+<span class="sd">        Mode         Description</span>
+<span class="sd">        ============ ===============================================================</span>
+<span class="sd">        &#39;hybrid&#39;     (default) Performs a distance tranform of the void</span>
+<span class="sd">                     space, thresholds to find voxels larger than `sizes[i]`,</span>
+<span class="sd">                     trims the resulting mask if `access_limitations` is `True`,</span>
+<span class="sd">                     then dilates it using the efficient fft-method to obtain the</span>
+<span class="sd">                     non-wetting fluid configuration.</span>
+<span class="sd">        &#39;dt&#39;         Same as &#39;hybrid&#39;, except uses a second distance</span>
+<span class="sd">                     transform relative to the thresholded mask, to find the</span>
+<span class="sd">                     invading fluid configuration. The choice of &#39;dt&#39; or &#39;hybrid&#39;</span>
+<span class="sd">                     depends on speed, which is system and installation specific.</span>
+<span class="sd">        &#39;mio&#39;        Uses binary erosion followed by dilation to obtain the invading</span>
+<span class="sd">                     fluid configuration directly. If `access_limitated` is</span>
+<span class="sd">                     `True` then disconnected blobs are trimmmed before the</span>
+<span class="sd">                     dilation. This is the only method that can be parallelized by</span>
+<span class="sd">                     chunking (see `divs` and `cores`).</span>
+<span class="sd">        ============ ===============================================================</span>
 
 <span class="sd">    divs : int or array_like</span>
 <span class="sd">        The number of times to divide the image for parallel processing.</span>
-<span class="sd">        If ``1`` then parallel processing does not occur.  ``2`` is</span>
-<span class="sd">        equivalent to ``[2, 2, 2]`` for a 3D image.  The number of cores</span>
-<span class="sd">        used is specified in ``porespy.settings.ncores`` and defaults to</span>
+<span class="sd">        If `1` then parallel processing does not occur.  `2` is</span>
+<span class="sd">        equivalent to `[2, 2, 2]` for a 3D image.  The number of cores</span>
+<span class="sd">        used is specified in `porespy.settings.ncores` and defaults to</span>
 <span class="sd">        all cores.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    image : ndarray</span>
-<span class="sd">        A copy of ``im`` with voxel values indicating the sphere radius at</span>
-<span class="sd">        which it becomes accessible from the ``inlets``.  This image can be</span>
+<span class="sd">        A copy of `im` with voxel values indicating the sphere radius at</span>
+<span class="sd">        which it becomes accessible from the `inlets`.  This image can be</span>
 <span class="sd">        used to find invading fluid configurations as a function of</span>
 <span class="sd">        applied capillary pressure by applying a boolean comparison:</span>
-<span class="sd">        ``inv_phase = im &gt; r`` where ``r`` is the radius (in voxels) of</span>
-<span class="sd">        the invading sphere.  Of course, ``r`` can be converted to</span>
+<span class="sd">        `inv_phase = im &gt; r` where `r` is the radius (in voxels) of</span>
+<span class="sd">        the invading sphere.  Of course, `r` can be converted to</span>
 <span class="sd">        capillary pressure using a preferred model.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    There are many ways to perform this filter, and PoreSpy offers 3,</span>
-<span class="sd">    which users can choose between via the ``mode`` argument. These</span>
+<span class="sd">    which users can choose between via the `mode` argument. These</span>
 <span class="sd">    methods all work in a similar way by finding which foreground voxels</span>
 <span class="sd">    can accomodate a sphere of a given radius, then repeating for smaller</span>
 <span class="sd">    radii.</span>
@@ -1297,8 +1137,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">imtemp</span> <span class="o">=</span> <span class="n">fftmorphology</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">impad</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="n">strel</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;erosion&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">access_limited</span><span class="p">:</span>
-                <span class="n">imtemp</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">imtemp</span><span class="p">,</span> <span class="n">inlets</span><span class="p">,</span>
-                                                 <span class="n">strel</span><span class="o">=</span><span class="n">strel_2</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">imtemp</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">imtemp</span><span class="p">,</span> <span class="n">inlets</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
                 <span class="n">imtemp</span> <span class="o">=</span> <span class="n">chunked_func</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">fftmorphology</span><span class="p">,</span>
                                       <span class="n">im</span><span class="o">=</span><span class="n">imtemp</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="n">strel</span><span class="p">(</span><span class="n">r</span><span class="p">),</span>
@@ -1314,8 +1153,7 @@
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
             <span class="n">imtemp</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">r</span>
             <span class="k">if</span> <span class="n">access_limited</span><span class="p">:</span>
-                <span class="n">imtemp</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">imtemp</span><span class="p">,</span> <span class="n">inlets</span><span class="p">,</span>
-                                                 <span class="n">strel</span><span class="o">=</span><span class="n">strel_2</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">imtemp</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">imtemp</span><span class="p">,</span> <span class="n">inlets</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">imtemp</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
                     <span class="n">imtemp</span> <span class="o">=</span> <span class="n">chunked_func</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">edt</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
@@ -1330,8 +1168,7 @@
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
             <span class="n">imtemp</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">r</span>
             <span class="k">if</span> <span class="n">access_limited</span><span class="p">:</span>
-                <span class="n">imtemp</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">imtemp</span><span class="p">,</span> <span class="n">inlets</span><span class="p">,</span>
-                                                 <span class="n">strel</span><span class="o">=</span><span class="n">strel_2</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">imtemp</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">imtemp</span><span class="p">,</span> <span class="n">inlets</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">imtemp</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
                     <span class="n">imtemp</span> <span class="o">=</span> <span class="n">chunked_func</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">fftmorphology</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;dilation&#39;</span><span class="p">,</span>
@@ -1348,87 +1185,19 @@
 
 
 
-<div class="viewcode-block" id="trim_disconnected_blobs">
-<a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.trim_disconnected_blobs.html#porespy.filters.trim_disconnected_blobs">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">trim_disconnected_blobs</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">inlets</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Removes foreground voxels not connected to specified inlets.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
-<span class="sd">        The image containing the blobs to be trimmed</span>
-<span class="sd">    inlets : ndarray or tuple of indices</span>
-<span class="sd">        The locations of the inlets.  Can either be a boolean mask the</span>
-<span class="sd">        same shape as ``im``, or a tuple of indices such as that returned</span>
-<span class="sd">        by the ``where`` function.  Any voxels *not* connected directly to</span>
-<span class="sd">        the inlets will be trimmed.</span>
-<span class="sd">    strel : array-like</span>
-<span class="sd">        The neighborhood over which connectivity should be checked. It</span>
-<span class="sd">        must be symmetric and the same dimensionality as the image. It is</span>
-<span class="sd">        passed directly to the ``scipy.ndimage.label`` function as the</span>
-<span class="sd">        ``structure`` argument so refer to that docstring for additional</span>
-<span class="sd">        info.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
-<span class="sd">        An array of the same shape as ``im``, but with all foreground</span>
-<span class="sd">        voxels not connected to the ``inlets`` removed.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    find_disconnected_voxels, find_nonpercolating_paths</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here</span>
-<span class="sd">    &lt;https://porespy.org/examples/filters/reference/trim_disconnected_blobs.html&gt;`_</span>
-<span class="sd">    to view online example.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inlets</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">inlets</span><span class="p">)</span>
-        <span class="n">inlets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-        <span class="n">inlets</span><span class="p">[</span><span class="n">temp</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">elif</span> <span class="p">(</span><span class="n">inlets</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">inlets</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="n">inlets</span> <span class="o">=</span> <span class="n">inlets</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;inlets not valid, refer to docstring for info&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">strel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="n">strel</span> <span class="o">=</span> <span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">strel</span> <span class="o">=</span> <span class="n">square</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-    <span class="n">labels</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">inlets</span> <span class="o">+</span> <span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">),</span> <span class="n">structure</span><span class="o">=</span><span class="n">strel</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">inlets</span><span class="p">])</span>
-    <span class="n">keep</span> <span class="o">=</span> <span class="n">keep</span><span class="p">[</span><span class="n">keep</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
-    <span class="n">im2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">keep</span><span class="p">)</span>
-    <span class="n">im2</span> <span class="o">=</span> <span class="n">im2</span> <span class="o">*</span> <span class="n">im</span>
-    <span class="k">return</span> <span class="n">im2</span></div>
-
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_axial_shifts</span><span class="p">(</span><span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">include_diagonals</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_axial_shifts</span><span class="p">(</span><span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function to generate the axial shifts that will be performed on</span>
 <span class="sd">    the image to identify bordering pixels/voxels</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">neighbors</span> <span class="o">=</span> <span class="n">strel</span><span class="p">[</span><span class="n">ndim</span><span class="p">][</span><span class="n">conn</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">include_diagonals</span><span class="p">:</span>
-            <span class="n">neighbors</span> <span class="o">=</span> <span class="n">square</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">neighbors</span> <span class="o">=</span> <span class="n">diamond</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">neighbors</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span>
         <span class="n">x</span> <span class="o">-=</span> <span class="mi">1</span>
         <span class="n">y</span> <span class="o">-=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">include_diagonals</span><span class="p">:</span>
-            <span class="n">neighbors</span> <span class="o">=</span> <span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">neighbors</span> <span class="o">=</span> <span class="n">octahedron</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">neighbors</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span>
         <span class="n">x</span> <span class="o">-=</span> <span class="mi">1</span>
@@ -1437,7 +1206,7 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_make_stack</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">include_diagonals</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_stack</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a stack of images with one extra dimension to the input image</span>
 <span class="sd">    with length equal to the number of borders to search + 1.</span>
@@ -1448,7 +1217,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ndim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">im</span><span class="p">))</span>
-    <span class="n">axial_shift</span> <span class="o">=</span> <span class="n">_get_axial_shifts</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">include_diagonals</span><span class="p">)</span>
+    <span class="n">axial_shift</span> <span class="o">=</span> <span class="n">_get_axial_shifts</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="n">stack</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">im</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">im</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">axial_shift</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
         <span class="n">stack</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">im</span>
@@ -1471,7 +1240,10 @@
 
 <div class="viewcode-block" id="nphase_border">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.nphase_border.html#porespy.filters.nphase_border">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">nphase_border</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">include_diagonals</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">nphase_border</span><span class="p">(</span>
+    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">conn</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;min&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;min&#39;</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Identifies the voxels in regions that border *N* other regions.</span>
 
@@ -1483,14 +1255,16 @@
 <span class="sd">        An ND image of the porous material containing discrete values in</span>
 <span class="sd">        the pore space identifying different regions. e.g. the result of a</span>
 <span class="sd">        snow-partition</span>
-<span class="sd">    include_diagonals : bool</span>
-<span class="sd">        When identifying bordering pixels (2D) and voxels (3D) include</span>
-<span class="sd">        those shifted along more than one axis</span>
+<span class="sd">    conn : str</span>
+<span class="sd">        Can be either `&#39;min&#39;` or `&#39;max&#39;` and controls the shape of the structuring</span>
+<span class="sd">        element used to determine voxel connectivity.  The default if `&#39;min&#39;` which</span>
+<span class="sd">        imposes the strictest criteria, so that voxels must share a face to be</span>
+<span class="sd">        considered connected.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    image : ndarray</span>
-<span class="sd">        A copy of ``im`` with voxel values equal to the number of uniquely</span>
+<span class="sd">        A copy of `im` with voxel values equal to the number of uniquely</span>
 <span class="sd">        different bordering values</span>
 
 <span class="sd">    Examples</span>
@@ -1508,7 +1282,7 @@
     <span class="c1"># Pad image to handle edges</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span><span class="p">)</span>
     <span class="c1"># Stack rolled images for each neighbor to be inspected</span>
-    <span class="n">stack</span> <span class="o">=</span> <span class="n">_make_stack</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">include_diagonals</span><span class="p">)</span>
+    <span class="n">stack</span> <span class="o">=</span> <span class="n">_make_stack</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
     <span class="c1"># Sort the stack along the last axis</span>
     <span class="n">stack</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
@@ -1530,7 +1304,11 @@
 
 <div class="viewcode-block" id="prune_branches">
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.prune_branches.html#porespy.filters.prune_branches">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">prune_branches</span><span class="p">(</span><span class="n">skel</span><span class="p">,</span> <span class="n">branch_points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">prune_branches</span><span class="p">(</span>
+    <span class="n">skel</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">branch_points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove all dangling ends or tails of a skeleton</span>
 
@@ -1540,7 +1318,7 @@
 <span class="sd">        A image of a full or partial skeleton from which the tails should</span>
 <span class="sd">        be trimmed.</span>
 <span class="sd">    branch_points : ndarray, optional</span>
-<span class="sd">        An image the same size ``skel`` with ``True`` values indicating the</span>
+<span class="sd">        An image the same size `skel` with `True` values indicating the</span>
 <span class="sd">        branch points of the skeleton.  If this is not provided it is</span>
 <span class="sd">        calculated automatically.</span>
 <span class="sd">    iterations : int</span>
@@ -1560,25 +1338,22 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">skel</span> <span class="o">=</span> <span class="n">skel</span> <span class="o">&gt;</span> <span class="mi">0</span>
-    <span class="k">if</span> <span class="n">skel</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">skimage.morphology</span><span class="w"> </span><span class="kn">import</span> <span class="n">square</span> <span class="k">as</span> <span class="n">cube</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">skimage.morphology</span><span class="w"> </span><span class="kn">import</span> <span class="n">cube</span>
+    <span class="n">cube</span> <span class="o">=</span> <span class="n">strel</span><span class="p">[</span><span class="n">skel</span><span class="o">.</span><span class="n">ndim</span><span class="p">][</span><span class="s1">&#39;max&#39;</span><span class="p">]</span>
     <span class="c1"># Create empty image to house results</span>
     <span class="n">im_result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">skel</span><span class="p">)</span>
     <span class="c1"># If branch points are not supplied, attempt to find them</span>
     <span class="k">if</span> <span class="n">branch_points</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">branch_points</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">skel</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">3</span>
+        <span class="n">branch_points</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">skel</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">cube</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span>
         <span class="n">branch_points</span> <span class="o">=</span> <span class="n">branch_points</span> <span class="o">*</span> <span class="n">skel</span>
     <span class="c1"># Store original branch points before dilating</span>
     <span class="n">pts_orig</span> <span class="o">=</span> <span class="n">branch_points</span>
     <span class="c1"># Find arcs of skeleton by deleting branch points</span>
     <span class="n">arcs</span> <span class="o">=</span> <span class="n">skel</span> <span class="o">*</span> <span class="p">(</span><span class="o">~</span><span class="n">branch_points</span><span class="p">)</span>
     <span class="c1"># Label arcs</span>
-    <span class="n">arc_labels</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">arcs</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">arc_labels</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">arcs</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">cube</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="c1"># Dilate branch points so they overlap with the arcs</span>
-    <span class="n">branch_points</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="n">branch_points</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
-    <span class="n">pts_labels</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">branch_points</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">branch_points</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="n">branch_points</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">cube</span><span class="p">)</span>
+    <span class="n">pts_labels</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">branch_points</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">cube</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="c1"># Now scan through each arc to see if it&#39;s connected to two branch points</span>
     <span class="n">slices</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="n">arc_labels</span><span class="p">)</span>
     <span class="n">label_num</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1607,19 +1382,19 @@
 <a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.chunked_func.html#porespy.filters.chunked_func">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">chunked_func</span><span class="p">(</span>
     <span class="n">func</span><span class="p">,</span>
-    <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">divs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">cores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">divs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">cores</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">im_arg</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="s2">&quot;image&quot;</span><span class="p">,</span> <span class="s2">&quot;im&quot;</span><span class="p">],</span>
     <span class="n">strel_arg</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;strel&quot;</span><span class="p">,</span> <span class="s2">&quot;structure&quot;</span><span class="p">,</span> <span class="s2">&quot;footprint&quot;</span><span class="p">],</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Performs the specfied operation &quot;chunk-wise&quot; in parallel using ``dask``.</span>
+<span class="sd">    Performs the specfied operation &quot;chunk-wise&quot; in parallel using `dask`.</span>
 
 <span class="sd">    This can be used to save memory by doing one chunk at a time</span>
-<span class="sd">    (``cores=1``) or to increase computation speed by spreading the work</span>
-<span class="sd">    across multiple cores (e.g. ``cores=8``)</span>
+<span class="sd">    (`cores=1`) or to increase computation speed by spreading the work</span>
+<span class="sd">    across multiple cores (e.g. `cores=8`)</span>
 
 <span class="sd">    This function can be used with any operation that applies a</span>
 <span class="sd">    structuring element of some sort, since this implies that the</span>
@@ -1629,13 +1404,13 @@
 <span class="sd">    ----------</span>
 <span class="sd">    func : function handle</span>
 <span class="sd">        The function which should be applied to each chunk, such as</span>
-<span class="sd">        ``spipy.ndimage.binary_dilation``.</span>
+<span class="sd">        `spipy.ndimage.binary_dilation`.</span>
 <span class="sd">    overlap : scalar or list of scalars, optional</span>
 <span class="sd">        The amount of overlap to include when dividing up the image. This</span>
 <span class="sd">        value will almost always be the size (i.e. raduis) of the</span>
 <span class="sd">        structuring element. If not specified then the amount of overlap</span>
 <span class="sd">        is inferred from the size of the structuring element, in which</span>
-<span class="sd">        case the ``strel_arg`` must be specified.</span>
+<span class="sd">        case the `strel_arg` must be specified.</span>
 <span class="sd">    divs : scalar or list of scalars (default = [2, 2, 2])</span>
 <span class="sd">        The number of chunks to divide the image into in each direction.</span>
 <span class="sd">        The default is 2 chunks in each direction, resulting in a</span>
@@ -1647,19 +1422,19 @@
 <span class="sd">        will be used, or as many are needed for the given number of</span>
 <span class="sd">        chunks, which ever is smaller.</span>
 <span class="sd">    im_arg : str</span>
-<span class="sd">        The keyword used by ``func`` for the image to be operated on. By</span>
-<span class="sd">        default this function will look for ``image``, ``input``, and</span>
-<span class="sd">        ``im`` which are commonly used by *scipy.ndimage* and *skimage*.</span>
+<span class="sd">        The keyword used by `func` for the image to be operated on. By</span>
+<span class="sd">        default this function will look for `image`, `input`, and</span>
+<span class="sd">        `im` which are commonly used by *scipy.ndimage* and *skimage*.</span>
 <span class="sd">    strel_arg : str</span>
-<span class="sd">        The keyword used by ``func`` for the structuring element to apply.</span>
-<span class="sd">        This is only needed if ``overlap`` is not specified. By default</span>
-<span class="sd">        this function will look for ``strel``, ``structure``, and</span>
-<span class="sd">        ``footprint`` which are commonly used by *scipy.ndimage* and</span>
+<span class="sd">        The keyword used by `func` for the structuring element to apply.</span>
+<span class="sd">        This is only needed if `overlap` is not specified. By default</span>
+<span class="sd">        this function will look for `strel`, `structure`, and</span>
+<span class="sd">        `footprint` which are commonly used by *scipy.ndimage* and</span>
 <span class="sd">        *skimage*.</span>
 <span class="sd">    kwargs</span>
-<span class="sd">        All other arguments are passed to ``func`` as keyword arguments.</span>
+<span class="sd">        All other arguments are passed to `func` as keyword arguments.</span>
 <span class="sd">        Note that PoreSpy will fetch the image from this list of keywords</span>
-<span class="sd">        using the value provided to ``im_arg``.</span>
+<span class="sd">        using the value provided to `im_arg`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1676,7 +1451,7 @@
 <span class="sd">    artifacts. The amount of padding is usually equal to the radius of the</span>
 <span class="sd">    structuring element but some functions do not use one, such as the</span>
 <span class="sd">    distance transform and Gaussian blur.  In these cases the user can</span>
-<span class="sd">    specify ``overlap``.</span>
+<span class="sd">    specify `overlap`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>

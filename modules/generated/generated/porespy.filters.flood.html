@@ -301,8 +301,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
-     fill_blind_pores
+    <a class="reference internal" href="porespy.filters.fill_closed_pores.html">
+     fill_closed_pores
     </a>
    </li>
    <li class="toctree-l2">
@@ -980,10 +980,10 @@
 <h1>flood<a class="headerlink" href="#flood" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.flood">
-<span class="sig-name descname"><span class="pre">flood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'maximum'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'minimum'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'median'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'mean'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'size'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'standard_deviations'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'variance'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'max'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#flood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.flood" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">flood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'maximum'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'minimum'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'median'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'mean'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'size'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'standard_deviations'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'variance'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'max'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#flood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.flood" title="Link to this definition">¶</a></dt>
 <dd><p>Floods/fills each region in an image with a single value based on the
 specific values in that region.</p>
-<p>This function calls the various functions in <code class="docutils literal notranslate"><span class="pre">scipy.ndimage.measurements</span></code>
+<p>This function calls the various functions in <cite>scipy.ndimage.measurements</cite>
 but instead of returning a list of values, it fills each region with its
 value.  This is useful for visualization and statistics.</p>
 <dl class="field-list simple">
@@ -991,9 +991,11 @@ value.  This is useful for visualization and statistics.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>im</strong> (<em>array_like</em>) – An image with the numerical values of interest in each voxel,
 and 0’s elsewhere.</p></li>
-<li><p><strong>labels</strong> (<em>array_like</em>) – An array the same shape as <code class="docutils literal notranslate"><span class="pre">im</span></code> with each region labeled.</p></li>
+<li><p><strong>labels</strong> (<em>array_like</em>) – An array containing labels identifying each individual region to be
+flooded. If not provided then <cite>scipy.ndimage.label</cite> is applied to
+<cite>im &gt; 0</cite>.</p></li>
 <li><p><strong>mode</strong> (<em>string</em>) – <p>Specifies how to determine the value to flood each region. Options
-taken from the <code class="docutils literal notranslate"><span class="pre">scipy.ndimage.measurements</span></code> function include:</p>
+taken from the <cite>scipy.ndimage.measurements</cite> function include:</p>
 <table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Option</p></th>
@@ -1003,11 +1005,11 @@ taken from the <code class="docutils literal notranslate"><span class="pre">scip
 <tbody>
 <tr class="row-even"><td><p>maximum</p></td>
 <td><p>Floods each region with the local max in that region.
-The keyword <code class="docutils literal notranslate"><span class="pre">max</span></code> is also accepted.</p></td>
+The keyword <cite>max</cite> is also accepted.</p></td>
 </tr>
 <tr class="row-odd"><td><p>minimum</p></td>
 <td><p>Floods each region the local minimum in that region.
-The keyword <code class="docutils literal notranslate"><span class="pre">min</span></code> is also accepted.</p></td>
+The keyword <cite>min</cite> is also accepted.</p></td>
 </tr>
 <tr class="row-even"><td><p>median</p></td>
 <td><p>Floods each region the local median in that region</p></td>
@@ -1017,16 +1019,16 @@ The keyword <code class="docutils literal notranslate"><span class="pre">min</sp
 </tr>
 <tr class="row-even"><td><p>size</p></td>
 <td><p>Floods each region with the size of that region.  This
-is actually accomplished with <code class="docutils literal notranslate"><span class="pre">scipy.ndimage.sum</span></code> by
-converting <code class="docutils literal notranslate"><span class="pre">im</span></code> to a boolean image (<code class="docutils literal notranslate"><span class="pre">im</span> <span class="pre">=</span> <span class="pre">im</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>).</p></td>
+is actually accomplished with <cite>scipy.ndimage.sum</cite> by
+converting <cite>im</cite> to a boolean image (<cite>im = im &gt; 0</cite>).</p></td>
 </tr>
 <tr class="row-odd"><td><p>standard_deviation</p></td>
 <td><p>Floods each region with the value of the standard
-deviation of the voxels in <code class="docutils literal notranslate"><span class="pre">im</span></code>.</p></td>
+deviation of the voxels in <cite>im</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p>variance</p></td>
 <td><p>Floods each region with the value of the variance of
-the voxels in <code class="docutils literal notranslate"><span class="pre">im</span></code>.</p></td>
+the voxels in <cite>im</cite>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1034,8 +1036,8 @@ the voxels in <code class="docutils literal notranslate"><span class="pre">im</s
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>flooded</strong> – A copy of <code class="docutils literal notranslate"><span class="pre">im</span></code> with new values placed in each forground voxel
-based on the <code class="docutils literal notranslate"><span class="pre">mode</span></code>.</p>
+<dd class="field-even"><p><strong>flooded</strong> – A copy of <cite>im</cite> with new values placed in each forground voxel
+based on the <cite>mode</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
