@@ -262,7 +262,7 @@
 <span class="sd">        The number of pixels/voxels layers to place along perimeter.</span>
 <span class="sd">    mode : string</span>
 <span class="sd">        The type of border to create.  Options are &#39;faces&#39;, &#39;edges&#39;</span>
-<span class="sd">        (default) and &#39;corners&#39;.  In 2D &#39;corners&#39; and &#39;edges&#39; give the</span>
+<span class="sd">        (default) and &#39;corners&#39;.  In 2D &#39;faces&#39; and &#39;edges&#39; give the</span>
 <span class="sd">        same result.</span>
 
 <span class="sd">    Returns</span>
@@ -288,8 +288,7 @@
             <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;edges&#39;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ndims</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">::]</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">border</span><span class="p">[</span><span class="mi">0</span><span class="p">::,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span> 
         <span class="k">if</span> <span class="n">ndims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
             <span class="n">border</span><span class="p">[</span><span class="mi">0</span><span class="p">::,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">::,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
