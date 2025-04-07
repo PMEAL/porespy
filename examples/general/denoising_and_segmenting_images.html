@@ -1266,12 +1266,12 @@
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="../simulations/tutorials/overview_of_two_phase_flow_part3.html">
-       Overview of Image-Based Two-Phase Flow Simulations - Part 3: Invasion
+       Overview of Image-Based Two-Phase Flow Simulations - Part 3: Injection
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../simulations/tutorials/using_invasion.html">
-       Image-based invasion percoalation
+      <a class="reference internal" href="../simulations/tutorials/using_injection.html">
+       Using the Injection Algorithm
       </a>
      </li>
     </ul>
@@ -2589,12 +2589,12 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../simulations/tutorials/overview_of_two_phase_flow_part3.html">
-   Overview of Image-Based Two-Phase Flow Simulations - Part 3: Invasion
+   Overview of Image-Based Two-Phase Flow Simulations - Part 3: Injection
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/tutorials/using_invasion.html">
-   Image-based invasion percoalation
+  <a class="reference internal" href="../simulations/tutorials/using_injection.html">
+   Using the Injection Algorithm
   </a>
  </li>
 </ul>
@@ -2988,7 +2988,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[18:50:13] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[01:09:45] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
@@ -3005,7 +3005,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/d4ccc97e13f21e5ae70363c072c6bd4d98fb0b5c28118074b14c5596b5245d37.png" src="../../_images/d4ccc97e13f21e5ae70363c072c6bd4d98fb0b5c28118074b14c5596b5245d37.png" />
+<img alt="../../_images/3e53cc6a37d18198b21dff8f722782a3e290e5d1a1f398e881dc1391c64f5d3e.png" src="../../_images/3e53cc6a37d18198b21dff8f722782a3e290e5d1a1f398e881dc1391c64f5d3e.png" />
 </div>
 </div>
 <p>The above image now contains some noise in each phase, which is more realistic, though as we will see it not close to reality.  Let’s look at a histogram of this image:</p>
@@ -3017,7 +3017,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/64839dc6eb22ad8506304180ec4e31ae81573356649c01d67222af7f36ac7589.png" src="../../_images/64839dc6eb22ad8506304180ec4e31ae81573356649c01d67222af7f36ac7589.png" />
+<img alt="../../_images/b87343b98846f2184efb175c83ff95b5c12aec4c2214d86d817c49ad65f5c904.png" src="../../_images/b87343b98846f2184efb175c83ff95b5c12aec4c2214d86d817c49ad65f5c904.png" />
 </div>
 </div>
 <p>We can see above that all pixels with a value less than 0.5 belong to the dark phase, while the other pixels belong to the light phase.  A simple global threshold can reproduce the original image perfectly:</p>
@@ -3029,7 +3029,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e2dabcf4c0370153fd2d56e095f513378085a2ba034835ef4e811f3818bec0fd.png" src="../../_images/e2dabcf4c0370153fd2d56e095f513378085a2ba034835ef4e811f3818bec0fd.png" />
+<img alt="../../_images/3d3f2bcd5de6d54f61f138de50a8d2d79acbb5aba0e73e73dabc00d4d31d8888.png" src="../../_images/3d3f2bcd5de6d54f61f138de50a8d2d79acbb5aba0e73e73dabc00d4d31d8888.png" />
 </div>
 </div>
 <p>Now let’s look at a more realistic noise distribution, though still artificially generated:</p>
@@ -3044,7 +3044,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e11da0e8be7f435b31cd3d32549e66e076ec0c22dcb4755a6b8035be7c049283.png" src="../../_images/e11da0e8be7f435b31cd3d32549e66e076ec0c22dcb4755a6b8035be7c049283.png" />
+<img alt="../../_images/58b5f0ace6ff413ecb9d80238be251ca14cc23c50fdf77dcae2fb74b2e22994a.png" src="../../_images/58b5f0ace6ff413ecb9d80238be251ca14cc23c50fdf77dcae2fb74b2e22994a.png" />
 </div>
 </div>
 <p>Now we can see that the noise is much less separated, and in fact the tails of the distributions just touch each other in the middle.  Let’s see how the simple threshold we used above would work now:</p>
@@ -3056,7 +3056,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7cb6a622fdc39b3b98b678142c319d1f63c2ebd3a9eb7c0df84d6826f28781e9.png" src="../../_images/7cb6a622fdc39b3b98b678142c319d1f63c2ebd3a9eb7c0df84d6826f28781e9.png" />
+<img alt="../../_images/ea10ef5f9c7e0c6371a938476b49e1ab32186782414b5e0d2d2513f3962aeb88.png" src="../../_images/ea10ef5f9c7e0c6371a938476b49e1ab32186782414b5e0d2d2513f3962aeb88.png" />
 </div>
 </div>
 <p>Now there are a few pixels in the dark phase which have been identified as bright and vice-versa. Let’s take this further but putting more extreme, but more realistic noise:</p>
@@ -3072,7 +3072,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c0b23eb9d84d5d264e462c44bc13e075053b3aa189127af91e5cbcc01c1dbcec.png" src="../../_images/c0b23eb9d84d5d264e462c44bc13e075053b3aa189127af91e5cbcc01c1dbcec.png" />
+<img alt="../../_images/9d9bee1316e68994480c8a6bae29166630da09b7564a9de02ff612e51ccaebb7.png" src="../../_images/9d9bee1316e68994480c8a6bae29166630da09b7564a9de02ff612e51ccaebb7.png" />
 </div>
 </div>
 <p>In the above case our eyes can differentiate the light and dark phases pretty well, but the histogram is fully merged into one, and the global threshold produces a very problematic result. Just to show this is not an exageration, below is an actual slice of a tomogram taken of an electrospun flow-battery electrode:</p>

@@ -1269,12 +1269,12 @@
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="../../simulations/tutorials/overview_of_two_phase_flow_part3.html">
-       Overview of Image-Based Two-Phase Flow Simulations - Part 3: Invasion
+       Overview of Image-Based Two-Phase Flow Simulations - Part 3: Injection
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../simulations/tutorials/using_invasion.html">
-       Image-based invasion percoalation
+      <a class="reference internal" href="../../simulations/tutorials/using_injection.html">
+       Using the Injection Algorithm
       </a>
      </li>
     </ul>
@@ -2592,12 +2592,12 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../simulations/tutorials/overview_of_two_phase_flow_part3.html">
-   Overview of Image-Based Two-Phase Flow Simulations - Part 3: Invasion
+   Overview of Image-Based Two-Phase Flow Simulations - Part 3: Injection
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../simulations/tutorials/using_invasion.html">
-   Image-based invasion percoalation
+  <a class="reference internal" href="../../simulations/tutorials/using_injection.html">
+   Using the Injection Algorithm
   </a>
  </li>
 </ul>
@@ -2969,7 +2969,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[18:51:43] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[01:11:19] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
@@ -2980,7 +2980,7 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="n">porosity</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
 <span class="n">pc</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">capillary_transform</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
-<span class="n">drn</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">drainage</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">return_sizes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">drn</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">drainage</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -3005,7 +3005,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/c1ea6b91835067d15fa5812c24c25baa86333071dad6f41c7e734ca18aaa569d.png" src="../../../_images/c1ea6b91835067d15fa5812c24c25baa86333071dad6f41c7e734ca18aaa569d.png" />
+<img alt="../../../_images/7f37fb6c011fddad6ec935f1a51a1648081eb686f921fdc9bddc9b4fca1ca423.png" src="../../../_images/7f37fb6c011fddad6ec935f1a51a1648081eb686f921fdc9bddc9b4fca1ca423.png" />
 </div>
 </div>
 <p>Alternatively, if the size map is available but not the capillary pressure map, then <code class="docutils literal notranslate"><span class="pre">size_to_pc</span></code> can be used first:</p>
@@ -3027,7 +3027,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/a24c7a1417b260ef3f7006f62749fe8e52c5edb677c97f82cd102f52a8a1765a.png" src="../../../_images/a24c7a1417b260ef3f7006f62749fe8e52c5edb677c97f82cd102f52a8a1765a.png" />
+<img alt="../../../_images/b1b92afde8814787cb9138b7eb213e8335093f84555d90072250ac0a93d7ba3f.png" src="../../../_images/b1b92afde8814787cb9138b7eb213e8335093f84555d90072250ac0a93d7ba3f.png" />
 </div>
 </div>
 </section>

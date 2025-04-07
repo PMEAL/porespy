@@ -38,7 +38,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": null,
    "id": "43b21324",
    "metadata": {
     "execution": {
@@ -53,7 +53,7 @@
     "np.random.seed(0)\n",
     "im = ps.generators.blobs(shape=[200, 200], porosity=0.6)\n",
     "pc = ps.filters.capillary_transform(im, sigma=0.01, theta=180, voxel_size=1e-5)\n",
-    "drn = ps.simulations.drainage(im, return_sizes=True)"
+    "drn = ps.simulations.drainage(im)"
    ]
   },
   {

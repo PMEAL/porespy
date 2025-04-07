@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Overview of Image-Based Two-Phase Flow Simulations - Part 3: Invasion &#8212; PoreSpy  documentation</title>
+    <title>Overview of Image-Based Two-Phase Flow Simulations - Part 3: Injection &#8212; PoreSpy  documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -43,7 +43,7 @@
     <script src="../../../_static/js/custom.js?v=8f303282"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Image-based invasion percoalation" href="using_invasion.html" />
+    <link rel="next" title="Using the Injection Algorithm" href="using_injection.html" />
     <link rel="prev" title="Overview of Image-Based Two-Phase Flow Simulations - Part 2: Imbibition" href="overview_of_two_phase_flow_part2.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="en">
@@ -1268,12 +1268,12 @@
      </li>
      <li class="toctree-l3 current active">
       <a class="current reference internal" href="#">
-       Overview of Image-Based Two-Phase Flow Simulations - Part 3: Invasion
+       Overview of Image-Based Two-Phase Flow Simulations - Part 3: Injection
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="using_invasion.html">
-       Image-based invasion percoalation
+      <a class="reference internal" href="using_injection.html">
+       Using the Injection Algorithm
       </a>
      </li>
     </ul>
@@ -2591,12 +2591,12 @@
  </li>
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
-   Overview of Image-Based Two-Phase Flow Simulations - Part 3: Invasion
+   Overview of Image-Based Two-Phase Flow Simulations - Part 3: Injection
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="using_invasion.html">
-   Image-based invasion percoalation
+  <a class="reference internal" href="using_injection.html">
+   Using the Injection Algorithm
   </a>
  </li>
 </ul>
@@ -2954,13 +2954,13 @@
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#comparison-of-invasion-and-drainage">
-     Comparison of Invasion and Drainage
+    <a class="reference internal nav-link" href="#comparison-of-injection-and-drainage">
+     Comparison of Injection and Drainage
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#incorporating-trapping-in-invasion">
-     Incorporating Trapping in Invasion
+    <a class="reference internal nav-link" href="#incorporating-trapping-in-injection">
+     Incorporating Trapping in Injection
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
@@ -2994,12 +2994,12 @@
               
               <article class="bd-article" role="main">
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="overview-of-image-based-two-phase-flow-simulations-part-3-invasion">
-<h1>Overview of Image-Based Two-Phase Flow Simulations - Part 3: Invasion<a class="headerlink" href="#overview-of-image-based-two-phase-flow-simulations-part-3-invasion" title="Link to this heading">¶</a></h1>
-<p>In parts 1 and 2 of this series we looked at <code class="docutils literal notranslate"><span class="pre">drainage</span></code> and <code class="docutils literal notranslate"><span class="pre">imbibition</span></code>, which are both pressure-controlled displacement processes.  This refers to the fact that a fixed pressure is applied to the invading phase, and all the accessible pore space become filled. In the present tutorial we will look at the <code class="docutils literal notranslate"><span class="pre">invasion</span></code> algorithm, which simulates volume-controlled invasion of non-wetting fluid. In this process the invasion front moves incrementally as though being injected by positive displacement pump, like as syringe pump.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="overview-of-image-based-two-phase-flow-simulations-part-3-injection">
+<h1>Overview of Image-Based Two-Phase Flow Simulations - Part 3: Injection<a class="headerlink" href="#overview-of-image-based-two-phase-flow-simulations-part-3-injection" title="Link to this heading">¶</a></h1>
+<p>In parts 1 and 2 of this series we looked at <code class="docutils literal notranslate"><span class="pre">drainage</span></code> and <code class="docutils literal notranslate"><span class="pre">imbibition</span></code>, which are both pressure-controlled displacement processes.  This refers to the fact that a fixed pressure is applied to the invading phase, and all the accessible pore space become filled. In the present tutorial we will look at the <code class="docutils literal notranslate"><span class="pre">injection</span></code> algorithm, which simulates volume-controlled invasion of non-wetting fluid. In this process the invasion front moves incrementally as though being injected by positive displacement pump, like as syringe pump.</p>
 <p>The objectives of this tutorial are as follows:</p>
 <ul class="simple">
-<li><p>Give an overview of the various ways to use the <code class="docutils literal notranslate"><span class="pre">porespy.simulations.invasion</span></code> algorithm</p></li>
+<li><p>Give an overview of the various ways to use the <code class="docutils literal notranslate"><span class="pre">porespy.simulations.injection</span></code> algorithm</p></li>
 <li><p>Demonstrate how the definition of inlets and outlets affects the result</p></li>
 <li><p>Explain the conventions used for dealing with trapped wetting phase in displacement maps</p></li>
 <li><p>Plot capillary pressure curves using the results of an invasion simulation, and compare it to a drainage simulation.</p></li>
@@ -3017,7 +3017,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[18:56:53] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[01:17:12] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
@@ -3047,7 +3047,7 @@
     <span class="n">theta</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span> 
     <span class="n">voxel_size</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">inv1</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">invasion</span><span class="p">(</span>
+<span class="n">inv1</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">injection</span><span class="p">(</span>
     <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
     <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
     <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
@@ -3060,7 +3060,7 @@
 </section>
 <section id="inspect-displacement-maps">
 <h3>Inspect Displacement Maps<a class="headerlink" href="#inspect-displacement-maps" title="Link to this heading">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">invasion</span></code> function returns a <code class="docutils literal notranslate"><span class="pre">Results</span></code> object which is a dataclass like object with various images attached as attributes.  The main images are the sequence map, the saturation map, and the capillary pressure map.  These are shown below:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">injection</span></code> function returns a <code class="docutils literal notranslate"><span class="pre">Results</span></code> object which is a dataclass-like object with various images attached as attributes.  The main images are the sequence map, the saturation map, and the capillary pressure map.  These are shown below:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
@@ -3134,7 +3134,7 @@ Requested: 0.8, Actual 0.7995018679950187
 </div>
 </div>
 </div>
-<p>Of course PoreSpy offers the <code class="docutils literal notranslate"><span class="pre">pc_map_to_pc_curve</span></code> function which works on the displacement maps produced by the <code class="docutils literal notranslate"><span class="pre">invasion</span></code> simulation, provided that the sequence map is also provided.  Note that the invasion is technically a drainage process since non-wetting phase is displacing the wetting phase, so <code class="docutils literal notranslate"><span class="pre">mode='drainage'</span></code> should be specified.</p>
+<p>Of course PoreSpy offers the <code class="docutils literal notranslate"><span class="pre">pc_map_to_pc_curve</span></code> function which works on the displacement maps produced by the <code class="docutils literal notranslate"><span class="pre">injection</span></code> simulation, provided that the sequence map is also provided.  Note that the invasion is technically a drainage process since non-wetting phase is displacing the wetting phase, so <code class="docutils literal notranslate"><span class="pre">mode='drainage'</span></code> should be specified.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Pc1</span><span class="p">,</span> <span class="n">Snwp1</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span>
@@ -3145,7 +3145,7 @@ Requested: 0.8, Actual 0.7995018679950187
 <span class="p">)</span>
 
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Pc1</span><span class="p">),</span> <span class="n">Snwp1</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;invasion&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Pc1</span><span class="p">),</span> <span class="n">Snwp1</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;injection&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;log(Capillary Pressure [Pa])&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Non-Wetting Phase Saturation&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">]);</span>
@@ -3158,8 +3158,8 @@ Requested: 0.8, Actual 0.7995018679950187
 </div>
 </div>
 </section>
-<section id="comparison-of-invasion-and-drainage">
-<h3>Comparison of Invasion and Drainage<a class="headerlink" href="#comparison-of-invasion-and-drainage" title="Link to this heading">¶</a></h3>
+<section id="comparison-of-injection-and-drainage">
+<h3>Comparison of Injection and Drainage<a class="headerlink" href="#comparison-of-injection-and-drainage" title="Link to this heading">¶</a></h3>
 <p>The above plot shows the fluctuating capillary pressure due the non-wetting fluid squeezing through throat constrictions then flooding into pore bodies repeatedly.  In fact the <em>envelop</em> of peak pressures in the above curve defines the capillary pressure curve that would be obtained using pressure-based drainage.  This can be illustrated by overlaying the drainage curve:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3183,19 +3183,19 @@ Requested: 0.8, Actual 0.7995018679950187
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/6cb1171311562f6dc0dea377a0171821160b6d6150d6d6140a521b8a77c0e96b.png"><img alt="../../../_images/6cb1171311562f6dc0dea377a0171821160b6d6150d6d6140a521b8a77c0e96b.png" src="../../../_images/6cb1171311562f6dc0dea377a0171821160b6d6150d6d6140a521b8a77c0e96b.png" style="width: 384px; height: 384px;" />
+<a class="reference internal image-reference" href="../../../_images/18305dd0933ed97fdd34a900201147f84ade3019f201bc1950f1e0529d1ca7b0.png"><img alt="../../../_images/18305dd0933ed97fdd34a900201147f84ade3019f201bc1950f1e0529d1ca7b0.png" src="../../../_images/18305dd0933ed97fdd34a900201147f84ade3019f201bc1950f1e0529d1ca7b0.png" style="width: 384px; height: 384px;" />
 </a>
 </div>
 </div>
-<p>When plotted together it becomes apparent that the drainage curve is a subset of the invasion curve, and that the pressure fluctuations in the invasion curve represent the filling of the voids made accessible at each new peak pressure.</p>
+<p>When plotted together it becomes apparent that the drainage curve is a subset of the injection curve, and that the pressure fluctuations in the invasion curve represent the filling of the voids made accessible at each new peak pressure.</p>
 </section>
-<section id="incorporating-trapping-in-invasion">
-<h3>Incorporating Trapping in Invasion<a class="headerlink" href="#incorporating-trapping-in-invasion" title="Link to this heading">¶</a></h3>
+<section id="incorporating-trapping-in-injection">
+<h3>Incorporating Trapping in Injection<a class="headerlink" href="#incorporating-trapping-in-injection" title="Link to this heading">¶</a></h3>
 <p>As with the drainage and imbibition algorithms discussed in Parts 1 and 2 of this series, the effect of trapped wetting phase can be incorporated by supplying a mask of <code class="docutils literal notranslate"><span class="pre">outlets</span></code>.  This will automatically apply trapping to the displacement maps.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">outlets</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">faces</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">outlet</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">inv2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">invasion</span><span class="p">(</span>
+<span class="n">inv2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">injection</span><span class="p">(</span>
     <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
     <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
     <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
@@ -3234,7 +3234,7 @@ Requested: 0.8, Actual 0.7995018679950187
 <span class="p">)</span>
 
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Pc3</span><span class="p">),</span> <span class="n">Snwp3</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;invasion&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Pc3</span><span class="p">),</span> <span class="n">Snwp3</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;injection&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;log(Capillary Pressure [Pa])&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Non-Wetting Phase Saturation&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">]);</span>
@@ -3269,7 +3269,7 @@ Requested: 0.8, Actual 0.7995018679950187
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/8cc3273280db33288531b974214eea97f6e4d634c762ba3cf7a70b9ec035d39d.png"><img alt="../../../_images/8cc3273280db33288531b974214eea97f6e4d634c762ba3cf7a70b9ec035d39d.png" src="../../../_images/8cc3273280db33288531b974214eea97f6e4d634c762ba3cf7a70b9ec035d39d.png" style="width: 384px; height: 384px;" />
+<a class="reference internal image-reference" href="../../../_images/cc49f5b3a8d6515629dfc04ac4667df7c27d463399c7f14f70683ac6fe9d1ce1.png"><img alt="../../../_images/cc49f5b3a8d6515629dfc04ac4667df7c27d463399c7f14f70683ac6fe9d1ce1.png" src="../../../_images/cc49f5b3a8d6515629dfc04ac4667df7c27d463399c7f14f70683ac6fe9d1ce1.png" style="width: 384px; height: 384px;" />
 </a>
 </div>
 </div>
@@ -3277,7 +3277,7 @@ Requested: 0.8, Actual 0.7995018679950187
 </section>
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">invasion</span></code> function simulates volume-controlled injection of non-wetting phase into an image. In can incorporate trapping but does net yet support inclusion of residual non-wetting phase (though this is possible and is planned).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">injection</span></code> function simulates volume-controlled injection of non-wetting phase into an image. In can incorporate trapping but does net yet support inclusion of residual non-wetting phase (though this is possible and is planned).</p>
 <p>The following table illustrates how the trapped phase is indicated in the various displacement maps:</p>
 <p>+——————-+————–+—————–+————————————+
 | Displacement Map  | Trapped NWP  | Residual WP     | Code to Generate Swp               |

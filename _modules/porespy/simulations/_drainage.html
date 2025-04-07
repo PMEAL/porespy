@@ -180,6 +180,7 @@
   <h1>Source code for porespy.simulations._drainage</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">skimage.morphology</span><span class="w"> </span><span class="kn">import</span> <span class="n">ball</span><span class="p">,</span> <span class="n">disk</span><span class="p">,</span> <span class="n">cube</span><span class="p">,</span> <span class="n">square</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
@@ -187,14 +188,20 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_insert_disks_at_points</span><span class="p">,</span>
     <span class="n">_insert_disks_at_points_parallel</span><span class="p">,</span>
+    <span class="n">_insert_disk_at_points</span><span class="p">,</span>
+    <span class="n">_insert_disk_at_points_parallel</span><span class="p">,</span>
     <span class="n">get_tqdm</span><span class="p">,</span>
     <span class="n">Results</span><span class="p">,</span>
+    <span class="n">ps_rect</span><span class="p">,</span>
+    <span class="n">ps_round</span><span class="p">,</span>
+    <span class="n">make_contiguous</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy.filters</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">trim_disconnected_blobs</span><span class="p">,</span>
     <span class="n">find_trapped_regions</span><span class="p">,</span>
     <span class="n">pc_to_satn</span><span class="p">,</span>
     <span class="n">pc_to_seq</span><span class="p">,</span>
+    <span class="n">fftmorphology</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy.generators</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">borders</span><span class="p">,</span>
@@ -207,7 +214,11 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;drainage&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ibop&#39;</span><span class="p">,</span>
+    <span class="c1"># The following are reference implementations using different techniques</span>
+    <span class="s1">&#39;drainage_dt&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;drainage_fft&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;drainage_dt_fft&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;drainage_dsi&#39;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -215,169 +226,405 @@
 <span class="n">strel</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="n">disk</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="n">square</span><span class="p">(</span><span class="mi">3</span><span class="p">)},</span> <span class="mi">3</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="n">ball</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">)}}</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">ibop</span><span class="p">(</span>
-    <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
-    <span class="n">pc</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">dt</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">inlets</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">outlets</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">residual</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">return_sizes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">conn</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;min&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;min&#39;</span><span class="p">,</span>
-    <span class="n">min_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">drainage_dsi</span><span class="p">(</span>
+    <span class="n">im</span><span class="p">,</span>
+    <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs a distance transform based drainage simulation using direct sphere</span>
+<span class="sd">    insertion to accomplish dilation and distance transform thresholding for erosion</span>
 
-    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The boolean image of the void space on which to perform the simulation</span>
+<span class="sd">    inlets : ndarray (optional)</span>
+<span class="sd">        A boolean array with `True` values indicating the inlet locations for the</span>
+<span class="sd">        invading (non-wetting) fluid. If not provided then access limitations will</span>
+<span class="sd">        not be applied, meaning that the invading fluid cand appear anywhere within</span>
+<span class="sd">        the domain.</span>
+<span class="sd">    outlets : ndarray (optional)</span>
+<span class="sd">        A boolean array with `True` values indicating the outlet locations through</span>
+<span class="sd">        which defending (wetting) phase would exit the domain. If not provided then</span>
+<span class="sd">        trapping of the wetting phase is ignored.</span>
+<span class="sd">    steps : scalar or array_like</span>
+<span class="sd">        A list of which sphere sizes to invade. If `None` (default) then each unique</span>
+<span class="sd">        integer value in the distance transform is used. If a scalar then a list of</span>
+<span class="sd">        steps is generated from `steps` to 1.</span>
+<span class="sd">    smooth : boolean</span>
+<span class="sd">        If `True` (default) then the spheres are drawn without any single voxel</span>
+<span class="sd">        protrusions on the faces.</span>
 
-    <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    results : Dataclass-like object</span>
+<span class="sd">        An object with the following attributes:</span>
 
-    <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">inlets</span> <span class="o">=</span> <span class="n">borders</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;faces&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="n">im</span>
+<span class="sd">        ----------- ----------------------------------------------------------------</span>
+<span class="sd">        Attribute   Description</span>
+<span class="sd">        ----------- ----------------------------------------------------------------</span>
+<span class="sd">        `im_seq`    The sequence map indicating the sequence or step number at which</span>
+<span class="sd">                    each voxels was first invaded.</span>
+<span class="sd">        `im_size`   The size map indicating the size of the sphere being drawn</span>
+<span class="sd">                    when each voxel was first invaded.</span>
+<span class="sd">        ----------- ----------------------------------------------------------------</span>
 
-    <span class="k">if</span> <span class="n">outlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">outlets</span> <span class="o">=</span> <span class="n">outlets</span><span class="o">*</span><span class="n">im</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">inlets</span> <span class="o">*</span> <span class="n">outlets</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Specified inlets and outlets overlap&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">pc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">pc</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">/</span><span class="n">dt</span>
-    <span class="n">pc</span><span class="p">[</span><span class="o">~</span><span class="n">im</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Remove any infs or nans from pc computation</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># Use values in pc for invasion steps</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span><span class="o">*</span><span class="n">im</span>
-        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">pc</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">pc</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="n">steps</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">pc</span><span class="p">[</span><span class="n">im</span><span class="p">])</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The sphere insert stesps will be executed in parallel if</span>
+<span class="sd">    `porespy.settings.ncores &gt; 1`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">ncores</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">_insert_disk_at_points_parallel</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>  <span class="c1"># To ensure they are in ascending order</span>
-
-    <span class="c1"># Initialize empty arrays to accumulate results of each loop</span>
-    <span class="n">nwp_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="n">im_seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-    <span class="n">im_pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">_insert_disk_at_points</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">ncores</span><span class="p">)</span>
+    <span class="n">dt_int</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">dt</span><span class="p">[</span><span class="n">im</span><span class="p">],</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">))[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">steps</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">bins</span><span class="p">[</span><span class="n">bins</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">im_seq</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
     <span class="n">im_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-    <span class="n">seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-
-    <span class="c1"># Begin IBOP algorithm</span>
-    <span class="n">se</span> <span class="o">=</span> <span class="n">strel</span><span class="p">[</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">][</span><span class="n">conn</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">step</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">Ps</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
-        <span class="c1"># Find all locations in image invadable at current pressure</span>
-        <span class="n">invadable</span> <span class="o">=</span> <span class="p">(</span><span class="n">pc</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="p">)</span><span class="o">*</span><span class="n">im</span>
-        <span class="c1"># Trim locations not connected to the inlets</span>
+    <span class="n">nwp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">desc</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>  <span class="c1"># Get current func name</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
+            <span class="n">seeds</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">r</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="n">dt_int</span> <span class="o">==</span> <span class="n">r</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">seeds</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;</span> <span class="n">r</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="p">(</span><span class="n">dt</span> <span class="o">&gt;</span> <span class="n">r</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">dt_int</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">invadable</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span>
-                <span class="n">im</span><span class="o">=</span><span class="n">invadable</span><span class="p">,</span>
-                <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
-                <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span>
+            <span class="n">seeds</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">seeds</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">)</span>
+            <span class="n">edges</span> <span class="o">*=</span> <span class="n">seeds</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">edges</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">coords</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">nwp</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span>
+                <span class="n">im</span><span class="o">=</span><span class="n">nwp</span><span class="p">,</span>
+                <span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span>
+                <span class="n">r</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">),</span>
+                <span class="n">v</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="c1"># Isolate only newly found locations to speed up inserting</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="n">invadable</span><span class="o">*</span><span class="p">(</span><span class="o">~</span><span class="n">seeds</span><span class="p">)</span>
-        <span class="c1"># Find (i, j, k) coordinates of new locations</span>
-        <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
-        <span class="c1"># Add new locations to list of invaded locations</span>
-        <span class="n">seeds</span> <span class="o">+=</span> <span class="n">invadable</span>
-        <span class="c1"># Extract the local size of sphere to insert at each new location</span>
-        <span class="n">radii</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">coords</span><span class="p">]</span>
-        <span class="c1"># Insert spheres of given radii at new locations</span>
-        <span class="n">nwp_mask</span> <span class="o">=</span> <span class="n">_insert_disks_at_points_parallel</span><span class="p">(</span>
-            <span class="n">im</span><span class="o">=</span><span class="n">nwp_mask</span><span class="p">,</span>
-            <span class="n">coords</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">coords</span><span class="p">),</span>
-            <span class="n">radii</span><span class="o">=</span><span class="n">radii</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
-            <span class="n">v</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="c1"># Values to images using mask</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">nwp_mask</span> <span class="o">*</span> <span class="p">(</span><span class="n">im_seq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">im</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
-            <span class="n">im_seq</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">step</span>
-            <span class="n">im_pc</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
-            <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">if</span> <span class="n">return_sizes</span> <span class="ow">and</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">radii</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
-                <span class="n">im_size</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">radii</span><span class="p">)</span>
-
-        <span class="c1"># Deal with impact of residual, if present</span>
-        <span class="k">if</span> <span class="n">residual</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># Find residual connected to current invasion front</span>
-            <span class="n">inv_temp</span> <span class="o">=</span> <span class="p">(</span><span class="n">im_pc</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">inv_temp</span><span class="p">):</span>
-                <span class="c1"># Find invadable pixels connected to surviving residual</span>
-                <span class="n">temp</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span>
-                    <span class="n">residual</span><span class="p">,</span> <span class="n">inv_temp</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">)</span><span class="o">*~</span><span class="n">inv_temp</span>
-                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">temp</span><span class="p">):</span>
-                    <span class="c1"># Trim invadable pixels not connected to residual</span>
-                    <span class="n">new_seeds</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">invadable</span><span class="p">,</span> <span class="n">temp</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">)</span>
-                    <span class="c1"># Find (i, j, k) coordinates of new locations</span>
-                    <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">new_seeds</span><span class="p">)</span>
-                    <span class="c1"># Add new locations to list of invaded locations</span>
-                    <span class="n">seeds</span> <span class="o">+=</span> <span class="n">new_seeds</span>
-                    <span class="c1"># Extract the local size of sphere to insert at each new location</span>
-                    <span class="n">radii</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">coords</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-                    <span class="c1"># Insert spheres of given radii at new locations</span>
-                    <span class="n">nwp_mask</span> <span class="o">=</span> <span class="n">_insert_disks_at_points_parallel</span><span class="p">(</span>
-                        <span class="n">im</span><span class="o">=</span><span class="n">nwp_mask</span><span class="p">,</span>
-                        <span class="n">coords</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">coords</span><span class="p">),</span>
-                        <span class="n">radii</span><span class="o">=</span><span class="n">radii</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
-                        <span class="n">v</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                        <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                        <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="p">)</span>
-
-                    <span class="n">mask</span> <span class="o">=</span> <span class="n">nwp_mask</span> <span class="o">*</span> <span class="p">(</span><span class="n">im_seq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">im</span>
-                    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
-                        <span class="n">im_seq</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">step</span>
-                        <span class="n">im_pc</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
-                        <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
-                        <span class="k">if</span> <span class="n">return_sizes</span> <span class="ow">and</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">radii</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
-                            <span class="n">im_size</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">radii</span><span class="p">)</span>
-
-    <span class="c1"># Set uninvaded voxels to inf</span>
-    <span class="n">im_pc</span><span class="p">[(</span><span class="n">im_pc</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="n">im</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-
-    <span class="c1"># Add residual if given</span>
-    <span class="k">if</span> <span class="n">residual</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">im_pc</span><span class="p">[</span><span class="n">residual</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-        <span class="n">im_seq</span><span class="p">[</span><span class="n">residual</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-
-    <span class="c1"># Analyze trapping and adjust computed images accordingly</span>
-    <span class="n">trapped</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">nwp</span><span class="p">[</span><span class="n">seeds</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">nwp</span><span class="o">*</span><span class="p">(</span><span class="n">im_seq</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">im_size</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="n">im_seq</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="n">outlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">trapped</span> <span class="o">=</span> <span class="n">find_trapped_regions</span><span class="p">(</span>
             <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
             <span class="n">seq</span><span class="o">=</span><span class="n">im_seq</span><span class="p">,</span>
             <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
+            <span class="n">return_mask</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">conn</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cluster&#39;</span><span class="p">,</span>
-            <span class="n">min_size</span><span class="o">=</span><span class="n">min_size</span><span class="p">,</span>
+            <span class="n">min_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">trapped</span><span class="p">[</span><span class="n">im_seq</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">im_pc</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>  <span class="c1"># Trapped defender only displaced as Pc -&gt; inf</span>
-        <span class="k">if</span> <span class="n">residual</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Re-add residual to inv</span>
-            <span class="n">im_pc</span><span class="p">[</span><span class="n">residual</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>  <span class="c1"># Residual defender is always present</span>
-
-    <span class="c1"># Initialize results object</span>
+        <span class="n">im_seq</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">im_seq</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">im_seq</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+        <span class="n">im_size</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
-    <span class="n">results</span><span class="o">.</span><span class="n">im_snwp</span> <span class="o">=</span> <span class="n">pc_to_satn</span><span class="p">(</span><span class="n">pc</span><span class="o">=</span><span class="n">im_pc</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
-    <span class="n">results</span><span class="o">.</span><span class="n">im_seq</span> <span class="o">=</span> <span class="n">im_seq</span>
-    <span class="c1"># results.im_seq = pc_to_seq(pc=pc_inv, im=im, mode=&#39;drainage&#39;)</span>
-    <span class="n">results</span><span class="o">.</span><span class="n">im_pc</span> <span class="o">=</span> <span class="n">im_pc</span>
-    <span class="n">results</span><span class="o">.</span><span class="n">im_trapped</span> <span class="o">=</span> <span class="n">trapped</span>
-    <span class="k">if</span> <span class="n">trapped</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">results</span><span class="o">.</span><span class="n">im_seq</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="n">results</span><span class="o">.</span><span class="n">im_snwp</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="n">results</span><span class="o">.</span><span class="n">im_pc</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-    <span class="k">if</span> <span class="n">return_sizes</span><span class="p">:</span>
-        <span class="n">im_size</span><span class="p">[</span><span class="n">im_pc</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-        <span class="n">im_size</span><span class="p">[</span><span class="n">im_pc</span> <span class="o">==</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-        <span class="n">results</span><span class="o">.</span><span class="n">im_size</span> <span class="o">=</span> <span class="n">im_size</span>
-    <span class="n">results</span><span class="o">.</span><span class="n">pc</span><span class="p">,</span> <span class="n">results</span><span class="o">.</span><span class="n">snwp</span> <span class="o">=</span> <span class="n">pc_map_to_pc_curve</span><span class="p">(</span>
-        <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
-        <span class="n">pc</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span>
-        <span class="n">seq</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">im_seq</span><span class="p">,</span>
-        <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">im_seq</span> <span class="o">=</span> <span class="n">im_seq</span><span class="o">*</span><span class="n">im</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">im_size</span> <span class="o">=</span> <span class="n">im_size</span><span class="o">*</span><span class="n">im</span>
+    <span class="k">return</span> <span class="n">results</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">drainage_dt_fft</span><span class="p">(</span>
+    <span class="n">im</span><span class="p">,</span>
+    <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs a distance transform based drainage simulation using distance transform</span>
+<span class="sd">    thresholding for the erosion step and fft-based convolution for the dilation</span>
+<span class="sd">    step.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The boolean image of the void space on which to perform the simulation</span>
+<span class="sd">    inlets : ndarray (optional)</span>
+<span class="sd">        A boolean array with `True` values indicating the inlet locations for the</span>
+<span class="sd">        invading (non-wetting) fluid. If not provided then access limitations will</span>
+<span class="sd">        not be applied, meaning that the invading fluid cand appear anywhere within</span>
+<span class="sd">        the domain.</span>
+<span class="sd">    outlets : ndarray (optional)</span>
+<span class="sd">        A boolean array with `True` values indicating the outlet locations through</span>
+<span class="sd">        which defending (wetting) phase would exit the domain. If not provided then</span>
+<span class="sd">        trapping of the wetting phase is ignored.</span>
+<span class="sd">    steps : scalar or array_like</span>
+<span class="sd">        A list of which sphere sizes to invade. If `None` (default) then each unique</span>
+<span class="sd">        integer value in the distance transform is used. If a scalar then a list of</span>
+<span class="sd">        steps is generated from `steps` to 1.</span>
+<span class="sd">    smooth : boolean</span>
+<span class="sd">        If `True` (default) then the spheres are drawn without any single voxel</span>
+<span class="sd">        protrusions on the faces.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    results : Dataclass-like object</span>
+<span class="sd">        An object with the following attributes:</span>
+
+<span class="sd">        ----------- ----------------------------------------------------------------</span>
+<span class="sd">        Attribute   Description</span>
+<span class="sd">        ----------- ----------------------------------------------------------------</span>
+<span class="sd">        `im_seq`    The sequence map indicating the sequence or step number at which</span>
+<span class="sd">                    each voxels was first invaded.</span>
+<span class="sd">        `im_size`   The size map indicating the size of the sphere being drawn</span>
+<span class="sd">                    when each voxel was first invaded.</span>
+<span class="sd">        ----------- ----------------------------------------------------------------</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The distance transform will be executed in parallel if</span>
+<span class="sd">    `porespy.settings.ncores &gt; 1`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">ncores</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">dt</span><span class="p">[</span><span class="n">im</span><span class="p">],</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">))[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">steps</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">bins</span><span class="p">[</span><span class="n">bins</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">im_seq</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">im_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">desc</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>  <span class="c1"># Get current func name</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">)):</span>
+        <span class="n">seeds</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">r</span> <span class="k">if</span> <span class="n">smooth</span> <span class="k">else</span> <span class="n">dt</span> <span class="o">&gt;</span> <span class="n">r</span>
+        <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">seeds</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">seeds</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">seeds</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="n">se</span> <span class="o">=</span> <span class="n">ps_round</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="n">ndim</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
+        <span class="n">nwp</span> <span class="o">=</span> <span class="n">fftmorphology</span><span class="p">(</span><span class="n">seeds</span><span class="p">,</span> <span class="n">se</span><span class="p">,</span> <span class="s1">&#39;dilation&#39;</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">nwp</span><span class="o">*</span><span class="p">(</span><span class="n">im_seq</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">im_size</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="n">im_seq</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="c1"># Apply trapping as a post-processing step if outlets given</span>
+    <span class="k">if</span> <span class="n">outlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">trapped</span> <span class="o">=</span> <span class="n">find_trapped_regions</span><span class="p">(</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+            <span class="n">seq</span><span class="o">=</span><span class="n">im_seq</span><span class="p">,</span>
+            <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
+            <span class="n">return_mask</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">conn</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cluster&#39;</span><span class="p">,</span>
+            <span class="n">min_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">im_seq</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">im_seq</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">im_seq</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+        <span class="n">im_size</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">im_seq</span> <span class="o">=</span> <span class="n">im_seq</span><span class="o">*</span><span class="n">im</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">im_size</span> <span class="o">=</span> <span class="n">im_size</span><span class="o">*</span><span class="n">im</span>
+    <span class="k">return</span> <span class="n">results</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">drainage_fft</span><span class="p">(</span>
+    <span class="n">im</span><span class="p">,</span>
+    <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs a distance transform based drainage simulation using fft-based</span>
+<span class="sd">    convolution for both the erosion and dilation steps</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The boolean image of the void space on which to perform the simulation</span>
+<span class="sd">    inlets : ndarray (optional)</span>
+<span class="sd">        A boolean array with `True` values indicating the inlet locations for the</span>
+<span class="sd">        invading (non-wetting) fluid. If not provided then access limitations will</span>
+<span class="sd">        not be applied, meaning that the invading fluid cand appear anywhere within</span>
+<span class="sd">        the domain.</span>
+<span class="sd">    outlets : ndarray (optional)</span>
+<span class="sd">        A boolean array with `True` values indicating the outlet locations through</span>
+<span class="sd">        which defending (wetting) phase would exit the domain. If not provided then</span>
+<span class="sd">        trapping of the wetting phase is ignored.</span>
+<span class="sd">    steps : scalar or array_like</span>
+<span class="sd">        A list of which sphere sizes to invade. If `None` (default) then each unique</span>
+<span class="sd">        integer value in the distance transform is used. If a scalar then a list of</span>
+<span class="sd">        steps is generated from `steps` to 1.</span>
+<span class="sd">    smooth : boolean</span>
+<span class="sd">        If `True` (default) then the spheres are drawn without any single voxel</span>
+<span class="sd">        protrusions on the faces.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    results : Dataclass-like object</span>
+<span class="sd">        An object with the following attributes:</span>
+
+<span class="sd">        ----------- ----------------------------------------------------------------</span>
+<span class="sd">        Attribute   Description</span>
+<span class="sd">        ----------- ----------------------------------------------------------------</span>
+<span class="sd">        `im_seq`    The sequence map indicating the sequence or step number at which</span>
+<span class="sd">                    each voxels was first invaded.</span>
+<span class="sd">        `im_size`   The size map indicating the size of the sphere being drawn</span>
+<span class="sd">                    when each voxel was first invaded.</span>
+<span class="sd">        ----------- ----------------------------------------------------------------</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">ncores</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">dt</span><span class="p">[</span><span class="n">im</span><span class="p">],</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">))[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">steps</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">bins</span><span class="p">[</span><span class="n">bins</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">im_seq</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">im_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">desc</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>  <span class="c1"># Get current func name</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">)):</span>
+        <span class="n">se</span> <span class="o">=</span> <span class="n">ps_round</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="n">ndim</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
+        <span class="n">seeds</span> <span class="o">=</span> <span class="o">~</span><span class="n">fftmorphology</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">,</span> <span class="n">se</span><span class="p">,</span> <span class="s1">&#39;dilation&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">seeds</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">seeds</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">seeds</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="n">se</span> <span class="o">=</span> <span class="n">ps_round</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="n">ndim</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
+        <span class="n">nwp</span> <span class="o">=</span> <span class="n">fftmorphology</span><span class="p">(</span><span class="n">seeds</span><span class="p">,</span> <span class="n">se</span><span class="p">,</span> <span class="s1">&#39;dilation&#39;</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">nwp</span><span class="o">*</span><span class="p">(</span><span class="n">im_seq</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">im_size</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="n">im_seq</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="c1"># Apply trapping as a post-processing step if outlets given</span>
+    <span class="k">if</span> <span class="n">outlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">trapped</span> <span class="o">=</span> <span class="n">find_trapped_regions</span><span class="p">(</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+            <span class="n">seq</span><span class="o">=</span><span class="n">im_seq</span><span class="p">,</span>
+            <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
+            <span class="n">return_mask</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">conn</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cluster&#39;</span><span class="p">,</span>
+            <span class="n">min_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">im_seq</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">im_seq</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">im_seq</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+        <span class="n">im_size</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">im_seq</span> <span class="o">=</span> <span class="n">im_seq</span><span class="o">*</span><span class="n">im</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">im_size</span> <span class="o">=</span> <span class="n">im_size</span><span class="o">*</span><span class="n">im</span>
+    <span class="k">return</span> <span class="n">results</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">drainage_dt</span><span class="p">(</span>
+    <span class="n">im</span><span class="p">,</span>
+    <span class="n">inlets</span><span class="p">,</span>
+    <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="c1"># residual=None,</span>
+    <span class="n">steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs a distance transform based drainage simulation using distance transform</span>
+<span class="sd">    thresholding for the erosion step and a second distance transform for the</span>
+<span class="sd">    dilation step.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The boolean image of the void space on which to perform the simulation</span>
+<span class="sd">    inlets : ndarray (optional)</span>
+<span class="sd">        A boolean array with `True` values indicating the inlet locations for the</span>
+<span class="sd">        invading (non-wetting) fluid. If not provided then access limitations will</span>
+<span class="sd">        not be applied, meaning that the invading fluid cand appear anywhere within</span>
+<span class="sd">        the domain.</span>
+<span class="sd">    outlets : ndarray (optional)</span>
+<span class="sd">        A boolean array with `True` values indicating the outlet locations through</span>
+<span class="sd">        which defending (wetting) phase would exit the domain. If not provided then</span>
+<span class="sd">        trapping of the wetting phase is ignored.</span>
+<span class="sd">    steps : scalar or array_like</span>
+<span class="sd">        A list of which sphere sizes to invade. If `None` (default) then each unique</span>
+<span class="sd">        integer value in the distance transform is used. If a scalar then a list of</span>
+<span class="sd">        steps is generated from `steps` to 1.</span>
+<span class="sd">    smooth : boolean</span>
+<span class="sd">        If `True` (default) then the spheres are drawn without any single voxel</span>
+<span class="sd">        protrusions on the faces.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    results : Results object</span>
+<span class="sd">        A dataclass-like object with the following attributes:</span>
+
+<span class="sd">        ========== =================================================================</span>
+<span class="sd">        Attribute  Description</span>
+<span class="sd">        ========== =================================================================</span>
+<span class="sd">        im_seq     A numpy array with each voxel value indicating the sequence</span>
+<span class="sd">                   at which it was invaded.  Values of -1 indicate that it was</span>
+<span class="sd">                   not invaded.</span>
+<span class="sd">        im_size    A numpy array with each voxel value indicating the radius of</span>
+<span class="sd">                   spheres being inserted when it was invaded.</span>
+<span class="sd">        ========== =================================================================</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The distance transforms will be executed in parallel if</span>
+<span class="sd">    `porespy.settings.ncores &gt; 1`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">ncores</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">dt</span><span class="p">[</span><span class="n">im</span><span class="p">],</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">))[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">steps</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">bins</span><span class="p">[</span><span class="n">bins</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">im_seq</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">im_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">desc</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>  <span class="c1"># Get current func name</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">)):</span>
+        <span class="n">seeds</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">r</span> <span class="k">if</span> <span class="n">smooth</span> <span class="k">else</span> <span class="n">dt</span> <span class="o">&gt;</span> <span class="n">r</span>
+        <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">seeds</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">seeds</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">seeds</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="o">~</span><span class="n">seeds</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">ncores</span><span class="p">)</span>
+        <span class="n">nwp</span> <span class="o">=</span> <span class="n">tmp</span> <span class="o">&lt;</span> <span class="n">r</span> <span class="k">if</span> <span class="n">smooth</span> <span class="k">else</span> <span class="n">tmp</span> <span class="o">&lt;=</span> <span class="n">r</span>
+        <span class="c1"># if residual is not None:</span>
+        <span class="c1">#     blobs = trim_disconnected_blobs(residual, inlets=nwp)</span>
+        <span class="c1">#     seeds = dt &gt;= r</span>
+        <span class="c1">#     seeds = trim_disconnected_blobs(seeds, inlets=blobs + inlets)</span>
+        <span class="c1">#     nwp = edt(~seeds, parallel=settings.ncores) &lt; r</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">nwp</span><span class="o">*</span><span class="p">(</span><span class="n">im_seq</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">im_size</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="n">im_seq</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="c1"># if residual is not None:</span>
+    <span class="c1">#     im_seq[im_seq &gt; 0] += 1</span>
+    <span class="c1">#     im_seq[residual] = 1</span>
+    <span class="c1">#     im_size[residual] = -np.inf</span>
+    <span class="c1"># Apply trapping as a post-processing step if outlets given</span>
+    <span class="k">if</span> <span class="n">outlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">trapped</span> <span class="o">=</span> <span class="n">find_trapped_regions</span><span class="p">(</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+            <span class="n">seq</span><span class="o">=</span><span class="n">im_seq</span><span class="p">,</span>
+            <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
+            <span class="n">return_mask</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">conn</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cluster&#39;</span><span class="p">,</span>
+            <span class="n">min_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">im_seq</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">im_seq</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">im_seq</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+        <span class="n">im_size</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">im_seq</span> <span class="o">=</span> <span class="n">im_seq</span><span class="o">*</span><span class="n">im</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">im_size</span> <span class="o">=</span> <span class="n">im_size</span><span class="o">*</span><span class="n">im</span>
     <span class="k">return</span> <span class="n">results</span>
 
 
@@ -390,8 +637,8 @@
     <span class="n">inlets</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">outlets</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">residual</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span>
-    <span class="n">return_sizes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">conn</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;min&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;min&#39;</span><span class="p">,</span>
     <span class="n">min_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -432,13 +679,9 @@
 <span class="sd">        ``pc``. If a list is given, each value in the list is used in ascending</span>
 <span class="sd">        order. If `None` is given then all the possible values in `pc`</span>
 <span class="sd">        are used.</span>
-<span class="sd">    return_sizes : bool, default = `False`</span>
-<span class="sd">        If `True` then an array containing the size of the sphere which first</span>
-<span class="sd">        overlapped each pixel is returned. This array is not computed by default</span>
-<span class="sd">        as computing it increases computation time.</span>
 <span class="sd">    conn : str</span>
 <span class="sd">        Controls the shape of the structuring element used to find neighboring</span>
-<span class="sd">        voxels when looking connectivity of invading blobs.  Options are:</span>
+<span class="sd">        voxels when looking at connectivity of invading blobs.  Options are:</span>
 
 <span class="sd">        ========= ==================================================================</span>
 <span class="sd">        Option    Description</span>
@@ -470,21 +713,16 @@
 <span class="sd">        im_snwp    A numpy array with each voxel value indicating the global</span>
 <span class="sd">                   value of the non-wetting phase saturation at the point it</span>
 <span class="sd">                   was invaded</span>
-<span class="sd">        im_size    If `return_sizes` was set to `True`, then a numpy array with</span>
-<span class="sd">                   each voxel containing the radius of the sphere, in voxels, that</span>
-<span class="sd">                   first overlapped it.</span>
+<span class="sd">        im_size    A numpy array with each voxel containing the radius of the</span>
+<span class="sd">                   sphere, in voxels, that first overlapped it.</span>
 <span class="sd">        im_pc      A numpy array with each voxel value indicating the</span>
 <span class="sd">                   capillary pressure at which it was invaded.</span>
-<span class="sd">        im_trapped  A numpy array with ``True`` values indicating trapped voxels if</span>
-<span class="sd">                    `outlets` was provided, otherwise will be `None`.</span>
+<span class="sd">        im_trapped A numpy array with ``True`` values indicating trapped voxels</span>
+<span class="sd">                   if `outlets` was provided, otherwise will be `None`.</span>
 <span class="sd">        pc         1D array of capillary pressure values that were applied</span>
 <span class="sd">        swnp       1D array of non-wetting phase saturations for each applied</span>
 <span class="sd">                   value of capillary pressure (``pc``).</span>
 <span class="sd">        ========== ============================================================</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    drainage</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -505,18 +743,150 @@
 <span class="sd">    `Click here</span>
 <span class="sd">    &lt;https://porespy.org/examples/simulations/reference/drainage.html&gt;`_</span>
 <span class="sd">    to view online example.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="n">ibop</span><span class="p">(</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">inlets</span> <span class="o">=</span> <span class="n">borders</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;faces&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="n">im</span>
+
+    <span class="k">if</span> <span class="n">outlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">outlets</span> <span class="o">=</span> <span class="n">outlets</span><span class="o">*</span><span class="n">im</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">inlets</span> <span class="o">*</span> <span class="n">outlets</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Specified inlets and outlets overlap&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">pc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">/</span><span class="n">dt</span>
+    <span class="n">pc</span><span class="p">[</span><span class="o">~</span><span class="n">im</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Remove any infs or nans from pc computation</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># Use values in pc for invasion steps</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span><span class="o">*</span><span class="n">im</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">pc</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">pc</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="n">steps</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">pc</span><span class="p">[</span><span class="n">im</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>  <span class="c1"># To ensure they are in ascending order</span>
+
+    <span class="c1"># Initialize empty arrays to accumulate results of each loop</span>
+    <span class="n">nwp_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">im_seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">im_pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">im_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="n">desc</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>  <span class="c1"># Get current func name</span>
+    <span class="k">for</span> <span class="n">step</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span><span class="n">Ps</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">)):</span>
+        <span class="c1"># Find all locations in image invadable at current pressure</span>
+        <span class="n">invadable</span> <span class="o">=</span> <span class="p">(</span><span class="n">pc</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="p">)</span><span class="o">*</span><span class="n">im</span>
+        <span class="c1"># Trim locations not connected to the inlets</span>
+        <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">invadable</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span>
+                <span class="n">im</span><span class="o">=</span><span class="n">invadable</span><span class="p">,</span>
+                <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+                <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="c1"># Isolate only newly found locations to speed up inserting</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">invadable</span><span class="o">*</span><span class="p">(</span><span class="o">~</span><span class="n">seeds</span><span class="p">)</span>
+        <span class="c1"># Find (i, j, k) coordinates of new locations</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+        <span class="c1"># Add new locations to list of invaded locations</span>
+        <span class="n">seeds</span> <span class="o">+=</span> <span class="n">invadable</span>
+        <span class="c1"># Extract the local size of sphere to insert at each new location</span>
+        <span class="n">radii</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">coords</span><span class="p">]</span>
+        <span class="c1"># Insert spheres of given radii at new locations</span>
+        <span class="n">nwp_mask</span> <span class="o">=</span> <span class="n">_insert_disks_at_points_parallel</span><span class="p">(</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">nwp_mask</span><span class="p">,</span>
+            <span class="n">coords</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">coords</span><span class="p">),</span>
+            <span class="n">radii</span><span class="o">=</span><span class="n">radii</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
+            <span class="n">v</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Values to images using mask</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">nwp_mask</span> <span class="o">*</span> <span class="p">(</span><span class="n">im_seq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">im</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+            <span class="n">im_seq</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">step</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">im_pc</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
+            <span class="n">im_size</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">radii</span><span class="p">)</span>
+
+        <span class="c1"># Deal with impact of residual, if present</span>
+        <span class="k">if</span> <span class="n">residual</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Find residual connected to current invasion front</span>
+            <span class="n">inv_temp</span> <span class="o">=</span> <span class="p">(</span><span class="n">im_pc</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">inv_temp</span><span class="p">):</span>
+                <span class="c1"># Find invadable pixels connected to surviving residual</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span>
+                    <span class="n">residual</span><span class="p">,</span> <span class="n">inv_temp</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">)</span><span class="o">*~</span><span class="n">inv_temp</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">temp</span><span class="p">):</span>
+                    <span class="c1"># Trim invadable pixels not connected to residual</span>
+                    <span class="n">new_seeds</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">invadable</span><span class="p">,</span> <span class="n">temp</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">)</span>
+                    <span class="c1"># Find (i, j, k) coordinates of new locations</span>
+                    <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">new_seeds</span><span class="p">)</span>
+                    <span class="c1"># Add new locations to list of invaded locations</span>
+                    <span class="n">seeds</span> <span class="o">+=</span> <span class="n">new_seeds</span>
+                    <span class="c1"># Extract the local size of sphere to insert at each new location</span>
+                    <span class="n">radii</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">coords</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+                    <span class="c1"># Insert spheres of given radii at new locations</span>
+                    <span class="n">nwp_mask</span> <span class="o">=</span> <span class="n">_insert_disks_at_points_parallel</span><span class="p">(</span>
+                        <span class="n">im</span><span class="o">=</span><span class="n">nwp_mask</span><span class="p">,</span>
+                        <span class="n">coords</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">coords</span><span class="p">),</span>
+                        <span class="n">radii</span><span class="o">=</span><span class="n">radii</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
+                        <span class="n">v</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="n">mask</span> <span class="o">=</span> <span class="n">nwp_mask</span> <span class="o">*</span> <span class="p">(</span><span class="n">im_seq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">im</span>
+                    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+                        <span class="n">im_seq</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">step</span> <span class="o">+</span> <span class="mi">1</span>
+                        <span class="n">im_pc</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
+                        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">radii</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">im_size</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">radii</span><span class="p">)</span>
+
+    <span class="c1"># Set uninvaded voxels to inf</span>
+    <span class="n">im_pc</span><span class="p">[(</span><span class="n">im_pc</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="n">im</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+    <span class="c1"># Add residual if given</span>
+    <span class="k">if</span> <span class="n">residual</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">im_pc</span><span class="p">[</span><span class="n">residual</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">im_seq</span><span class="p">[</span><span class="n">residual</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Analyze trapping and adjust computed images accordingly</span>
+    <span class="n">trapped</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">outlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">trapped</span> <span class="o">=</span> <span class="n">find_trapped_regions</span><span class="p">(</span>
+            <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+            <span class="n">seq</span><span class="o">=</span><span class="n">im_seq</span><span class="p">,</span>
+            <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cluster&#39;</span><span class="p">,</span>
+            <span class="n">min_size</span><span class="o">=</span><span class="n">min_size</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">trapped</span><span class="p">[</span><span class="n">im_seq</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">im_pc</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>  <span class="c1"># Trapped defender only displaced as Pc -&gt; inf</span>
+        <span class="k">if</span> <span class="n">residual</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Re-add residual to inv</span>
+            <span class="n">im_pc</span><span class="p">[</span><span class="n">residual</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>  <span class="c1"># Residual defender is always present</span>
+
+    <span class="c1"># Initialize results object</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">im_snwp</span> <span class="o">=</span> <span class="n">pc_to_satn</span><span class="p">(</span><span class="n">pc</span><span class="o">=</span><span class="n">im_pc</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">im_seq</span> <span class="o">=</span> <span class="n">im_seq</span>
+    <span class="c1"># results.im_seq = pc_to_seq(pc=pc_inv, im=im, mode=&#39;drainage&#39;)</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">im_pc</span> <span class="o">=</span> <span class="n">im_pc</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">im_trapped</span> <span class="o">=</span> <span class="n">trapped</span>
+    <span class="k">if</span> <span class="n">trapped</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">im_seq</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">im_snwp</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">im_pc</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">im_size</span><span class="p">[</span><span class="n">im_pc</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">im_size</span><span class="p">[</span><span class="n">im_pc</span> <span class="o">==</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">im_size</span> <span class="o">=</span> <span class="n">im_size</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">pc</span><span class="p">,</span> <span class="n">results</span><span class="o">.</span><span class="n">snwp</span> <span class="o">=</span> <span class="n">pc_map_to_pc_curve</span><span class="p">(</span>
         <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
-        <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
-        <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
-        <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
-        <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
-        <span class="n">residual</span><span class="o">=</span><span class="n">residual</span><span class="p">,</span>
-        <span class="n">steps</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span>
-        <span class="n">return_sizes</span><span class="o">=</span><span class="n">return_sizes</span><span class="p">,</span>
-        <span class="n">min_size</span><span class="o">=</span><span class="n">min_size</span><span class="p">,</span>
+        <span class="n">pc</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span>
+        <span class="n">seq</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">im_seq</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">results</span></div>
 
@@ -568,21 +938,21 @@
         <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
         <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
         <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
-        <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">steps</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">drn2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">drainage</span><span class="p">(</span>
         <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
         <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
         <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
         <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
-        <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">steps</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">drn3</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">drainage</span><span class="p">(</span>
         <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
         <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
         <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
         <span class="n">residual</span><span class="o">=</span><span class="n">residual</span><span class="p">,</span>
-        <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">steps</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">drn4</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">drainage</span><span class="p">(</span>
         <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
@@ -590,12 +960,12 @@
         <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
         <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
         <span class="n">residual</span><span class="o">=</span><span class="n">residual</span><span class="p">,</span>
-        <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">steps</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">drn5</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">drainage</span><span class="p">(</span>
         <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
         <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
-        <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">steps</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># %% Visualize the invasion configurations for each scenario</span>
@@ -603,32 +973,38 @@
         <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot_mosaic</span><span class="p">(</span>
             <span class="p">[[</span><span class="s1">&#39;(a)&#39;</span><span class="p">,</span> <span class="s1">&#39;(b)&#39;</span><span class="p">,</span> <span class="s1">&#39;(e)&#39;</span><span class="p">,</span> <span class="s1">&#39;(e)&#39;</span><span class="p">],</span>
              <span class="p">[</span><span class="s1">&#39;(c)&#39;</span><span class="p">,</span> <span class="s1">&#39;(d)&#39;</span><span class="p">,</span> <span class="s1">&#39;(e)&#39;</span><span class="p">,</span> <span class="s1">&#39;(e)&#39;</span><span class="p">]],</span>
-             <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
+            <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
          <span class="p">)</span>
         <span class="c1"># drn1.im_pc[~im] = -1</span>
         <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(a)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">drn1</span><span class="o">.</span><span class="n">im_seq</span><span class="o">/</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
         <span class="n">vmax</span> <span class="o">=</span> <span class="n">drn2</span><span class="o">.</span><span class="n">im_seq</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(b)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">drn2</span><span class="o">.</span><span class="n">im_seq</span><span class="o">/</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(b)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+            <span class="n">drn2</span><span class="o">.</span><span class="n">im_seq</span><span class="o">/</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
 
-        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(c)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">drn3</span><span class="o">.</span><span class="n">im_seq</span><span class="o">/</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(c)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+            <span class="n">drn3</span><span class="o">.</span><span class="n">im_seq</span><span class="o">/</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(d)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">drn4</span><span class="o">.</span><span class="n">im_seq</span><span class="o">/</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(d)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+            <span class="n">drn4</span><span class="o">.</span><span class="n">im_seq</span><span class="o">/</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-        <span class="n">pc</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span><span class="n">pc</span><span class="o">=</span><span class="n">drn1</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="n">drn1</span><span class="o">.</span><span class="n">im_seq</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(e)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="s1">&#39;b-&gt;&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
+        <span class="n">pc</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span>
+            <span class="n">pc</span><span class="o">=</span><span class="n">drn1</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="n">drn1</span><span class="o">.</span><span class="n">im_seq</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(e)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">pc</span><span class="p">),</span> <span class="n">s</span><span class="p">,</span> <span class="s1">&#39;b-&gt;&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
 
-        <span class="n">pc</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span><span class="n">pc</span><span class="o">=</span><span class="n">drn2</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="n">drn2</span><span class="o">.</span><span class="n">im_seq</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(e)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="s1">&#39;r-&lt;&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;drainage w trapping&#39;</span><span class="p">)</span>
+        <span class="n">pc</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span>
+            <span class="n">pc</span><span class="o">=</span><span class="n">drn2</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="n">drn2</span><span class="o">.</span><span class="n">im_seq</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(e)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">pc</span><span class="p">),</span> <span class="n">s</span><span class="p">,</span> <span class="s1">&#39;r-&lt;&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;drainage w trapping&#39;</span><span class="p">)</span>
 
-        <span class="n">pc</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span><span class="n">pc</span><span class="o">=</span><span class="n">drn3</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="n">drn3</span><span class="o">.</span><span class="n">im_seq</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(e)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="s1">&#39;g-^&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;drainage w residual&#39;</span><span class="p">)</span>
+        <span class="n">pc</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span>
+            <span class="n">pc</span><span class="o">=</span><span class="n">drn3</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="n">drn3</span><span class="o">.</span><span class="n">im_seq</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(e)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">pc</span><span class="p">),</span> <span class="n">s</span><span class="p">,</span> <span class="s1">&#39;g-^&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;drainage w residual&#39;</span><span class="p">)</span>
 
-        <span class="n">pc</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span><span class="n">pc</span><span class="o">=</span><span class="n">drn4</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="n">drn4</span><span class="o">.</span><span class="n">im_seq</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(e)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="s1">&#39;m-*&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;drainage w residual &amp; trapping&#39;</span><span class="p">)</span>
+        <span class="n">pc</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span>
+            <span class="n">pc</span><span class="o">=</span><span class="n">drn4</span><span class="o">.</span><span class="n">im_pc</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="n">drn4</span><span class="o">.</span><span class="n">im_seq</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(e)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">pc</span><span class="p">),</span> <span class="n">s</span><span class="p">,</span> <span class="s1">&#39;m-*&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;drainage w residual &amp; trapping&#39;</span><span class="p">)</span>
 
         <span class="n">ax</span><span class="p">[</span><span class="s1">&#39;(e)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-
 </pre></div>
 
               </article>

@@ -1268,12 +1268,12 @@
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="../../simulations/tutorials/overview_of_two_phase_flow_part3.html">
-       Overview of Image-Based Two-Phase Flow Simulations - Part 3: Invasion
+       Overview of Image-Based Two-Phase Flow Simulations - Part 3: Injection
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../simulations/tutorials/using_invasion.html">
-       Image-based invasion percoalation
+      <a class="reference internal" href="../../simulations/tutorials/using_injection.html">
+       Using the Injection Algorithm
       </a>
      </li>
     </ul>
@@ -2591,12 +2591,12 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../simulations/tutorials/overview_of_two_phase_flow_part3.html">
-   Overview of Image-Based Two-Phase Flow Simulations - Part 3: Invasion
+   Overview of Image-Based Two-Phase Flow Simulations - Part 3: Injection
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../simulations/tutorials/using_invasion.html">
-   Image-based invasion percoalation
+  <a class="reference internal" href="../../simulations/tutorials/using_injection.html">
+   Using the Injection Algorithm
   </a>
  </li>
 </ul>
@@ -2958,7 +2958,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[18:49:53] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[01:09:24] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
@@ -3073,23 +3073,17 @@
 <span class="g g-Whitespace">   </span><span class="mi">1372</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">*</span> <span class="n">tmp</span>
 <span class="g g-Whitespace">   </span><span class="mi">1373</span> <span class="n">n_fibers_added</span> <span class="o">+=</span> <span class="n">n_fibers</span>
 
-<span class="nn">File ~/work/porespy/porespy/src/porespy/generators/_imgen.py:1215,</span> in <span class="ni">_cylinders</span><span class="nt">(shape, r, ncylinders, phi_max, theta_max, length, verbose, seed)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1211</span> <span class="n">X0</span> <span class="o">=</span> <span class="n">R</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span>
-<span class="g g-Whitespace">   </span><span class="mi">1212</span>                    <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span>
-<span class="g g-Whitespace">   </span><span class="mi">1213</span>                    <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)])</span>
+<span class="nn">File ~/work/porespy/porespy/src/porespy/generators/_imgen.py:1216,</span> in <span class="ni">_cylinders</span><span class="nt">(shape, r, ncylinders, phi_max, theta_max, length, verbose, seed)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1214</span> <span class="p">[</span><span class="n">X0</span><span class="p">,</span> <span class="n">X1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="n">X0</span><span class="p">,</span> <span class="n">x</span> <span class="o">-</span> <span class="n">X0</span><span class="p">]</span>
-<span class="ne">-&gt; </span><span class="mi">1215</span> <span class="n">crds</span> <span class="o">=</span> <span class="n">line_segment</span><span class="p">(</span><span class="n">X0</span><span class="p">,</span> <span class="n">X1</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1216</span> <span class="n">lower</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">crds</span><span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="o">&lt;</span> <span class="p">[</span><span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1215</span> <span class="n">crds</span> <span class="o">=</span> <span class="n">line_segment</span><span class="p">(</span><span class="n">X0</span><span class="p">,</span> <span class="n">X1</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">1216</span> <span class="n">lower</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">crds</span><span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="o">&lt;</span> <span class="p">[</span><span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1217</span> <span class="n">upper</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">crds</span><span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="o">&gt;=</span> <span class="n">shape</span> <span class="o">+</span> <span class="n">L</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1218</span> <span class="n">valid</span> <span class="o">=</span> <span class="n">upper</span> <span class="o">*</span> <span class="n">lower</span>
 
-<span class="nn">File ~/work/porespy/porespy/src/porespy/generators/_imgen.py:1413,</span> in <span class="ni">line_segment</span><span class="nt">(X0, X1)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1410</span> <span class="n">X1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">X1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1411</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-<span class="g g-Whitespace">   </span><span class="mi">1412</span>     <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span>
-<span class="ne">-&gt; </span><span class="mi">1413</span>         <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">([[</span><span class="n">X1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">X0</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">X1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">X0</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">X1</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">X0</span><span class="p">[</span><span class="mi">2</span><span class="p">]]])</span>
-<span class="g g-Whitespace">   </span><span class="mi">1414</span>     <span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="g g-Whitespace">   </span><span class="mi">1415</span>     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">X0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">L</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1416</span>     <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">X0</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">L</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/numpy/core/shape_base.py:289,</span> in <span class="ni">vstack</span><span class="nt">(tup, dtype, casting)</span>
+<span class="g g-Whitespace">    </span><span class="mi">287</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">288</span>     <span class="n">arrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">arrs</span><span class="p">]</span>
+<span class="ne">--&gt; </span><span class="mi">289</span> <span class="k">return</span> <span class="n">_nx</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">)</span>
 
 <span class="ne">KeyboardInterrupt</span>: 
 </pre></div>
