@@ -18,27 +18,50 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-voxel_size = 2.25e-6
-with open('../../../test/fixtures/image_Leopard_slice100.npy', 'rb') as f:
-    im = np.load(f)
+import subprocess
+import os
+import numpy as np
+import porespy as ps
+import h5py  # if there was error importing, please install the h5py package
+import importlib
+import warnings
+import openpnm as op
+import porespy as ps
+import scipy as sp
+from matplotlib import pyplot as plt
+from sklearn.metrics import r2_score
+import time
+import tensorflow as tf
+ps.visualization.set_mpl_style()
+warnings.filterwarnings("ignore")
 ------------------
 
+----- stdout -----
+No module named 'pyedt'
+------------------
 
 [31m---------------------------------------------------------------------------[39m
-[31mFileNotFoundError[39m                         Traceback (most recent call last)
-[36mCell[39m[36m [39m[32mIn[5][39m[32m, line 2[39m
-[32m      1[39m voxel_size = [32m2.25e-6[39m
-[32m----> [39m[32m2[39m [38;5;28;01mwith[39;00m [38;5;28;43mopen[39;49m[43m([49m[33;43m'[39;49m[33;43m../../../test/fixtures/image_Leopard_slice100.npy[39;49m[33;43m'[39;49m[43m,[49m[43m [49m[33;43m'[39;49m[33;43mrb[39;49m[33;43m'[39;49m[43m)[49m [38;5;28;01mas[39;00m f:
-[32m      3[39m     im = np.load(f)
+[31mImportError[39m                               Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[1][39m[32m, line 12[39m
+[32m     10[39m [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mscipy[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[34;01msp[39;00m
+[32m     11[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mmatplotlib[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m pyplot [38;5;28;01mas[39;00m plt
+[32m---> [39m[32m12[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01msklearn[39;00m[34;01m.[39;00m[34;01mmetrics[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m r2_score
+[32m     13[39m [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mtime[39;00m
+[32m     14[39m [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mtensorflow[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[34;01mtf[39;00m
 
-[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/IPython/core/interactiveshell.py:326[39m, in [36m_modified_open[39m[34m(file, *args, **kwargs)[39m
-[32m    319[39m [38;5;28;01mif[39;00m file [38;5;129;01min[39;00m {[32m0[39m, [32m1[39m, [32m2[39m}:
-[32m    320[39m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m(
-[32m    321[39m         [33mf[39m[33m"[39m[33mIPython won[39m[33m'[39m[33mt let you open fd=[39m[38;5;132;01m{[39;00mfile[38;5;132;01m}[39;00m[33m by default [39m[33m"[39m
-[32m    322[39m         [33m"[39m[33mas it is likely to crash IPython. If you know what you are doing, [39m[33m"[39m
-[32m    323[39m         [33m"[39m[33myou can use builtins[39m[33m'[39m[33m open.[39m[33m"[39m
-[32m    324[39m     )
-[32m--> [39m[32m326[39m [38;5;28;01mreturn[39;00m [43mio_open[49m[43m([49m[43mfile[49m[43m,[49m[43m [49m[43m*[49m[43margs[49m[43m,[49m[43m [49m[43m*[49m[43m*[49m[43mkwargs[49m[43m)[49m
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/sklearn/__init__.py:69[39m
+[32m     60[39m os.environ.setdefault([33m"[39m[33mKMP_INIT_AT_FORK[39m[33m"[39m, [33m"[39m[33mFALSE[39m[33m"[39m)
+[32m     62[39m [38;5;66;03m# `_distributor_init` allows distributors to run custom init code.[39;00m
+[32m     63[39m [38;5;66;03m# For instance, for the Windows wheel, this is used to pre-load the[39;00m
+[32m     64[39m [38;5;66;03m# vcomp shared library runtime for OpenMP embedded in the sklearn/.libs[39;00m
+[32m   (...)[39m[32m     67[39m [38;5;66;03m# later is linked to the OpenMP runtime to make it possible to introspect[39;00m
+[32m     68[39m [38;5;66;03m# it and importing it first would fail if the OpenMP dll cannot be found.[39;00m
+[32m---> [39m[32m69[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01m.[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m (  [38;5;66;03m# noqa: F401 E402[39;00m
+[32m     70[39m     __check_build,
+[32m     71[39m     _distributor_init,
+[32m     72[39m )
+[32m     73[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01m.[39;00m[34;01mbase[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m clone  [38;5;66;03m# noqa: E402[39;00m
+[32m     74[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01m.[39;00m[34;01mutils[39;00m[34;01m.[39;00m[34;01m_show_versions[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m show_versions  [38;5;66;03m# noqa: E402[39;00m
 
-[31mFileNotFoundError[39m: [Errno 2] No such file or directory: '../../../test/fixtures/image_Leopard_slice100.npy'
+[31mImportError[39m: cannot import name '__check_build' from partially initialized module 'sklearn' (most likely due to a circular import) (/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/sklearn/__init__.py)
 
