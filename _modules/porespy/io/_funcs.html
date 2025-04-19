@@ -180,20 +180,16 @@
   <h1>Source code for porespy.io._funcs</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">skimage.measure</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ms</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">skimage.morphology</span><span class="w"> </span><span class="kn">import</span> <span class="n">ball</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy.filters</span><span class="w"> </span><span class="kn">import</span> <span class="n">reduce_peaks</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_voxel_image</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">sanitize_filename</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">sanitize_filename</span><span class="p">,</span> <span class="n">get_edt</span>
 
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">pyedt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
-<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">edt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
+
+<span class="n">edt</span> <span class="o">=</span> <span class="n">get_edt</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="dict_to_vtk">

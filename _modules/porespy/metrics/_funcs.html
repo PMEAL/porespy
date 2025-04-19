@@ -200,11 +200,8 @@
     <span class="n">extend_slice</span><span class="p">,</span>
     <span class="n">get_tqdm</span><span class="p">,</span>
     <span class="n">im_to_slabs</span><span class="p">,</span>
+    <span class="n">get_edt</span>
 <span class="p">)</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">pyedt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
-<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">edt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -227,6 +224,7 @@
 <span class="p">]</span>
 
 
+<span class="n">edt</span> <span class="o">=</span> <span class="n">get_edt</span><span class="p">()</span>
 <span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -1285,6 +1283,8 @@
 
 
 
+<div class="viewcode-block" id="pc_map_to_pc_curve">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.pc_map_to_pc_curve.html#porespy.metrics.pc_map_to_pc_curve">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">pc_map_to_pc_curve</span><span class="p">(</span>
     <span class="n">pc</span><span class="p">,</span>
     <span class="n">im</span><span class="p">,</span>
@@ -1396,7 +1396,8 @@
     <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
     <span class="n">results</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="n">pcs</span>
     <span class="n">results</span><span class="o">.</span><span class="n">snwp</span> <span class="o">=</span> <span class="n">snwp</span>
-    <span class="k">return</span> <span class="n">results</span>
+    <span class="k">return</span> <span class="n">results</span></div>
+
 
 
 <div class="viewcode-block" id="satn_profile">
@@ -1568,6 +1569,8 @@
 
 
 
+<div class="viewcode-block" id="bond_number">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.bond_number.html#porespy.metrics.bond_number">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">bond_number</span><span class="p">(</span>
     <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
     <span class="n">delta_rho</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -1647,7 +1650,8 @@
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized method </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">R</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">dvals</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span>
     <span class="n">Bo</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">delta_rho</span><span class="o">*</span><span class="n">g</span><span class="o">*</span><span class="p">(</span><span class="n">R</span><span class="o">*</span><span class="n">voxel_size</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">sigma</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">Bo</span>
+    <span class="k">return</span> <span class="n">Bo</span></div>
+
 </pre></div>
 
               </article>

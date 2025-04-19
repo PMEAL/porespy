@@ -195,6 +195,7 @@
     <span class="n">ps_rect</span><span class="p">,</span>
     <span class="n">ps_round</span><span class="p">,</span>
     <span class="n">make_contiguous</span><span class="p">,</span>
+    <span class="n">get_edt</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy.filters</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">trim_disconnected_blobs</span><span class="p">,</span>
@@ -206,10 +207,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy.generators</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">borders</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">pyedt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
-<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">edt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -222,10 +219,13 @@
 <span class="p">]</span>
 
 
+<span class="n">edt</span> <span class="o">=</span> <span class="n">get_edt</span><span class="p">()</span>
 <span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
 <span class="n">strel</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="n">disk</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="n">square</span><span class="p">(</span><span class="mi">3</span><span class="p">)},</span> <span class="mi">3</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="n">ball</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">)}}</span>
 
 
+<div class="viewcode-block" id="drainage_dsi">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.simulations.drainage_dsi.html#porespy.simulations.drainage_dsi">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">drainage_dsi</span><span class="p">(</span>
     <span class="n">im</span><span class="p">,</span>
     <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -334,9 +334,12 @@
     <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
     <span class="n">results</span><span class="o">.</span><span class="n">im_seq</span> <span class="o">=</span> <span class="n">im_seq</span><span class="o">*</span><span class="n">im</span>
     <span class="n">results</span><span class="o">.</span><span class="n">im_size</span> <span class="o">=</span> <span class="n">im_size</span><span class="o">*</span><span class="n">im</span>
-    <span class="k">return</span> <span class="n">results</span>
+    <span class="k">return</span> <span class="n">results</span></div>
 
 
+
+<div class="viewcode-block" id="drainage_dt_fft">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.simulations.drainage_dt_fft.html#porespy.simulations.drainage_dt_fft">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">drainage_dt_fft</span><span class="p">(</span>
     <span class="n">im</span><span class="p">,</span>
     <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -429,9 +432,12 @@
     <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
     <span class="n">results</span><span class="o">.</span><span class="n">im_seq</span> <span class="o">=</span> <span class="n">im_seq</span><span class="o">*</span><span class="n">im</span>
     <span class="n">results</span><span class="o">.</span><span class="n">im_size</span> <span class="o">=</span> <span class="n">im_size</span><span class="o">*</span><span class="n">im</span>
-    <span class="k">return</span> <span class="n">results</span>
+    <span class="k">return</span> <span class="n">results</span></div>
 
 
+
+<div class="viewcode-block" id="drainage_fft">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.simulations.drainage_fft.html#porespy.simulations.drainage_fft">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">drainage_fft</span><span class="p">(</span>
     <span class="n">im</span><span class="p">,</span>
     <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -519,9 +525,12 @@
     <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
     <span class="n">results</span><span class="o">.</span><span class="n">im_seq</span> <span class="o">=</span> <span class="n">im_seq</span><span class="o">*</span><span class="n">im</span>
     <span class="n">results</span><span class="o">.</span><span class="n">im_size</span> <span class="o">=</span> <span class="n">im_size</span><span class="o">*</span><span class="n">im</span>
-    <span class="k">return</span> <span class="n">results</span>
+    <span class="k">return</span> <span class="n">results</span></div>
 
 
+
+<div class="viewcode-block" id="drainage_dt">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.simulations.drainage_dt.html#porespy.simulations.drainage_dt">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">drainage_dt</span><span class="p">(</span>
     <span class="n">im</span><span class="p">,</span>
     <span class="n">inlets</span><span class="p">,</span>
@@ -625,7 +634,8 @@
     <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
     <span class="n">results</span><span class="o">.</span><span class="n">im_seq</span> <span class="o">=</span> <span class="n">im_seq</span><span class="o">*</span><span class="n">im</span>
     <span class="n">results</span><span class="o">.</span><span class="n">im_size</span> <span class="o">=</span> <span class="n">im_size</span><span class="o">*</span><span class="n">im</span>
-    <span class="k">return</span> <span class="n">results</span>
+    <span class="k">return</span> <span class="n">results</span></div>
+
 
 
 <div class="viewcode-block" id="drainage">

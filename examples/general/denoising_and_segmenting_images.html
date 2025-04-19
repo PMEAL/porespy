@@ -2988,7 +2988,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[01:09:45] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[04:15:16] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
 </pre>
 </div></div>
@@ -3005,7 +3005,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/3e53cc6a37d18198b21dff8f722782a3e290e5d1a1f398e881dc1391c64f5d3e.png" src="../../_images/3e53cc6a37d18198b21dff8f722782a3e290e5d1a1f398e881dc1391c64f5d3e.png" />
+<img alt="../../_images/79a62e9c9c0010f7cb4ad9f9f7dfe01454a80a8846272bd4f0976d2b12663045.png" src="../../_images/79a62e9c9c0010f7cb4ad9f9f7dfe01454a80a8846272bd4f0976d2b12663045.png" />
 </div>
 </div>
 <p>The above image now contains some noise in each phase, which is more realistic, though as we will see it not close to reality.  Let’s look at a histogram of this image:</p>
@@ -3017,7 +3017,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/b87343b98846f2184efb175c83ff95b5c12aec4c2214d86d817c49ad65f5c904.png" src="../../_images/b87343b98846f2184efb175c83ff95b5c12aec4c2214d86d817c49ad65f5c904.png" />
+<img alt="../../_images/d1f5a86a96a22f6659fbd962dc78c122e1e601ef7ade651dcdb35adfd7039716.png" src="../../_images/d1f5a86a96a22f6659fbd962dc78c122e1e601ef7ade651dcdb35adfd7039716.png" />
 </div>
 </div>
 <p>We can see above that all pixels with a value less than 0.5 belong to the dark phase, while the other pixels belong to the light phase.  A simple global threshold can reproduce the original image perfectly:</p>
@@ -3029,7 +3029,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/3d3f2bcd5de6d54f61f138de50a8d2d79acbb5aba0e73e73dabc00d4d31d8888.png" src="../../_images/3d3f2bcd5de6d54f61f138de50a8d2d79acbb5aba0e73e73dabc00d4d31d8888.png" />
+<img alt="../../_images/ca6ff4d91a94514026b00b909ed908d1accb91c8fa75869619d14a6cba657d98.png" src="../../_images/ca6ff4d91a94514026b00b909ed908d1accb91c8fa75869619d14a6cba657d98.png" />
 </div>
 </div>
 <p>Now let’s look at a more realistic noise distribution, though still artificially generated:</p>
@@ -3044,7 +3044,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/58b5f0ace6ff413ecb9d80238be251ca14cc23c50fdf77dcae2fb74b2e22994a.png" src="../../_images/58b5f0ace6ff413ecb9d80238be251ca14cc23c50fdf77dcae2fb74b2e22994a.png" />
+<img alt="../../_images/93042f392360c366ae1ff14be06f735f71c8afbcbd9ffc075b0884fb9a0e8c78.png" src="../../_images/93042f392360c366ae1ff14be06f735f71c8afbcbd9ffc075b0884fb9a0e8c78.png" />
 </div>
 </div>
 <p>Now we can see that the noise is much less separated, and in fact the tails of the distributions just touch each other in the middle.  Let’s see how the simple threshold we used above would work now:</p>
@@ -3056,7 +3056,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ea10ef5f9c7e0c6371a938476b49e1ab32186782414b5e0d2d2513f3962aeb88.png" src="../../_images/ea10ef5f9c7e0c6371a938476b49e1ab32186782414b5e0d2d2513f3962aeb88.png" />
+<img alt="../../_images/30be18826e5ca162778171ec2086c4f3ac437d17944e3eb28d93bf692b28bc3b.png" src="../../_images/30be18826e5ca162778171ec2086c4f3ac437d17944e3eb28d93bf692b28bc3b.png" />
 </div>
 </div>
 <p>Now there are a few pixels in the dark phase which have been identified as bright and vice-versa. Let’s take this further but putting more extreme, but more realistic noise:</p>
@@ -3072,7 +3072,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/9d9bee1316e68994480c8a6bae29166630da09b7564a9de02ff612e51ccaebb7.png" src="../../_images/9d9bee1316e68994480c8a6bae29166630da09b7564a9de02ff612e51ccaebb7.png" />
+<img alt="../../_images/4d83ca71ec33734fba29b300768a24a0f533f62e4260dacfc03797df4ceb79c1.png" src="../../_images/4d83ca71ec33734fba29b300768a24a0f533f62e4260dacfc03797df4ceb79c1.png" />
 </div>
 </div>
 <p>In the above case our eyes can differentiate the light and dark phases pretty well, but the histogram is fully merged into one, and the global threshold produces a very problematic result. Just to show this is not an exageration, below is an actual slice of a tomogram taken of an electrospun flow-battery electrode:</p>
@@ -3095,13 +3095,13 @@
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">/</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/imageio/v2.py:522,</span> in <span class="ni">volread</span><span class="nt">(uri, format, **kwargs)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/imageio/v2.py:522,</span> in <span class="ni">volread</span><span class="nt">(uri, format, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">520</span> <span class="n">imopen_args</span> <span class="o">=</span> <span class="n">decypher_format_arg</span><span class="p">(</span><span class="nb">format</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">521</span> <span class="n">imopen_args</span><span class="p">[</span><span class="s2">&quot;legacy_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="ne">--&gt; </span><span class="mi">522</span> <span class="k">with</span> <span class="n">imopen</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="s2">&quot;rv&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">imopen_args</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">523</span>     <span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/imageio/core/imopen.py:113,</span> in <span class="ni">imopen</span><span class="nt">(uri, io_mode, plugin, extension, format_hint, legacy_mode, **kwargs)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/imageio/core/imopen.py:113,</span> in <span class="ni">imopen</span><span class="nt">(uri, io_mode, plugin, extension, format_hint, legacy_mode, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">111</span>     <span class="n">request</span><span class="o">.</span><span class="n">format_hint</span> <span class="o">=</span> <span class="n">format_hint</span>
 <span class="g g-Whitespace">    </span><span class="mi">112</span> <span class="k">else</span><span class="p">:</span>
 <span class="ne">--&gt; </span><span class="mi">113</span>     <span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">io_mode</span><span class="p">,</span> <span class="n">format_hint</span><span class="o">=</span><span class="n">format_hint</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
@@ -3109,14 +3109,14 @@
 <span class="g g-Whitespace">    </span><span class="mi">117</span> <span class="c1"># fast-path based on plugin</span>
 <span class="g g-Whitespace">    </span><span class="mi">118</span> <span class="c1"># (except in legacy mode)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/imageio/core/request.py:249,</span> in <span class="ni">Request.__init__</span><span class="nt">(self, uri, mode, extension, format_hint, **kwargs)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/imageio/core/request.py:249,</span> in <span class="ni">Request.__init__</span><span class="nt">(self, uri, mode, extension, format_hint, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">246</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Request.Mode: </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">248</span> <span class="c1"># Parse what was given</span>
 <span class="ne">--&gt; </span><span class="mi">249</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">251</span> <span class="c1"># Set extension</span>
 <span class="g g-Whitespace">    </span><span class="mi">252</span> <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/imageio/core/request.py:409,</span> in <span class="ni">Request._parse_uri</span><span class="nt">(self, uri)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/imageio/core/request.py:409,</span> in <span class="ni">Request._parse_uri</span><span class="nt">(self, uri)</span>
 <span class="g g-Whitespace">    </span><span class="mi">406</span> <span class="k">if</span> <span class="n">is_read_request</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">407</span>     <span class="c1"># Reading: check that the file exists (but is allowed a dir)</span>
 <span class="g g-Whitespace">    </span><span class="mi">408</span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>

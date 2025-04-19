@@ -179,26 +179,20 @@
                 
   <h1>Source code for porespy.tools._funcs</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spim</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">rankdata</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">boolean</span><span class="p">,</span> <span class="n">njit</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">skimage.morphology</span><span class="w"> </span><span class="kn">import</span> <span class="n">ball</span><span class="p">,</span> <span class="n">disk</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">skimage.segmentation</span><span class="w"> </span><span class="kn">import</span> <span class="n">relabel_sequential</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">._utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Results</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Results</span><span class="p">,</span> <span class="n">get_edt</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">skimage.measure</span><span class="w"> </span><span class="kn">import</span> <span class="n">marching_cubes</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">skimage.measure</span><span class="w"> </span><span class="kn">import</span> <span class="n">marching_cubes_lewiner</span> <span class="k">as</span> <span class="n">marching_cubes</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">pyedt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
-<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">edt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
 
 
+<span class="n">edt</span> <span class="o">=</span> <span class="n">get_edt</span><span class="p">()</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
@@ -226,10 +220,6 @@
     <span class="s1">&#39;overlay&#39;</span><span class="p">,</span>
     <span class="s1">&#39;randomize_colors&#39;</span><span class="p">,</span>
     <span class="s1">&#39;recombine&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ps_ball&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ps_disk&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ps_rect&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ps_round&#39;</span><span class="p">,</span>
     <span class="s1">&#39;subdivide&#39;</span><span class="p">,</span>
     <span class="s1">&#39;tilde&#39;</span><span class="p">,</span>
     <span class="s1">&#39;unpad&#39;</span><span class="p">,</span>
@@ -1050,6 +1040,7 @@
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
 
 
+
 <span class="nd">@njit</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">jit_extend_slice</span><span class="p">(</span><span class="n">slices</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
@@ -1059,6 +1050,7 @@
         <span class="n">stop</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">stop</span> <span class="o">+</span> <span class="n">pad</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
 
 <span class="nd">@njit</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">pad</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
@@ -1356,7 +1348,7 @@
     <span class="c1"># Alternative, might be faster</span>
     <span class="c1"># im2 = rankdata(im).reshape(im.shape)</span>
     <span class="c1"># im = (im2 - im2.min())/(im2.max() - im2.min())*(scale[1] - scale[0]) + scale[0]</span>
-    <span class="n">aargsort_im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">flatten</span><span class="p">()))</span>  <span class="c1"># Twice for the inverse permutation</span>
+    <span class="n">aargsort_im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">flatten</span><span class="p">()))</span>  <span class="c1"># 2x forinverse permutation</span>
     <span class="n">linspace_im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">scale</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">scale</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">aargsort_im</span><span class="p">),</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">uniform_flatten_im</span> <span class="o">=</span> <span class="n">linspace_im</span><span class="p">[</span><span class="n">aargsort_im</span><span class="p">]</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">uniform_flatten_im</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
@@ -1465,143 +1457,6 @@
     <span class="n">result</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">norm</span>
     <span class="n">result</span><span class="o">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">val</span>
     <span class="k">return</span> <span class="n">result</span></div>
-
-
-
-<div class="viewcode-block" id="ps_disk">
-<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.ps_disk.html#porespy.tools.ps_disk">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">ps_disk</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates circular disk structuring element for morphological operations</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    r : float or int</span>
-<span class="sd">        The desired radius of the structuring element</span>
-<span class="sd">    smooth : boolean</span>
-<span class="sd">        Indicates whether the faces of the sphere should have the little</span>
-<span class="sd">        nibs (``True``) or not (``False``, default)</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    disk : ndarray</span>
-<span class="sd">        A 2D numpy bool array of the structring element</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here</span>
-<span class="sd">    &lt;https://porespy.org/examples/tools/reference/ps_disk.html&gt;`_</span>
-<span class="sd">    to view online example.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">disk</span> <span class="o">=</span> <span class="n">ps_round</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">disk</span></div>
-
-
-
-<div class="viewcode-block" id="ps_ball">
-<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.ps_ball.html#porespy.tools.ps_ball">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">ps_ball</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates spherical ball structuring element for morphological operations</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    r : scalar</span>
-<span class="sd">        The desired radius of the structuring element</span>
-<span class="sd">    smooth : boolean</span>
-<span class="sd">        Indicates whether the faces of the sphere should have the little</span>
-<span class="sd">        nibs (``True``) or not (``False``, default)</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    ball : ndarray</span>
-<span class="sd">        A 3D numpy array of the structuring element</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here</span>
-<span class="sd">    &lt;https://porespy.org/examples/tools/reference/ps_ball.html&gt;`_</span>
-<span class="sd">    to view online example.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">ball</span> <span class="o">=</span> <span class="n">ps_round</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ball</span></div>
-
-
-
-<div class="viewcode-block" id="ps_round">
-<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.ps_round.html#porespy.tools.ps_round">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">ps_round</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates round structuring element with the given radius and dimensionality</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    r : scalar</span>
-<span class="sd">        The desired radius of the structuring element</span>
-<span class="sd">    ndim : int</span>
-<span class="sd">        The dimensionality of the element, either 2 or 3.</span>
-<span class="sd">    smooth : boolean</span>
-<span class="sd">        Indicates whether the faces of the sphere should have the little</span>
-<span class="sd">        nibs (``True``) or not (``False``, default)</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    strel : ndarray</span>
-<span class="sd">        A 3D numpy array of the structuring element</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here</span>
-<span class="sd">    &lt;https://porespy.org/examples/tools/reference/ps_round.html&gt;`_</span>
-<span class="sd">    to view online example.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">rad</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>
-    <span class="n">other</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">2</span><span class="o">*</span><span class="n">rad</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndim</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="n">other</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">rad</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndim</span><span class="p">))]</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
-        <span class="n">ball</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">r</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">ball</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">r</span>
-    <span class="k">return</span> <span class="n">ball</span></div>
-
-
-
-<div class="viewcode-block" id="ps_rect">
-<a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.ps_rect.html#porespy.tools.ps_rect">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">ps_rect</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">ndim</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates rectilinear structuring element with the given size and</span>
-<span class="sd">    dimensionality</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    w : scalar</span>
-<span class="sd">        The desired width of the structuring element</span>
-<span class="sd">    ndim : int</span>
-<span class="sd">        The dimensionality of the element, either 2 or 3.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    strel : D-aNrray</span>
-<span class="sd">        A numpy array of the structuring element</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here</span>
-<span class="sd">    &lt;https://porespy.org/examples/tools/reference/ps_rect.html&gt;`_</span>
-<span class="sd">    to view online example.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">skimage.morphology</span><span class="w"> </span><span class="kn">import</span> <span class="n">square</span>
-        <span class="n">strel</span> <span class="o">=</span> <span class="n">square</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">skimage.morphology</span><span class="w"> </span><span class="kn">import</span> <span class="n">cube</span>
-        <span class="n">strel</span> <span class="o">=</span> <span class="n">cube</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">strel</span></div>
 
 
 
@@ -1828,7 +1683,8 @@
         <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">x_min</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)</span>
         <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">y_min</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span> <span class="n">y_max</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">regions</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="n">z_min</span><span class="p">,</span> <span class="n">z_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">z_min</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span> <span class="n">z_max</span><span class="p">)</span>
+            <span class="n">z_min</span><span class="p">,</span> <span class="n">z_max</span> <span class="o">=</span> \
+                <span class="nb">min</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">z_min</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span> <span class="n">z_max</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">trim</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">regions</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
             <span class="n">bbox</span> <span class="o">=</span> <span class="n">bbox_to_slices</span><span class="p">([</span><span class="n">x_min</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="n">z_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="n">z_max</span><span class="p">])</span>
@@ -1854,6 +1710,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Input image conains a singleton axis. Reduce&quot;</span>
                        <span class="s2">&quot; dimensionality with np.squeeze(im) to avoid&quot;</span>
                        <span class="s2">&quot; unexpected behavior.&quot;</span><span class="p">)</span>
+
 
 <span class="nd">@njit</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">center_of_mass</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>

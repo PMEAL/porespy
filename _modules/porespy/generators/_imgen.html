@@ -181,14 +181,12 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">insp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spim</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.spatial</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sptl</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spst</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">njit</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="kn">import</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">settings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy.filters</span><span class="w"> </span><span class="kn">import</span> <span class="n">chunked_func</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -201,12 +199,8 @@
     <span class="n">insert_sphere</span><span class="p">,</span>
     <span class="n">ps_ball</span><span class="p">,</span>
     <span class="n">ps_disk</span><span class="p">,</span>
+    <span class="n">get_edt</span><span class="p">,</span>
 <span class="p">)</span>
-
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">pyedt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
-<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">edt</span><span class="w"> </span><span class="kn">import</span> <span class="n">edt</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -227,10 +221,13 @@
 <span class="p">]</span>
 
 
+<span class="n">edt</span> <span class="o">=</span> <span class="n">get_edt</span><span class="p">()</span>
 <span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="elevation">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.elevation.html#porespy.generators.elevation">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">elevation</span><span class="p">(</span>
     <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
     <span class="n">voxel_size</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -274,9 +271,12 @@
     <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">c</span><span class="o">*</span><span class="n">voxel_size</span>
     <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">h</span>
+    <span class="k">return</span> <span class="n">h</span></div>
 
 
+
+<div class="viewcode-block" id="ramp">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.ramp.html#porespy.generators.ramp">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">ramp</span><span class="p">(</span>
     <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
     <span class="n">inlet</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -324,7 +324,8 @@
     <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
     <span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">ramp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ramp</span>
+    <span class="k">return</span> <span class="n">ramp</span></div>
+
 
 
 <div class="viewcode-block" id="cylindrical_plug">

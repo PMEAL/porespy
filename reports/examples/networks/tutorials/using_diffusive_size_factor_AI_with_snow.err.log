@@ -1,20 +1,20 @@
 Traceback (most recent call last):
-  File "/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+  File "/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
     executenb(
-  File "/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/nbclient/client.py", line 1319, in execute
+  File "/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/nbclient/client.py", line 1319, in execute
     return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+  File "/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
     return loop.run_until_complete(inner)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
+  File "/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
     return future.result()
            ^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/nbclient/client.py", line 709, in async_execute
+  File "/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/nbclient/client.py", line 709, in async_execute
     await self.async_execute_cell(
-  File "/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+  File "/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/nbclient/client.py", line 1062, in async_execute_cell
     await self._check_raise_for_error(cell, cell_index, exec_reply)
-  File "/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+  File "/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
@@ -40,7 +40,7 @@ model.load_weights(path_weights)
 ------------------
 
 ----- stderr -----
-2025-04-07 01:14:43.850817: E external/local_xla/xla/stream_executor/cuda/cuda_platform.cc:51] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: UNKNOWN ERROR (303)
+2025-04-19 04:20:15.388060: E external/local_xla/xla/stream_executor/cuda/cuda_platform.cc:51] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: UNKNOWN ERROR (303)
 ------------------
 
 [31m---------------------------------------------------------------------------[39m
@@ -57,7 +57,7 @@ model.load_weights(path_weights)
 [32m--> [39m[32m616[39m model.compile(loss=[33m'[39m[33mmse[39m[33m'[39m, optimizer=[43mAdam[49m[43m([49m[43mlr[49m[43m=[49m[32;43m1e-4[39;49m[43m)[49m, metrics=[[33m'[39m[33mmse[39m[33m'[39m])
 [32m    617[39m [38;5;28;01mreturn[39;00m model
 
-[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/keras/src/optimizers/adam.py:62[39m, in [36mAdam.__init__[39m[34m(self, learning_rate, beta_1, beta_2, epsilon, amsgrad, weight_decay, clipnorm, clipvalue, global_clipnorm, use_ema, ema_momentum, ema_overwrite_frequency, loss_scale_factor, gradient_accumulation_steps, name, **kwargs)[39m
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/keras/src/optimizers/adam.py:62[39m, in [36mAdam.__init__[39m[34m(self, learning_rate, beta_1, beta_2, epsilon, amsgrad, weight_decay, clipnorm, clipvalue, global_clipnorm, use_ema, ema_momentum, ema_overwrite_frequency, loss_scale_factor, gradient_accumulation_steps, name, **kwargs)[39m
 [32m     43[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34m__init__[39m(
 [32m     44[39m     [38;5;28mself[39m,
 [32m     45[39m     learning_rate=[32m0.001[39m,
@@ -80,12 +80,12 @@ model.load_weights(path_weights)
 [32m     76[39m     [38;5;28mself[39m.beta_1 = beta_1
 [32m     77[39m     [38;5;28mself[39m.beta_2 = beta_2
 
-[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/keras/src/backend/tensorflow/optimizer.py:21[39m, in [36mTFOptimizer.__init__[39m[34m(self, *args, **kwargs)[39m
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/keras/src/backend/tensorflow/optimizer.py:21[39m, in [36mTFOptimizer.__init__[39m[34m(self, *args, **kwargs)[39m
 [32m     20[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34m__init__[39m([38;5;28mself[39m, *args, **kwargs):
 [32m---> [39m[32m21[39m     [38;5;28;43msuper[39;49m[43m([49m[43m)[49m[43m.[49m[34;43m__init__[39;49m[43m([49m[43m*[49m[43margs[49m[43m,[49m[43m [49m[43m*[49m[43m*[49m[43mkwargs[49m[43m)[49m
 [32m     22[39m     [38;5;28mself[39m._distribution_strategy = tf.distribute.get_strategy()
 
-[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/keras/src/optimizers/base_optimizer.py:90[39m, in [36mBaseOptimizer.__init__[39m[34m(self, learning_rate, weight_decay, clipnorm, clipvalue, global_clipnorm, use_ema, ema_momentum, ema_overwrite_frequency, loss_scale_factor, gradient_accumulation_steps, name, **kwargs)[39m
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/keras/src/optimizers/base_optimizer.py:90[39m, in [36mBaseOptimizer.__init__[39m[34m(self, learning_rate, weight_decay, clipnorm, clipvalue, global_clipnorm, use_ema, ema_momentum, ema_overwrite_frequency, loss_scale_factor, gradient_accumulation_steps, name, **kwargs)[39m
 [32m     86[39m     warnings.warn(
 [32m     87[39m         [33m"[39m[33mArgument `decay` is no longer supported and will be ignored.[39m[33m"[39m
 [32m     88[39m     )

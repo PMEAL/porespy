@@ -320,6 +320,8 @@
 
 
 
+<div class="viewcode-block" id="find_closed_pores">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.find_closed_pores.html#porespy.filters.find_closed_pores">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">find_closed_pores</span><span class="p">(</span>
     <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
     <span class="n">conn</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;min&#39;</span><span class="p">,</span>
@@ -355,9 +357,12 @@
     <span class="n">mask</span> <span class="o">=</span> <span class="n">borders</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;faces&#39;</span><span class="p">)</span>
     <span class="n">hits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span>
     <span class="n">closed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">hits</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">closed</span>
+    <span class="k">return</span> <span class="n">closed</span></div>
 
 
+
+<div class="viewcode-block" id="find_surface_pores">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.find_surface_pores.html#porespy.filters.find_surface_pores">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">find_surface_pores</span><span class="p">(</span>
     <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
     <span class="n">conn</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;min&#39;</span><span class="p">,</span>
@@ -399,9 +404,12 @@
         <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
     <span class="n">closed</span> <span class="o">=</span> <span class="n">find_closed_pores</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">)</span>
     <span class="n">surface</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">keep</span><span class="p">),</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">*</span> <span class="o">~</span><span class="n">closed</span>
-    <span class="k">return</span> <span class="n">surface</span>
+    <span class="k">return</span> <span class="n">surface</span></div>
 
 
+
+<div class="viewcode-block" id="find_invalid_pores">
+<a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.find_invalid_pores.html#porespy.filters.find_invalid_pores">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">find_invalid_pores</span><span class="p">(</span>
     <span class="n">im</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
     <span class="n">conn</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;min&#39;</span><span class="p">,</span>
@@ -434,7 +442,8 @@
     <span class="n">closed</span> <span class="o">=</span> <span class="n">find_closed_pores</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">)</span>
     <span class="n">surface</span> <span class="o">=</span> <span class="n">find_surface_pores</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">)</span>
     <span class="n">invalid</span> <span class="o">=</span> <span class="n">closed</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">surface</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">invalid</span>
+    <span class="k">return</span> <span class="n">invalid</span></div>
+
 
 
 <div class="viewcode-block" id="fill_closed_pores">

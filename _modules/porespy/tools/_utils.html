@@ -194,15 +194,16 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;sanitize_filename&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_tqdm&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_edt&quot;</span><span class="p">,</span>
     <span class="s2">&quot;show_docstring&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Results&quot;</span><span class="p">,</span>
     <span class="s2">&quot;tic&quot;</span><span class="p">,</span>
     <span class="s2">&quot;toc&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_edt&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_edt</span><span class="p">():</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">package</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;pyedt&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">package</span><span class="o">.</span><span class="n">edt</span>
