@@ -179,14 +179,21 @@
                 
   <h1>Source code for porespy.generators._micromodels</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spim</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spst</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.generators</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">borders</span><span class="p">,</span>
+    <span class="n">lattice_spheres</span><span class="p">,</span>
+    <span class="n">spheres_from_coords</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_insert_disks_at_points_parallel</span><span class="p">,</span>
+    <span class="n">extend_slice</span><span class="p">,</span>
+    <span class="n">parse_shape</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.generators</span><span class="w"> </span><span class="kn">import</span> <span class="n">borders</span><span class="p">,</span> <span class="n">lattice_spheres</span><span class="p">,</span> <span class="n">spheres_from_coords</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">_insert_disks_at_points_parallel</span><span class="p">,</span> <span class="n">extend_slice</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;rectangular_pillars_array&#39;</span><span class="p">,</span>
@@ -291,6 +298,7 @@
 <span class="sd">        &lt;https://porespy.org/examples/generators/reference/rectangular_pillars_array.html&gt;`_</span>
 <span class="sd">        to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">parse_shape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;shape must be 2D for this function&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -391,13 +399,13 @@
 <span class="sd">        &lt;https://porespy.org/examples/generators/reference/cylindrical_pillars_array.html&gt;`_</span>
 <span class="sd">        to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">parse_shape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;shape must be 2D for this function&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">f</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">spst</span><span class="p">,</span> <span class="n">dist</span><span class="p">)(</span><span class="o">**</span><span class="n">dist_kwargs</span><span class="p">)</span>
-    <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">new_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span><span class="o">*</span><span class="n">shape</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">lattice</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">):</span>
         <span class="n">pts</span> <span class="o">=</span> <span class="o">~</span><span class="n">lattice_spheres</span><span class="p">(</span><span class="n">new_shape</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="n">spacing</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -479,6 +487,7 @@
         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The nanomesh package can be installed with `pip install nanomesh`&quot;</span>
         <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">parse_shape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;shape must be 2D for this function&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

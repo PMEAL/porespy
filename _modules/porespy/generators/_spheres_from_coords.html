@@ -179,10 +179,12 @@
                 
   <h1>Source code for porespy.generators._spheres_from_coords</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_insert_disks_at_points</span><span class="p">,</span>
+    <span class="n">find_bbox</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">porespy.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">_insert_disks_at_points</span><span class="p">,</span> <span class="n">find_bbox</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;spheres_from_coords&#39;</span><span class="p">,</span>

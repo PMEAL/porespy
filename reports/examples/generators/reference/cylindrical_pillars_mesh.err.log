@@ -38,10 +38,10 @@ ax[1].set_title('a=5000');
 
 [31m---------------------------------------------------------------------------[39m
 [31mModuleNotFoundError[39m                       Traceback (most recent call last)
-[36mFile [39m[32m~/work/porespy/porespy/src/porespy/generators/_micromodels.py:289[39m, in [36mcylindrical_pillars_mesh[39m[34m(shape, f, a, n, truncate)[39m
-[32m    288[39m [38;5;28;01mtry[39;00m:
-[32m--> [39m[32m289[39m     [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mnanomesh[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m Mesher2D
-[32m    290[39m [38;5;28;01mexcept[39;00m [38;5;167;01mModuleNotFoundError[39;00m:
+[36mFile [39m[32m~/work/porespy/porespy/src/porespy/generators/_micromodels.py:297[39m, in [36mcylindrical_pillars_mesh[39m[34m(shape, f, a, n, truncate)[39m
+[32m    296[39m [38;5;28;01mtry[39;00m:
+[32m--> [39m[32m297[39m     [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mnanomesh[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m Mesher2D
+[32m    298[39m [38;5;28;01mexcept[39;00m [38;5;167;01mModuleNotFoundError[39;00m:
 
 [31mModuleNotFoundError[39m: No module named 'nanomesh'
 
@@ -61,12 +61,12 @@ During handling of the above exception, another exception occurred:
 [32m     10[39m )
 [32m     12[39m ax[[32m0[39m].imshow(im1, origin=[33m'[39m[33mlower[39m[33m'[39m, interpolation=[33m'[39m[33mnone[39m[33m'[39m)
 
-[36mFile [39m[32m~/work/porespy/porespy/src/porespy/generators/_micromodels.py:292[39m, in [36mcylindrical_pillars_mesh[39m[34m(shape, f, a, n, truncate)[39m
-[32m    290[39m [38;5;28;01mexcept[39;00m [38;5;167;01mModuleNotFoundError[39;00m:
-[32m    291[39m     msg = [33m"[39m[33mThe nanomesh package can be installed with `pip install nanomesh`[39m[33m"[39m
-[32m--> [39m[32m292[39m     [38;5;28;01mraise[39;00m [38;5;167;01mModuleNotFoundError[39;00m(msg)
-[32m    294[39m [38;5;28;01mif[39;00m [38;5;28mlen[39m(shape) != [32m2[39m:
-[32m    295[39m     [38;5;28;01mraise[39;00m [38;5;167;01mException[39;00m([33m'[39m[33mshape must be 2D for this function[39m[33m'[39m)
+[36mFile [39m[32m~/work/porespy/porespy/src/porespy/generators/_micromodels.py:300[39m, in [36mcylindrical_pillars_mesh[39m[34m(shape, f, a, n, truncate)[39m
+[32m    298[39m [38;5;28;01mexcept[39;00m [38;5;167;01mModuleNotFoundError[39;00m:
+[32m    299[39m     msg = [33m"[39m[33mThe nanomesh package can be installed with `pip install nanomesh`[39m[33m"[39m
+[32m--> [39m[32m300[39m     [38;5;28;01mraise[39;00m [38;5;167;01mModuleNotFoundError[39;00m(msg)
+[32m    302[39m shape = parse_shape(shape)
+[32m    303[39m [38;5;28;01mif[39;00m [38;5;28mlen[39m(shape) != [32m2[39m:
 
 [31mModuleNotFoundError[39m: The nanomesh package can be installed with `pip install nanomesh`
 
