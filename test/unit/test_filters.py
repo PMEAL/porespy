@@ -25,7 +25,7 @@ class FilterTest():
     def test_im_in_not_im_out(self):
         im = self.im[:, :, 50]
         for item in ps.filters.__dir__():
-            if ~item.startswith('__'):
+            if not item.startswith('__'):
                 temp = getattr(ps.filters, item)
                 assert temp is not im
 
