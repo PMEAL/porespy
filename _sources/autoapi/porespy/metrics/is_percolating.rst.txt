@@ -1,0 +1,31 @@
+porespy.metrics.is_percolating
+==============================
+
+.. py:function:: porespy.metrics.is_percolating(im, axis=None, inlets=None, outlets=None, conn='min')
+
+   Determines if a percolating path exists across the domain (in the specified
+   direction) or between given inlets and outlets.
+
+   :param im: Image of the void space with `True` indicating void space.
+   :type im: ndarray
+   :param axis: The axis along which percolation is checked. If `None` (default) then
+                percolation is checked in all dimensions.
+   :type axis: int
+   :param conn: Can be either `'min'` or `'max'` and controls the shape of the structuring
+                element used to determine voxel connectivity.  The default if `'min'` which
+                imposes the strictest criteria, so that voxels must share a face to be
+                considered connected.
+   :type conn: str
+
+   :returns: **percolating** -- A boolean value indicating if the domain percolates in the given direction.
+             If `axis=None` then all directions are checked and the result is returned
+             as a list like `[True, False, True]` indicating that the domain percolates
+             in the `x` and `z` directions, but not `y`.
+   :rtype: bool or list of bools
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/is_percolating.html>`_
+   to view online example.
+

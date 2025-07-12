@@ -25,7 +25,9 @@
    "source": [
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
+    "\n",
     "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()"
    ]
   },
@@ -229,14 +231,14 @@
    "source": [
     "fig, ax = plt.subplots(1, 2, figsize=[8, 4])\n",
     "\n",
-    "clearance=-1\n",
+    "clearance = -1\n",
     "im = ps.generators.borders(shape=[151, 151], mode='faces')\n",
     "packing = ps.generators.pseudo_electrostatic_packing(im=im, r=r, clearance=clearance)\n",
     "ax[0].imshow(packing, interpolation='none', origin='lower')\n",
     "ax[0].axis(False)\n",
     "ax[0].set_title(f'clearance: {clearance}')\n",
     "\n",
-    "clearance=5\n",
+    "clearance = 5\n",
     "im = ps.generators.borders(shape=[151, 151], mode='faces')\n",
     "packing = ps.generators.pseudo_electrostatic_packing(im=im, r=r, clearance=clearance)\n",
     "ax[1].imshow(packing, interpolation='none', origin='lower')\n",

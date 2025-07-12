@@ -1,0 +1,54 @@
+porespy.metrics.satn_profile
+============================
+
+.. py:function:: porespy.metrics.satn_profile(satn, s=None, im=None, axis=0, span=10, mode='tile')
+
+   Computes a saturation profile from an image of fluid invasion
+
+   :param satn: An image with each voxel indicating the saturation upon its
+                invasion.  0's are treated as solid and -1's are treated as uninvaded
+                void space.
+   :type satn: ndarray
+   :param s: The global saturation value for which the profile is desired. If `satn` is
+             a pre-thresholded boolean image then this is ignored, in which case `im`
+             is required.
+   :type s: scalar
+   :param im: A boolean image with `True` values indicating the void phase. This is used
+              to compute the void volume if `satn` is given as a pre-thresholded boolean
+              mask.
+   :type im: ndarray
+   :param axis: The axis along which to profile should be measured
+   :type axis: int
+   :param span: The width of layers to include in the moving average saturation
+                calculation.
+   :type span: int
+   :param mode: How the moving average should be applied. Options are:
+
+                ======== ==============================================================
+                mode     description
+                ======== ==============================================================
+                'tile'   The average is computed for discrete non-overlapping
+                         tiles of a size given by ``span``
+                'slide'  The average is computed in a moving window starting at
+                         ``span/2`` and sliding by a single voxel. This method
+                         provides more data points but is slower.
+                ======== ==============================================================
+   :type mode: str
+
+   :returns: **results** -- Results is a custom porespy class with the following attributes:
+
+             ============= =========================================================
+             Attribute     Description
+             ============= =========================================================
+             position      The position along the given axis at which saturation
+                           values are computed.  The units are in voxels.
+             saturation    The local saturation value at each position.
+             ============= =========================================================
+   :rtype: dataclass
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/satn_profile.html>`__
+   to view online example.
+

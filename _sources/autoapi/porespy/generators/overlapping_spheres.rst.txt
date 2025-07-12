@@ -1,0 +1,39 @@
+porespy.generators.overlapping_spheres
+======================================
+
+.. py:function:: porespy.generators.overlapping_spheres(shape: List[int], r: int = 5, porosity: float = 0.5, maxiter: int = 10, tol: float = 0.01, seed: int = None)
+
+   Generate a packing of overlapping mono-disperse spheres
+
+   :param shape: The size of the image to generate in [Nx, Ny, Nz] where Ni is the
+                 number of voxels in the i-th direction.
+   :type shape: list
+   :param r: The radius of spheres in the packing.
+   :type r: scalar
+   :param porosity: The porosity of the final image, accurate to the given tolerance.
+   :type porosity: scalar
+   :param maxiter: Maximum number of iterations for the iterative algorithm that improves
+                   the porosity of the final image to match the given value.
+   :type maxiter: int
+   :param tol: Tolerance for porosity of the final image compared to the given value.
+   :type tol: float
+   :param seed: Initializes numpy's random number generator to the specified state. If not
+                provided, the current global value is used. This means calls to
+                ``np.random.seed(seed)`` prior to calling this function will be respected.
+   :type seed: int, optional, default = `None`
+
+   :returns: **image** -- A boolean array with ``True`` values denoting the pore space
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   This method can also be used to generate a dispersion of hollows by
+   treating ``porosity`` as solid volume fraction and inverting the
+   returned image.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/overlapping_spheres.html>`__
+   to view online example.
+

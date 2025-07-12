@@ -1,0 +1,27 @@
+porespy.filters.fill_surface_pores
+==================================
+
+.. py:function:: porespy.filters.fill_surface_pores(im: numpy.typing.NDArray, axis=None, conn: Literal['max', 'min'] = 'min')
+
+   Fill surface pores
+
+   :param im: A boolean array with `True` indicating the void phase (or phase of interest)
+   :type im: ndarray
+   :param axis: The direction which defines the surfaces of interest. By default all
+                directions are considered.
+   :type axis: int
+   :param conn: Can be either `'min'` or `'max'` and controls the shape of the structuring
+                element used to determine voxel connectivity.  The default if `'min'` which
+                imposes the strictest criteria, so that voxels must share a face to be
+                considered connected.
+   :type conn: str
+
+   :returns: **im** -- A copy of `im` with surface pores set to `False`.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/fill_surface_pores.html>`_
+   to view online example.
+

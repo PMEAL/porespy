@@ -1,0 +1,17 @@
+porespy.tools.sanitize_filename
+===============================
+
+.. py:function:: porespy.tools.sanitize_filename(filename, ext, exclude_ext=False)
+
+   Returns a sanitized string in the form of name.extension
+
+   :param filename: Unsanitized filename, could be 'test.vtk' or just 'test'
+   :type filename: str
+   :param ext: Extension of the file, could be 'vtk'
+   :type ext: str
+   :param exclude_ext: If True, the returned string doesn't have the extension
+   :type exclude_ext: bool
+
+   :returns: **sanitized** -- Sanitized filename in form of name.extension
+   :rtype: str
+

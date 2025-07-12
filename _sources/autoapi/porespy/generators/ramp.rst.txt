@@ -1,0 +1,35 @@
+porespy.generators.ramp
+=======================
+
+.. py:function:: porespy.generators.ramp(shape: List, inlet: float = 1.0, outlet: float = 0.0, axis: int = 0)
+
+   Generates an array containing a linear ramp of greyscale values along the given
+   axis.
+
+   This is useful for de-trending at concentration gradient, or for computing
+   the elevation of each voxel for use in the capillary transform.
+
+   Parameter
+   ---------
+   shape : list
+       The [X, Y, Z] dimension of the desired image. Z is optional.
+   inlet : scalar
+       The values to place the beginning of the specified axis. The default is 1.0.
+   outlet : scalar
+       The values to place the end of the specified axis. The default is 0.0.
+   axis : scalar
+       The axis along which the ramp should be directed. The default is 0,
+       corresponding to the x-axis.
+
+   :returns: **ramp** -- An array of the requested shape with values changing linearly from inlet
+             to outlet in the direction specified.
+   :rtype: ndarray
+
+   .. seealso:: :py:obj:`elevation`
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/ramp.html>`__
+   to view online example.
+

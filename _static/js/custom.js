@@ -16,7 +16,7 @@ window.onload = function () {
     };
 
     // Hide the redundant "PoreSpy" title
-    if ($("h1").text().includes("Module and Function Reference")) {
+    if ($("h1").text().includes("API")) {
         $("h2").hide()
     }
 };

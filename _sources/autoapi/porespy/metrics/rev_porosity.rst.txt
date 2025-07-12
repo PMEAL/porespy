@@ -1,0 +1,45 @@
+porespy.metrics.rev_porosity
+============================
+
+.. py:function:: porespy.metrics.rev_porosity(im, n=1000, slices=None)
+
+   Calculates the porosity for a many subdomains of diffrent sizes, suitable for
+   an REV plot
+
+   :param im: A boolean image of the porous material with `True` indicating the phase of
+              interest
+   :type im: ndarray
+   :param n: The number of random blocks to analyze. If `slices` are provided this is
+             ignored.
+   :type n: int, default = 1000
+   :param slices: A list of `slice` objects into the image which define the subdomains. If
+                  not provided then `n` random blocks are used.
+   :type slices: list
+
+   :returns: **result** -- A custom object with the following data added as named attributes:
+
+             ========== ==================================================================
+             Attribute  Description
+             ========== ==================================================================
+             volume     The total volume of each cubic subdomain tested
+             porosity   The porosity of each subdomain tested
+             ========== ==================================================================
+
+             These attributes can be conveniently plotted by passing the Results
+             object to matplotlib's ``plot`` function using the notation:
+             ``plt.plot(\*result, 'b.')``. The resulting plot is similar to the
+             sketch given by Bachmat and Bear [1]_
+   :rtype: Results object
+
+   .. rubric:: References
+
+   .. [1] Bachmat and Bear. On the Concept and Size of a Representative
+      Elementary Volume (Rev), Advances in Transport Phenomena in Porous Media
+      (1987)
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/rev_porosity.html>`__
+   to view online example.
+

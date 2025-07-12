@@ -1,0 +1,25 @@
+porespy.filters.find_closed_pores
+=================================
+
+.. py:function:: porespy.filters.find_closed_pores(im: numpy.typing.NDArray, conn: Literal['max', 'min'] = 'min')
+
+   Finds closed pores that a not connected to *any* surface
+
+   :param im: A boolean array with `True` indicating the phase of interest
+   :type im: ndarray
+   :param conn: Can be either `'min'` or `'max'` and controls the shape of the structuring
+                element used to determine voxel connectivity.  The default if `'min'` which
+                imposes the strictest criteria, so that voxels must share a face to be
+                considered connected.
+   :type conn: str
+
+   :returns: **closed** -- A array containing boolean values indicating voxels which belong to closed
+             pores.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/find_closed_pores.html>`__
+   to view online example.
+

@@ -1,0 +1,31 @@
+porespy.filters.apply_padded
+============================
+
+.. py:function:: porespy.filters.apply_padded(im: numpy.typing.NDArray, pad_width, func, pad_val: int = 1, **kwargs)
+
+   Applies padding to an image before sending to `func`, then extracts
+   the result corresponding to the original image shape.
+
+   :param im: The image to which `func` should be applied
+   :type im: ndarray
+   :param pad_width: The amount of padding to apply to each axis. Refer to `numpy.pad`
+                     documentation for more details.
+   :type pad_width: int or list of ints
+   :param pad_val: The value to place into the padded voxels.  The default is 1 (or
+                   `True`) which extends the pore space.
+   :type pad_val: scalar
+   :param func: The function to apply to the padded image.
+   :type func: function handle
+   :param kwargs: Additional keyword arguments are collected and passed to `func`.
+
+   .. rubric:: Notes
+
+   A use case for this is when using `skimage.morphology.skeletonize`
+   to ensure that the skeleton extends beyond the edges of the image.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/apply_padded.html>`__
+   to view online example.
+

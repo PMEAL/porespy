@@ -38,12 +38,15 @@
     }
    ],
    "source": [
-    "import matplotlib.pyplot as plt\n",
-    "import porespy as ps\n",
-    "import numpy as np\n",
-    "from porespy.filters import fftmorphology\n",
-    "from skimage.morphology import disk\n",
     "import inspect\n",
+    "\n",
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "from skimage.morphology import disk\n",
+    "\n",
+    "import porespy as ps\n",
+    "from porespy.filters import fftmorphology\n",
+    "\n",
     "inspect.signature(ps.metrics.phase_fraction)"
    ]
   },
@@ -95,9 +98,9 @@
     "phases = im + pad\n",
     "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
     "ax.imshow(phases, origin='lower', interpolation='none')\n",
-    "ax.axis(False);\n",
-    "labels=np.unique(phases)\n",
-    "print('labels of phases are',labels)"
+    "ax.axis(False)\n",
+    "labels = np.unique(phases)\n",
+    "print('labels of phases are', labels)"
    ]
   },
   {

@@ -1,0 +1,34 @@
+porespy.visualization.bar
+=========================
+
+.. py:function:: porespy.visualization.bar(results, h='pdf', **kwargs)
+
+   Convenience wrapper for matplotlib's `bar`.
+
+   This automatically:
+
+       * Fetches the `bin_centers`
+       * Fetches the bin heights from the specified `h`
+       * Sets the bin widths
+       * Sets the edges to black
+
+   :param results: The objects returned by various functions in the
+                   `porespy.metrics` submodule, such as `chord_length_distribution`.
+   :type results: object
+   :param h: The value to use for bin heights.  The default is `pdf`, but
+             `cdf` is another option. Depending on the function the named-tuple
+             may have different options.
+   :type h: str
+   :param kwargs: All other keyword arguments are passed to `bar`, including
+                  `edgecolor` if you wish to overwrite the default black.
+   :type kwargs: keyword arguments
+
+   :returns: **fig**
+   :rtype: Matplotlib figure handle
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/visualization/reference/bar.html>`__
+   to view online example.
+

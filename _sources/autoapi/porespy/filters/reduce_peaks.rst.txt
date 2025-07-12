@@ -1,0 +1,28 @@
+porespy.filters.reduce_peaks
+============================
+
+.. py:function:: porespy.filters.reduce_peaks(peaks)
+
+   Any peaks that are broad or elongated are replaced with a single voxel
+   that is located at the center of mass of the original voxels.
+
+   :param peaks: An image containing ``True`` values indicating peaks in the
+                 distance transform
+   :type peaks: ndarray
+
+   :returns: **image** -- An array with the same number of isolated peaks as the original
+             image, but fewer total ``True`` voxels.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   The center of mass of a group of voxels is used as the new single
+   voxel, so if the group has an odd shape (like a horse shoe), the new
+   voxel may *not* lie on top of the original set.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/reduce_peaks.html>`__
+   to view online example.
+

@@ -34,20 +34,18 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "import subprocess\n",
-    "import os\n",
-    "import numpy as np\n",
-    "import porespy as ps\n",
-    "import h5py  # if there was error importing, please install the h5py package\n",
     "import importlib\n",
+    "import os\n",
+    "import time\n",
     "import warnings\n",
-    "import openpnm as op\n",
-    "import porespy as ps\n",
-    "import scipy as sp\n",
+    "\n",
+    "import h5py  # if there was error importing, please install the h5py package\n",
+    "import numpy as np\n",
     "from matplotlib import pyplot as plt\n",
     "from sklearn.metrics import r2_score\n",
-    "import time\n",
-    "import tensorflow as tf\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()\n",
     "warnings.filterwarnings(\"ignore\")"
    ]
@@ -90,7 +88,7 @@
     "DIR_WEIGHTS = \"sf-model-lib/diffusion\"\n",
     "fname_in = [f\"{DIR_WEIGHTS}/model_weights_part{j}.h5\" for j in [0, 1]]\n",
     "\n",
-    "#Identifying hdf5 files and merging them together, the result would be a unique file\n",
+    "# Identifying hdf5 files and merging them together, the result would be a unique file\n",
     "h5tools.combine(fname_in, fname_out=f\"{DIR_WEIGHTS}/model_weights.h5\")"
    ]
   },
@@ -294,7 +292,7 @@
     }
    ],
    "source": [
-    "snow = ps.networks.snow2(im, boundary_width=0, parallelization=None, voxel_size = voxel_size)\n",
+    "snow = ps.networks.snow2(im, boundary_width=0, parallelization=None, voxel_size=voxel_size)\n",
     "regions = snow.regions\n",
     "net = snow.network\n",
     "conns = net['throat.conns']"
@@ -370,7 +368,7 @@
     "    model=model,\n",
     "    g_train=g_train,\n",
     "    throat_conns=conns,\n",
-    "    voxel_size = voxel_size\n",
+    "    voxel_size=voxel_size\n",
     ")"
    ]
   },
@@ -414,7 +412,7 @@
     "startTime = time.time()\n",
     "predicted_dns = ps.networks.diffusive_size_factor_DNS(regions,\n",
     "                                                    throat_conns=conns,\n",
-    "                                                         voxel_size = voxel_size)\n",
+    "                                                         voxel_size=voxel_size)\n",
     "executionTime_dns = (time.time() - startTime)\n",
     "print('Execution time in seconds: ' + str(executionTime_dns))"
    ]
@@ -470,9 +468,9 @@
    ],
    "source": [
     "max_val = np.max([predicted_ai, predicted_dns])\n",
-    "plt.figure(figsize=[8,8])\n",
+    "plt.figure(figsize=[8, 8])\n",
     "plt.plot(predicted_ai, predicted_dns, '*', [0, max_val], [0, max_val], 'r')\n",
-    "plt.title(r'$R^2$ = ' + str(np.round(r2_score(predicted_dns, predicted_ai), 2)));\n",
+    "plt.title(r'$R^2$ = ' + str(np.round(r2_score(predicted_dns, predicted_ai), 2)))\n",
     "plt.xlabel('AI_based size factor values')\n",
     "plt.ylabel('DNS_based size factor values')"
    ]

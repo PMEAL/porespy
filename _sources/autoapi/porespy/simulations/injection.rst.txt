@@ -1,0 +1,106 @@
+porespy.simulations.injection
+=============================
+
+.. py:function:: porespy.simulations.injection(im, pc=None, dt=None, inlets=None, outlets=None, maxiter=None, return_sizes=False, return_pressures=True, conn='min', min_size=0, method='qbip')
+
+   Performs injection of non-wetting fluid including the effect of gravity and
+   trapping of wetting phase.
+
+   :param im: A boolean image of the porous media with ``True`` values indicating
+              the void space
+   :type im: ndarray
+   :param pc: Precomputed capillary pressure transform which is used to determine
+              the invadability of each voxel. If not provided then the ``2/dt`` is used,
+              which is equivalent to a surface tension and voxel size of unity, and a
+              contact angle of 180 degrees.
+   :type pc: ndarray, optional
+   :param dt: The distance transform of ``im``.  If not provided it will be
+              calculated, so supplying it saves time.
+   :type dt: ndarray (optional)
+   :param inlets: A boolean image with ``True`` values indicating the inlet locations.
+                  If not provided then the beginning of the x-axis is assumed.
+   :type inlets: ndarray, optional
+   :param outlets: A boolean image with ``True`` values indicating the outlet locations.
+                   If this is provided then trapped voxels of wetting phase are found and
+                   all the output images are adjusted accordingly. Note that trapping can
+                   be assessed during postprocessing as well.
+   :type outlets: ndarray, optional
+   :param return_sizes: If ``True`` then an array containing the size of the sphere which first
+                        overlapped each pixel is returned. This array is not computed by default
+                        to save computation time.
+   :type return_sizes: bool, default = `False`
+   :param return_pressures: If ``True`` then an array containing the capillary pressure at which
+                            each pixels was first invaded is returned.
+   :type return_pressures: bool, default = ``True``
+   :param maxiter: The maximum number of iteration to perform.  The default is equal to the
+                   number of void pixels in ``im``.
+   :type maxiter: int
+   :param min_size: Any clusters of trapped voxels smaller than this size will be set to not
+                    trapped. This argument is only used if ``outlets`` is given. This is useful
+                    to prevent small voxels along edges of the void space from being set to
+                    trapped. These can appear to be trapped due to the jagged nature of the
+                    digital image. The default is 0, meaning this adjustment is not applied,
+                    but a value of 3 or 4 is recommended to activate this adjustment.
+   :type min_size: int
+   :param conn: Controls the shape of the structuring element used to find neighboring
+                voxels.  Options are:
+
+                ========= ==================================================================
+                Option    Description
+                ========= ==================================================================
+                'min'     This corresponds to a cross with 4 neighbors in 2D and 6 neighbors
+                          in 3D.
+                'max'     This corresponds to a square or cube with 8 neighbors in 2D and
+                          26 neighbors in 3D.
+                ========= ==================================================================
+   :type conn: str
+   :param method: Controls the method used perform the simulation.  Options are:
+
+                  ========= ==================================================================
+                  Option    Description
+                  ========= ==================================================================
+                  'qbip'    Uses 'queue-based invasion percolation' [1]_. This is the default.
+                            It is much faster.
+                  'ibip'    Uses 'image-based invasion percolation' [2]_. This is only
+                            provided for completeness since it is the original algorithm.
+                  ========= ==================================================================
+   :type method: str
+
+   :returns: **results** -- A dataclass-like object with the following attributes:
+
+             ========== =================================================================
+             Attribute  Description
+             ========== =================================================================
+             im_seq     A numpy array with each voxel value containing the step at
+                        which it was invaded.  Uninvaded voxels are set to -1.
+             im_snwp    A numpy array with each voxel value indicating the saturation
+                        present in the domain it was invaded. Solids are given 0, and
+                        uninvaded regions are given -1.
+             im_pc      If ``return_pressures`` was set to ``True``, then a numpy array
+                        with each voxel value indicating the capillary pressure at which
+                        it was invaded. Uninvaded voxels have value of ``np.inf``.
+             im_size    If ``return_sizes`` was set to ``True``, then a numpy array with
+                        each voxel containing the radius of the sphere, in voxels, that
+                        first overlapped it.
+             ========== =================================================================
+   :rtype: Results object
+
+   .. rubric:: References
+
+   .. [1] Gostick JT, Misaghian N, A Irannezhad, B Zhao. *A computationally
+      efficient queue-based algorithm for simulating volume-controlled drainage
+      under the influence of gravity on volumetric images*. `Advances in Water
+      Resources <https://doi.org/10.1016/j.advwatres.2024.104799>`__. 193(11),
+      104799 (2024)
+
+   .. [2] Gostick JT, Misaghian N, Yang J, Boek ES. *Simulating volume-controlled
+      invasion of a non-wetting fluid in volumetric images using basic image
+      processing tools*. `Computers and the Geosciences
+      <https://doi.org/10.1016/j.cageo.2021.104978>`__. 158(1), 104978 (2022)
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/injection.html>`__
+   to view an online example.
+

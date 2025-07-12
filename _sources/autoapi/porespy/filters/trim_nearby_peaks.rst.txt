@@ -1,0 +1,41 @@
+porespy.filters.trim_nearby_peaks
+=================================
+
+.. py:function:: porespy.filters.trim_nearby_peaks(peaks, dt, f=1)
+
+   Removes peaks that are nearer to another peak than to solid
+
+   :param peaks: A image containing nonzeros values indicating peaks in the distance
+                 transform (``dt``).  If ``peaks`` is boolean, a boolean is returned;
+                 if ``peaks`` have already been labelled, then the original labels
+                 are returned, missing the trimmed peaks.
+   :type peaks: ndarray
+   :param dt: The distance transform of the pore space
+   :type dt: ndarray
+   :param f: Controls how close peaks must be before they are considered near
+             to each other. Sets of peaks are tagged as too near if
+             ``d_neighbor < f * d_solid``.
+   :type f: scalar
+
+   :returns: **image** -- An array the same size and type as ``peaks`` containing a subset of
+             the peaks in the original image.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   Each pair of peaks is considered simultaneously, so for a triplet of nearby
+   peaks, each pair is considered.  This ensures that only the single peak
+   that is furthest from the solid is kept.  No iteration is required.
+
+   .. rubric:: References
+
+   [1] Gostick, J. "A versatile and efficient network extraction
+   algorithm using marker-based watershed segmenation". Physical Review
+   E. (2017)
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/trim_nearby_peaks.html>`__
+   to view online example.
+

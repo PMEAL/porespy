@@ -1,0 +1,18 @@
+porespy.beta.df_to_tortuosity
+=============================
+
+.. py:function:: porespy.beta.df_to_tortuosity(im, df)
+
+   Compute the tortuosity of a network populated with diffusive conductance values
+   from the given dataframe.
+
+   :param im: The boolean image of the materials with `True` indicating the void space
+   :type im: ndarray
+   :param df: The dataframe returned by the `blocks_to_dataframe` function
+   :type df: dataframe
+   :param block_size: The size of the blocks used to compute the conductance values in `df`
+   :type block_size: int
+
+   :returns: **tau** -- The tortuosity in all three principal directions
+   :rtype: list of floats
+

@@ -1,0 +1,28 @@
+porespy.filters.find_invalid_pores
+==================================
+
+.. py:function:: porespy.filters.find_invalid_pores(im: numpy.typing.NDArray, axis=None, conn: Literal['max', 'min'] = 'min')
+
+   Finds invalid pores which are either closed or do not span the domain
+
+   :param im: A boolean array with `True` indicating the phase of interest
+   :type im: ndarray
+   :param axis: The direction which defines the surfaces of interest. By default all
+                directions are considered.
+   :type axis: int
+   :param conn: Can be either `'min'` or `'max'` and controls the shape of the structuring
+                element used to determine voxel connectivity.  The default if `'min'` which
+                imposes the strictest criteria, so that voxels must share a face to be
+                considered connected.
+   :type conn: str
+
+   :returns: **invalid** -- A array containing `1` indicated closed pores and `2` indicating surface
+             pores.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/find_invalid_pores.html>`__
+   to view online example.
+

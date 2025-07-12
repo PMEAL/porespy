@@ -1,0 +1,35 @@
+porespy.imshow
+==============
+
+.. py:function:: porespy.imshow(im, ind=None, axis=None, **kwargs)
+
+   Convenience wrapper for matplotlib's `imshow`.
+
+   This automatically:
+
+       * slices a 3D image in the middle of the last axis
+       * uses a masked array to make 0's white
+       * sets the origin to 'lower' so bottom-left corner is [0, 0]
+       * disables interpolation
+
+   :param im: The 2D or 3D image to show.  If 2D then all other arguments are ignored.
+   :type im: ndarray
+   :param ind: The slice to show if `im` is 3D.  If not given then the middle of
+               the image is used.
+   :type ind: int
+   :param axis: The axis to show if `im` is 3D.  If not given, then the last
+                axis of the image is used, so an 'lower' slice is shown.
+   :type axis: int
+   :param \*\*kwargs: All other keyword arguments are passed to `plt.imshow`
+
+   .. note::
+
+      `im` can also be a series of unnamed arguments, in which case all
+      received images will be shown using `subplot`.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/visualization/reference/imshow.html>`__
+   to view online example.
+

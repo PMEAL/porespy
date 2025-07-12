@@ -1,0 +1,26 @@
+porespy.metrics.phase_fraction
+==============================
+
+.. py:function:: porespy.metrics.phase_fraction(im, normed=True)
+
+   Calculate the fraction of each phase in an image
+
+   :param im: An ndarray containing integer values
+   :type im: ndarray
+   :param normed: If ``True`` (default) the returned values are normalized by the total
+                  number of voxels in image, otherwise the voxel count of each phase is
+                  returned.
+   :type normed: boolean
+
+   :returns: **result** -- A array of length max(im) with each element containing the number of
+             voxels found with the corresponding label.
+   :rtype: 1D-array
+
+   .. seealso:: :py:obj:`porosity`
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/phase_fraction.html>`__
+   to view online example.
+

@@ -1,0 +1,25 @@
+porespy.tools.parse_steps
+=========================
+
+.. py:function:: porespy.tools.parse_steps(steps, vals, mask=None, descending=True)
+
+   Converts given steps into a list of sizes
+
+   :param steps: If an `int` then `steps` is treated as the number of steps between 1 and the
+                 maximum in `vals`. If a `tuple` is received then this is used as the first
+                 and last values of an integer range. If a `list` or `ndarray` is received
+                 they are used directly. If `None` then all unique values in `vals` are used.
+   :type steps: int, tuple, list or ndarray, or None
+   :param vals: An array containing the values to be scanned, such as a distance or
+                capillary transform.
+   :type vals: ndarray
+   :param mask: A boolean mask of which values in `vals` to use when finding limits. If
+                not provided then all values `vals` are used, but if provided, then `vals`
+                is converted as `vals = vals[mask]` beforehand.
+   :type mask: ndarray
+   :param descending: If `True` (default), then the returned list of sizes is in descending order
+   :type descending: bool, optional
+
+   :returns: **bins** -- Array of values spanning the desired start and stop limits
+   :rtype: ndarray
+

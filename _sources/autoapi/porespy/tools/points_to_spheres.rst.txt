@@ -1,0 +1,17 @@
+porespy.tools.points_to_spheres
+===============================
+
+.. py:function:: porespy.tools.points_to_spheres(im)
+
+   Inserts disks/spheres into an image at locations indicated by non-zero values
+
+   :param im: The image containing nonzeros indicating the locations to insert
+              spheres. If the non-zero values are ``bool``, then the maximal size is
+              found and used. If the non-zeros are ``int`` then these values are used
+              as the radii.
+   :type im: ndarray
+
+   :returns: **spheres** -- A `bool` array with disks/spheres inserted at each nonzero location in
+             ``im``.
+   :rtype: ndarray
+

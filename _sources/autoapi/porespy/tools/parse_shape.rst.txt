@@ -1,0 +1,15 @@
+porespy.tools.parse_shape
+=========================
+
+.. py:function:: porespy.tools.parse_shape(im_or_shape)
+
+   Given a list of dimensions or an image finds shape in a clean format
+
+   :param im_or_shape: Given a list of dimensions removes any `0`, `inf` or `None`
+                       values. Given an image removes any singleton dimensions and returns
+                       shape. If a scalar then assumes a 3D shape is requested.
+   :type im_or_shape: scalar, list or ndarray
+
+   :returns: **shape** -- List of [X, Y] or [X, Y, Z] dimensions
+   :rtype: list
+

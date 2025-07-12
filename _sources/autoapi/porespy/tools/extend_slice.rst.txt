@@ -1,0 +1,58 @@
+porespy.tools.extend_slice
+==========================
+
+.. py:function:: porespy.tools.extend_slice(slices, shape, pad=1)
+
+   Adjust slice indices to include additional voxles around the slice.
+
+   This function does bounds checking to ensure the indices don't extend
+   outside the image.
+
+   :param slices: A list (or tuple) of N slice objects, where N is the number of
+                  dimensions in the image.
+   :type slices: list of slice objects
+   :param shape: The shape of the image into which the slice objects apply.  This is
+                 used to check the bounds to prevent indexing beyond the image.
+   :type shape: array_like
+   :param pad: The number of voxels to expand in each direction.
+   :type pad: int or list of ints
+
+   :returns: **slices** -- A list slice of objects with the start and stop attributes respectively
+             incremented and decremented by 1, without extending beyond the image
+             boundaries.
+   :rtype: list of slice objects
+
+   .. rubric:: Examples
+
+   >>> from scipy.ndimage import label, find_objects
+   >>> from porespy.tools import extend_slice
+   >>> im = np.array([[1, 0, 0], [1, 0, 0], [0, 0, 1]])
+   >>> labels = label(im)[0]
+   >>> s = find_objects(labels)
+
+   Using the slices returned by ``find_objects``, set the first label to 3
+
+   >>> labels[s[0]] = 3
+   >>> print(labels)
+   [[3 0 0]
+    [3 0 0]
+    [0 0 2]]
+
+   Next extend the slice, and use it to set the values to 4
+
+   >>> s_ext = extend_slice(s[0], shape=im.shape, pad=1)
+   >>> labels[s_ext] = 4
+   >>> print(labels)
+   [[4 4 0]
+    [4 4 0]
+    [4 4 2]]
+
+   As can be seen by the location of the 4s, the slice was extended by 1, and
+   also handled the extension beyond the boundary correctly.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/tools/reference/extend_slice.html>`__
+   to view online example.
+

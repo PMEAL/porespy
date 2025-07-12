@@ -1,0 +1,35 @@
+porespy.tools.get_slices_multigrid
+==================================
+
+.. py:function:: porespy.tools.get_slices_multigrid(im, block_size_range, overlap=0, mode='whole')
+
+   Creates a set of grids spanning the request block size range
+
+   :param im: The image for which the grid should be generated.
+   :type im: ndarray
+   :param block_size_range: The minimum and maximum size of blocks to generate. If more than 2 values
+                            are received these are as block sizes directly.
+   :type block_size_range: list
+   :param overlap: The amount of overlap to use when dividing along each axis.  If a
+                   scalar is given it is assumed this value applies in all dimensions.
+   :type overlap: scalar or array_like
+   :param mode: This argument is only used if `block_size` is given and it controls how
+                to handle the situation when given block sizes are not a clean multiple of
+                the image shape. The options are:
+
+                ========== ==================================================================
+                mode       description
+                ========== ==================================================================
+                'whole'    Blocks start at the beginning of each axis, and only "whole"
+                           blocks (that fit within the image) are included in the returned
+                           list of slice objects.
+                'partial'  Blocks start at the beginning of each axis, and any blocks which
+                           partially extend beyond the end of the image are returned.
+                'offset'   Only whole blocks are included, but an offset is applied to the
+                           start of each axis so that an equal amount of voxels are missed
+                           at the start and end of each axis.
+                'strict'   Raises an Exception if the image cannot be evenly divided by the
+                           given block size.
+                ========== ==================================================================
+   :type mode: str
+

@@ -1,0 +1,43 @@
+porespy.metrics.find_h
+======================
+
+.. py:function:: porespy.metrics.find_h(saturation, position=None, srange=[0.01, 0.99])
+
+   Given a saturation profile, compute the height between given bounds
+
+   :param saturation: A list of saturation values as function of ``position``
+   :type saturation: array_like
+   :param position: A list of positions corresponding to each saturation.  If not provided
+                    then each value in ``saturation`` is assumed to be separated by 1 voxel.
+   :type position: array_like, optional
+   :param srange: The minimum and maximum value of saturation to consider as the start
+                  and end of the profile
+   :type srange: list
+
+   :returns: =========== ================================================================
+             Attribute   Description
+             =========== ================================================================
+             `zmax`      The position where the saturation first exceeds `smax`
+             `zmin`      The position where the saturation first exceeds `smin`
+             `smax`      The value defining the start of the saturation profile
+             `smin`      The value defining the end of the saturation profile
+             `h`         The total distance in voxels between `zmax` and `zmin`
+             `valid`     A flag indicating whether the requested saturation difference
+                         (between `smin` and `smax`) was found.
+             =========== ================================================================
+   :rtype: A dataclass-like object with the following attributes
+
+   .. seealso:: :py:obj:`satn_profile`
+
+   .. rubric:: Notes
+
+   The `satn_profile` function can be used to obtain the ``saturation``
+   and `position` from an image, such as a displacement map produced by
+   `drainage` or `imbibition`.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/find_h.html>`__
+   to view online example.
+

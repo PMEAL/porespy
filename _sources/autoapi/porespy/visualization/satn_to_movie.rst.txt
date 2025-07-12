@@ -1,0 +1,53 @@
+porespy.visualization.satn_to_movie
+===================================
+
+.. py:function:: porespy.visualization.satn_to_movie(im, satn, cmap='viridis', c_under='grey', c_over='white', v_under=0.001, v_over=1.0, fps=10, repeat=True)
+
+   Converts a saturation map into an animation that can be saved
+
+   :param im: The boolean image of the porous media with ``True`` values indicating
+              the void space
+   :type im: ndarray
+   :param satn: The saturation map such as that produced by an invasion or drainage
+                algorithm.
+   :type satn: ndaray
+   :param cmap: The name of the matplotlib color map to use. These are listed on
+                matplotlib's website
+                `here <https://matplotlib.org/stable/gallery/color/colormap_reference.html>`__
+   :type cmap: str
+   :param c_under: The color to insert for values that are less than `v_under`
+                   (greater than `v_over`).  The string value of colors are given on
+                   matplotlib's website
+                   `here <https://matplotlib.org/stable/gallery/color/named_colors.html>`__
+   :type c_under: str
+   :param c_over: The color to insert for values that are less than `v_under`
+                  (greater than `v_over`).  The string value of colors are given on
+                  matplotlib's website
+                  `here <https://matplotlib.org/stable/gallery/color/named_colors.html>`__
+   :type c_over: str
+   :param v_under: The values in ``satn`` that should be considered the lower and upper
+                   threshold, beyond which the colors given in `c_under` and `c_over`
+                   are used.
+   :type v_under: scalar
+   :param v_over: The values in ``satn`` that should be considered the lower and upper
+                  threshold, beyond which the colors given in `c_under` and `c_over`
+                  are used.
+   :type v_over: scalar
+   :param fps: The frames per second to use when generating the movie.  A higher
+               number gives a shorter and faster-paced movie.
+   :type fps: int
+   :param repeat: If ``True`` the produced animation will rerun repeatedly until
+                  stopped or closed.
+   :type repeat: bool
+
+   .. rubric:: Notes
+
+   To save animation as a file use:
+   ``ani.save('image_based_ip.gif', writer='imagemagick', fps=3)``
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/visualization/reference/satn_to_movie.html>`__
+   to view online example.
+

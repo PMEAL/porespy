@@ -1,0 +1,19 @@
+porespy.tools.get_block_sizes
+=============================
+
+.. py:function:: porespy.tools.get_block_sizes(im, block_size_range=[10, 100])
+
+   Finds all viable block sizes between lower and upper limits
+
+   :param im: The binary image to analyze with ``True`` indicating phase of interest.
+   :type im: np.array
+   :param block_size_range: The [lower, upper] range of the desired block sizes. Default is [10, 100]
+   :type block_size_range: sequence of 2 ints
+
+   :returns: **sizes** -- All the viable block sizes in the specified range
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   This is called by `rev_tortuosity` to determine what size blocks to use.
+

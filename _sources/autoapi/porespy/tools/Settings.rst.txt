@@ -1,0 +1,51 @@
+porespy.tools.Settings
+======================
+
+.. py:class:: porespy.tools.Settings(*args, **kwargs)
+
+   A dataclass for use at the module level to store settings.  This class
+   is defined as a Singleton so now matter how or where it gets
+   instantiated the same object is returned, containing all existing
+   settings.
+
+   :param notebook: Is automatically determined upon initialization of PoreSpy, and is
+                    ``True`` if running within a Jupyter notebook and ``False``
+                    otherwise. This is used by the ``porespy.tools.get_tqdm`` function
+                    to determine whether a standard or a notebook version of the
+                    progress bar should be used.
+   :type notebook: boolean
+   :param tqdm: This dictionary is passed directly to the the ``tqdm`` function
+                throughout PoreSpy (``for i in tqdm(range(N), **settings.tqdm)``).
+                To see a list of available options visit the tqdm website.
+                Probably the most important is ``'disable'`` which when set to
+                ``True`` will silence the progress bars.  It's also possible to
+                adjust the formatting such as ``'colour'`` and ``'ncols'``, which
+                controls width.
+   :type tqdm: dict
+   :param loglevel: Determines what messages to get printed in console. Options are:
+                    ``'TRACE'`` (5), ``'DEBUG'`` (10), ``'INFO'`` (20), ``'SUCCESS'`` (25),
+                    ``'WARNING'`` (30), ``'ERROR'`` (40), ``'CRITICAL'`` (50)
+   :type loglevel: str, or int
+
+
+   .. py:attribute:: divs
+      :value: 2
+
+
+
+   .. py:property:: loglevel
+
+
+   .. py:attribute:: ncores
+
+
+   .. py:attribute:: notebook
+
+
+   .. py:attribute:: overlap
+      :value: None
+
+
+
+   .. py:attribute:: tqdm
+

@@ -38,11 +38,14 @@
     }
    ],
    "source": [
+    "import inspect\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
-    "import porespy as ps\n",
     "from skimage.util import random_noise\n",
-    "import inspect\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()\n",
     "inspect.signature(ps.filters.nl_means_layered)"
    ]
@@ -228,11 +231,11 @@
     "im_z = ps.filters.nl_means_layered(im2, axis=2)\n",
     "fig, ax = plt.subplots(1, 4, figsize=[15, 5])\n",
     "ax[0].imshow(im2[..., 15])\n",
-    "ax[0].axis(False);\n",
+    "ax[0].axis(False)\n",
     "ax[1].imshow(im_x[..., 15])\n",
-    "ax[1].axis(False);\n",
+    "ax[1].axis(False)\n",
     "ax[2].imshow(im_y[..., 15])\n",
-    "ax[2].axis(False);\n",
+    "ax[2].axis(False)\n",
     "ax[3].imshow(im_z[..., 15])\n",
     "ax[3].axis(False);"
    ]
@@ -285,11 +288,11 @@
     "im_3 = ps.filters.nl_means_layered(im2, patch_size=8)\n",
     "fig, ax = plt.subplots(1, 4, figsize=[15, 5])\n",
     "ax[0].imshow(im2[..., 15])\n",
-    "ax[0].axis(False);\n",
+    "ax[0].axis(False)\n",
     "ax[1].imshow(im_1[..., 15])\n",
-    "ax[1].axis(False);\n",
+    "ax[1].axis(False)\n",
     "ax[2].imshow(im_2[..., 15])\n",
-    "ax[2].axis(False);\n",
+    "ax[2].axis(False)\n",
     "ax[3].imshow(im_3[..., 15])\n",
     "ax[3].axis(False);"
    ]
@@ -342,11 +345,11 @@
     "im_3 = ps.filters.nl_means_layered(im2, patch_distance=20)\n",
     "fig, ax = plt.subplots(1, 4, figsize=[15, 5])\n",
     "ax[0].imshow(im2[..., 15])\n",
-    "ax[0].axis(False);\n",
+    "ax[0].axis(False)\n",
     "ax[1].imshow(im_1[..., 15])\n",
-    "ax[1].axis(False);\n",
+    "ax[1].axis(False)\n",
     "ax[2].imshow(im_2[..., 15])\n",
-    "ax[2].axis(False);\n",
+    "ax[2].axis(False)\n",
     "ax[3].imshow(im_3[..., 15])\n",
     "ax[3].axis(False);"
    ]
@@ -400,11 +403,11 @@
     "im_3 = ps.filters.nl_means_layered(im2, h=6)\n",
     "fig, ax = plt.subplots(1, 4, figsize=[15, 5])\n",
     "ax[0].imshow(im2[..., 15])\n",
-    "ax[0].axis(False);\n",
+    "ax[0].axis(False)\n",
     "ax[1].imshow(im_1[..., 15])\n",
-    "ax[1].axis(False);\n",
+    "ax[1].axis(False)\n",
     "ax[2].imshow(im_2[..., 15])\n",
-    "ax[2].axis(False);\n",
+    "ax[2].axis(False)\n",
     "ax[3].imshow(im_3[..., 15])\n",
     "ax[3].axis(False);"
    ]

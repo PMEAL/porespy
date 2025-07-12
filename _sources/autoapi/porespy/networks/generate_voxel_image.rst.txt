@@ -1,0 +1,37 @@
+porespy.networks.generate_voxel_image
+=====================================
+
+.. py:function:: porespy.networks.generate_voxel_image(network, pore_shape='sphere', throat_shape='cylinder', max_dim=None, rtol=0.1)
+
+   Generate a voxel image from an OpenPNM network object
+
+   :param network: Network from which voxel image is to be generated
+   :type network: OpenPNM GenericNetwork
+   :param pore_shape: Shape of pores in the network, valid choices are "sphere", "cube"
+   :type pore_shape: str
+   :param throat_shape: Shape of throats in the network, valid choices are "cylinder", "cuboid"
+   :type throat_shape: str
+   :param max_dim: Number of voxels in the largest dimension of the network
+   :type max_dim: int
+   :param rtol: Stopping criteria for finding the smallest voxel image such that
+                further increasing the number of voxels in each dimension by 25% would
+                improve the predicted porosity of the image by less that ``rtol``
+   :type rtol: float
+
+   :returns: **im** -- Voxelated image corresponding to the given pore network model
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   (1) The generated voxelated image is labeled with 0s, 1s and 2s signifying
+   solid phase, pores, and throats respectively.
+
+   (2) If max_dim is not provided, the method calculates it such that the
+   further increasing it doesn't change porosity by much.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/networks/reference/generator_voxel_image.html>`__
+   to view online example.
+

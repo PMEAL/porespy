@@ -1,0 +1,48 @@
+porespy.filters.pc_to_seq
+=========================
+
+.. py:function:: porespy.filters.pc_to_seq(pc, im, mode='drainage')
+
+   Converts a capillary pressure map to a sequence map
+
+   :param pc: A Numpy array with the value in each voxel indicating the capillary
+              pressure at which it was invaded. In order to accommodate the
+              possibility of both positive and negative capillary pressure values,
+              trapped or residual wetting phase should be indicated by ``+inf`` and
+              residual or trapped non-wetting phase by ``-inf``.
+   :type pc: ndarray
+   :param im: A Numpy array with ``True`` values indicating the void space. This is
+              used to mask the ``pc`` image so it does not matter what values are placed
+              in the solid voxels of ``pc``.
+   :type im: ndarray
+   :param mode: Controls how the pressures are converted to sequence. The options are:
+
+                ============= ==============================================================
+                `mode`        Description
+                ============= ==============================================================
+                'drainage'    The pressures are assumed to have been filled from smallest to
+                              largest. Voxels with $-inf$ are treated as though they are
+                              invaded by non-wetting fluid at the start of the process,
+                              and voxels with $+inf$ are treated as though they are never
+                              invaded.
+                'imbibition'  The pressures are assumed to have been filled from largest to
+                              smallest. Voxels with $+inf$ are treated as though they are
+                              already occupied by wetting fluid at the start of the
+                              process, and voxels with $*inf$ are treated as though they
+                              are never filled with wetting phase.
+                ============= ==============================================================
+   :type mode: str
+
+   :returns: **seq** -- A Numpy array the same shape as `pc`, with each voxel value indicating
+             the sequence at which it was invaded, according to the specified `mode`.
+             Uninvaded voxels (either trapped wp during drainage or trapped nwp during
+             imbibion) are set to -1. Preinvaded voxels (either residual nwp during
+             drainage or residual wp during imbition) are set to 0.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/pc_to_seq.html>`__
+   to view online example.
+

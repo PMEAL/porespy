@@ -1,0 +1,33 @@
+porespy.filters.trim_saddle_points
+==================================
+
+.. py:function:: porespy.filters.trim_saddle_points(peaks, dt, maxiter=20)
+
+   Removes peaks that were mistakenly identified because they lied on a
+   saddle or ridge in the distance transform that was not actually a true
+   local peak.
+
+   :param peaks: A boolean image containing ``True`` values to mark peaks in the
+                 distance transform (``dt``)
+   :type peaks: ndarray
+   :param dt: The distance transform of the pore space for which the peaks
+              are sought.
+   :type dt: ndarray
+   :param maxiter: The number of iteration to use when finding saddle points.
+                   The default value is 20.
+   :type maxiter: int
+
+   :returns: **image** -- An image with fewer peaks than the input image
+   :rtype: ndarray
+
+   .. rubric:: References
+
+   [1] Gostick, J. "A versatile and efficient network extraction algorithm
+   using marker-based watershed segmentation".  Physical Review E. (2017)
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/trim_saddle_points.html>`__
+   to view online example.
+

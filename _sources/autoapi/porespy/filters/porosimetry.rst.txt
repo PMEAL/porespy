@@ -1,0 +1,41 @@
+porespy.filters.porosimetry
+===========================
+
+.. py:function:: porespy.filters.porosimetry(im: numpy.typing.NDArray, dt: numpy.typing.NDArray = None, inlets: numpy.typing.NDArray = None, sizes: int = None, method: Literal['dsi', 'fft', 'dt'] = 'dt', smooth: bool = True)
+
+   Each location is assigned the radius of the largest sphere that can reach it
+   from the given inlets.
+
+   This function is essentially a local thickness filter but with access limitations
+   so represents a form of porosimetry
+
+   :param im: Boolean image of the porous material
+   :type im: ndarray
+   :param dt: The distance transform of the image
+   :type dt: ndarray, optional
+   :param inlets: A boolean array the same sizes a `im`, with `True` values indicating the
+                  inlet locations. If not provided then all faces are used.
+   :type inlets: ndarray, optional
+   :param method: Which method to use to compute the local thickness. Options are:
+
+                  ======== ===================================================================
+                  Method   Description
+                  ======== ===================================================================
+                  'dt'     Uses distance transforms to perform erosion and dilation for each
+                           radius in the image
+                  'dsi'     Uses brute-force to inserts spheres at each voxel
+                  'conv'   Uses FFT-based convolution to perform erosion and dilation for
+                           each radius in the image
+                  ======== ===================================================================
+   :type method: str
+   :param sizes: This is only used if the method is `dt` or `conv`. If a list of values is
+                 provided they are used directly. If a scalar is provided then that number
+                 of points spanning the min and max of the distance transform are used.
+                 If `None`, then all the unique values in the distance transform are used,
+                 which may become time consuming. This can be sped up if `dt` is provided
+                 and rounded to the nearest integer first.
+   :type sizes: array_like or scalar
+   :param smooth: Indicates if protrusions should be removed from the faces of the spheres
+                  or not. Default is `True`.
+   :type smooth: bool, optional
+

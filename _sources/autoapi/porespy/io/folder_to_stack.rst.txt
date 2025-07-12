@@ -1,0 +1,18 @@
+porespy.io.folder_to_stack
+==========================
+
+.. py:function:: porespy.io.folder_to_stack(target_dir)
+
+   Opens all images found in the target directory as single 3D numpy array
+
+   :param target_dir: The location of the folder containing the images.
+   :type target_dir: str or path object
+
+   :returns: **im** -- A 3D numpy array of the imported image.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   The files should be named with leading numerical values indicating their
+   layer number, like 001, 002, etc.
+

@@ -38,11 +38,14 @@
     }
    ],
    "source": [
+    "import inspect\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
-    "import porespy as ps\n",
     "from skimage.morphology import disk\n",
-    "import inspect\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "inspect.signature(ps.metrics.region_interface_areas)"
    ]
   },
@@ -95,7 +98,7 @@
    ],
    "source": [
     "np.random.seed(10)\n",
-    "im = ps.generators.blobs(shape=[200,200])\n",
+    "im = ps.generators.blobs(shape=[200, 200])\n",
     "snow = ps.filters.snow_partitioning(im)\n",
     "regions = snow.regions\n",
     "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
@@ -174,8 +177,8 @@
     "areas = ps.metrics.region_surface_areas(regions=regions)\n",
     "conns, interface_areas = ps.metrics.region_interface_areas(regions, areas)\n",
     "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
-    "ax.plot(np.arange(0,len(conns)), interface_areas, 'o')\n",
-    "plt.xlabel('interface (throat) number');\n",
+    "ax.plot(np.arange(0, len(conns)), interface_areas, 'o')\n",
+    "plt.xlabel('interface (throat) number')\n",
     "plt.ylabel('interface area (Voxel^2)');"
    ]
   },
@@ -233,11 +236,11 @@
     }
    ],
    "source": [
-    "voxel_size=1e-1\n",
+    "voxel_size = 1e-1\n",
     "conns, interface_areas = ps.metrics.region_interface_areas(regions, areas, voxel_size=voxel_size)\n",
     "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
-    "ax.plot(np.arange(0,len(conns)), interface_areas, 'o')\n",
-    "plt.xlabel('interface (throat) number');\n",
+    "ax.plot(np.arange(0, len(conns)), interface_areas, 'o')\n",
+    "plt.xlabel('interface (throat) number')\n",
     "plt.ylabel('interface area (m^2)');"
    ]
   },
@@ -296,11 +299,11 @@
     }
    ],
    "source": [
-    "voxel_size=1e-1\n",
+    "voxel_size = 1e-1\n",
     "conns, interface_areas = ps.metrics.region_interface_areas(regions, areas, strel=disk(10))\n",
     "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
-    "ax.plot(np.arange(0,len(conns)), interface_areas, 'o')\n",
-    "plt.xlabel('interface (throat) number');\n",
+    "ax.plot(np.arange(0, len(conns)), interface_areas, 'o')\n",
+    "plt.xlabel('interface (throat) number')\n",
     "plt.ylabel('interface area (m^2)');"
    ]
   }

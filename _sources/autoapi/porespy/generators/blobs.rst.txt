@@ -1,0 +1,69 @@
+porespy.generators.blobs
+========================
+
+.. py:function:: porespy.generators.blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1, parallel_kw: dict = {'divs': 1}, seed: int = None, periodic: bool = True)
+
+   Generates an image containing amorphous blobs
+
+   :param shape: The size of the image to generate in [Nx, Ny, Nz] where N is the
+                 number of voxels
+   :type shape: list
+   :param porosity: If specified, this will threshold the image to the specified value
+                    prior to returning.  If ``None`` is specified, then the scalar
+                    noise field is converted to a uniform distribution and returned
+                    without thresholding.
+   :type porosity: float
+   :param blobiness: Controls the morphology of the blobs.  A higher number results in
+                     a larger number of small blobs.  If a list is supplied then the
+                     blobs are anisotropic.
+   :type blobiness: int or list of ints (default = 1)
+   :param parallel_kw: Dictionary containing the settings for parallelization by chunking. The
+                       optional settings include `divs` (scalar or list of scalars,
+                       default = [2, 2, 2]), `overlap` (scalar or list of scalars, optional),
+                       and `cores` (scalar, default is all available cores).
+
+                       `divs` is the number of times to divide the image for parallel
+                       processing. If `1` then parallel processing does not occur. `2` is
+                       equivalent to `[2, 2, 2]` for a 3D image. If a list is provided, each
+                       respective axis will be divided by its corresponding number in the
+                       list. For example, [2, 3, 4] will divide z, y, and x axis to 2, 3,
+                       and 4 respectively.
+
+                       `overlap` is the amount of overlap to include when dividing up the
+                       image. This value is controlled by the blobiness and shape of the
+                       image by default but can be controlled using parallel_kw!
+
+                       `cores` is the number of cores that will be used to parallel process all
+                       domains. If ``None`` then all cores will be used but user can specify
+                       any integer values to control the memory usage. Setting value to 1 will
+                       effectively process the chunks in serial to minimize memory usage.
+   :type parallel_kw: dict
+   :param seed: Initializes numpy's random number generator to the specified state. If not
+                provided, the current global value is used. This means calls to
+                ``np.random.seed(seed)`` prior to calling this function will be respected.
+   :type seed: int, default = `None`
+   :param periodic: If `True` the blobs will be periodic, meaning that the image can be tiled
+                    and the phases will be continuous. `False` will provide the "legacy" version
+                    of an image, which has high-porosity artifacts at the image boundaries.
+   :type periodic: bool, default = `True`
+
+   :returns: **image** -- A boolean array with ``True`` values denoting the pore space
+   :rtype: ndarray
+
+   .. seealso:: :py:obj:`all_to_uniform`
+
+   .. rubric:: Notes
+
+   This function generates random noise, the applies a gaussian blur to
+   the noise with a sigma controlled by the blobiness argument as:
+   ``np.mean(shape) / (40 * blobiness)``
+
+   The value of 40 was chosen so that a ``blobiness`` of 1 gave a
+   reasonable result.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/blobs.html>`__
+   to view online example.
+

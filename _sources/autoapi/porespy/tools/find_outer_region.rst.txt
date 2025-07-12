@@ -1,0 +1,34 @@
+porespy.tools.find_outer_region
+===============================
+
+.. py:function:: porespy.tools.find_outer_region(im, r=None)
+
+   Find regions of the image that are outside of the solid matrix.
+
+   :param im: Image of the porous material with 1's for void and 0's for solid
+   :type im: ndarray
+   :param r: The radius of the rolling ball to use.  If not specified then a value
+             is calculated as twice maximum of the distance transform. The image
+             size is padded by this amount in all directions, so the image can
+             become quite large and unwieldy if too large a value is given.
+   :type r: scalar
+
+   :returns: **image** -- A boolean mask the same shape as ``im``, containing True in all voxels
+             identified as *outside* the sample.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   This function uses the rolling ball method to define where the outer region
+   ends and the void space begins.
+
+   This is particularly useful for samples that do not fill the
+   entire rectangular image, such as cylindrical cores or samples with non-
+   parallel faces.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/tools/reference/find_outer_region.html>`__
+   to view online example.
+

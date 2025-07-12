@@ -33,10 +33,13 @@
     }
    ],
    "source": [
-    "import matplotlib.pyplot as plt\n",
-    "import porespy as ps\n",
-    "import numpy as np\n",
     "import inspect\n",
+    "\n",
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "inspect.signature(ps.generators.fractal_noise)"
    ]
   },
@@ -200,13 +203,13 @@
     "im1 = ps.generators.fractal_noise(shape=shape, frequency=frequency, cores=cores, seed=seed)\n",
     "ax[0].imshow(im)\n",
     "ax[0].axis(False)\n",
-    "ax[0].set_title(f'frequency = 0.05')\n",
+    "ax[0].set_title('frequency = 0.05')\n",
     "\n",
     "frequency = 0.05\n",
     "im2 = ps.generators.fractal_noise(shape=shape, frequency=frequency, cores=cores, seed=seed)\n",
     "ax[1].imshow(im2)\n",
     "ax[1].axis(False)\n",
-    "ax[1].set_title(f'frequency = 0.1');"
+    "ax[1].set_title('frequency = 0.1');"
    ]
   },
   {
@@ -243,13 +246,13 @@
    "source": [
     "fig, ax = plt.subplots(1, 2, figsize=[8, 4])\n",
     "\n",
-    "octaves=2\n",
+    "octaves = 2\n",
     "im1 = ps.generators.fractal_noise(shape=shape, octaves=octaves, frequency=frequency, seed=seed, cores=cores)\n",
     "ax[0].imshow(im1)\n",
     "ax[0].axis(False)\n",
     "ax[0].set_title(f'octaves = {octaves}')\n",
     "\n",
-    "octaves=10\n",
+    "octaves = 10\n",
     "im2 = ps.generators.fractal_noise(shape=shape, octaves=octaves, frequency=frequency, seed=seed, cores=cores)\n",
     "ax[1].imshow(im2)\n",
     "ax[1].axis(False)\n",
@@ -338,7 +341,7 @@
    "source": [
     "fig, ax = plt.subplots(2, 2, figsize=[8, 8])\n",
     "\n",
-    "mode='perlin'\n",
+    "mode = 'perlin'\n",
     "im1 = ps.generators.fractal_noise(shape=shape, gain=gain, seed=seed, cores=cores, mode=mode)\n",
     "ax[0][0].imshow(im1)\n",
     "ax[0][0].axis(False)\n",
@@ -397,14 +400,14 @@
    "source": [
     "fig, ax = plt.subplots(2, 2, figsize=[8, 8])\n",
     "\n",
-    "mode='perlin'\n",
-    "uniform=True\n",
+    "mode = 'perlin'\n",
+    "uniform = True\n",
     "im1 = ps.generators.fractal_noise(shape=shape, gain=gain, seed=seed, cores=cores, mode=mode, uniform=uniform)\n",
     "ax[0][0].imshow(im1)\n",
     "ax[0][0].axis(False)\n",
     "ax[0][0].set_title(f'uniform = {uniform}')\n",
     "\n",
-    "uniform=False\n",
+    "uniform = False\n",
     "im2 = ps.generators.fractal_noise(shape=shape, gain=gain, seed=seed, cores=cores, mode=mode, uniform=uniform)\n",
     "ax[0][1].imshow(im2)\n",
     "ax[0][1].axis(False)\n",
@@ -447,13 +450,13 @@
    "source": [
     "fig, ax = plt.subplots(1, 2, figsize=[8, 4])\n",
     "\n",
-    "porosity1=0.3\n",
+    "porosity1 = 0.3\n",
     "im1 = ps.generators.fractal_noise(shape=shape, porosity=porosity1, gain=gain, seed=seed, cores=cores, mode=mode)\n",
     "ax[0].imshow(im1)\n",
     "ax[0].axis(False)\n",
     "ax[0].set_title(f'porosity = {porosity1}')\n",
     "\n",
-    "porosity2=0.6\n",
+    "porosity2 = 0.6\n",
     "im2 = ps.generators.fractal_noise(shape=shape, porosity=porosity2, gain=gain, seed=seed, cores=cores, mode=mode)\n",
     "ax[1].imshow(im2)\n",
     "ax[1].axis(False)\n",

@@ -1,0 +1,26 @@
+porespy.tools.recombine
+=======================
+
+.. py:function:: porespy.tools.recombine(ims, slices, overlap)
+
+   Recombines image blocks back into full image
+
+   :param ims: The block of the original image, which may or may not have been
+               processed.
+   :type ims: list of ndarrays
+   :param slices: The `slice` objects which were used to obtain the chunks in `ims`
+   :type slices: list of slice objects
+   :param overlap: The amount of overlap used when creating blocks
+   :type overlap: int of list ints
+
+   :returns: **im** -- An image constituted from the chunks in ``ims``
+   :rtype: ndarray
+
+   .. seealso:: :py:obj:`chunked_func`, :py:obj:`get_slices_grid`
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/tools/reference/recombine.html>`__
+   to view online example.
+

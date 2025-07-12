@@ -1,0 +1,45 @@
+porespy.filters.size_to_seq
+===========================
+
+.. py:function:: porespy.filters.size_to_seq(size, im=None, bins=None, mode='drainage')
+
+   Converts a size map to a sequence map
+
+   :param size: The image containing invasion size in each voxel. Values of 0 are
+                assumed to be solid (if ``im`` is not given) and values of -1 are
+                assumed to be uninvaded.
+   :type size: ndarray
+   :param im: A binary image of the porous media, with ``True`` indicating the
+              void space and ``False`` indicating the solid phase. If not given
+              then it is assumed that the solid is identified as ``size == 0``.
+   :type im: ndarray, optional
+   :param bins: The bins to use when converting sizes to sequence.  The default is
+                to create 1 bin for each unique value in ``size`` (except for -1 and 0).
+                If an **int** is supplied, it is interpreted as the number of bins between 1
+                and the maximum value in ``size``.  If an array is supplied it is used as
+                the bins directly.
+   :type bins: array_like or int (optional)
+   :param mode: Controls how the sizes are converted to a sequence. The options are:
+
+                ============= ==============================================================
+                `mode`        Description
+                ============= ==============================================================
+                'drainage'    The sizes are assumed to have been filled from largest to
+                              smallest, ignoring 0's and -1's
+                'imbibition'  The sizes are assumed to have been filled from smallest to
+                              largest, ignoring 0's and -1's
+                ============= ==============================================================
+   :type mode: str
+
+   :returns: **seq** -- An ndarray the same shape as ``size`` with invasion size values
+             replaced by the invasion sequence, according to the specified `mode`.
+             Any uninvaded voxels, indicated by -1 in ``size`` will be indicated by
+             -1 in ``seq``.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/size_to_seq.html>`__
+   to view online example.
+

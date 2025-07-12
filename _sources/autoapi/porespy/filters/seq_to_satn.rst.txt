@@ -1,0 +1,44 @@
+porespy.filters.seq_to_satn
+===========================
+
+.. py:function:: porespy.filters.seq_to_satn(seq, im, mode='drainage')
+
+   Converts a sequence map to a saturation map
+
+   :param seq: The image containing invasion sequence values in each voxel. Residual phase
+               should be indicated as 0's and uninvaded (i.e. trapped) voxels as -1.
+               `im` is used to mask to remove solid voxels from computation
+   :type seq: ndarray
+   :param im: A binary image of the porous media, with ``True`` indicating the
+              void space and ``False`` indicating the solid phase.
+   :type im: ndarray
+   :param mode: Controls how the sequences are converted to saturations. The options are:
+
+                ============= ==============================================================
+                `mode`        Description
+                ============= ==============================================================
+                'drainage'    The saturation is assumed to increase with increasing sequence
+                'imbibition'  The saturation is assumed to decrease with increasing sequence
+                ============= ==============================================================
+   :type mode: str
+
+   :returns: **satn** -- An ndarray the same shape as ``seq`` but with sequence values replaced
+             by the fraction of void space invaded at the sequence number, accounting
+             for the specified `mode`. Residual fluid and uninvaded voxels are represented
+             by 0 and -1, respectively.  Solie phase is also represented as 0, so `im`
+             must be used as a mask.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   If any `-1` values are present in `seq` the maximum saturation will be less
+   than 1.0 since this means that not all defending phase was displaced. If any
+   `0` are present in `seq` then the minimum saturation will be greater than 0,
+   since this means some invading phase was already present.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/seq_to_satn.html>`__
+   to view online example.
+

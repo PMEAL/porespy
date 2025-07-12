@@ -1,0 +1,23 @@
+porespy.tools.get_slices_random
+===============================
+
+.. py:function:: porespy.tools.get_slices_random(im, n=1000, lims=[10, 100], aspect=None)
+
+   Generates a list of `slice` objects which can be used to obtain cubic subdomains
+   of random size and location from the image
+
+   :param im: The image of the porous material
+   :type im: ndarry
+   :param n: The number of random subdomains to be generated
+   :type n: int
+   :param lims: The minimum and maximum size for the subdomains to be generated
+   :type lims: list
+   :param aspect: The aspect ratio of returned slices, with a value for each axis. If not
+                  given the slices will be cubic (default). If `True` then they will have
+                  the same aspect ratio as the image.
+   :type aspect: array_like, optional
+
+   :returns: **new_slices** -- A list containing `slice` objects which can be iterated over
+             to access the image slices.
+   :rtype: list
+

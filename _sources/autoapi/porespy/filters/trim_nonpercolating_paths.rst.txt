@@ -1,0 +1,44 @@
+porespy.filters.trim_nonpercolating_paths
+=========================================
+
+.. py:function:: porespy.filters.trim_nonpercolating_paths(im: numpy.typing.NDArray, axis: int = None, inlets: numpy.typing.NDArray = None, outlets: numpy.typing.NDArray = None, conn: Literal['max', 'min'] = 'min')
+
+   Remove all nonpercolating pores between specified locations
+
+   :param im: The image of the porous material with `True` values indicating the
+              phase of interest
+   :type im: ndarray
+   :param axis: An integer indicating that axis along which the inlet and outlet faces
+                should be applied.  For instance if `axis=0` then the inlets will be
+                at `im[0, ...]` and the outlets will be at `im[-1, ...]`. If this argument
+                is given then `inlets` and `outlets` are ignored.
+   :type axis: int, optional
+   :param inlets: Boolean masks indicating locations of inlets and outlets. This can be used
+                  instead of `axis` to provide more control.
+   :type inlets: ndarray, optional
+   :param outlets: Boolean masks indicating locations of inlets and outlets. This can be used
+                   instead of `axis` to provide more control.
+   :type outlets: ndarray, optional
+   :param conn: Can be either `'min'` or `'max'` and controls the shape of the structuring
+                element used to determine voxel connectivity.  The default is `'min'` which
+                imposes the strictest criteria, so that voxels must share a face to be
+                considered connected.
+   :type conn: str
+
+   :returns: **image** -- A copy of `im` with all the nonpercolating paths removed
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   This function is essential when performing transport simulations on an
+   image since regions that do not span between the desired inlet and
+   outlet do not contribute to the transport.
+
+   .. seealso:: :py:obj:`find_disconnected_voxels`, :py:obj:`trim_floating_solid`, :py:obj:`fill_closed_pores`
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/trim_nonpercolating_paths.html>`__
+   to view online example.
+

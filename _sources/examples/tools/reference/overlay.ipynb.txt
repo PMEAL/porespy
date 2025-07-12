@@ -30,11 +30,11 @@
    },
    "outputs": [],
    "source": [
-    "import numpy as np\n",
-    "import porespy as ps\n",
-    "import scipy.ndimage as spim\n",
     "import matplotlib.pyplot as plt\n",
-    "import skimage\n",
+    "import numpy as np\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()"
    ]
   },
@@ -97,11 +97,11 @@
     "im2 = ps.generators.random_spheres(im=im2, r=5, phi=0.5, value=3) - 1\n",
     "im3 = im1.copy()\n",
     "\n",
-    "fig, ax = plt.subplots(figsize=[4, 4]);\n",
-    "ax.imshow(im1[50, ...], vmin=0, vmax=3);\n",
+    "fig, ax = plt.subplots(figsize=[4, 4])\n",
+    "ax.imshow(im1[50, ...], vmin=0, vmax=3)\n",
     "ax.axis(False)\n",
-    "fig, ax = plt.subplots(figsize=[4, 4]);\n",
-    "ax.imshow(im2[25, ...], vmin=0, vmax=3);\n",
+    "fig, ax = plt.subplots(figsize=[4, 4])\n",
+    "ax.imshow(im2[25, ...], vmin=0, vmax=3)\n",
     "ax.axis(False);"
    ]
   },

@@ -1,0 +1,30 @@
+porespy.generators.random_cantor_dust
+=====================================
+
+.. py:function:: porespy.generators.random_cantor_dust(shape, n: int = 5, p: int = 2, f: float = 0.8, seed: int = None)
+
+   Generates an image of random cantor dust
+
+   :param shape: The shape of the final image.  If not evenly divisible by $p**n$
+                 it will be increased to the nearest size that is.
+   :type shape: array_like
+   :param n: The number of times to iteratively divide the image.
+   :type n: int
+   :param p: The number of divisions to make on each iteration.
+   :type p: int (default = 2)
+   :param f: The fraction of the set to keep on each iteration.
+   :type f: float (default = 0.8)
+   :param seed: Initializes numpy's random number generator to the specified state. If not
+                provided, the current global value is used. This means calls to
+                ``np.random.state(seed)`` prior to calling this function will be respected.
+   :type seed: int, optional, default = `None`
+
+   :returns: **dust** -- A boolean image of a random Cantor dust
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/randon_cantor_dust.html>`__
+   to view online example.
+

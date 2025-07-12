@@ -1,0 +1,80 @@
+porespy.metrics.radial_density_distribution
+===========================================
+
+.. py:function:: porespy.metrics.radial_density_distribution(dt, bins=10, log=False, voxel_size=1)
+
+   Computes radial density function by analyzing the histogram of voxel
+   values in the distance transform.  This function is defined by
+   Torquato [1b]_ as:
+
+       .. math::
+
+           \int_0^\infty P(r)dr = 1.0
+
+   where *P(r)dr* is the probability of finding a voxel at a lying at a radial
+   distance between *r* and *dr* from the solid interface.  This is equivalent
+   to a probability density function (*pdf*)
+
+   The cumulative distribution is defined as:
+
+       .. math::
+
+           F(r) = \int_r^\infty P(r)dr
+
+   which gives the fraction of pore-space with a radius larger than *r*. This
+   is equivalent to the cumulative distribution function (*cdf*).
+
+   :param dt: A distance transform of the pore space.  Note that it is recommended to apply
+              ``find_dt_artifacts`` to this image first, and set potentially
+              erroneous values to 0 with ``dt[mask] = 0`` where
+              ``mask = porespy.filters.find_dt_artifaces(dt)``.
+   :type dt: ndarray
+   :param bins: This number of bins (if int) or the location of the bins (if array).
+                This argument is passed directly to Scipy's ``histogram`` function so
+                see that docstring for more information.  The default is 10 bins, which
+                reduces produces a relatively smooth distribution.
+   :type bins: int or array_like
+   :param log: If ``True`` the size data is converted to log (base-10)
+               values before processing.  This can help to plot wide size
+               distributions or to better visualize the radii in the small size region.
+               Note that you should not anti-log the radii values in the retunred
+               ``tuple``, since the binning is performed on the logged radii values.
+   :type log: boolean
+   :param voxel_size: The size of a voxel side in preferred units.  The default is 1, so the
+                      user can apply the scaling to the returned results after the fact.
+   :type voxel_size: scalar
+
+   :returns: **result** -- A custom object with the following data added as named attributes:
+
+             ============== =======================================================
+             Attribute      Description
+             ============== =======================================================
+             *R* or *LogR*  Radius, equivalent to ``bin_centers``
+             *pdf*          Probability density function
+             *cdf*          Cumulative density function
+             *bin_centers*  The center point of each bin
+             *bin_edges*    Locations of bin divisions, including 1 more value than
+                            the number of bins
+             *bin_widths*   Useful for passing to the ``width`` argument of
+                            ``matplotlib.pyplot.bar``
+             ============== =======================================================
+   :rtype: Results object
+
+   .. rubric:: Notes
+
+   Torquato refers to this as the *pore-size density function*, and mentions
+   that it is also known as the *pore-size distribution function*.  These
+   terms are avoided here since they have specific connotations in porous
+   media analysis.
+
+   .. rubric:: References
+
+   .. [1b] Torquato, S. Random Heterogeneous Materials: Mircostructure and
+      Macroscopic Properties. Springer, New York (2002) - See page 48 & 292
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/radial_density.html>`__
+   to view online example.
+

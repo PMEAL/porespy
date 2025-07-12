@@ -1,0 +1,65 @@
+porespy.filters.find_peaks
+==========================
+
+.. py:function:: porespy.filters.find_peaks(dt, r_max=4, strel=None, sigma=None, parallel_kw={'divs': 1})
+
+   Finds local maxima in the distance transform
+
+   :param dt: The distance transform of the pore space.  This may be calculated
+              and filtered using any means desired.
+   :type dt: ndarray
+   :param r_max: The radius of the spherical element used in the maximum filter.
+                 This controls the localness of any maxima. The default is 4 voxels.
+   :type r_max: scalar
+   :param strel: Instead of supplying ``r_max``, this argument allows a custom
+                 structuring element allowing control over both size and shape.
+   :type strel: ndarray
+   :param sigma: If given, then a gaussian filter is applied to the distance transform
+                 using this value for the kernel
+                 (i.e. ``scipy.ndimage.gaussian_filter(dt, sigma)``)
+   :type sigma: float or list of floats
+   :param parallel_kw: Dictionary containing the settings for parallelization by chunking. The
+                       optional settings include `divs` (scalar or list of scalars,
+                       default = [2, 2, 2]), `overlap` (scalar or list of scalars, optional),
+                       and `cores` (scalar, default is all available cores).
+
+                       `divs` is the number of times to divide the image for parallel
+                       processing. If `1` then parallel processing does not occur. `2` is
+                       equivalent to `[2, 2, 2]` for a 3D image. If a list is provided, each
+                       respective axis will be divided by its corresponding number in the
+                       list. For example, [2, 3, 4] will divide z, y, and x axis to 2, 3,
+                       and 4 respectively.
+
+                       `overlap` is the amount of overlap to include when dividing up the
+                       image. This value is controlled by the size (i.e. radius) of the
+                       structuring element and cannot be controlled in this function using
+                       parallel_kw!
+
+                       `cores` is the number of cores that will be used to parallel process all
+                       domains. If ``None`` then all cores will be used but user can specify
+                       any integer values to control the memory usage. Setting value to 1 will
+                       effectively process the chunks in serial to minimize memory usage.
+   :type parallel_kw: dict
+
+   :returns: **image** -- An array of booleans with ``True`` values at the location of any
+             local maxima.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   It is also possible ot the ``peak_local_max`` function from the
+   ``skimage.feature`` module as follows:
+
+   ``peaks = peak_local_max(image=dt, min_distance=r, exclude_border=0,
+   indices=False)``
+
+   The *skimage* function automatically uses a square structuring element
+   which is significantly faster than using a circular or spherical
+   element.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/find_peaks.html>`__
+   to view online example.
+

@@ -1,0 +1,19 @@
+porespy.networks.partition_skeleton
+===================================
+
+.. py:function:: porespy.networks.partition_skeleton(sk, juncs, dt)
+
+   Divides skeleton into pore and throat voxels given junctions
+
+   :param sk: A boolean image of the skeleton of the phase of interest
+   :type sk: ndarray
+   :param juncs: A boolean array the same shape as `sk` with `True` values indicating the
+                 junction points at which the skeleton will be divided.
+   :type juncs: ndarray
+   :param dt: The distance transform of the phase of interest
+   :type dt: ndarray
+
+   :returns: **results** -- A `Results` object with images of `pores` and `throats` each containing
+             the labelled clusters of connected voxels.
+   :rtype: dataclass
+

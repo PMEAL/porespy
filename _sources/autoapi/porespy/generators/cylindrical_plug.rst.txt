@@ -1,0 +1,27 @@
+porespy.generators.cylindrical_plug
+===================================
+
+.. py:function:: porespy.generators.cylindrical_plug(shape, r=None, axis=2)
+
+   Generates a cylindrical plug suitable for use as a mask on a tomogram
+
+   :param shape: The shape of the image to create.  Can be 3D, or 2D in which case
+                 a circle is returned.
+   :type shape: array_like
+   :param r: The diameter of the cylinder to create. If not provided then the
+             largest possible radius is used to fit within the image.
+   :type r: int (optional)
+   :param axis: The direction along with the cylinder's axis of rotation should be
+                oriented.  The default is 2, which is the z-direction.
+   :type axis: int
+
+   :returns: **cylinder** -- A boolean image of the size given by ``shape`` with ``True``'s
+             inside the cylinder and ``False``'s outside.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/cylindrical_plug.html>`__
+   to view online example.
+

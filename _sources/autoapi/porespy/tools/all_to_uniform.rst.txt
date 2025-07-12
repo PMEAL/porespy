@@ -1,0 +1,26 @@
+porespy.tools.all_to_uniform
+============================
+
+.. py:function:: porespy.tools.all_to_uniform(im, scale=None)
+
+   Take an image with some distribution of greyscale values and convert it to
+   a uniform (i.e. flat) distribution.
+
+   :param im: The image with the greyscale values distribution to be converted.
+   :type im: ndarray
+   :param scale: A list or array indicating the lower and upper bounds for the new
+                 randomly distributed data.  The default is ``None``, which uses the
+                 ``max`` and ``min`` of the original image as the the lower and upper
+                 bounds, but another common option might be [0, 1].
+   :type scale: [low, high]
+
+   :returns: **image** -- A copy of ``im`` with uniformly distributed greyscale values spanning
+             the specified range, if given.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/tools/reference/all_to_uniform.html>`__
+   to view online example.
+

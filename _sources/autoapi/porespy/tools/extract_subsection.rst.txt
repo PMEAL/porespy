@@ -1,0 +1,38 @@
+porespy.tools.extract_subsection
+================================
+
+.. py:function:: porespy.tools.extract_subsection(im, shape)
+
+   Extracts the middle section of a image
+
+   :param im: Image from which to extract the subsection
+   :type im: ndarray
+   :param shape: Can either specify the size of the extracted section or the fractional
+                 size of the image to extact.
+   :type shape: array_like
+
+   :returns: **image** -- An ndarray of size given by the ``shape`` argument, taken from the
+             center of the image.
+   :rtype: ndarray
+
+   .. seealso:: :py:obj:`unpad`
+
+   .. rubric:: Examples
+
+   >>> import numpy as sp
+   >>> from porespy.tools import extract_subsection
+   >>> im = np.array([[1, 1, 1, 1], [1, 2, 2, 2], [1, 2, 3, 3], [1, 2, 3, 4]])
+   >>> print(im)
+   [[1 1 1 1]
+    [1 2 2 2]
+    [1 2 3 3]
+    [1 2 3 4]]
+   >>> im = extract_subsection(im=im, shape=[2, 2])
+   >>> print(im)
+   [[2 2]
+    [2 3]]
+
+   `Click here
+   <https://porespy.org/examples/tools/reference/extract_subsection.html>`__
+   to view online example.
+

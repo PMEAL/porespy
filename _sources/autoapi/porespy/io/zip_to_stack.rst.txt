@@ -1,0 +1,21 @@
+porespy.io.zip_to_stack
+=======================
+
+.. py:function:: porespy.io.zip_to_stack(f)
+
+   Reads a zip file containing 2D slices of a 3D image, and converts to a 3D stack
+
+   :param f: The path and/or file name of the zip archive.  If ``<name>.zip`` is given,
+             then it's assumed to be located in the current working directory. Otherwise
+             a full path should be given, like ``C:\path\to\file.zip``. Either way, the
+             archive is extracted into a folder in the given directory.
+   :type f: str
+
+   :returns: **im** -- A 3D numpy array of the imported image.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   The files should be named with leading numerical values indicating their
+   layer number, like 001, 002, etc.
+

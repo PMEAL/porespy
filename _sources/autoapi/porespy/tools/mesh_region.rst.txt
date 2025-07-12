@@ -1,0 +1,28 @@
+porespy.tools.mesh_region
+=========================
+
+.. py:function:: porespy.tools.mesh_region(region: bool, strel=None, voxel_size=(1.0, 1.0, 1.0))
+
+   Creates a tri-mesh of the provided region using the marching cubes
+   algorithm
+
+   :param im: A boolean image with ``True`` values indicating the region of interest
+   :type im: ndarray
+   :param strel: The structuring element to use when blurring the region.  The blur is
+                 perfomed using a simple convolution filter.  The point is to create a
+                 greyscale region to allow the marching cubes algorithm some freedom
+                 to conform the mesh to the surface.  As the size of ``strel`` increases
+                 the region will become increasingly blurred and inaccurate. The default
+                 is a spherical element with a radius of 1.
+   :type strel: ndarray
+
+   :returns: **mesh** -- A named-tuple containing ``faces``, ``verts``, ``norm``, and ``val``
+             as returned by ``scikit-image.measure.marching_cubes`` function.
+   :rtype: tuple
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/tools/reference/mesh_region.html>`__
+   to view online example.
+

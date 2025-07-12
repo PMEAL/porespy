@@ -1,0 +1,43 @@
+porespy.networks.get_throat_area
+================================
+
+.. py:function:: porespy.networks.get_throat_area(im, sk, throats, voxel_size=1, n_walkers=10, step_size=0.5, max_n_steps=None)
+
+   This function returns the cross-sectional acrea of throats.
+
+   :param im: Image of porous material where True indicates the void phase and False
+              indicates solid
+   :type im: ndarray (boolean)
+   :param sk: The skeleton of an image
+   :type sk: ndarray
+   :param throats: An ndarray the same shape as `im` with clusters of throat voxels
+                   uniquely labelled (1...Nt). If a boolean array is provided then a
+                   cluster labeling is performed with full cubic connectivity. Walkers are
+                   sent from each voxel in throats. Therefore, reducing clusters of throat
+                   voxels beforehand could help reduce computation time but consequently
+                   will reduce the amount of imformation available. It is important that
+                   each voxel specified in this image has exactly two neighbours on the
+                   skeleton!
+   :type throats: ndarray
+   :param voxel_size: The resolution of the image, expressed as the length of one side of a
+                      voxel, so the volume of a voxel would be voxel_size-cubed
+   :type voxel_size: scalar (default = 1)
+   :param n_walkers: The number of walkers to start from each voxel in throats. If 2D image
+                     is passed then 2 walkers is used automatically since there are only
+                     two directions perpendicular to normal in 2D.
+   :type n_walkers: int (default=10)
+   :param step_size: The size of each step to take. This is equivalent to r in spherical
+                     coordinates. If an ndarray is passed, it is assume that this is the
+                     distance transform the same shape as im. Pass the distance transform
+                     if you would like to adaptively effect step size for significant
+                     speed up.
+   :type step_size: float or ndarray (default=0.5)
+   :param max_n_steps: The maximum number of steps to take. The default is None, in which case
+                       there is no maximum and the walk will stop when ALL walkers have
+                       reached solid.
+   :type max_n_steps: int (optional)
+
+   :returns: **throat_area** -- The original throats image with labelled voxels overwritten by their
+             measured throat areas.
+   :rtype: ndarray
+

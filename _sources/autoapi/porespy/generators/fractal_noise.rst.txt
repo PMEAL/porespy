@@ -1,0 +1,69 @@
+porespy.generators.fractal_noise
+================================
+
+.. py:function:: porespy.generators.fractal_noise(shape, porosity: float = None, frequency: float = 0.05, octaves: int = 4, gain: float = 0.5, mode: Literal['simplex', 'perlin', 'value', 'cubic'] = 'simplex', seed: int = None, cores: int = 1, uniform: bool = True)
+
+   Generate fractal noise with realistic structures across scales.
+
+   :param shape: The size of the image to generate, can be 2D or 3D.
+   :type shape: array_like
+   :param porosity: If specified, this will convert the noise distribution to uniform
+                    (no need to set uniform to ``True``), and then threshold the image
+                    to the specified value prior to returning.
+   :type porosity: float
+   :param frequency: Controls the overall scale of the generated noise, with larger
+                     values giving smaller structures.
+   :type frequency: scalar, default=0.05
+   :param octaves: Controls the number of scales across which structures are
+                   generated, with larger values giving more scale.
+   :type octaves: int, default=4
+   :param gain: Controls the intensity of successively higher octaves. Values
+                below 1.0 mean the higher octaves are less prominent.
+   :type gain: scalar, default=0.5
+   :param mode: The type of noise to generate. Options are:
+
+                ========== ==================================================================
+                mode       description
+                ========== ==================================================================
+                'perlin'   Classic Perlin noise. For more information on ``perlin noise`` see
+                           `here <https://en.wikipedia.org/wiki/Perlin_noise>`__.
+                'simplex'  Updated Perlin noise for more realistic textures. For more
+                           information on ``simplex noise`` see
+                           `here <https://en.wikipedia.org/wiki/Simplex_noise>`__.
+                'value'    Bilnear interpolation of white noise. For more information on
+                           ``value noise`` see
+                           `here <https://en.wikipedia.org/wiki/Value_noise>`__.
+                'cubic'    Cubic interpolation of white noise. For more information on
+                           ``cubic noise`` see
+                           `here <https://github.com/jobtalle/CubicNoise>`__.
+                ========== ==================================================================
+   :type mode: string
+   :param seed: The seed of the random number generator.  Using the same
+                ``seed`` between runs will produce the same image.
+   :type seed: int, optional
+   :param cores: The number of cores to use. This function uses ``pyfastnoisesimd``,
+                 which has implemented SIMD processing which can be spread across
+                 cores. The default is to use all cores.
+   :type cores: int, optional
+   :param uniform: If ``True`` (default) the random values are converted to a
+                   uniform distribution between 0 and 1, otherwise the resulting image
+                   contains the unprocesssed values, which have a 'normal-esque'
+                   distribution centered on 0.
+   :type uniform: boolean, optional
+
+   .. rubric:: Notes
+
+   This function provides a simplified wrapper for the functions in
+   the `pyfastnoisesimd <https://github.com/robbmcleod/pyfastnoisesimd>`_
+   package. ``pyfastnoisesimd`` is itself a wrapper for a C-library
+   called `FastNoiseSIMD <https://github.com/Auburn/FastNoiseSIMD>`_.
+   To access the more elaborate functionality and options of these
+   packages, explore the `pyfastnoisesimd documentation
+   <https://pyfastnoisesimd.readthedocs.io/en/latest/overview.html>`__.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/fractal_noise.html>`__
+   to view online example.
+

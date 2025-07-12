@@ -1,0 +1,28 @@
+porespy.io.dict_to_vtk
+======================
+
+.. py:function:: porespy.io.dict_to_vtk(data, filename, voxel_size=1, origin=(0, 0, 0))
+
+   Accepts multiple images as a dictionary and compiles them into a vtk file
+
+   :param data: A dictionary of *key: value* pairs, where the *key* is the name of the
+                scalar property stored in each voxel of the array stored in the
+                corresponding *value*.
+   :type data: dict
+   :param path: Path to output file
+   :type path: string
+   :param voxel_size: The side length of the voxels (voxels  are cubic)
+   :type voxel_size: int
+   :param origin: data origin (according to selected voxel size)
+   :type origin: float
+
+   .. rubric:: Notes
+
+   Outputs a vtk, vtp or vti file that can opened in ParaView
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/io/reference/dict_to_vtk.html>`__
+   to view online example.
+

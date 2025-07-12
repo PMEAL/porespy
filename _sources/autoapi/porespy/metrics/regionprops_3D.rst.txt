@@ -1,0 +1,80 @@
+porespy.metrics.regionprops_3D
+==============================
+
+.. py:function:: porespy.metrics.regionprops_3D(im)
+
+   Calculates various metrics for each labeled region in a 3D image.
+
+   This functions offers a few extras for 3D images that are not provided
+   by the ``regionprops`` function in ``scikit-image``.
+
+   :param im: An image containing at least one labeled region. If a boolean image
+              is received than the ``True`` voxels are treated as a single region
+              labeled ``1``.  Regions labeled 0 are ignored in all cases.
+   :type im: array_like
+
+   :returns: **props** -- An augmented version of the list returned by skimage's ``regionprops``.
+             Information, such as ``volume``, can be found for region A using the
+             following syntax: ``result[A-1].volume``.
+
+             The returned list contains all the metrics normally returned by
+             **skimage.measure.regionprops** plus the following:
+
+             'slices'
+                 Slice indices into the image that can be used to extract the
+                 region
+
+             'volume'
+                 Volume of the region in number of voxels.
+
+             'bbox_volume'
+                 Volume of the bounding box that contains the region.
+
+             'border'
+                 The edges of the region, found as the locations where the distance
+                 transform is 1.
+
+             'inscribed_sphere'
+                 An image containing the largest sphere can can fit entirely inside
+                 the region.
+
+             'surface_mesh_vertices'
+                 Obtained by applying the marching cubes algorithm on the region,
+                 AFTER first blurring the voxel image. This allows marching cubes
+                 more freedom to fit the surface contours.
+                 See also ``surface_mesh_simplices``
+
+             'surface_mesh_simplices'
+                 This accompanies ``surface_mesh_vertices`` and together they can
+                 be used to define the region as a mesh.
+
+             'surface_area'
+                 Calculated using the mesh obtained as described above, using the
+                 ``porespy.metrics.mesh_surface_area`` method.
+
+             'sphericity'
+                 Defined as the ratio of the area of a sphere with the same volume
+                 as the region to the actual surface area of the region.
+
+             'skeleton'
+                 The medial axis of the region obtained using the ``skeletonize``
+                 method from **skimage**.
+
+             'convex_volume'
+                 Same as convex_area, but translated to a more meaningful name.
+   :rtype: list
+
+   .. seealso:: :py:obj:`snow_partitioning`
+
+   .. rubric:: Notes
+
+   Regions can be identified using a watershed algorithm, which can be a bit
+   tricky to obtain desired results.  *PoreSpy* includes the SNOW algorithm,
+   which may be helpful.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/regionprops_3D.html>`__
+   to view online example.
+

@@ -1,0 +1,49 @@
+porespy.metrics.porosity_profile
+================================
+
+.. py:function:: porespy.metrics.porosity_profile(im, axis=0, span=1, mode='tile')
+
+   Computes the porosity profile along the specified axis
+
+   :param im: The volumetric image for which to calculate the porosity profile.  All
+              voxels with a value of 1 (or ``True``) are considered as void.
+   :type im: ndarray
+   :param axis: The axis along which to profile should be measured
+   :type axis: int
+   :param span: The thickness of layers to include in the moving average calculation.
+   :type span: int (Default = 1)
+   :param mode: How the moving average should be applied. Options are:
+
+                ======== ==============================================================
+                mode     description
+                ======== ==============================================================
+                'tile'   The average is computed for discrete non-overlapping
+                         tiles of a size given by ``span``
+                'slide'  The average is computed in a moving window starting at
+                         ``span/2`` and sliding by a single voxel. This method
+                         provides more data points but is slower.
+                ======== ==============================================================
+   :type mode: str (Default = 'tile')
+
+   :returns: **results** -- Results is a custom porespy class with the following attributes:
+
+             ============= =========================================================
+             Attribute     Description
+             ============= =========================================================
+             position      The position along the given axis at which porosity
+                           values are computed, corresponding to the middle of each
+                           slice, whether the mode was `'tile'` or `'slide'`.
+                           The units are in voxels.
+             porosity      The local porosity value at each position.
+             ============= =========================================================
+   :rtype: dataclass
+
+   :returns: **result** -- A 1D-array of porosity along the specified axis
+   :rtype: 1D-array
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/porosity_profile.html>`__
+   to view online example.
+

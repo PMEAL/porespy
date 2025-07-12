@@ -1,0 +1,61 @@
+porespy.metrics.lineal_path_distribution
+========================================
+
+.. py:function:: porespy.metrics.lineal_path_distribution(im, bins=10, voxel_size=1, log=False)
+
+   Determines the probability that a point lies within a certain distance
+   of the opposite phase *along a specified direction*
+
+   This relates directly the radial density function defined by Torquato [1c]_,
+   but instead of reporting the probability of lying within a stated distance
+   to the nearest solid in any direciton, it considers only linear distances
+   along orthogonal directions.The benefit of this is that anisotropy can be
+   detected in materials by performing the analysis in multiple orthogonal
+   directions.
+
+   :param im: An image with each voxel containing the distance to the nearest solid
+              along a linear path, as produced by ``distance_transform_lin``.
+   :type im: ndarray
+   :param bins: The number of bins or a list of specific bins to use
+   :type bins: int or array_like
+   :param voxel_size: The side length of a voxel.  This is used to scale the chord lengths
+                      into real units.  Note this is applied *after* the binning, so
+                      ``bins``, if supplied, should be in terms of voxels, not length units.
+   :type voxel_size: scalar
+   :param log: If ``True`` (default) the size data is converted to log (base-10)
+               values before processing.  This can help to plot wide size
+               distributions or to better visualize data in the small size region.
+               Note that you should not anti-log the radii values in the retunred
+               ``results``, since the binning is performed on the logged radii values.
+   :type log: boolean
+
+   :returns: **result** -- A custom object with the following data added as named attributes:
+
+             =============== =============================================================
+             Description     Attribute
+             =============== =============================================================
+             *L* or *LogL*   Length, equivalent to ``bin_centers``
+             *pdf*           Probability density function
+             *cdf*           Cumulative density function
+             *relfreq*       Relative frequency chords in each bin.  The sum of all bin
+                             heights is 1.0.  For the cumulative relativce, use *cdf*
+                             which is already normalized to 1.
+             *bin_centers*   The center point of each bin
+             *bin_edges*     Locations of bin divisions, including 1 more value than
+                             the number of bins
+             *bin_widths*    Useful for passing to the ``width`` argument of
+                             ``matplotlib.pyplot.bar``
+             =============== =============================================================
+   :rtype: Results object
+
+   .. rubric:: References
+
+   .. [1c] Torquato, S. Random Heterogeneous Materials: Microstructure and
+      Macroscopic Properties. Springer, New York (2002)
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/linearl_path_distribution.html>`__
+   to view online example.
+

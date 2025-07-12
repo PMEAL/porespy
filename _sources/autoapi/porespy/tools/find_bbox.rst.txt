@@ -1,0 +1,24 @@
+porespy.tools.find_bbox
+=======================
+
+.. py:function:: porespy.tools.find_bbox(im, order_by='axis')
+
+   Finds the lower and upper corner surrounding the foreground in the image
+
+   :param im: The image containing the features around which the bounding box is sought
+   :type im: ndarray
+   :param order_by: How the coords are returned.  Options are:
+
+                    ========= ==================================================================
+                    option    description
+                    ========= ==================================================================
+                    axis      The values are sorted by axes first, like
+                              ``[x_min, x_max], [y_min, y_max], [z_min, z_max]``.
+                    corner    The values are sorted as lower corner first followed by upper
+                              corner, like ``[x_min, y_min, z_min], [x_max, y_max, z_max]``.
+                    ========= ==================================================================
+   :type order_by: string
+
+   :returns: **bbox** -- The corners of the bounding box around the forground of the image
+   :rtype: list or list-of-lists
+

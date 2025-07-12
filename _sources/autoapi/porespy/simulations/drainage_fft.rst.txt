@@ -1,0 +1,45 @@
+porespy.simulations.drainage_fft
+================================
+
+.. py:function:: porespy.simulations.drainage_fft(im, inlets=None, outlets=None, dt=None, steps=None, smooth=True)
+
+   Performs a distance transform based drainage simulation using fft-based
+   convolution for both the erosion and dilation steps
+
+   :param im: The boolean image of the void space on which to perform the simulation
+   :type im: ndarray
+   :param inlets: A boolean array with `True` values indicating the inlet locations for the
+                  invading (non-wetting) fluid. If not provided then access limitations will
+                  not be applied, meaning that the invading fluid cand appear anywhere within
+                  the domain.
+   :type inlets: ndarray (optional)
+   :param outlets: A boolean array with `True` values indicating the outlet locations through
+                   which defending (wetting) phase would exit the domain. If not provided then
+                   trapping of the wetting phase is ignored.
+   :type outlets: ndarray (optional)
+   :param dt: The distance transform of the void space. This is optional, but providing
+              it if it is already available save some time. Also, it can be converted to
+              integer type or round to fewer decimal places to reduce the number of unique
+              sphere sizes to insert if `steps=None`.
+   :type dt: ndarray, optional
+   :param steps: Controls which sphere sizes to invade. If an `int` then this many steps
+                 between 1 and the maximum size are used. A `tuple` is treated as the start
+                 and stop of the integer values. A `list` or `ndarray` is used directly. If
+                 `None` (default) then each unique value in the distance transform is used.
+   :type steps: scalar or array_like
+   :param smooth: If `True` (default) then the spheres are drawn without any single voxel
+                  protrusions on the faces.
+   :type smooth: boolean
+
+   :returns: **results** -- An object with the following attributes:
+
+             =========== ================================================================
+             Attribute   Description
+             =========== ================================================================
+             `im_seq`    The sequence map indicating the sequence or step number at which
+                         each voxels was first invaded.
+             `im_size`   The size map indicating the size of the sphere being drawn
+                         when each voxel was first invaded.
+             =========== ================================================================
+   :rtype: Dataclass-like object
+

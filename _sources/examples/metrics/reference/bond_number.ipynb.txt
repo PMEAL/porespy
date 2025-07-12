@@ -1,0 +1,205 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "2c29b9c2",
+   "metadata": {},
+   "source": [
+    "# `bond_number`\n",
+    "Computes the Bond number for an image.  The Bond number is defined as:\n",
+    "\n",
+    "$$ Bo = \\frac{\\Delta \\rho g R^2}{\\sigma} $$\n",
+    "\n",
+    "The main challenge with finding $Bo$ is determining the correct expression for $R$.  The `bond_number` function provides a lot of options."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "182ceb8e",
+   "metadata": {},
+   "source": [
+    "## `im`, `g`, `sigma`, `voxel_size`, and `delta_rho`\n",
+    "\n",
+    "Several mandatory arguments are required.  Firstly, `im` is needed because it computes either the distance transform or the local thickness of the image in order to find the characteristic size `R`.  \n",
+    "\n",
+    "`voxel_size` is required to convert the value of `R` obtained from the image into proper size units instead of voxels.\n",
+    "\n",
+    "`g`, `sigma` and `delta_rho` are needed since they are required by the definition of $Bo$.  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "a162a36a",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.008817170868430176"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "\n",
+    "import porespy as ps\n",
+    "\n",
+    "im = ps.generators.blobs([100, 100], porosity=0.8, seed=0)\n",
+    "ps.metrics.bond_number(\n",
+    "    im=im,\n",
+    "    g=9.81,\n",
+    "    sigma=0.01,\n",
+    "    voxel_size=1e-5,\n",
+    "    delta_rho=1000,\n",
+    ")\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "93b7dfc9",
+   "metadata": {},
+   "source": [
+    "## `source` and `method`\n",
+    "\n",
+    "`source` can either be `dt` or `lt` meaning distance transform or local thickness.  This controls which values of `R` are used to compute the characteristic size.\n",
+    "\n",
+    "`method` indicates how the values in the `dt` or `lt` image are averaged to get a characteristic size.  There are several options, including `'median'`, `'mean'`, `'min'`, `'max'`, etc.  These are each described in the docstring for the function.  \n",
+    "\n",
+    "A good option is the median of the local thickness, which are the defaults.  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "27f00931",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.008817170868430176"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ps.metrics.bond_number(\n",
+    "    im=im,\n",
+    "    g=9.81,\n",
+    "    sigma=0.01,\n",
+    "    voxel_size=1e-5,\n",
+    "    delta_rho=1000,\n",
+    "    source='lt',\n",
+    "    method='median',\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "39b1c34c",
+   "metadata": {},
+   "source": [
+    "## `mask_source`\n",
+    "This option will compute the skeleton of the image and only consider values under the skeleton when applying the selected `method` to the selected `source`.  This would weight the `R` to values far away from the walls."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "c633db32",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.0030404821622150796"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ps.metrics.bond_number(\n",
+    "    im=im,\n",
+    "    g=9.81,\n",
+    "    sigma=0.01,\n",
+    "    voxel_size=1e-5,\n",
+    "    delta_rho=1000,\n",
+    "    source='dt',\n",
+    "    method='mean',\n",
+    "    mask_source=True,\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8e98f00b",
+   "metadata": {},
+   "source": [
+    "## `use_diameter`\n",
+    "This boolean flag will convert the `dt` or `lt` from radius to diameters if `True`.  The default is `False`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "abcae79f",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.012161928648860319"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ps.metrics.bond_number(\n",
+    "    im=im,\n",
+    "    g=9.81,\n",
+    "    sigma=0.01,\n",
+    "    voxel_size=1e-5,\n",
+    "    delta_rho=1000,\n",
+    "    source='dt',\n",
+    "    method='mean',\n",
+    "    mask_source=True,\n",
+    "    use_diameter=True,\n",
+    ")"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "PoreSpy",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.7"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

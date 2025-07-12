@@ -1,0 +1,34 @@
+porespy.filters.dilate
+======================
+
+.. py:function:: porespy.filters.dilate(im: numpy.typing.NDArray, r: int, dt: numpy.typing.NDArray = None, method: str = 'dt', smooth: bool = True)
+
+   Perform dilation with a round structuring element
+
+   :param im: A boolean image with the foreground (to be dilated) indicated by `True`
+   :type im: ndarray
+   :param r: The radius of the round structuring element to use
+   :type r: int
+   :param dt: The distance transform of the foreground. If not provided it will be
+              computed. This argument is only relevant if `method='dt'`.
+   :type dt: ndarray
+   :param smooth: If `True` (default) the single voxel protrusion on the face of the
+                  structuring element are removed.
+   :type smooth: boolean
+   :param method: Controls which method is used. Options are:
+
+                  ========= =============================================================
+                  method    Description
+                  ========= =============================================================
+                  `'dt'`    Uses a distance transform to find all voxels within `r` of
+                            the foreground, then adds them to affect a dilation
+                  `'conv'`  Using a FFT based convolution to find all voxels within `r`
+                            of the foreground (voxels with a value larger than 0), then adds
+                            them to affect a dilation.
+                  ========= =============================================================
+   :type method: str
+
+   :returns: **dilation** -- An image the same size as `im` with the foreground eroded by the specified
+             amount.
+   :rtype: ndarray
+

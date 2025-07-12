@@ -1,0 +1,68 @@
+porespy.generators.spheres_from_coords
+======================================
+
+.. py:function:: porespy.generators.spheres_from_coords(df, mode='contained', smooth=False)
+
+   Generates a sphere packing given a list of centers and radii
+
+   :param df: The X, Y, Z center coordinates, and radius R of each sphere in the packing
+              should be stored in their own column or key. The units should be in voxels.
+              See ``Notes`` for more detail on how this should be formatted. If one of
+              the dimensions has all 0's then a 2D image is generated.
+   :type df: DataFrame or dict
+   :param smooth: Indicates if spheres should be smooth or have the single pixel bump on
+                  each face.
+   :type smooth: bool
+   :param mode: How edges are handled. Options are:
+
+                ============= ==============================================================
+                mode          description
+                ============= ==============================================================
+                'contained'   (default) All spheres are fully contained within the image,
+                              meaning the image is padded beyond extents of the given
+                              coordinates by the maximum radius of the given sphere radii
+                              to ensure they all fit.
+                'extended'    Spheres extend beyond the edge of the image. In this mode
+                              the image is only as large enough to hold the given coordinates
+                              so the spheres may extend beyond the image boundary.
+                ============= ==============================================================
+   :type mode: str
+
+   :returns: **spheres** -- A numpy ndarray of ``True`` values indicating the spheres and
+             ``False`` elsewhere. The size of the returned image will be large enough
+             to fit all the spheres plus the radius of the largest sphere.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   The input data should be in column format as a dictionary of 1D
+   *numpy* arrays like this:
+
+   .. code::
+
+       d['X'] = np.array([1, 1, 2])
+       d['Y'] = np.array([1, 3, 2])
+       d['Z'] = np.array([1, 1, 1])
+       d['R'] = np.array([0.5, 0.7, 0.6])
+
+   Or a *pandas* ``DataFrame`` like this:
+
+   ==== ==== ==== ==== ====
+   ID   'X'  'Y'  'Z'  'R'
+   ==== ==== ==== ==== ====
+   0    10   10   10   5
+   1    10   30   10   7
+   2    20   20   10   6
+   ==== ==== ==== ==== ====
+
+   Or a numpy N-by-3(or 4) array like this:
+
+   .. code::
+
+       array([[10, 10, 10, 5],
+              [10, 30, 10, 7],
+              [20, 20, 10, 6]])
+
+   Note that in all cases if the radius is not given that it is assumed to be
+   a single pixel
+

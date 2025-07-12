@@ -29,10 +29,11 @@
    },
    "outputs": [],
    "source": [
-    "import porespy as ps\n",
-    "import numpy as np\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
-    "from copy import copy\n",
+    "import numpy as np\n",
+    "\n",
+    "import porespy as ps\n",
     "\n",
     "ps.visualization.set_mpl_style()"
    ]
@@ -81,7 +82,7 @@
    "outputs": [],
    "source": [
     "bd = ps.generators.faces(im.shape, inlet=0)\n",
-    "im = ps.filters.trim_disconnected_blobs(im=im, inlets=bd)"
+    "im = ps.filters.trim_disconnected_voxels(im=im, inlets=bd)"
    ]
   },
   {
@@ -126,10 +127,10 @@
    "outputs": [],
    "source": [
     "inv = ps.simulations.injection(\n",
-    "    im=im, \n",
+    "    im=im,\n",
     "    pc=pc,\n",
-    "    inlets=bd, \n",
-    "    maxiter=25000, \n",
+    "    inlets=bd,\n",
+    "    maxiter=25000,\n",
     "    return_pressures=True,\n",
     "    method='qbip',\n",
     ")\n",
@@ -159,10 +160,10 @@
    "outputs": [],
    "source": [
     "drn = ps.simulations.drainage(\n",
-    "    im=im, \n",
+    "    im=im,\n",
     "    pc=pc,\n",
-    "    inlets=bd, \n",
-    "    steps=None, \n",
+    "    inlets=bd,\n",
+    "    steps=None,\n",
     ")\n",
     "drn_seq = ps.filters.satn_to_seq(satn=drn.im_snwp, im=im)\n",
     "drn_seq[im*(drn_seq == 0)] = -1  # Adjust to set uninvaded to -1\n",
@@ -349,20 +350,20 @@
    "source": [
     "fig, ax = plt.subplots()\n",
     "ax.plot(\n",
-    "    np.log10(pc_curve_inv.pc), \n",
-    "    pc_curve_inv.snwp, \n",
-    "    'g-', \n",
-    "    linewidth=1, \n",
+    "    np.log10(pc_curve_inv.pc),\n",
+    "    pc_curve_inv.snwp,\n",
+    "    'g-',\n",
+    "    linewidth=1,\n",
     "    label='invasion',\n",
     ")\n",
     "ax.step(\n",
-    "    np.array(np.log10(pc_curve_drn.pc)), \n",
-    "    pc_curve_drn.snwp, \n",
-    "    'r--', \n",
-    "    where='post', \n",
-    "    markersize=20, \n",
-    "    linewidth=3, \n",
-    "    alpha=0.6, \n",
+    "    np.array(np.log10(pc_curve_drn.pc)),\n",
+    "    pc_curve_drn.snwp,\n",
+    "    'r--',\n",
+    "    where='post',\n",
+    "    markersize=20,\n",
+    "    linewidth=3,\n",
+    "    alpha=0.6,\n",
     "    label='drainage',\n",
     ")\n",
     "plt.xlabel('log(Capillary Pressure [Pa])')\n",

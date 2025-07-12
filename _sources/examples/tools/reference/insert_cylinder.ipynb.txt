@@ -30,11 +30,9 @@
    },
    "outputs": [],
    "source": [
-    "import numpy as np\n",
-    "import porespy as ps\n",
-    "import scipy.ndimage as spim\n",
     "import matplotlib.pyplot as plt\n",
-    "import skimage\n",
+    "\n",
+    "import porespy as ps\n",
     "\n",
     "ps.visualization.set_mpl_style()"
    ]
@@ -121,8 +119,8 @@
    "source": [
     "im = ps.generators.blobs([100, 100, 100])\n",
     "\n",
-    "fig, ax = plt.subplots(figsize=[4, 4]);\n",
-    "ax.imshow(im[..., 50]);\n",
+    "fig, ax = plt.subplots(figsize=[4, 4])\n",
+    "ax.imshow(im[..., 50])\n",
     "plt.axis(False);"
    ]
   },
@@ -208,8 +206,8 @@
    "source": [
     "im = ps.tools.insert_cylinder(im=im*1.0, xyz0=[20, 20, 20], xyz1=[60, 60, 50], r=20)\n",
     "\n",
-    "fig, ax = plt.subplots(figsize=[4, 4]);\n",
-    "ax.imshow(ps.visualization.xray(~(im > 1)));\n",
+    "fig, ax = plt.subplots(figsize=[4, 4])\n",
+    "ax.imshow(ps.visualization.xray(~(im > 1)))\n",
     "plt.axis(False);"
    ]
   },

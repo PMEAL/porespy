@@ -1,0 +1,34 @@
+porespy.metrics.region_surface_areas
+====================================
+
+.. py:function:: porespy.metrics.region_surface_areas(regions, voxel_size=(1, 1, 1), strel=None)
+
+   Extract the surface area of each region in a labeled image.
+
+   Optionally, it can also find the the interfacial area between all
+   adjoining regions.
+
+   :param regions: An image of the pore space partitioned into individual pore regions.
+                   Note that zeros in the image will not be considered for area
+                   calculation.
+   :type regions: ndarray
+   :param voxel_size: The resolution of the image, expressed as the length of one side of a
+                      voxel, so the volume of a voxel would be **voxel_size**-cubed.  The
+                      default is 1.
+   :type voxel_size: tuple
+   :param strel: The structuring element used to blur the region.  If not provided,
+                 then a spherical element (or disk) with radius 1 is used.  See the
+                 docstring for ``mesh_region`` for more details, as this argument is
+                 passed to there.
+   :type strel: array_like
+
+   :returns: **areas** -- A list containing the surface area of each region, offset by 1, such
+             that the surface area of region 1 is stored in element 0 of the list.
+   :rtype: list
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/region_surface_areas.html>`__
+   to view online example.
+

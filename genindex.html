@@ -1,35 +1,46 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="./">
+
+<html lang="en" data-content_root="./" >
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index &#8212; PoreSpy  documentation</title>
-<script>
-  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
-</script>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
 
+    </style>
+  </noscript>
+  
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
-<link href="_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
-
-
-  <link rel="stylesheet"
-    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=723bc057" />
-
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=78389542" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
@@ -37,28 +48,66 @@
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=30646c52"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
-    <script src="_static/js/custom.js?v=8f303282"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
+    <script src="_static/js/custom.js?v=8f029c3b"></script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="docsearch:language" content="en">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
-    <div class="bd-header-announcement container-fluid" id="banner">
-      
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-    </div>
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
+  
+  <dialog id="pst-search-dialog">
     
-    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
 
-  <div id="navbar-start">
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
     
+      <div class="navbar-item">
+
+  
     
   
-
 
 <a class="navbar-brand logo" href="index.html">
   
@@ -66,350 +115,764 @@
   
   
   
-    <p class="title logo__title">PoreSpy  documentation</p>
+    
+    
+      
+    
+    
+    <img src="_static/porespy_logo.png" class="logo__image only-light" alt="PoreSpy  documentation - Home"/>
+    <img src="_static/porespy_logo.png" class="logo__image only-dark pst-js-only" alt="PoreSpy  documentation - Home"/>
   
-</a>
+  
+</a></div>
     
   </div>
-
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="fas fa-bars"></span>
-  </button>
-
   
-  <div id="navbar-collapsible" class=" collapse navbar-collapse">
-    <div id="navbar-center" class="mr-auto">
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
       
-      <div class="navbar-center-item">
-        <ul id="navbar-main-elements" class="navbar-nav">
-    <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="installation.html">
-  Installation
- </a>
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation
+  </a>
 </li>
 
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="modules/index.html">
-  Module and Function Reference
- </a>
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="_examples/index.html">
+    Examples
+  </a>
 </li>
 
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="_examples/index.html">
-  Examples
- </a>
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="autoapi/index.html">
+    API Reference
+  </a>
 </li>
 
-    
-    <li class="nav-item">
-        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-    </li>
-    
-    <li class="nav-item">
-        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-    </li>
-    
-</ul>
-      </div>
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/issues">
+    Issue Tracker
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">
+    Get Help
+  </a>
+</li>
+
+  </ul>
+</nav></div>
       
     </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
 
-    <div id="navbar-end">
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
       
-      <div class="navbar-end-item">
-        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
-      </div>
       
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Quick Links">
         <li class="nav-item">
-          <a class="nav-link" href="https://github.com/PMEAL/porespy" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/porespy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/porespy" title="Twitter" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitter</span></a>
         </li>
-      </ul>
-      </div>
+</ul></div>
       
     </div>
-  </div>
-</div>
-    </nav>
-    
-
-    <div class="bd-container container-xl">
-      <div class="bd-container__inner row">
-          
-
-<!-- Only show if we have sidebars configured, else just a small margin  -->
-<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
-  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-  <div class="bd-toc-item active">
     
   </div>
-</nav>
-  </div>
-  <div class="sidebar-end-items">
-  </div>
-</div>
+  
+  
+    <div class="navbar-persistent--mobile">
 
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
 
-          
-
-
-<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
   
 </div>
 
+    </header>
+  
 
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
           
           
-          <div class="bd-content col-12 col-md-9 col-xl-7">
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="_examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="autoapi/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/issues">
+    Issue Tracker
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">
+    Get Help
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/porespy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/porespy" title="Twitter" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
               
-              <article class="bd-article" role="main">
+              <div class="bd-header-article d-print-none"></div>
+              
+              
+              
                 
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
 
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#A"><strong>A</strong></a>
- | <a href="#B"><strong>B</strong></a>
- | <a href="#C"><strong>C</strong></a>
+ <a href="#B"><strong>B</strong></a>
  | <a href="#D"><strong>D</strong></a>
- | <a href="#E"><strong>E</strong></a>
- | <a href="#F"><strong>F</strong></a>
- | <a href="#G"><strong>G</strong></a>
- | <a href="#H"><strong>H</strong></a>
- | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
- | <a href="#Q"><strong>Q</strong></a>
- | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
- | <a href="#U"><strong>U</strong></a>
- | <a href="#V"><strong>V</strong></a>
- | <a href="#X"><strong>X</strong></a>
  
 </div>
-<h2 id="A">A</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.networks.add_boundary_regions.html#porespy.networks.add_boundary_regions">add_boundary_regions() (in module porespy.networks)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.align_image_with_openpnm.html#porespy.tools.align_image_with_openpnm">align_image_with_openpnm() (in module porespy.tools)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.all_to_uniform.html#porespy.tools.all_to_uniform">all_to_uniform() (in module porespy.tools)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.filters.apply_chords.html#porespy.filters.apply_chords">apply_chords() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.apply_chords_3D.html#porespy.filters.apply_chords_3D">apply_chords_3D() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.apply_padded.html#porespy.filters.apply_padded">apply_padded() (in module porespy.filters)</a>
-</li>
-  </ul></td>
-</tr></table>
-
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.visualization.bar.html#porespy.visualization.bar">bar() (in module porespy.visualization)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.bbox_to_slices.html#porespy.tools.bbox_to_slices">bbox_to_slices() (in module porespy.tools)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.generators.blobs.html#porespy.generators.blobs">blobs() (in module porespy.generators)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.metrics.bond_number.html#porespy.metrics.bond_number">bond_number() (in module porespy.metrics)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.generators.borders.html#porespy.generators.borders">borders() (in module porespy.generators)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.metrics.boxcount.html#porespy.metrics.boxcount">boxcount() (in module porespy.metrics)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.generators.bundle_of_tubes.html#porespy.generators.bundle_of_tubes">bundle_of_tubes() (in module porespy.generators)</a>
-</li>
-  </ul></td>
-</tr></table>
+      <li>
+    built-in function
 
-<h2 id="C">C</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.filters.capillary_transform.html#porespy.filters.capillary_transform">capillary_transform() (in module porespy.filters)</a>
+      <ul>
+        <li><a href="autoapi/porespy/beta/df_to_tortuosity.html#porespy.beta.df_to_tortuosity">porespy.beta.df_to_tortuosity()</a>
 </li>
-      <li><a href="modules/generated/generated/porespy.metrics.chord_counts.html#porespy.metrics.chord_counts">chord_counts() (in module porespy.metrics)</a>
+        <li><a href="autoapi/porespy/beta/flux.html#porespy.beta.flux">porespy.beta.flux()</a>
 </li>
-      <li><a href="modules/generated/generated/porespy.metrics.chord_length_distribution.html#porespy.metrics.chord_length_distribution">chord_length_distribution() (in module porespy.metrics)</a>
+        <li><a href="autoapi/porespy/beta/get_block_sizes.html#porespy.beta.get_block_sizes">porespy.beta.get_block_sizes()</a>
 </li>
-      <li><a href="modules/generated/generated/porespy.filters.chunked_func.html#porespy.filters.chunked_func">chunked_func() (in module porespy.filters)</a>
+        <li><a href="autoapi/porespy/beta/local_diff.html#porespy.beta.local_diff">porespy.beta.local_diff()</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.generators.cylinders.html#porespy.generators.cylinders">cylinders() (in module porespy.generators)</a>
+        <li><a href="autoapi/porespy/beta/polydisperse_cylinders.html#porespy.beta.polydisperse_cylinders">porespy.beta.polydisperse_cylinders()</a>
 </li>
-      <li><a href="modules/generated/generated/porespy.generators.cylindrical_pillars_array.html#porespy.generators.cylindrical_pillars_array">cylindrical_pillars_array() (in module porespy.generators)</a>
+        <li><a href="autoapi/porespy/beta/rev_tortuosity.html#porespy.beta.rev_tortuosity">porespy.beta.rev_tortuosity()</a>
 </li>
-      <li><a href="modules/generated/generated/porespy.generators.cylindrical_pillars_mesh.html#porespy.generators.cylindrical_pillars_mesh">cylindrical_pillars_mesh() (in module porespy.generators)</a>
+        <li><a href="autoapi/porespy/beta/tau_from_cmap.html#porespy.beta.tau_from_cmap">porespy.beta.tau_from_cmap()</a>
 </li>
-      <li><a href="modules/generated/generated/porespy.generators.cylindrical_plug.html#porespy.generators.cylindrical_plug">cylindrical_plug() (in module porespy.generators)</a>
+        <li><a href="autoapi/porespy/beta/tortuosity_bt.html#porespy.beta.tortuosity_bt">porespy.beta.tortuosity_bt()</a>
 </li>
+        <li><a href="autoapi/porespy/beta/walk.html#porespy.beta.walk">porespy.beta.walk()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/apply_chords.html#porespy.filters.apply_chords">porespy.filters.apply_chords()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/apply_chords_3D.html#porespy.filters.apply_chords_3D">porespy.filters.apply_chords_3D()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/apply_padded.html#porespy.filters.apply_padded">porespy.filters.apply_padded()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/capillary_transform.html#porespy.filters.capillary_transform">porespy.filters.capillary_transform()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/chunked_func.html#porespy.filters.chunked_func">porespy.filters.chunked_func()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/dilate.html#porespy.filters.dilate">porespy.filters.dilate()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/distance_transform_lin.html#porespy.filters.distance_transform_lin">porespy.filters.distance_transform_lin()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/erode.html#porespy.filters.erode">porespy.filters.erode()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/fftmorphology.html#porespy.filters.fftmorphology">porespy.filters.fftmorphology()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/fill_closed_pores.html#porespy.filters.fill_closed_pores">porespy.filters.fill_closed_pores()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/fill_invalid_pores.html#porespy.filters.fill_invalid_pores">porespy.filters.fill_invalid_pores()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/fill_surface_pores.html#porespy.filters.fill_surface_pores">porespy.filters.fill_surface_pores()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/find_closed_pores.html#porespy.filters.find_closed_pores">porespy.filters.find_closed_pores()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/find_disconnected_voxels.html#porespy.filters.find_disconnected_voxels">porespy.filters.find_disconnected_voxels()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/find_dt_artifacts.html#porespy.filters.find_dt_artifacts">porespy.filters.find_dt_artifacts()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/find_floating_solid.html#porespy.filters.find_floating_solid">porespy.filters.find_floating_solid()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/find_invalid_pores.html#porespy.filters.find_invalid_pores">porespy.filters.find_invalid_pores()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/find_peaks.html#porespy.filters.find_peaks">porespy.filters.find_peaks()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/find_small_clusters.html#porespy.filters.find_small_clusters">porespy.filters.find_small_clusters()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/find_surface_pores.html#porespy.filters.find_surface_pores">porespy.filters.find_surface_pores()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/find_trapped_clusters.html#porespy.filters.find_trapped_clusters">porespy.filters.find_trapped_clusters()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/flood.html#porespy.filters.flood">porespy.filters.flood()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/flood_func.html#porespy.filters.flood_func">porespy.filters.flood_func()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/hold_peaks.html#porespy.filters.hold_peaks">porespy.filters.hold_peaks()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/local_thickness.html#porespy.filters.local_thickness">porespy.filters.local_thickness()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/local_thickness_bf.html#porespy.filters.local_thickness_bf">porespy.filters.local_thickness_bf()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/local_thickness_conv.html#porespy.filters.local_thickness_conv">porespy.filters.local_thickness_conv()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/local_thickness_dt.html#porespy.filters.local_thickness_dt">porespy.filters.local_thickness_dt()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/local_thickness_imj.html#porespy.filters.local_thickness_imj">porespy.filters.local_thickness_imj()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/nl_means_layered.html#porespy.filters.nl_means_layered">porespy.filters.nl_means_layered()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/nphase_border.html#porespy.filters.nphase_border">porespy.filters.nphase_border()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/pc_to_satn.html#porespy.filters.pc_to_satn">porespy.filters.pc_to_satn()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/pc_to_seq.html#porespy.filters.pc_to_seq">porespy.filters.pc_to_seq()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/porosimetry.html#porespy.filters.porosimetry">porespy.filters.porosimetry()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/prune_branches.html#porespy.filters.prune_branches">porespy.filters.prune_branches()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/reduce_peaks.html#porespy.filters.reduce_peaks">porespy.filters.reduce_peaks()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/region_size.html#porespy.filters.region_size">porespy.filters.region_size()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/satn_to_seq.html#porespy.filters.satn_to_seq">porespy.filters.satn_to_seq()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/seq_to_satn.html#porespy.filters.seq_to_satn">porespy.filters.seq_to_satn()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/size_to_pc.html#porespy.filters.size_to_pc">porespy.filters.size_to_pc()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/size_to_satn.html#porespy.filters.size_to_satn">porespy.filters.size_to_satn()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/size_to_seq.html#porespy.filters.size_to_seq">porespy.filters.size_to_seq()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/snow_partitioning.html#porespy.filters.snow_partitioning">porespy.filters.snow_partitioning()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/snow_partitioning_n.html#porespy.filters.snow_partitioning_n">porespy.filters.snow_partitioning_n()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/snow_partitioning_parallel.html#porespy.filters.snow_partitioning_parallel">porespy.filters.snow_partitioning_parallel()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/trim_disconnected_voxels.html#porespy.filters.trim_disconnected_voxels">porespy.filters.trim_disconnected_voxels()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/trim_extrema.html#porespy.filters.trim_extrema">porespy.filters.trim_extrema()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/trim_floating_solid.html#porespy.filters.trim_floating_solid">porespy.filters.trim_floating_solid()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/trim_nearby_peaks.html#porespy.filters.trim_nearby_peaks">porespy.filters.trim_nearby_peaks()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/trim_nonpercolating_paths.html#porespy.filters.trim_nonpercolating_paths">porespy.filters.trim_nonpercolating_paths()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/trim_saddle_points.html#porespy.filters.trim_saddle_points">porespy.filters.trim_saddle_points()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/trim_saddle_points_legacy.html#porespy.filters.trim_saddle_points_legacy">porespy.filters.trim_saddle_points_legacy()</a>
+</li>
+        <li><a href="autoapi/porespy/filters/trim_small_clusters.html#porespy.filters.trim_small_clusters">porespy.filters.trim_small_clusters()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/blobs.html#porespy.generators.blobs">porespy.generators.blobs()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/borders.html#porespy.generators.borders">porespy.generators.borders()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/bundle_of_tubes.html#porespy.generators.bundle_of_tubes">porespy.generators.bundle_of_tubes()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/cylinders.html#porespy.generators.cylinders">porespy.generators.cylinders()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/cylindrical_pillars_array.html#porespy.generators.cylindrical_pillars_array">porespy.generators.cylindrical_pillars_array()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/cylindrical_pillars_mesh.html#porespy.generators.cylindrical_pillars_mesh">porespy.generators.cylindrical_pillars_mesh()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/cylindrical_plug.html#porespy.generators.cylindrical_plug">porespy.generators.cylindrical_plug()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/elevation.html#porespy.generators.elevation">porespy.generators.elevation()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/faces.html#porespy.generators.faces">porespy.generators.faces()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/fractal_noise.html#porespy.generators.fractal_noise">porespy.generators.fractal_noise()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/insert_shape.html#porespy.generators.insert_shape">porespy.generators.insert_shape()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/lattice_spheres.html#porespy.generators.lattice_spheres">porespy.generators.lattice_spheres()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/line_segment.html#porespy.generators.line_segment">porespy.generators.line_segment()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/overlapping_spheres.html#porespy.generators.overlapping_spheres">porespy.generators.overlapping_spheres()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/polydisperse_spheres.html#porespy.generators.polydisperse_spheres">porespy.generators.polydisperse_spheres()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/pseudo_electrostatic_packing.html#porespy.generators.pseudo_electrostatic_packing">porespy.generators.pseudo_electrostatic_packing()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/pseudo_gravity_packing.html#porespy.generators.pseudo_gravity_packing">porespy.generators.pseudo_gravity_packing()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/ramp.html#porespy.generators.ramp">porespy.generators.ramp()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/random_cantor_dust.html#porespy.generators.random_cantor_dust">porespy.generators.random_cantor_dust()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/random_spheres.html#porespy.generators.random_spheres">porespy.generators.random_spheres()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/rectangular_pillars_array.html#porespy.generators.rectangular_pillars_array">porespy.generators.rectangular_pillars_array()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/sierpinski_foam.html#porespy.generators.sierpinski_foam">porespy.generators.sierpinski_foam()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/spheres_from_coords.html#porespy.generators.spheres_from_coords">porespy.generators.spheres_from_coords()</a>
+</li>
+        <li><a href="autoapi/porespy/generators/voronoi_edges.html#porespy.generators.voronoi_edges">porespy.generators.voronoi_edges()</a>
+</li>
+        <li><a href="autoapi/porespy/imshow.html#porespy.imshow">porespy.imshow()</a>
+</li>
+        <li><a href="autoapi/porespy/io/dict_to_vtk.html#porespy.io.dict_to_vtk">porespy.io.dict_to_vtk()</a>
+</li>
+        <li><a href="autoapi/porespy/io/folder_to_stack.html#porespy.io.folder_to_stack">porespy.io.folder_to_stack()</a>
+</li>
+        <li><a href="autoapi/porespy/io/open_paraview.html#porespy.io.open_paraview">porespy.io.open_paraview()</a>
+</li>
+        <li><a href="autoapi/porespy/io/to_palabos.html#porespy.io.to_palabos">porespy.io.to_palabos()</a>
+</li>
+        <li><a href="autoapi/porespy/io/to_paraview.html#porespy.io.to_paraview">porespy.io.to_paraview()</a>
+</li>
+        <li><a href="autoapi/porespy/io/to_stl.html#porespy.io.to_stl">porespy.io.to_stl()</a>
+</li>
+        <li><a href="autoapi/porespy/io/to_vtk.html#porespy.io.to_vtk">porespy.io.to_vtk()</a>
+</li>
+        <li><a href="autoapi/porespy/io/zip_to_stack.html#porespy.io.zip_to_stack">porespy.io.zip_to_stack()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/bond_number.html#porespy.metrics.bond_number">porespy.metrics.bond_number()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/boxcount.html#porespy.metrics.boxcount">porespy.metrics.boxcount()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/chord_counts.html#porespy.metrics.chord_counts">porespy.metrics.chord_counts()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/chord_length_distribution.html#porespy.metrics.chord_length_distribution">porespy.metrics.chord_length_distribution()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/find_h.html#porespy.metrics.find_h">porespy.metrics.find_h()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/find_porosity_threshold.html#porespy.metrics.find_porosity_threshold">porespy.metrics.find_porosity_threshold()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/is_percolating.html#porespy.metrics.is_percolating">porespy.metrics.is_percolating()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/lineal_path_distribution.html#porespy.metrics.lineal_path_distribution">porespy.metrics.lineal_path_distribution()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/mesh_surface_area.html#porespy.metrics.mesh_surface_area">porespy.metrics.mesh_surface_area()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/mesh_volume.html#porespy.metrics.mesh_volume">porespy.metrics.mesh_volume()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/pc_map_to_pc_curve.html#porespy.metrics.pc_map_to_pc_curve">porespy.metrics.pc_map_to_pc_curve()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/percolating_porosity.html#porespy.metrics.percolating_porosity">porespy.metrics.percolating_porosity()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/phase_fraction.html#porespy.metrics.phase_fraction">porespy.metrics.phase_fraction()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/pore_size_distribution.html#porespy.metrics.pore_size_distribution">porespy.metrics.pore_size_distribution()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/porosity.html#porespy.metrics.porosity">porespy.metrics.porosity()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/porosity_by_type.html#porespy.metrics.porosity_by_type">porespy.metrics.porosity_by_type()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/porosity_profile.html#porespy.metrics.porosity_profile">porespy.metrics.porosity_profile()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/prop_to_image.html#porespy.metrics.prop_to_image">porespy.metrics.prop_to_image()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/props_to_DataFrame.html#porespy.metrics.props_to_DataFrame">porespy.metrics.props_to_DataFrame()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/radial_density_distribution.html#porespy.metrics.radial_density_distribution">porespy.metrics.radial_density_distribution()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/region_interface_areas.html#porespy.metrics.region_interface_areas">porespy.metrics.region_interface_areas()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/region_surface_areas.html#porespy.metrics.region_surface_areas">porespy.metrics.region_surface_areas()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/region_volumes.html#porespy.metrics.region_volumes">porespy.metrics.region_volumes()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/regionprops_3D.html#porespy.metrics.regionprops_3D">porespy.metrics.regionprops_3D()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/rev_porosity.html#porespy.metrics.rev_porosity">porespy.metrics.rev_porosity()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/rev_tortuosity.html#porespy.metrics.rev_tortuosity">porespy.metrics.rev_tortuosity()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/satn_profile.html#porespy.metrics.satn_profile">porespy.metrics.satn_profile()</a>
+</li>
+        <li><a href="autoapi/porespy/metrics/two_point_correlation.html#porespy.metrics.two_point_correlation">porespy.metrics.two_point_correlation()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/add_boundary_regions.html#porespy.networks.add_boundary_regions">porespy.networks.add_boundary_regions()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/create_model.html#porespy.networks.create_model">porespy.networks.create_model()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/diffusive_size_factor_AI.html#porespy.networks.diffusive_size_factor_AI">porespy.networks.diffusive_size_factor_AI()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/diffusive_size_factor_DNS.html#porespy.networks.diffusive_size_factor_DNS">porespy.networks.diffusive_size_factor_DNS()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/find_conns.html#porespy.networks.find_conns">porespy.networks.find_conns()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/find_junctions.html#porespy.networks.find_junctions">porespy.networks.find_junctions()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/find_throat_junctions.html#porespy.networks.find_throat_junctions">porespy.networks.find_throat_junctions()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/generate_voxel_image.html#porespy.networks.generate_voxel_image">porespy.networks.generate_voxel_image()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/get_throat_area.html#porespy.networks.get_throat_area">porespy.networks.get_throat_area()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/juncs_to_pore_centers.html#porespy.networks.juncs_to_pore_centers">porespy.networks.juncs_to_pore_centers()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/junctions_to_network.html#porespy.networks.junctions_to_network">porespy.networks.junctions_to_network()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/label_boundaries.html#porespy.networks.label_boundaries">porespy.networks.label_boundaries()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/label_phases.html#porespy.networks.label_phases">porespy.networks.label_phases()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/magnet.html#porespy.networks.magnet">porespy.networks.magnet()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/map_to_regions.html#porespy.networks.map_to_regions">porespy.networks.map_to_regions()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/merge_nearby_juncs.html#porespy.networks.merge_nearby_juncs">porespy.networks.merge_nearby_juncs()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/partition_skeleton.html#porespy.networks.partition_skeleton">porespy.networks.partition_skeleton()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/regions_to_network.html#porespy.networks.regions_to_network">porespy.networks.regions_to_network()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/regions_to_network_parallel.html#porespy.networks.regions_to_network_parallel">porespy.networks.regions_to_network_parallel()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/skeleton.html#porespy.networks.skeleton">porespy.networks.skeleton()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/skeleton_parallel.html#porespy.networks.skeleton_parallel">porespy.networks.skeleton_parallel()</a>
+</li>
+        <li><a href="autoapi/porespy/networks/snow2.html#porespy.networks.snow2">porespy.networks.snow2()</a>
+</li>
+        <li><a href="autoapi/porespy/simulations/drainage.html#porespy.simulations.drainage">porespy.simulations.drainage()</a>
+</li>
+        <li><a href="autoapi/porespy/simulations/drainage_dsi.html#porespy.simulations.drainage_dsi">porespy.simulations.drainage_dsi()</a>
+</li>
+        <li><a href="autoapi/porespy/simulations/drainage_dt.html#porespy.simulations.drainage_dt">porespy.simulations.drainage_dt()</a>
+</li>
+        <li><a href="autoapi/porespy/simulations/drainage_dt_fft.html#porespy.simulations.drainage_dt_fft">porespy.simulations.drainage_dt_fft()</a>
+</li>
+        <li><a href="autoapi/porespy/simulations/drainage_fft.html#porespy.simulations.drainage_fft">porespy.simulations.drainage_fft()</a>
+</li>
+        <li><a href="autoapi/porespy/simulations/hg_porosimetry.html#porespy.simulations.hg_porosimetry">porespy.simulations.hg_porosimetry()</a>
+</li>
+        <li><a href="autoapi/porespy/simulations/ibip.html#porespy.simulations.ibip">porespy.simulations.ibip()</a>
+</li>
+        <li><a href="autoapi/porespy/simulations/imbibition.html#porespy.simulations.imbibition">porespy.simulations.imbibition()</a>
+</li>
+        <li><a href="autoapi/porespy/simulations/imbibition_dsi.html#porespy.simulations.imbibition_dsi">porespy.simulations.imbibition_dsi()</a>
+</li>
+        <li><a href="autoapi/porespy/simulations/imbibition_dt.html#porespy.simulations.imbibition_dt">porespy.simulations.imbibition_dt()</a>
+</li>
+        <li><a href="autoapi/porespy/simulations/imbibition_dt_fft.html#porespy.simulations.imbibition_dt_fft">porespy.simulations.imbibition_dt_fft()</a>
+</li>
+        <li><a href="autoapi/porespy/simulations/imbibition_fft.html#porespy.simulations.imbibition_fft">porespy.simulations.imbibition_fft()</a>
+</li>
+        <li><a href="autoapi/porespy/simulations/injection.html#porespy.simulations.injection">porespy.simulations.injection()</a>
+</li>
+        <li><a href="autoapi/porespy/simulations/qbip.html#porespy.simulations.qbip">porespy.simulations.qbip()</a>
+</li>
+        <li><a href="autoapi/porespy/simulations/tortuosity_fd.html#porespy.simulations.tortuosity_fd">porespy.simulations.tortuosity_fd()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/align_image_with_openpnm.html#porespy.tools.align_image_with_openpnm">porespy.tools.align_image_with_openpnm()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/all_to_uniform.html#porespy.tools.all_to_uniform">porespy.tools.all_to_uniform()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/area_of_triangle.html#porespy.tools.area_of_triangle">porespy.tools.area_of_triangle()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/ball.html#porespy.tools.ball">porespy.tools.ball()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/bbox_to_slices.html#porespy.tools.bbox_to_slices">porespy.tools.bbox_to_slices()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/block_size_to_divs.html#porespy.tools.block_size_to_divs">porespy.tools.block_size_to_divs()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/calculate_area_and_volume.html#porespy.tools.calculate_area_and_volume">porespy.tools.calculate_area_and_volume()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/center_of_mass.html#porespy.tools.center_of_mass">porespy.tools.center_of_mass()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/create_mc_template_list.html#porespy.tools.create_mc_template_list">porespy.tools.create_mc_template_list()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/cube.html#porespy.tools.cube">porespy.tools.cube()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/disk.html#porespy.tools.disk">porespy.tools.disk()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/extend_slice.html#porespy.tools.extend_slice">porespy.tools.extend_slice()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/extract_cylinder.html#porespy.tools.extract_cylinder">porespy.tools.extract_cylinder()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/extract_regions.html#porespy.tools.extract_regions">porespy.tools.extract_regions()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/extract_subsection.html#porespy.tools.extract_subsection">porespy.tools.extract_subsection()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/face_orientation.html#porespy.tools.face_orientation">porespy.tools.face_orientation()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/find_bbox.html#porespy.tools.find_bbox">porespy.tools.find_bbox()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/find_outer_region.html#porespy.tools.find_outer_region">porespy.tools.find_outer_region()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/get_block_sizes.html#porespy.tools.get_block_sizes">porespy.tools.get_block_sizes()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/get_edt.html#porespy.tools.get_edt">porespy.tools.get_edt()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/get_fixtures_path.html#porespy.tools.get_fixtures_path">porespy.tools.get_fixtures_path()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/get_planes.html#porespy.tools.get_planes">porespy.tools.get_planes()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/get_skel.html#porespy.tools.get_skel">porespy.tools.get_skel()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/get_slices_grid.html#porespy.tools.get_slices_grid">porespy.tools.get_slices_grid()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/get_slices_multigrid.html#porespy.tools.get_slices_multigrid">porespy.tools.get_slices_multigrid()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/get_slices_random.html#porespy.tools.get_slices_random">porespy.tools.get_slices_random()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/get_slices_slabs.html#porespy.tools.get_slices_slabs">porespy.tools.get_slices_slabs()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/get_strel.html#porespy.tools.get_strel">porespy.tools.get_strel()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/get_tqdm.html#porespy.tools.get_tqdm">porespy.tools.get_tqdm()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/in_hull.html#porespy.tools.in_hull">porespy.tools.in_hull()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/insert_cylinder.html#porespy.tools.insert_cylinder">porespy.tools.insert_cylinder()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/insert_sphere.html#porespy.tools.insert_sphere">porespy.tools.insert_sphere()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/isolate_object.html#porespy.tools.isolate_object">porespy.tools.isolate_object()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/jit_extend_slice.html#porespy.tools.jit_extend_slice">porespy.tools.jit_extend_slice()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/jit_marching_cubes_area_and_volume.html#porespy.tools.jit_marching_cubes_area_and_volume">porespy.tools.jit_marching_cubes_area_and_volume()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/jit_marching_squares_perimeter_and_area.html#porespy.tools.jit_marching_squares_perimeter_and_area">porespy.tools.jit_marching_squares_perimeter_and_area()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/make_contiguous.html#porespy.tools.make_contiguous">porespy.tools.make_contiguous()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/marching_cubes_area_and_volume.html#porespy.tools.marching_cubes_area_and_volume">porespy.tools.marching_cubes_area_and_volume()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/marching_map.html#porespy.tools.marching_map">porespy.tools.marching_map()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/mc_templates_generator.html#porespy.tools.mc_templates_generator">porespy.tools.mc_templates_generator()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/mesh_region.html#porespy.tools.mesh_region">porespy.tools.mesh_region()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/overlay.html#porespy.tools.overlay">porespy.tools.overlay()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/pad.html#porespy.tools.pad">porespy.tools.pad()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/parse_shape.html#porespy.tools.parse_shape">porespy.tools.parse_shape()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/parse_steps.html#porespy.tools.parse_steps">porespy.tools.parse_steps()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/points_to_spheres.html#porespy.tools.points_to_spheres">porespy.tools.points_to_spheres()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/ps_ball.html#porespy.tools.ps_ball">porespy.tools.ps_ball()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/ps_disk.html#porespy.tools.ps_disk">porespy.tools.ps_disk()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/ps_rect.html#porespy.tools.ps_rect">porespy.tools.ps_rect()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/ps_round.html#porespy.tools.ps_round">porespy.tools.ps_round()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/randomize_colors.html#porespy.tools.randomize_colors">porespy.tools.randomize_colors()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/recombine.html#porespy.tools.recombine">porespy.tools.recombine()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/results_to_df.html#porespy.tools.results_to_df">porespy.tools.results_to_df()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/sanitize_filename.html#porespy.tools.sanitize_filename">porespy.tools.sanitize_filename()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/show_docstring.html#porespy.tools.show_docstring">porespy.tools.show_docstring()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/square.html#porespy.tools.square">porespy.tools.square()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/tic.html#porespy.tools.tic">porespy.tools.tic()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/toc.html#porespy.tools.toc">porespy.tools.toc()</a>
+</li>
+        <li><a href="autoapi/porespy/tools/unpad.html#porespy.tools.unpad">porespy.tools.unpad()</a>
+</li>
+        <li><a href="autoapi/porespy/visualization/bar.html#porespy.visualization.bar">porespy.visualization.bar()</a>
+</li>
+        <li><a href="autoapi/porespy/visualization/imshow.html#porespy.visualization.imshow">porespy.visualization.imshow()</a>
+</li>
+        <li><a href="autoapi/porespy/visualization/prep_for_imshow.html#porespy.visualization.prep_for_imshow">porespy.visualization.prep_for_imshow()</a>
+</li>
+        <li><a href="autoapi/porespy/visualization/satn_to_movie.html#porespy.visualization.satn_to_movie">porespy.visualization.satn_to_movie()</a>
+</li>
+        <li><a href="autoapi/porespy/visualization/satn_to_panels.html#porespy.visualization.satn_to_panels">porespy.visualization.satn_to_panels()</a>
+</li>
+        <li><a href="autoapi/porespy/visualization/sem.html#porespy.visualization.sem">porespy.visualization.sem()</a>
+</li>
+        <li><a href="autoapi/porespy/visualization/set_mpl_style.html#porespy.visualization.set_mpl_style">porespy.visualization.set_mpl_style()</a>
+</li>
+        <li><a href="autoapi/porespy/visualization/show_3D.html#porespy.visualization.show_3D">porespy.visualization.show_3D()</a>
+</li>
+        <li><a href="autoapi/porespy/visualization/show_mesh.html#porespy.visualization.show_mesh">porespy.visualization.show_mesh()</a>
+</li>
+        <li><a href="autoapi/porespy/visualization/show_panels.html#porespy.visualization.show_panels">porespy.visualization.show_panels()</a>
+</li>
+        <li><a href="autoapi/porespy/visualization/show_planes.html#porespy.visualization.show_planes">porespy.visualization.show_planes()</a>
+</li>
+        <li><a href="autoapi/porespy/visualization/xray.html#porespy.visualization.xray">porespy.visualization.xray()</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.io.dict_to_vtk.html#porespy.io.dict_to_vtk">dict_to_vtk() (in module porespy.io)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.networks.diffusive_size_factor_AI.html#porespy.networks.diffusive_size_factor_AI">diffusive_size_factor_AI() (in module porespy.networks)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.dilate.html#porespy.filters.dilate">dilate() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.distance_transform_lin.html#porespy.filters.distance_transform_lin">distance_transform_lin() (in module porespy.filters)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.simulations.drainage.html#porespy.simulations.drainage">drainage() (in module porespy.simulations)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.simulations.drainage_dsi.html#porespy.simulations.drainage_dsi">drainage_dsi() (in module porespy.simulations)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.simulations.drainage_dt.html#porespy.simulations.drainage_dt">drainage_dt() (in module porespy.simulations)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.simulations.drainage_dt_fft.html#porespy.simulations.drainage_dt_fft">drainage_dt_fft() (in module porespy.simulations)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.simulations.drainage_fft.html#porespy.simulations.drainage_fft">drainage_fft() (in module porespy.simulations)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="E">E</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.generators.elevation.html#porespy.generators.elevation">elevation() (in module porespy.generators)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.erode.html#porespy.filters.erode">erode() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.extend_slice.html#porespy.tools.extend_slice">extend_slice() (in module porespy.tools)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.tools.extract_cylinder.html#porespy.tools.extract_cylinder">extract_cylinder() (in module porespy.tools)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.extract_regions.html#porespy.tools.extract_regions">extract_regions() (in module porespy.tools)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.extract_subsection.html#porespy.tools.extract_subsection">extract_subsection() (in module porespy.tools)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="F">F</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.generators.faces.html#porespy.generators.faces">faces() (in module porespy.generators)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.fftmorphology.html#porespy.filters.fftmorphology">fftmorphology() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.fill_closed_pores.html#porespy.filters.fill_closed_pores">fill_closed_pores() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.fill_trapped_voxels.html#porespy.filters.fill_trapped_voxels">fill_trapped_voxels() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.find_closed_pores.html#porespy.filters.find_closed_pores">find_closed_pores() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.find_disconnected_voxels.html#porespy.filters.find_disconnected_voxels">find_disconnected_voxels() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.find_dt_artifacts.html#porespy.filters.find_dt_artifacts">find_dt_artifacts() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.metrics.find_h.html#porespy.metrics.find_h">find_h() (in module porespy.metrics)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.filters.find_invalid_pores.html#porespy.filters.find_invalid_pores">find_invalid_pores() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.find_outer_region.html#porespy.tools.find_outer_region">find_outer_region() (in module porespy.tools)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.find_peaks.html#porespy.filters.find_peaks">find_peaks() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.find_surface_pores.html#porespy.filters.find_surface_pores">find_surface_pores() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.find_trapped_regions.html#porespy.filters.find_trapped_regions">find_trapped_regions() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.flood.html#porespy.filters.flood">flood() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.flood_func.html#porespy.filters.flood_func">flood_func() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.generators.fractal_noise.html#porespy.generators.fractal_noise">fractal_noise() (in module porespy.generators)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="G">G</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.networks.generate_voxel_image.html#porespy.networks.generate_voxel_image">generate_voxel_image() (in module porespy.networks)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.get_border.html#porespy.tools.get_border">get_border() (in module porespy.tools)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.tools.get_planes.html#porespy.tools.get_planes">get_planes() (in module porespy.tools)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.get_tqdm.html#porespy.tools.get_tqdm">get_tqdm() (in module porespy.tools)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="H">H</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.filters.hold_peaks.html#porespy.filters.hold_peaks">hold_peaks() (in module porespy.filters)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="I">I</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.simulations.ibip.html#porespy.simulations.ibip">ibip() (in module porespy.simulations)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.simulations.imbibition.html#porespy.simulations.imbibition">imbibition() (in module porespy.simulations)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.simulations.imbibition_dsi.html#porespy.simulations.imbibition_dsi">imbibition_dsi() (in module porespy.simulations)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.simulations.imbibition_dt.html#porespy.simulations.imbibition_dt">imbibition_dt() (in module porespy.simulations)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.simulations.imbibition_dt_fft.html#porespy.simulations.imbibition_dt_fft">imbibition_dt_fft() (in module porespy.simulations)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.simulations.imbibition_fft.html#porespy.simulations.imbibition_fft">imbibition_fft() (in module porespy.simulations)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.visualization.imshow.html#porespy.visualization.imshow">imshow() (in module porespy.visualization)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.in_hull.html#porespy.tools.in_hull">in_hull() (in module porespy.tools)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.simulations.injection.html#porespy.simulations.injection">injection() (in module porespy.simulations)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.insert_cylinder.html#porespy.tools.insert_cylinder">insert_cylinder() (in module porespy.tools)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.generators.insert_shape.html#porespy.generators.insert_shape">insert_shape() (in module porespy.generators)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.insert_sphere.html#porespy.tools.insert_sphere">insert_sphere() (in module porespy.tools)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.isolate_object.html#porespy.tools.isolate_object">isolate_object() (in module porespy.tools)</a>
+      <li><a href="autoapi/porespy/tools/Settings.html#porespy.tools.Settings.divs">divs (porespy.tools.Settings attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -417,19 +880,7 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.networks.label_boundaries.html#porespy.networks.label_boundaries">label_boundaries() (in module porespy.networks)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.networks.label_phases.html#porespy.networks.label_phases">label_phases() (in module porespy.networks)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.generators.lattice_spheres.html#porespy.generators.lattice_spheres">lattice_spheres() (in module porespy.generators)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.generators.line_segment.html#porespy.generators.line_segment">line_segment() (in module porespy.generators)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.metrics.lineal_path_distribution.html#porespy.metrics.lineal_path_distribution">lineal_path_distribution() (in module porespy.metrics)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.local_thickness.html#porespy.filters.local_thickness">local_thickness() (in module porespy.filters)</a>
+      <li><a href="autoapi/porespy/tools/Settings.html#porespy.tools.Settings.loglevel">loglevel (porespy.tools.Settings property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -437,39 +888,29 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.tools.make_contiguous.html#porespy.tools.make_contiguous">make_contiguous() (in module porespy.tools)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.networks.map_to_regions.html#porespy.networks.map_to_regions">map_to_regions() (in module porespy.networks)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.marching_map.html#porespy.tools.marching_map">marching_map() (in module porespy.tools)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.mesh_region.html#porespy.tools.mesh_region">mesh_region() (in module porespy.tools)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.metrics.mesh_surface_area.html#porespy.metrics.mesh_surface_area">mesh_surface_area() (in module porespy.metrics)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.metrics.mesh_volume.html#porespy.metrics.mesh_volume">mesh_volume() (in module porespy.metrics)</a>
-</li>
       <li>
     module
 
       <ul>
-        <li><a href="modules/index.html#module-porespy">porespy</a>
+        <li><a href="autoapi/porespy/index.html#module-porespy">porespy</a>
 </li>
-        <li><a href="modules/generated/porespy.filters.html#module-porespy.filters">porespy.filters</a>
+        <li><a href="autoapi/porespy/beta/index.html#module-porespy.beta">porespy.beta</a>
 </li>
-        <li><a href="modules/generated/porespy.generators.html#module-porespy.generators">porespy.generators</a>
+        <li><a href="autoapi/porespy/filters/index.html#module-porespy.filters">porespy.filters</a>
 </li>
-        <li><a href="modules/generated/porespy.io.html#module-porespy.io">porespy.io</a>
+        <li><a href="autoapi/porespy/generators/index.html#module-porespy.generators">porespy.generators</a>
 </li>
-        <li><a href="modules/generated/porespy.metrics.html#module-porespy.metrics">porespy.metrics</a>
+        <li><a href="autoapi/porespy/io/index.html#module-porespy.io">porespy.io</a>
 </li>
-        <li><a href="modules/generated/porespy.networks.html#module-porespy.networks">porespy.networks</a>
+        <li><a href="autoapi/porespy/metrics/index.html#module-porespy.metrics">porespy.metrics</a>
 </li>
-        <li><a href="modules/generated/porespy.simulations.html#module-porespy.simulations">porespy.simulations</a>
+        <li><a href="autoapi/porespy/networks/index.html#module-porespy.networks">porespy.networks</a>
 </li>
-        <li><a href="modules/generated/porespy.tools.html#module-porespy.tools">porespy.tools</a>
+        <li><a href="autoapi/porespy/simulations/index.html#module-porespy.simulations">porespy.simulations</a>
 </li>
-        <li><a href="modules/generated/porespy.visualization.html#module-porespy.visualization">porespy.visualization</a>
+        <li><a href="autoapi/porespy/tools/index.html#module-porespy.tools">porespy.tools</a>
+</li>
+        <li><a href="autoapi/porespy/visualization/index.html#module-porespy.visualization">porespy.visualization</a>
 </li>
       </ul></li>
   </ul></td>
@@ -478,11 +919,11 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.filters.nl_means_layered.html#porespy.filters.nl_means_layered">nl_means_layered() (in module porespy.filters)</a>
+      <li><a href="autoapi/porespy/tools/Settings.html#porespy.tools.Settings.ncores">ncores (porespy.tools.Settings attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.filters.nphase_border.html#porespy.filters.nphase_border">nphase_border() (in module porespy.filters)</a>
+      <li><a href="autoapi/porespy/tools/Settings.html#porespy.tools.Settings.notebook">notebook (porespy.tools.Settings attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -490,15 +931,7 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.io.open_paraview.html#porespy.io.open_paraview">open_paraview() (in module porespy.io)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.io.openpnm_to_im.html#porespy.io.openpnm_to_im">openpnm_to_im() (in module porespy.io)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.generators.overlapping_spheres.html#porespy.generators.overlapping_spheres">overlapping_spheres() (in module porespy.generators)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.overlay.html#porespy.tools.overlay">overlay() (in module porespy.tools)</a>
+      <li><a href="autoapi/porespy/tools/Settings.html#porespy.tools.Settings.overlap">overlap (porespy.tools.Settings attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -506,305 +939,1779 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.metrics.pc_curve.html#porespy.metrics.pc_curve">pc_curve() (in module porespy.metrics)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.metrics.pc_map_to_pc_curve.html#porespy.metrics.pc_map_to_pc_curve">pc_map_to_pc_curve() (in module porespy.metrics)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.pc_to_satn.html#porespy.filters.pc_to_satn">pc_to_satn() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.pc_to_seq.html#porespy.filters.pc_to_seq">pc_to_seq() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.metrics.phase_fraction.html#porespy.metrics.phase_fraction">phase_fraction() (in module porespy.metrics)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.generators.polydisperse_spheres.html#porespy.generators.polydisperse_spheres">polydisperse_spheres() (in module porespy.generators)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.metrics.pore_size_distribution.html#porespy.metrics.pore_size_distribution">pore_size_distribution() (in module porespy.metrics)</a>
-</li>
       <li>
     porespy
 
       <ul>
-        <li><a href="modules/index.html#module-porespy">module</a>
+        <li><a href="autoapi/porespy/index.html#module-porespy">module</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.beta
+
+      <ul>
+        <li><a href="autoapi/porespy/beta/index.html#module-porespy.beta">module</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.beta.df_to_tortuosity()
+
+      <ul>
+        <li><a href="autoapi/porespy/beta/df_to_tortuosity.html#porespy.beta.df_to_tortuosity">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.beta.flux()
+
+      <ul>
+        <li><a href="autoapi/porespy/beta/flux.html#porespy.beta.flux">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.beta.get_block_sizes()
+
+      <ul>
+        <li><a href="autoapi/porespy/beta/get_block_sizes.html#porespy.beta.get_block_sizes">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.beta.local_diff()
+
+      <ul>
+        <li><a href="autoapi/porespy/beta/local_diff.html#porespy.beta.local_diff">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.beta.polydisperse_cylinders()
+
+      <ul>
+        <li><a href="autoapi/porespy/beta/polydisperse_cylinders.html#porespy.beta.polydisperse_cylinders">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.beta.rev_tortuosity()
+
+      <ul>
+        <li><a href="autoapi/porespy/beta/rev_tortuosity.html#porespy.beta.rev_tortuosity">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.beta.tau_from_cmap()
+
+      <ul>
+        <li><a href="autoapi/porespy/beta/tau_from_cmap.html#porespy.beta.tau_from_cmap">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.beta.tortuosity_bt()
+
+      <ul>
+        <li><a href="autoapi/porespy/beta/tortuosity_bt.html#porespy.beta.tortuosity_bt">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.beta.walk()
+
+      <ul>
+        <li><a href="autoapi/porespy/beta/walk.html#porespy.beta.walk">built-in function</a>
 </li>
       </ul></li>
       <li>
     porespy.filters
 
       <ul>
-        <li><a href="modules/generated/porespy.filters.html#module-porespy.filters">module</a>
+        <li><a href="autoapi/porespy/filters/index.html#module-porespy.filters">module</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.apply_chords()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/apply_chords.html#porespy.filters.apply_chords">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.apply_chords_3D()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/apply_chords_3D.html#porespy.filters.apply_chords_3D">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.apply_padded()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/apply_padded.html#porespy.filters.apply_padded">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.capillary_transform()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/capillary_transform.html#porespy.filters.capillary_transform">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.chunked_func()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/chunked_func.html#porespy.filters.chunked_func">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.dilate()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/dilate.html#porespy.filters.dilate">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.distance_transform_lin()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/distance_transform_lin.html#porespy.filters.distance_transform_lin">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.erode()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/erode.html#porespy.filters.erode">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.fftmorphology()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/fftmorphology.html#porespy.filters.fftmorphology">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.fill_closed_pores()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/fill_closed_pores.html#porespy.filters.fill_closed_pores">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.fill_invalid_pores()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/fill_invalid_pores.html#porespy.filters.fill_invalid_pores">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.fill_surface_pores()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/fill_surface_pores.html#porespy.filters.fill_surface_pores">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.find_closed_pores()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/find_closed_pores.html#porespy.filters.find_closed_pores">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.find_disconnected_voxels()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/find_disconnected_voxels.html#porespy.filters.find_disconnected_voxels">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.find_dt_artifacts()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/find_dt_artifacts.html#porespy.filters.find_dt_artifacts">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.find_floating_solid()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/find_floating_solid.html#porespy.filters.find_floating_solid">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.find_invalid_pores()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/find_invalid_pores.html#porespy.filters.find_invalid_pores">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.find_peaks()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/find_peaks.html#porespy.filters.find_peaks">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.find_small_clusters()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/find_small_clusters.html#porespy.filters.find_small_clusters">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.find_surface_pores()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/find_surface_pores.html#porespy.filters.find_surface_pores">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.find_trapped_clusters()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/find_trapped_clusters.html#porespy.filters.find_trapped_clusters">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.flood()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/flood.html#porespy.filters.flood">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.flood_func()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/flood_func.html#porespy.filters.flood_func">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.hold_peaks()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/hold_peaks.html#porespy.filters.hold_peaks">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.local_thickness()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/local_thickness.html#porespy.filters.local_thickness">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.local_thickness_bf()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/local_thickness_bf.html#porespy.filters.local_thickness_bf">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.local_thickness_conv()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/local_thickness_conv.html#porespy.filters.local_thickness_conv">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.local_thickness_dt()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/local_thickness_dt.html#porespy.filters.local_thickness_dt">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.local_thickness_imj()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/local_thickness_imj.html#porespy.filters.local_thickness_imj">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.nl_means_layered()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/nl_means_layered.html#porespy.filters.nl_means_layered">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.nphase_border()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/nphase_border.html#porespy.filters.nphase_border">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.pc_to_satn()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/pc_to_satn.html#porespy.filters.pc_to_satn">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.pc_to_seq()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/pc_to_seq.html#porespy.filters.pc_to_seq">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.porosimetry()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/porosimetry.html#porespy.filters.porosimetry">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.prune_branches()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/prune_branches.html#porespy.filters.prune_branches">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.reduce_peaks()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/reduce_peaks.html#porespy.filters.reduce_peaks">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.region_size()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/region_size.html#porespy.filters.region_size">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.satn_to_seq()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/satn_to_seq.html#porespy.filters.satn_to_seq">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.seq_to_satn()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/seq_to_satn.html#porespy.filters.seq_to_satn">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.size_to_pc()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/size_to_pc.html#porespy.filters.size_to_pc">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.size_to_satn()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/size_to_satn.html#porespy.filters.size_to_satn">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.size_to_seq()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/size_to_seq.html#porespy.filters.size_to_seq">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.snow_partitioning()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/snow_partitioning.html#porespy.filters.snow_partitioning">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.snow_partitioning_n()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/snow_partitioning_n.html#porespy.filters.snow_partitioning_n">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.snow_partitioning_parallel()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/snow_partitioning_parallel.html#porespy.filters.snow_partitioning_parallel">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.trim_disconnected_voxels()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/trim_disconnected_voxels.html#porespy.filters.trim_disconnected_voxels">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.trim_extrema()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/trim_extrema.html#porespy.filters.trim_extrema">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.trim_floating_solid()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/trim_floating_solid.html#porespy.filters.trim_floating_solid">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.trim_nearby_peaks()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/trim_nearby_peaks.html#porespy.filters.trim_nearby_peaks">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.trim_nonpercolating_paths()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/trim_nonpercolating_paths.html#porespy.filters.trim_nonpercolating_paths">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.trim_saddle_points()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/trim_saddle_points.html#porespy.filters.trim_saddle_points">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.trim_saddle_points_legacy()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/trim_saddle_points_legacy.html#porespy.filters.trim_saddle_points_legacy">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.filters.trim_small_clusters()
+
+      <ul>
+        <li><a href="autoapi/porespy/filters/trim_small_clusters.html#porespy.filters.trim_small_clusters">built-in function</a>
 </li>
       </ul></li>
       <li>
     porespy.generators
 
       <ul>
-        <li><a href="modules/generated/porespy.generators.html#module-porespy.generators">module</a>
+        <li><a href="autoapi/porespy/generators/index.html#module-porespy.generators">module</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.blobs()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/blobs.html#porespy.generators.blobs">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.borders()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/borders.html#porespy.generators.borders">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.bundle_of_tubes()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/bundle_of_tubes.html#porespy.generators.bundle_of_tubes">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.cylinders()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/cylinders.html#porespy.generators.cylinders">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.cylindrical_pillars_array()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/cylindrical_pillars_array.html#porespy.generators.cylindrical_pillars_array">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.cylindrical_pillars_mesh()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/cylindrical_pillars_mesh.html#porespy.generators.cylindrical_pillars_mesh">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.cylindrical_plug()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/cylindrical_plug.html#porespy.generators.cylindrical_plug">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.elevation()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/elevation.html#porespy.generators.elevation">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.faces()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/faces.html#porespy.generators.faces">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.fractal_noise()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/fractal_noise.html#porespy.generators.fractal_noise">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.insert_shape()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/insert_shape.html#porespy.generators.insert_shape">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.lattice_spheres()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/lattice_spheres.html#porespy.generators.lattice_spheres">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.line_segment()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/line_segment.html#porespy.generators.line_segment">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.overlapping_spheres()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/overlapping_spheres.html#porespy.generators.overlapping_spheres">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.polydisperse_spheres()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/polydisperse_spheres.html#porespy.generators.polydisperse_spheres">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.pseudo_electrostatic_packing()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/pseudo_electrostatic_packing.html#porespy.generators.pseudo_electrostatic_packing">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.pseudo_gravity_packing()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/pseudo_gravity_packing.html#porespy.generators.pseudo_gravity_packing">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.ramp()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/ramp.html#porespy.generators.ramp">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.random_cantor_dust()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/random_cantor_dust.html#porespy.generators.random_cantor_dust">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.random_spheres()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/random_spheres.html#porespy.generators.random_spheres">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.rectangular_pillars_array()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/rectangular_pillars_array.html#porespy.generators.rectangular_pillars_array">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.sierpinski_foam()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/sierpinski_foam.html#porespy.generators.sierpinski_foam">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.spheres_from_coords()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/spheres_from_coords.html#porespy.generators.spheres_from_coords">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.generators.voronoi_edges()
+
+      <ul>
+        <li><a href="autoapi/porespy/generators/voronoi_edges.html#porespy.generators.voronoi_edges">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.imshow()
+
+      <ul>
+        <li><a href="autoapi/porespy/imshow.html#porespy.imshow">built-in function</a>
 </li>
       </ul></li>
       <li>
     porespy.io
 
       <ul>
-        <li><a href="modules/generated/porespy.io.html#module-porespy.io">module</a>
+        <li><a href="autoapi/porespy/io/index.html#module-porespy.io">module</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.io.dict_to_vtk()
+
+      <ul>
+        <li><a href="autoapi/porespy/io/dict_to_vtk.html#porespy.io.dict_to_vtk">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.io.folder_to_stack()
+
+      <ul>
+        <li><a href="autoapi/porespy/io/folder_to_stack.html#porespy.io.folder_to_stack">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.io.open_paraview()
+
+      <ul>
+        <li><a href="autoapi/porespy/io/open_paraview.html#porespy.io.open_paraview">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.io.to_palabos()
+
+      <ul>
+        <li><a href="autoapi/porespy/io/to_palabos.html#porespy.io.to_palabos">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.io.to_paraview()
+
+      <ul>
+        <li><a href="autoapi/porespy/io/to_paraview.html#porespy.io.to_paraview">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.io.to_stl()
+
+      <ul>
+        <li><a href="autoapi/porespy/io/to_stl.html#porespy.io.to_stl">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.io.to_vtk()
+
+      <ul>
+        <li><a href="autoapi/porespy/io/to_vtk.html#porespy.io.to_vtk">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.io.zip_to_stack()
+
+      <ul>
+        <li><a href="autoapi/porespy/io/zip_to_stack.html#porespy.io.zip_to_stack">built-in function</a>
 </li>
       </ul></li>
       <li>
     porespy.metrics
 
       <ul>
-        <li><a href="modules/generated/porespy.metrics.html#module-porespy.metrics">module</a>
+        <li><a href="autoapi/porespy/metrics/index.html#module-porespy.metrics">module</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.bond_number()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/bond_number.html#porespy.metrics.bond_number">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.boxcount()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/boxcount.html#porespy.metrics.boxcount">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.chord_counts()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/chord_counts.html#porespy.metrics.chord_counts">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.chord_length_distribution()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/chord_length_distribution.html#porespy.metrics.chord_length_distribution">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.find_h()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/find_h.html#porespy.metrics.find_h">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.find_porosity_threshold()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/find_porosity_threshold.html#porespy.metrics.find_porosity_threshold">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.is_percolating()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/is_percolating.html#porespy.metrics.is_percolating">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.lineal_path_distribution()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/lineal_path_distribution.html#porespy.metrics.lineal_path_distribution">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.mesh_surface_area()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/mesh_surface_area.html#porespy.metrics.mesh_surface_area">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.mesh_volume()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/mesh_volume.html#porespy.metrics.mesh_volume">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.pc_map_to_pc_curve()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/pc_map_to_pc_curve.html#porespy.metrics.pc_map_to_pc_curve">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.percolating_porosity()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/percolating_porosity.html#porespy.metrics.percolating_porosity">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.phase_fraction()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/phase_fraction.html#porespy.metrics.phase_fraction">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.pore_size_distribution()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/pore_size_distribution.html#porespy.metrics.pore_size_distribution">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.porosity()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/porosity.html#porespy.metrics.porosity">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.porosity_by_type()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/porosity_by_type.html#porespy.metrics.porosity_by_type">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.porosity_profile()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/porosity_profile.html#porespy.metrics.porosity_profile">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.prop_to_image()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/prop_to_image.html#porespy.metrics.prop_to_image">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.props_to_DataFrame()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/props_to_DataFrame.html#porespy.metrics.props_to_DataFrame">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.radial_density_distribution()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/radial_density_distribution.html#porespy.metrics.radial_density_distribution">built-in function</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    porespy.metrics.region_interface_areas()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/region_interface_areas.html#porespy.metrics.region_interface_areas">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.region_surface_areas()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/region_surface_areas.html#porespy.metrics.region_surface_areas">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.region_volumes()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/region_volumes.html#porespy.metrics.region_volumes">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.regionprops_3D()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/regionprops_3D.html#porespy.metrics.regionprops_3D">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.rev_porosity()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/rev_porosity.html#porespy.metrics.rev_porosity">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.rev_tortuosity()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/rev_tortuosity.html#porespy.metrics.rev_tortuosity">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.satn_profile()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/satn_profile.html#porespy.metrics.satn_profile">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.metrics.two_point_correlation()
+
+      <ul>
+        <li><a href="autoapi/porespy/metrics/two_point_correlation.html#porespy.metrics.two_point_correlation">built-in function</a>
 </li>
       </ul></li>
       <li>
     porespy.networks
 
       <ul>
-        <li><a href="modules/generated/porespy.networks.html#module-porespy.networks">module</a>
+        <li><a href="autoapi/porespy/networks/index.html#module-porespy.networks">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    porespy.networks.add_boundary_regions()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/add_boundary_regions.html#porespy.networks.add_boundary_regions">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.create_model()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/create_model.html#porespy.networks.create_model">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.diffusive_size_factor_AI()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/diffusive_size_factor_AI.html#porespy.networks.diffusive_size_factor_AI">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.diffusive_size_factor_DNS()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/diffusive_size_factor_DNS.html#porespy.networks.diffusive_size_factor_DNS">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.find_conns()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/find_conns.html#porespy.networks.find_conns">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.find_junctions()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/find_junctions.html#porespy.networks.find_junctions">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.find_throat_junctions()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/find_throat_junctions.html#porespy.networks.find_throat_junctions">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.generate_voxel_image()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/generate_voxel_image.html#porespy.networks.generate_voxel_image">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.get_throat_area()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/get_throat_area.html#porespy.networks.get_throat_area">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.juncs_to_pore_centers()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/juncs_to_pore_centers.html#porespy.networks.juncs_to_pore_centers">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.junctions_to_network()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/junctions_to_network.html#porespy.networks.junctions_to_network">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.label_boundaries()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/label_boundaries.html#porespy.networks.label_boundaries">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.label_phases()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/label_phases.html#porespy.networks.label_phases">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.magnet()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/magnet.html#porespy.networks.magnet">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.map_to_regions()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/map_to_regions.html#porespy.networks.map_to_regions">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.merge_nearby_juncs()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/merge_nearby_juncs.html#porespy.networks.merge_nearby_juncs">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.partition_skeleton()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/partition_skeleton.html#porespy.networks.partition_skeleton">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.regions_to_network()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/regions_to_network.html#porespy.networks.regions_to_network">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.regions_to_network_parallel()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/regions_to_network_parallel.html#porespy.networks.regions_to_network_parallel">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.skeleton()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/skeleton.html#porespy.networks.skeleton">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.skeleton_parallel()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/skeleton_parallel.html#porespy.networks.skeleton_parallel">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.networks.snow2()
+
+      <ul>
+        <li><a href="autoapi/porespy/networks/snow2.html#porespy.networks.snow2">built-in function</a>
+</li>
+      </ul></li>
       <li>
     porespy.simulations
 
       <ul>
-        <li><a href="modules/generated/porespy.simulations.html#module-porespy.simulations">module</a>
+        <li><a href="autoapi/porespy/simulations/index.html#module-porespy.simulations">module</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.simulations.drainage()
+
+      <ul>
+        <li><a href="autoapi/porespy/simulations/drainage.html#porespy.simulations.drainage">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.simulations.drainage_dsi()
+
+      <ul>
+        <li><a href="autoapi/porespy/simulations/drainage_dsi.html#porespy.simulations.drainage_dsi">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.simulations.drainage_dt()
+
+      <ul>
+        <li><a href="autoapi/porespy/simulations/drainage_dt.html#porespy.simulations.drainage_dt">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.simulations.drainage_dt_fft()
+
+      <ul>
+        <li><a href="autoapi/porespy/simulations/drainage_dt_fft.html#porespy.simulations.drainage_dt_fft">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.simulations.drainage_fft()
+
+      <ul>
+        <li><a href="autoapi/porespy/simulations/drainage_fft.html#porespy.simulations.drainage_fft">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.simulations.hg_porosimetry()
+
+      <ul>
+        <li><a href="autoapi/porespy/simulations/hg_porosimetry.html#porespy.simulations.hg_porosimetry">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.simulations.ibip()
+
+      <ul>
+        <li><a href="autoapi/porespy/simulations/ibip.html#porespy.simulations.ibip">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.simulations.imbibition()
+
+      <ul>
+        <li><a href="autoapi/porespy/simulations/imbibition.html#porespy.simulations.imbibition">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.simulations.imbibition_dsi()
+
+      <ul>
+        <li><a href="autoapi/porespy/simulations/imbibition_dsi.html#porespy.simulations.imbibition_dsi">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.simulations.imbibition_dt()
+
+      <ul>
+        <li><a href="autoapi/porespy/simulations/imbibition_dt.html#porespy.simulations.imbibition_dt">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.simulations.imbibition_dt_fft()
+
+      <ul>
+        <li><a href="autoapi/porespy/simulations/imbibition_dt_fft.html#porespy.simulations.imbibition_dt_fft">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.simulations.imbibition_fft()
+
+      <ul>
+        <li><a href="autoapi/porespy/simulations/imbibition_fft.html#porespy.simulations.imbibition_fft">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.simulations.injection()
+
+      <ul>
+        <li><a href="autoapi/porespy/simulations/injection.html#porespy.simulations.injection">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.simulations.qbip()
+
+      <ul>
+        <li><a href="autoapi/porespy/simulations/qbip.html#porespy.simulations.qbip">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.simulations.tortuosity_fd()
+
+      <ul>
+        <li><a href="autoapi/porespy/simulations/tortuosity_fd.html#porespy.simulations.tortuosity_fd">built-in function</a>
 </li>
       </ul></li>
       <li>
     porespy.tools
 
       <ul>
-        <li><a href="modules/generated/porespy.tools.html#module-porespy.tools">module</a>
+        <li><a href="autoapi/porespy/tools/index.html#module-porespy.tools">module</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.align_image_with_openpnm()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/align_image_with_openpnm.html#porespy.tools.align_image_with_openpnm">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.all_to_uniform()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/all_to_uniform.html#porespy.tools.all_to_uniform">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.area_of_triangle()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/area_of_triangle.html#porespy.tools.area_of_triangle">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.ball()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/ball.html#porespy.tools.ball">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.bbox_to_slices()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/bbox_to_slices.html#porespy.tools.bbox_to_slices">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.block_size_to_divs()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/block_size_to_divs.html#porespy.tools.block_size_to_divs">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.calculate_area_and_volume()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/calculate_area_and_volume.html#porespy.tools.calculate_area_and_volume">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.center_of_mass()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/center_of_mass.html#porespy.tools.center_of_mass">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.create_mc_template_list()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/create_mc_template_list.html#porespy.tools.create_mc_template_list">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.cube()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/cube.html#porespy.tools.cube">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.disk()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/disk.html#porespy.tools.disk">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.extend_slice()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/extend_slice.html#porespy.tools.extend_slice">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.extract_cylinder()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/extract_cylinder.html#porespy.tools.extract_cylinder">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.extract_regions()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/extract_regions.html#porespy.tools.extract_regions">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.extract_subsection()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/extract_subsection.html#porespy.tools.extract_subsection">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.face_orientation()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/face_orientation.html#porespy.tools.face_orientation">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.find_bbox()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/find_bbox.html#porespy.tools.find_bbox">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.find_outer_region()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/find_outer_region.html#porespy.tools.find_outer_region">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.get_block_sizes()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/get_block_sizes.html#porespy.tools.get_block_sizes">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.get_edt()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/get_edt.html#porespy.tools.get_edt">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.get_fixtures_path()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/get_fixtures_path.html#porespy.tools.get_fixtures_path">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.get_planes()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/get_planes.html#porespy.tools.get_planes">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.get_skel()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/get_skel.html#porespy.tools.get_skel">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.get_slices_grid()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/get_slices_grid.html#porespy.tools.get_slices_grid">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.get_slices_multigrid()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/get_slices_multigrid.html#porespy.tools.get_slices_multigrid">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.get_slices_random()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/get_slices_random.html#porespy.tools.get_slices_random">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.get_slices_slabs()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/get_slices_slabs.html#porespy.tools.get_slices_slabs">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.get_strel()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/get_strel.html#porespy.tools.get_strel">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.get_tqdm()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/get_tqdm.html#porespy.tools.get_tqdm">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.in_hull()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/in_hull.html#porespy.tools.in_hull">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.insert_cylinder()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/insert_cylinder.html#porespy.tools.insert_cylinder">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.insert_sphere()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/insert_sphere.html#porespy.tools.insert_sphere">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.isolate_object()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/isolate_object.html#porespy.tools.isolate_object">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.jit_extend_slice()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/jit_extend_slice.html#porespy.tools.jit_extend_slice">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.jit_marching_cubes_area_and_volume()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/jit_marching_cubes_area_and_volume.html#porespy.tools.jit_marching_cubes_area_and_volume">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.jit_marching_squares_perimeter_and_area()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/jit_marching_squares_perimeter_and_area.html#porespy.tools.jit_marching_squares_perimeter_and_area">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.make_contiguous()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/make_contiguous.html#porespy.tools.make_contiguous">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.marching_cubes_area_and_volume()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/marching_cubes_area_and_volume.html#porespy.tools.marching_cubes_area_and_volume">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.marching_map()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/marching_map.html#porespy.tools.marching_map">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.mc_templates_generator()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/mc_templates_generator.html#porespy.tools.mc_templates_generator">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.mesh_region()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/mesh_region.html#porespy.tools.mesh_region">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.overlay()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/overlay.html#porespy.tools.overlay">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.pad()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/pad.html#porespy.tools.pad">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.parse_shape()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/parse_shape.html#porespy.tools.parse_shape">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.parse_steps()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/parse_steps.html#porespy.tools.parse_steps">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.points_to_spheres()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/points_to_spheres.html#porespy.tools.points_to_spheres">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.ps_ball()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/ps_ball.html#porespy.tools.ps_ball">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.ps_disk()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/ps_disk.html#porespy.tools.ps_disk">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.ps_rect()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/ps_rect.html#porespy.tools.ps_rect">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.ps_round()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/ps_round.html#porespy.tools.ps_round">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.randomize_colors()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/randomize_colors.html#porespy.tools.randomize_colors">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.recombine()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/recombine.html#porespy.tools.recombine">built-in function</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/porespy/tools/Results.html#porespy.tools.Results">porespy.tools.Results (built-in class)</a>
+</li>
+      <li>
+    porespy.tools.results_to_df()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/results_to_df.html#porespy.tools.results_to_df">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.sanitize_filename()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/sanitize_filename.html#porespy.tools.sanitize_filename">built-in function</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/porespy/tools/Settings.html#porespy.tools.Settings">porespy.tools.Settings (built-in class)</a>
+</li>
+      <li>
+    porespy.tools.show_docstring()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/show_docstring.html#porespy.tools.show_docstring">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.square()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/square.html#porespy.tools.square">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.tic()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/tic.html#porespy.tools.tic">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.toc()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/toc.html#porespy.tools.toc">built-in function</a>
+</li>
+      </ul></li>
+      <li>
+    porespy.tools.unpad()
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/unpad.html#porespy.tools.unpad">built-in function</a>
 </li>
       </ul></li>
       <li>
     porespy.visualization
 
       <ul>
-        <li><a href="modules/generated/porespy.visualization.html#module-porespy.visualization">module</a>
+        <li><a href="autoapi/porespy/visualization/index.html#module-porespy.visualization">module</a>
 </li>
       </ul></li>
-      <li><a href="modules/generated/generated/porespy.filters.porosimetry.html#porespy.filters.porosimetry">porosimetry() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.metrics.porosity.html#porespy.metrics.porosity">porosity() (in module porespy.metrics)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.metrics.porosity_profile.html#porespy.metrics.porosity_profile">porosity_profile() (in module porespy.metrics)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.visualization.prep_for_imshow.html#porespy.visualization.prep_for_imshow">prep_for_imshow() (in module porespy.visualization)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.metrics.prop_to_image.html#porespy.metrics.prop_to_image">prop_to_image() (in module porespy.metrics)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.metrics.props_to_DataFrame.html#porespy.metrics.props_to_DataFrame">props_to_DataFrame() (in module porespy.metrics)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.prune_branches.html#porespy.filters.prune_branches">prune_branches() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.ps_ball.html#porespy.tools.ps_ball">ps_ball() (in module porespy.tools)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.ps_disk.html#porespy.tools.ps_disk">ps_disk() (in module porespy.tools)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.ps_rect.html#porespy.tools.ps_rect">ps_rect() (in module porespy.tools)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.ps_round.html#porespy.tools.ps_round">ps_round() (in module porespy.tools)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.generators.pseudo_electrostatic_packing.html#porespy.generators.pseudo_electrostatic_packing">pseudo_electrostatic_packing() (in module porespy.generators)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.generators.pseudo_gravity_packing.html#porespy.generators.pseudo_gravity_packing">pseudo_gravity_packing() (in module porespy.generators)</a>
-</li>
-  </ul></td>
-</tr></table>
+      <li>
+    porespy.visualization.bar()
 
-<h2 id="Q">Q</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.simulations.qbip.html#porespy.simulations.qbip">qbip() (in module porespy.simulations)</a>
+      <ul>
+        <li><a href="autoapi/porespy/visualization/bar.html#porespy.visualization.bar">built-in function</a>
 </li>
-  </ul></td>
-</tr></table>
+      </ul></li>
+      <li>
+    porespy.visualization.imshow()
 
-<h2 id="R">R</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.metrics.radial_density_distribution.html#porespy.metrics.radial_density_distribution">radial_density_distribution() (in module porespy.metrics)</a>
+      <ul>
+        <li><a href="autoapi/porespy/visualization/imshow.html#porespy.visualization.imshow">built-in function</a>
 </li>
-      <li><a href="modules/generated/generated/porespy.generators.ramp.html#porespy.generators.ramp">ramp() (in module porespy.generators)</a>
+      </ul></li>
+      <li>
+    porespy.visualization.prep_for_imshow()
+
+      <ul>
+        <li><a href="autoapi/porespy/visualization/prep_for_imshow.html#porespy.visualization.prep_for_imshow">built-in function</a>
 </li>
-      <li><a href="modules/generated/generated/porespy.generators.random_cantor_dust.html#porespy.generators.random_cantor_dust">random_cantor_dust() (in module porespy.generators)</a>
+      </ul></li>
+      <li>
+    porespy.visualization.satn_to_movie()
+
+      <ul>
+        <li><a href="autoapi/porespy/visualization/satn_to_movie.html#porespy.visualization.satn_to_movie">built-in function</a>
 </li>
-      <li><a href="modules/generated/generated/porespy.generators.random_spheres.html#porespy.generators.random_spheres">random_spheres() (in module porespy.generators)</a>
+      </ul></li>
+      <li>
+    porespy.visualization.satn_to_panels()
+
+      <ul>
+        <li><a href="autoapi/porespy/visualization/satn_to_panels.html#porespy.visualization.satn_to_panels">built-in function</a>
 </li>
-      <li><a href="modules/generated/generated/porespy.tools.randomize_colors.html#porespy.tools.randomize_colors">randomize_colors() (in module porespy.tools)</a>
+      </ul></li>
+      <li>
+    porespy.visualization.sem()
+
+      <ul>
+        <li><a href="autoapi/porespy/visualization/sem.html#porespy.visualization.sem">built-in function</a>
 </li>
-      <li><a href="modules/generated/generated/porespy.tools.recombine.html#porespy.tools.recombine">recombine() (in module porespy.tools)</a>
+      </ul></li>
+      <li>
+    porespy.visualization.set_mpl_style()
+
+      <ul>
+        <li><a href="autoapi/porespy/visualization/set_mpl_style.html#porespy.visualization.set_mpl_style">built-in function</a>
 </li>
-      <li><a href="modules/generated/generated/porespy.generators.rectangular_pillars_array.html#porespy.generators.rectangular_pillars_array">rectangular_pillars_array() (in module porespy.generators)</a>
+      </ul></li>
+      <li>
+    porespy.visualization.show_3D()
+
+      <ul>
+        <li><a href="autoapi/porespy/visualization/show_3D.html#porespy.visualization.show_3D">built-in function</a>
 </li>
-      <li><a href="modules/generated/generated/porespy.filters.reduce_peaks.html#porespy.filters.reduce_peaks">reduce_peaks() (in module porespy.filters)</a>
+      </ul></li>
+      <li>
+    porespy.visualization.show_mesh()
+
+      <ul>
+        <li><a href="autoapi/porespy/visualization/show_mesh.html#porespy.visualization.show_mesh">built-in function</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.metrics.region_interface_areas.html#porespy.metrics.region_interface_areas">region_interface_areas() (in module porespy.metrics)</a>
+      </ul></li>
+      <li>
+    porespy.visualization.show_panels()
+
+      <ul>
+        <li><a href="autoapi/porespy/visualization/show_panels.html#porespy.visualization.show_panels">built-in function</a>
 </li>
-      <li><a href="modules/generated/generated/porespy.filters.region_size.html#porespy.filters.region_size">region_size() (in module porespy.filters)</a>
+      </ul></li>
+      <li>
+    porespy.visualization.show_planes()
+
+      <ul>
+        <li><a href="autoapi/porespy/visualization/show_planes.html#porespy.visualization.show_planes">built-in function</a>
 </li>
-      <li><a href="modules/generated/generated/porespy.metrics.region_surface_areas.html#porespy.metrics.region_surface_areas">region_surface_areas() (in module porespy.metrics)</a>
+      </ul></li>
+      <li>
+    porespy.visualization.xray()
+
+      <ul>
+        <li><a href="autoapi/porespy/visualization/xray.html#porespy.visualization.xray">built-in function</a>
 </li>
-      <li><a href="modules/generated/generated/porespy.metrics.region_volumes.html#porespy.metrics.region_volumes">region_volumes() (in module porespy.metrics)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.metrics.regionprops_3D.html#porespy.metrics.regionprops_3D">regionprops_3D() (in module porespy.metrics)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.networks.regions_to_network.html#porespy.networks.regions_to_network">regions_to_network() (in module porespy.networks)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.metrics.representative_elementary_volume.html#porespy.metrics.representative_elementary_volume">representative_elementary_volume() (in module porespy.metrics)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.Results.html#porespy.tools.Results">Results (class in porespy.tools)</a>
-</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.tools.sanitize_filename.html#porespy.tools.sanitize_filename">sanitize_filename() (in module porespy.tools)</a>
+      <li><a href="autoapi/porespy/index.html#porespy.settings">settings (in module porespy)</a>
+
+      <ul>
+        <li><a href="autoapi/porespy/tools/index.html#porespy.tools.settings">(in module porespy.tools)</a>
 </li>
-      <li><a href="modules/generated/generated/porespy.metrics.satn_profile.html#porespy.metrics.satn_profile">satn_profile() (in module porespy.metrics)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.visualization.satn_to_movie.html#porespy.visualization.satn_to_movie">satn_to_movie() (in module porespy.visualization)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.visualization.satn_to_panels.html#porespy.visualization.satn_to_panels">satn_to_panels() (in module porespy.visualization)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.satn_to_seq.html#porespy.filters.satn_to_seq">satn_to_seq() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.visualization.sem.html#porespy.visualization.sem">sem() (in module porespy.visualization)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.seq_to_satn.html#porespy.filters.seq_to_satn">seq_to_satn() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.visualization.set_mpl_style.html#porespy.visualization.set_mpl_style">set_mpl_style() (in module porespy.visualization)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.visualization.show_3D.html#porespy.visualization.show_3D">show_3D() (in module porespy.visualization)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.show_docstring.html#porespy.tools.show_docstring">show_docstring() (in module porespy.tools)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.visualization.show_mesh.html#porespy.visualization.show_mesh">show_mesh() (in module porespy.visualization)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.visualization.show_planes.html#porespy.visualization.show_planes">show_planes() (in module porespy.visualization)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.generators.sierpinski_foam.html#porespy.generators.sierpinski_foam">sierpinski_foam() (in module porespy.generators)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.size_to_pc.html#porespy.filters.size_to_pc">size_to_pc() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.size_to_satn.html#porespy.filters.size_to_satn">size_to_satn() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.size_to_seq.html#porespy.filters.size_to_seq">size_to_seq() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.networks.snow2.html#porespy.networks.snow2">snow2() (in module porespy.networks)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.snow_partitioning.html#porespy.filters.snow_partitioning">snow_partitioning() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.snow_partitioning_n.html#porespy.filters.snow_partitioning_n">snow_partitioning_n() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.snow_partitioning_parallel.html#porespy.filters.snow_partitioning_parallel">snow_partitioning_parallel() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.generators.spheres_from_coords.html#porespy.generators.spheres_from_coords">spheres_from_coords() (in module porespy.generators)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.tools.subdivide.html#porespy.tools.subdivide">subdivide() (in module porespy.tools)</a>
-</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.io.to_palabos.html#porespy.io.to_palabos">to_palabos() (in module porespy.io)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.io.to_paraview.html#porespy.io.to_paraview">to_paraview() (in module porespy.io)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.io.to_stl.html#porespy.io.to_stl">to_stl() (in module porespy.io)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.io.to_vtk.html#porespy.io.to_vtk">to_vtk() (in module porespy.io)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.simulations.tortuosity_fd.html#porespy.simulations.tortuosity_fd">tortuosity_fd() (in module porespy.simulations)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.trim_disconnected_blobs.html#porespy.filters.trim_disconnected_blobs">trim_disconnected_blobs() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.trim_extrema.html#porespy.filters.trim_extrema">trim_extrema() (in module porespy.filters)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.filters.trim_floating_solid.html#porespy.filters.trim_floating_solid">trim_floating_solid() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.trim_nearby_peaks.html#porespy.filters.trim_nearby_peaks">trim_nearby_peaks() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.trim_nonpercolating_paths.html#porespy.filters.trim_nonpercolating_paths">trim_nonpercolating_paths() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.trim_saddle_points.html#porespy.filters.trim_saddle_points">trim_saddle_points() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.trim_saddle_points_legacy.html#porespy.filters.trim_saddle_points_legacy">trim_saddle_points_legacy() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.filters.trim_small_clusters.html#porespy.filters.trim_small_clusters">trim_small_clusters() (in module porespy.filters)</a>
-</li>
-      <li><a href="modules/generated/generated/porespy.metrics.two_point_correlation.html#porespy.metrics.two_point_correlation">two_point_correlation() (in module porespy.metrics)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="U">U</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.tools.unpad.html#porespy.tools.unpad">unpad() (in module porespy.tools)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="V">V</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.generators.voronoi_edges.html#porespy.generators.voronoi_edges">voronoi_edges() (in module porespy.generators)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="X">X</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/generated/porespy.visualization.xray.html#porespy.visualization.xray">xray() (in module porespy.visualization)</a>
+      <li><a href="autoapi/porespy/tools/Settings.html#porespy.tools.Settings.tqdm">tqdm (porespy.tools.Settings attribute)</a>
 </li>
   </ul></td>
 </tr></table>
 
 
 
-              </article>
+                </article>
               
-
               
+              
+              
+              
+            </div>
+            
+            
+              
+            
           </div>
-          
-      </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
     </div>
-
-  
+  </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
-<footer class="bd-footer"><div class="bd-footer__inner container">
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
   
-  <div class="footer-item">
-    <p class="copyright">
-    &copy; Copyright 2025, PMEAL.<br>
-</p>
-  </div>
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, PMEAL.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
   
-  <div class="footer-item">
-    <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.3.<br>
-</p>
-  </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
   
 </div>
-</footer>
+
+  </footer>
   </body>
 </html>

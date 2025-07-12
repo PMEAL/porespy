@@ -1,0 +1,27 @@
+porespy.filters.prune_branches
+==============================
+
+.. py:function:: porespy.filters.prune_branches(skel: numpy.typing.NDArray, branch_points=None, iterations: int = 1)
+
+   Remove all dangling ends or tails of a skeleton
+
+   :param skel: A image of a full or partial skeleton from which the tails should
+                be trimmed.
+   :type skel: ndarray
+   :param branch_points: An image the same size `skel` with `True` values indicating the
+                         branch points of the skeleton.  If this is not provided it is
+                         calculated automatically.
+   :type branch_points: ndarray, optional
+   :param iterations: The number of times to recursively repeat the process.  The default is
+                      1.
+   :type iterations: int
+
+   :returns: An ndarray containing the skeleton with tails removed.
+   :rtype: array
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/prune_branches.html>`__
+   to view online example.
+

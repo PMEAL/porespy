@@ -1,0 +1,24 @@
+porespy.visualization.xray
+==========================
+
+.. py:function:: porespy.visualization.xray(im, axis=0)
+
+   Simulates an X-ray radiograph looking through the porous material.
+
+   The resulting image is colored according to the amount of attenuation an
+   X-ray would experience, so regions with more solid will appear darker.
+
+   :param im: ndarray of the porous material with the solid phase marked as 1 or `True`
+   :type im: array_like
+   :param axis: Specifes the axis along which the camera will point.
+   :type axis: int
+
+   :returns: **image** -- A 2D greyscale image suitable for use in matplotlib's `imshow` function.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/visualization/reference/sem.html>`__
+   to view online example.
+

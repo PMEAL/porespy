@@ -1,0 +1,22 @@
+porespy.beta.local_diff
+=======================
+
+.. py:function:: porespy.beta.local_diff(vals, im, strel=None)
+
+   Computes the difference pixel and the average of it's neighbors.
+
+   :param vals: The array containing the values of interest
+   :type vals: ndarray
+   :param im: A boolean image of the domain
+   :type im: ndarray
+   :param strel: The struturing element to use when doing the convolution to find the
+                 neighbor values.  This defines the size and shape of the area searched.
+                 If not provided then a 3**ndim cube is used.
+   :type strel: ndarray, optional
+
+   :returns: **diff** -- An array containing the difference between each pixel and the average
+             of it's neighbors.  The result is not normalized or squared so may
+             contain negative values which might be of interest if the direction of the
+             difference is relevant.
+   :rtype: ndarray
+

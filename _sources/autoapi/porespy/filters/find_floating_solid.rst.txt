@@ -1,0 +1,33 @@
+porespy.filters.find_floating_solid
+===================================
+
+.. py:function:: porespy.filters.find_floating_solid(im: numpy.typing.NDArray, conn: Literal['max', 'min'] = 'min', incl_surface: bool = False)
+
+   Finds all solid that that is not attached to main solid structure.
+
+   :param im: The image of the porous material
+   :type im: ndarray
+   :param conn: Can be either `'min'` or `'max'` and controls the shape of the structuring
+                element used to determine voxel connectivity.  The default if `'min'` which
+                imposes the strictest criteria, so that voxels must share a face to be
+                considered connected.
+   :type conn: str
+   :param incl_surface: If `True`, any isolated solid regions that are connected to the
+                        surfaces of the image but not the main body of the solid are also
+                        removed.  Voxels are deemed to be surface voxels if they are part of a
+                        cluster that does not span the domain. In other words, a cluster of voxels
+                        touching the `x=0` face but not the `x=-1` face will be trimmed if this
+                        is enabled.
+   :type incl_surface: bool
+
+   :returns: **solid** -- An image with `True` values indicating voxels which were floating solid
+   :rtype: ndarray
+
+   .. seealso:: :py:obj:`find_disconnected_voxels`, :py:obj:`trim_nonpercolating_paths`
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/find_floating_solid.html>`_
+   to view online example.
+

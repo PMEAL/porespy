@@ -1,0 +1,24 @@
+porespy.tools.get_planes
+========================
+
+.. py:function:: porespy.tools.get_planes(im, squeeze=True)
+
+   Extracts three planar images from the volumetric image, one for each
+   principle axis.  The planes are taken from the middle of the domain.
+
+   :param im: The volumetric image from which the 3 planar images are to be obtained
+   :type im: ndarray
+   :param squeeze: If `True` (default) the returned images are 2D (i.e. squeezed).  If
+                   `False`, the images are 1 element deep along the axis where the slice
+                   was obtained.
+   :type squeeze: boolean, optional
+
+   :returns: **planes** -- A list of 2D-images
+   :rtype: list
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/tools/reference/get_planes.html>`__
+   to view online example.
+

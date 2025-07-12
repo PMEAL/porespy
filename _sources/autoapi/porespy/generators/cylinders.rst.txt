@@ -1,0 +1,81 @@
+porespy.generators.cylinders
+============================
+
+.. py:function:: porespy.generators.cylinders(shape: List[int], r: int, ncylinders: int = None, porosity: float = None, phi_max: float = 0, theta_max: float = 90, length: float = None, maxiter: int = 3, seed=None)
+
+   Generates a binary image of overlapping cylinders given porosity OR
+   number of cylinders.
+
+   This is a good approximation of a fibrous mat.
+
+   :param shape: The size of the image to generate in [Nx, Ny, Nz] where N is the
+                 number of voxels. 2D images are not permitted.
+   :type shape: list
+   :param r: The radius of the cylinders in voxels
+   :type r: scalar
+   :param ncylinders: The number of cylinders to add to the domain. Adjust this value to
+                      control the final porosity, which is not easily specified since
+                      cylinders overlap and intersect different fractions of the domain.
+   :type ncylinders: int
+   :param porosity: The targeted value for the porosity of the generated mat. The
+                    function uses an algorithm for predicted the number of required
+                    number of cylinder, and refines this over a certain number of
+                    fractional insertions (according to the 'iterations' input).
+   :type porosity: float
+   :param phi_max: A value between 0 and 90 that controls the amount that the
+                   cylinders lie *out of* the XY plane, with 0 meaning all cylinders
+                   lie in the XY plane, and 90 meaning that cylinders are randomly
+                   oriented out of the plane by as much as +/- 90 degrees.
+   :type phi_max: int
+   :param theta_max: A value between 0 and 90 that controls the amount of rotation
+                     *in the* XY plane, with 0 meaning all cylinders point in the
+                     X-direction, and 90 meaning they are randomly rotated about the Z
+                     axis by as much as +/- 90 degrees.
+   :type theta_max: int
+   :param length: The length of the cylinders to add.  If ``None`` (default) then
+                  the cylinders will extend beyond the domain in both directions so
+                  no ends will exist. If a scalar value is given it will be
+                  interpreted as the Euclidean distance between the two ends of the
+                  cylinder. Note that one or both of the ends *may* still lie
+                  outside the domain, depending on the randomly chosen center point
+                  of the cylinder.
+   :type length: int
+   :param maxiter: The number of fractional fiber insertions used to target the
+                   requested porosity. By default a value of 3 is used (and this is
+                   typically effective in getting very close to the targeted
+                   porosity), but a greater number can be input to improve the
+                   achieved porosity.
+   :type maxiter: int
+   :param seed: Initializes numpy's random number generator to the specified state. If not
+                provided, the current global value is used. This means calls to
+                ``np.random.seed(seed)`` prior to calling this function will be respected.
+   :type seed: int, optional, default = `None`
+
+   :returns: **image** -- A boolean array with ``True`` values denoting the pore space
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   The cylinders_porosity function works by estimating the number of
+   cylinders needed to be inserted into the domain by estimating
+   cylinder length, and exploiting the fact that, when inserting any
+   potentially overlapping objects randomly into a volume v_total (which
+   has units of pixels and is equal to dimx x dimy x dimz, for example),
+   such that the total volume of objects added to the volume is v_added
+   (and includes any volume that was inserted but overlapped with already
+   occupied space), the resulting porosity will be equal to
+   exp(-v_added/v_total).
+
+   After intially estimating the cylinder number and inserting a small
+   fraction of the estimated number, the true cylinder volume is
+   calculated, the estimate refined, and a larger fraction of cylinders
+   inserted. This is repeated a number of times according to the
+   ``maxiter`` argument, yielding an image with a porosity close to
+   the goal.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/cylinders.html>`__
+   to view online example.
+

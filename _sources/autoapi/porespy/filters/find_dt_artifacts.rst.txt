@@ -1,0 +1,32 @@
+porespy.filters.find_dt_artifacts
+=================================
+
+.. py:function:: porespy.filters.find_dt_artifacts(dt: numpy.typing.NDArray)
+
+   Label points in a distance transform that are closer to image boundary
+   than solid
+
+   :param dt: The distance transform of the phase of interest.
+   :type dt: ndarray
+
+   :returns: **image** -- An ndarray the same shape as `dt` with numerical values
+             indicating the maximum amount of error in each volxel, which is
+             found by subtracting the distance to nearest edge of image from
+             the distance transform value. In other words, this is the error
+             that would be found if there were a solid voxel lurking just
+             beyond the nearest edge of the image.  Obviously, voxels with a
+             value of zero have no error.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   These points could *potentially* be erroneously high since their
+   distance values do not reflect the possibility that solid may have
+   been present beyond the border of the image but was lost by trimming.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/find_dt_artifacts.html>`__
+   to view online example.
+

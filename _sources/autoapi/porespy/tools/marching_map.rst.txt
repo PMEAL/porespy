@@ -1,0 +1,29 @@
+porespy.tools.marching_map
+==========================
+
+.. py:function:: porespy.tools.marching_map(path, start)
+
+   Use the fast marching method to find distance of each voxel from a starting
+   point
+
+   :param path: A boolean image with ``True`` values demarcating the path along which
+                the march will occur
+   :type path: ndarray
+   :param start: A boolean image with ``True`` values indicating where the march should
+                 start.
+   :type start: ndarray
+
+   :returns: **distance** -- An array the same size as ``path`` with numerical values in each voxel
+             indicating it's distance from the start point(s) along the given path.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   This function assumes ``scikit-fmm`` is installed.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/tools/reference/marching_map.html>`__
+   to view online example.
+

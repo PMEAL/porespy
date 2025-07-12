@@ -1,0 +1,30 @@
+porespy.generators.borders
+==========================
+
+.. py:function:: porespy.generators.borders(shape, thickness: int = 1, mode: Literal['edges', 'faces', 'corners'] = 'edges')
+
+   Creates an array of specified size with corners, edges or faces
+   labelled as ``True``.
+
+   This can be used as mask to manipulate values laying on the perimeter
+   of an image.
+
+   :param shape: The shape of the array to return.  Can be either 2D or 3D.
+   :type shape: array_like
+   :param thickness: The number of pixels/voxels layers to place along perimeter.
+   :type thickness: scalar (default is 1)
+   :param mode: The type of border to create.  Options are 'faces', 'edges'
+                (default) and 'corners'.  In 2D 'faces' and 'edges' give the
+                same result.
+   :type mode: string
+
+   :returns: **image** -- An ndarray of specified shape with ``True`` values at the
+             perimeter and ``False`` elsewhere
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/borders.html>`__
+   to view online example.
+

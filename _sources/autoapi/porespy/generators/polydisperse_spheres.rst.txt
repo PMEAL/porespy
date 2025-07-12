@@ -1,0 +1,43 @@
+porespy.generators.polydisperse_spheres
+=======================================
+
+.. py:function:: porespy.generators.polydisperse_spheres(shape: List, porosity: float, dist, nbins: int = 5, r_min: int = 5, seed=None)
+
+   Create an image of randomly placed, overlapping spheres with a
+   distribution of radii.
+
+   :param shape: The size of the image to generate in [Nx, Ny, Nz] where Ni is the
+                 number of voxels in each direction.  If shape is only 2D, then an
+                 image of polydisperse disks is returns
+   :type shape: list
+   :param porosity: The porosity of the image, defined as the number of void voxels
+                    divided by the number of voxels in the image. The specified value
+                    is only matched approximately, so it's suggested to check this
+                    value after the image is generated.
+   :type porosity: float
+   :param dist: This should be an initialized distribution chosen from the large
+                number of options in the ``scipy.stats`` submodule.  For instance,
+                a normal distribution with a mean of 20 and a standard deviation
+                of 10 can be obtained with
+                ``dist = scipy.stats.norm(loc=20, scale=10)``
+   :type dist: scipy.stats distribution object
+   :param nbins: The number of discrete sphere sizes that will be used to generate
+                 the image. This function generates ``nbins`` images of
+                 monodisperse spheres that span 0.05 and 0.95 of the possible
+                 values produced by the provided distribution, then overlays them
+                 to get polydispersivity.
+   :type nbins: int
+   :param seed: Initializes numpy's random number generator to the specified state. If not
+                provided, the current global value is used. This means calls to
+                ``np.random.seed(seed)`` prior to calling this function will be respected.
+   :type seed: int, optional, default = `None`
+
+   :returns: **image** -- A boolean array with ``True`` values denoting the pore space
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/polydisperse_spheres.html>`__
+   to view online example.
+

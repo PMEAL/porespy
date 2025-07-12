@@ -1,0 +1,86 @@
+porespy.beta.polydisperse_cylinders
+===================================
+
+.. py:function:: porespy.beta.polydisperse_cylinders(shape, porosity, dist, voxel_size=1, phi_max=0, theta_max=90, maxiter=3, rtol=0.01, seed=None)
+
+   Generates overlapping cylinders with radii from the given size distribution
+
+   This function works by combining individual images from the `cylinders` function
+   for each radius, so **it can be slow**.  For instance, if the distribution spans
+   10 different radii, then this function will take approximately 10x longer
+   than generating unimodal cylinders.
+
+   :param shape: The shape of the image to generate
+   :type shape: list
+   :param porosity: The target porosity of the final image. This value is achieved by
+                    iteratively inserting cylinders so the final value will not be exact.
+   :type porosity: float
+   :param dist: The fiber radius distribution in arbitary units depending on the value of
+                `voxel_size`. The way this distribution is used internally is explained in
+                more detail in the Notes section.
+   :type dist: scipy.stats frozen distribution
+   :param voxel_size: The length of one side of a voxel. The units should be the same as used to
+                      obtain `dist`, so if `dist` is in terms of `nm`, then `voxel_size` should
+                      have units of `nm/voxel`.
+   :type voxel_size: scalar
+   :param phi_max: The maximum amount of 'out of plane' rotation applied to the fibers in units
+                   of degrees.  A value of 10 will result in the fibers being randomly oriented
+                   +/- 10 degress out of the XY plane.  The default is 0.
+   :type phi_max: scalar
+   :param theta_max: The maximum amount of 'in plane' rotation applied to the fibers in units of
+                     degrees.  A value of 0 means the fibers will all be aligned in the
+                     x-direction.  A value of 90 degrees means they will be oriented +/- 90
+                     degrees, providing completely random orientation.
+   :type theta_max: scalar
+   :param maxiter: The number of iterations to use when trying to achieve the requested
+                   porosity. The default is 3.  If the algorithm tends to undershoot porosity
+                   (i.e. gives 0.4 when 0.5 was requested) try lowering this value to 2 or 1.
+                   And conversely if the algorithm gives 0.7 when 0.6 was requested by 4 or 5.
+   :type maxiter: int
+   :param rtol: Controls how close the porosity gets to the target value before stopping.
+                The default is 1e-2, or 2%, so if the requested porosity is 0.5, the default
+                will stop iterations if the image achieves 0.51 or lower.
+   :type rtol: float
+   :param seed: The seed to use in the random number generator.  The default is `None` which
+                will produced different results each time.
+   :type seed: int
+
+   :returns: **cylinders** -- An ndarray of the requested shape with ``True`` values indicating the void
+             space.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   The `scipy.stats` object must be initialized with desired parameter to create
+   a *frozen* object, like `dist = spst.gamma(5, 1, 7)`. Then this parameters
+   are fixed for all future calls to the object's methods (i.e. `ppf`, `pdf`, etc.)
+   The classes in the `stats` module have a very useful `fit` method for
+   finding the fitting parameters for a given data set.  For example,
+   `params = scipy.stats.gamma.fit(data)` can then be used to initialize the
+   frozen distribution as `dist = scipy.stats.gamma(*params)`.
+
+   The `stats` object is used to compute the lower and upper limits on the
+   cylinder radii in units of voxels using the `ppf` method as follows:
+
+       `rstart = int(stats.ppf(0.01)/voxel_size)`
+
+       and
+
+       `rstop = int(stats.ppf(0.99)/voxel_size)`
+
+   An array of radius values is then found as `radii = np.arange(rstart, rstop, 1)`
+   so all radii are used.
+
+   The `stats` object is then used again to determine the relative fraction of
+   each cylinder size to add using the `pdf` function:
+
+       `phi = stats.pdf(r*voxel_size)*bin_width`
+
+   where `r` is in units of voxels and `bin_width` is found as:
+
+       `bin_width = (radii[i+1] -  radii[i])*voxel_size`
+
+   where `radii` is a list of cylinder radii between `rstart` and `rstop`. However,
+   since `radii` contains sequential integers `bin_width` is basically equal to
+   the `voxel_size`.
+

@@ -1,0 +1,30 @@
+porespy.filters.hold_peaks
+==========================
+
+.. py:function:: porespy.filters.hold_peaks(im: numpy.typing.NDArray, axis: int = -1, ascending: bool = True)
+
+   Replaces each voxel with the highest value along the given axis.
+
+   :param im: A greyscale image whose peaks are to be found.
+   :type im: ndarray
+   :param axis: The axis along which the operation is to be applied.
+   :type axis: int
+   :param ascending: If `True` (default) the given `axis` is scanned from 0 to end.
+                     If `False`, it is scanned in reverse order from end to 0.
+   :type ascending: bool
+
+   :returns: **result** -- A copy of `im` with each voxel is replaced with the highest value along
+             the given axis.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   "im" must be a greyscale image. In case a Boolean image is fed into this
+   method, it will be converted to float values [0.0,1.0] before proceeding.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/hold_peaks.html>`__
+   to view online example.
+

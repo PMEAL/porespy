@@ -1,0 +1,73 @@
+porespy.generators.pseudo_gravity_packing
+=========================================
+
+.. py:function:: porespy.generators.pseudo_gravity_packing(shape: List = None, im: numpy.typing.ArrayLike = None, r: int = 5, clearance: int = 0, protrusion: int = 0, axis: int = 0, edges: Literal['contained', 'extended'] = 'contained', maxiter: int = 1000, phi: float = 1.0, seed: int = None, smooth: bool = True, value: int = 1) -> numpy.ndarray
+
+   Iteratively inserts spheres at the lowest accessible point in an image,
+   mimicking a gravity packing.
+
+   :param shape: The shape of the image to create.  This is equivalent to passing an array
+                 of `False` values of the desired size to `im`.
+   :type shape: list
+   :param im: Image with `False` indicating the voxels where spheres should be
+              inserted. This can be used to insert spheres into an image that already
+              has some features (e.g. half filled with larger spheres, or a cylindrical
+              plug).
+   :type im: ndarray
+   :param r: The radius of the spheres to be added
+   :type r: int
+   :param clearance: The amount space to add between neighboring spheres. The value can be
+                     negative for overlapping spheres, but ``abs(clearance) > r``.
+   :type clearance: int (default is 0)
+   :param protrusion: The amount that spheres are allowed to protrude beyond the active phase.
+                      A negative number will create clearance between spheres and the background.
+   :type protrusion: int (optional, default=0)
+   :param axis: The axis along which gravity acts, directed from the end (-1) towards the
+                start (0).
+   :type axis: int (default is 0)
+   :param phi: The "solid volume fraction" of spheres to add (considering spheres as solid).
+               This is used to calculate the discrete number of spheres, *N*, required
+               based on the total volume of the image. If *N* is less than `maxiter` then
+               `maxiter` will be set to *N*. Note that this number is not quite accurate
+               when the `edges='extended'` since it's not possible to know how much of the
+               sphere will be cutoff by the edge.
+   :type phi: float (default is 1.0)
+   :param maxiter: The maximum number of spheres to add. This places a hard limit on the number
+                   of spheres even if `phi` is specified.
+   :type maxiter: int (default is 1000)
+   :param edges: Controls how spheres at the edges of the image are handled.  Options are:
+
+                 ============ ================================================================
+                 edges        description
+                 ============ ================================================================
+                 'contained'  Spheres are all completely within the image
+                 'extended'   Spheres are allowed to extend beyond the edge of the
+                              image. In this mode the volume fraction will be less that
+                              requested since some spheres extend beyond the image, but their
+                              entire volume is counted as added for computational efficiency.
+                 ============ ================================================================
+   :type edges: string (default is 'contained')
+   :param seed: The seed to supply to the random number generator. Because this function
+                uses ``numba`` for speed, calling the normal ``numpy.random.seed(<seed>)``
+                has no effect. To get a repeatable image, the seed must be passed to the
+                function so it can be initialized the way ``numba`` requires. The default
+                is ``None``, which means each call will produce a new realization.
+   :type seed: int, optional, default = `None`
+   :param smooth: Controls whether or not the spheres have the small pip each face.
+   :type smooth: bool, default = `True`
+   :param value: The value of insert for the spheres. The default is 1, which puts holes into
+                 the background. Values other than 1 make it easy to add spheres repeatedly
+                 and identify which were added on each step.
+   :type value: int, default = 1
+
+   :returns: **spheres** -- An image the same size as `im` with spheres indicated by `value`.
+             The spheres are only inserted at locations that are accessible
+             from the top of the image.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/pseudo_gravity_packing.html>`__
+   to view online example.
+

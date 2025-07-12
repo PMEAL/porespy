@@ -30,11 +30,11 @@
    },
    "outputs": [],
    "source": [
-    "import numpy as np\n",
-    "import porespy as ps\n",
-    "import scipy.ndimage as spim\n",
     "import matplotlib.pyplot as plt\n",
-    "import skimage\n",
+    "import numpy as np\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()"
    ]
   },
@@ -77,7 +77,7 @@
     }
    ],
    "source": [
-    "im = np.random.randint(-10,10, [10,10], int)\n",
+    "im = np.random.randint(-10, 10, [10, 10], int)\n",
     "print(im)"
    ]
   },
@@ -585,7 +585,7 @@
     }
    ],
    "source": [
-    "fig, ax = plt.subplots(1, 1, figsize=[4, 4]);\n",
+    "fig, ax = plt.subplots(1, 1, figsize=[4, 4])\n",
     "ax.imshow(im1)\n",
     "ax.axis(False)\n",
     "ax.set_title(f\"Minimum = {im1.min()}\");"

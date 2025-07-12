@@ -1,0 +1,21 @@
+porespy.networks.juncs_to_pore_centers
+======================================
+
+.. py:function:: porespy.networks.juncs_to_pore_centers(juncs, dt)
+
+   Finds pore centers from an image of junctions. To do this, clusters of
+   junction points are reduced to a single voxel, whereby the new voxel,
+   corresponds to the one that has the largest distance transform value from
+   within the original cluster. This method, ensures that the 'pore centre'
+   lies on the original set of voxels.
+
+   :param juncs: An ndarray the same shape as `dt` with clusters of junction voxels
+                 uniquely labelled (1...Np).  If a boolean array is provided then a
+                 cluster labeling is performed with full cubic connectivity.
+   :type juncs: ndarray
+   :param dt: The distance transform of the original image.
+   :type dt: ndarray
+
+   :returns: **pc** -- The resulting pore centres labelled
+   :rtype: ndarray
+

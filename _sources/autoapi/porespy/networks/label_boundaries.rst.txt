@@ -1,0 +1,28 @@
+porespy.networks.label_boundaries
+=================================
+
+.. py:function:: porespy.networks.label_boundaries(network, labels=[['left', 'right'], ['front', 'back'], ['top', 'bottom']], tol=1e-09)
+
+   Create boundary pore labels based on proximity to axis extrema
+
+   :param network: The network stored as a dictionary as returned from the
+                   ``regions_to_network`` function
+   :type network: dict
+   :param labels: A 3-element list, with each element containing a pair of strings
+                  indicating the label to apply to the beginning and end of each axis.
+                  The default is ``[['left', 'right'], ['front', 'back'],
+                  ['top', 'bottom']]`` which will apply the label ``'left'`` to all
+                  pores with the minimum x-coordinate, and ``'right'`` to the pores
+                  with the maximum x-coordinate, and so on.
+   :type labels: list of lists
+
+   :returns: **network** -- The same ``network`` as passed in but with new boolean arrays added
+             for the boundary labels.
+   :rtype: dict
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/networks/reference/label_boundaries.html>`__
+   to view online example.
+

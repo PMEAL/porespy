@@ -1,0 +1,28 @@
+porespy.networks.diffusive_size_factor_AI
+=========================================
+
+.. py:function:: porespy.networks.diffusive_size_factor_AI(regions, throat_conns, model, g_train, voxel_size=1)
+
+   :param regions: A segmented 3D image of pore regions/a pair of two regions.
+   :type regions: ndarray
+   :param throat_conns: An Nt by 2 array containing the throat connections. The indices orders in
+                        throat_conns start from 0 to be consistent with network extraction method.
+   :type throat_conns: array
+   :param model: The trained model to be used for prediction.
+   :type model: tensorflow model
+   :param g_train: The training data distribution. This will be used for denormalizing
+                   the prediction.
+   :type g_train: array
+   :param voxel_size: Voxel size of the image. The default is 1.
+   :type voxel_size: scalar, optional
+
+   :returns: **diff_size_factor** -- An array of length conns containing diffusive size factor of the conduits
+             in the segmented image (regions).
+   :rtype: array
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/networks/reference/diffusive_size_factor_AI.html>`__
+   to view online example.
+

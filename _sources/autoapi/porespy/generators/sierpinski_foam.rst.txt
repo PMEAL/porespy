@@ -1,0 +1,30 @@
+porespy.generators.sierpinski_foam
+==================================
+
+.. py:function:: porespy.generators.sierpinski_foam(shape, n: int = 5, mode: str = 'upper')
+
+   Generates an image of a Sierpinski carpet or foam with independent control of
+   image size and number of iterations
+
+   :param shape: The shape of the final image to create. To create a full image with no
+                 cropping, use a that is a multiple of `3**n`.
+   :type shape: array_like
+   :param n: The number of times to iteratively divide the image. This functions starts
+             by inserting single voxels, then inserts increasingly large squares/cubes.
+   :type n: int
+   :param mode: Controls the portion of the image that is returned, options are `'upper'`
+                which returns the upper corner, `'centered'`, which returns the center
+                portion of the image, and `None` provide the full image, in which case
+                the returned image will be larger than `shape`.
+   :type mode: str
+
+   :returns: **im** -- A boolean image with `False` values inserted at the center of each
+             square (or cubic) sub-section.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/sierpinski_foam.html>`__
+   to view online example.
+

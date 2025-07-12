@@ -1,0 +1,46 @@
+porespy.filters.find_small_clusters
+===================================
+
+.. py:function:: porespy.filters.find_small_clusters(im: numpy.typing.NDArray, trapped: numpy.typing.NDArray = None, min_size: int = 1, conn: str = 'min')
+
+   Finds small isolated clusters of voxels which were identified as trapped and
+   sets them to invaded.
+
+   :param im: The boolean image of the porous media with `True` indicating void.
+   :type im: ndarray
+   :param trapped: The boolean array of the trapped voxels.
+   :type trapped: ndarray
+   :param min_size: The minimum size of the clusters which are to be filled.
+   :type min_size: int
+   :param conn: Controls the shape of the structuring element used to find neighboring
+                voxels when looking for sequence values to place into un-trapped voxels.
+                Options are:
+
+                ========= ==================================================================
+                Option    Description
+                ========= ==================================================================
+                'min'     This corresponds to a cross with 4 neighbors in 2D and 6 neighbors
+                          in 3D.
+                'max'     This corresponds to a square or cube with 8 neighbors in 2D and
+                          26 neighbors in 3D.
+                ========= ==================================================================
+   :type conn: str
+
+   :returns: A dataclass-like object with the following images as attributes:
+
+             ============= ==============================================================
+             Attribute     Description
+             ============= ==============================================================
+             `im_small`    A boolean image with `True` values indicating trapped clusters
+                           which are smaller than `min_size`.
+             `im_trapped`  An updated mask of trapped voxels with the small clusters of
+                           trapped voxels removed (i.e. set to `False`).
+             ============= ==============================================================
+   :rtype: results
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/find_small_clusters.html>`_
+   to view online example.
+

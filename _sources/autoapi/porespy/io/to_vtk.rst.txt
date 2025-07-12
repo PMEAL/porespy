@@ -1,0 +1,35 @@
+porespy.io.to_vtk
+=================
+
+.. py:function:: porespy.io.to_vtk(im, filename, divide=False, downsample=False, voxel_size=1, vox=False)
+
+   Converts an array to a vtk file.
+
+   :param im: The image of the porous material
+   :type im: 3D image
+   :param path: Path to output file
+   :type path: string
+   :param divide: vtk files can get very large, this option allows you for two output
+                  files, divided at z = half. This allows for large data sets to be
+                  imaged without loss of information
+   :type divide: bool
+   :param downsample: very large images acan be downsampled to half the size in each
+                      dimension, this doubles the effective voxel size
+   :type downsample: bool
+   :param voxel_size: The side length of the voxels (voxels  are cubic)
+   :type voxel_size: int
+   :param vox: For an image that is binary (1's and 0's) this reduces the file size by
+               using int8 format (can also be used to reduce file size when accuracy
+               is not necessary ie: just visulization)
+   :type vox: bool
+
+   .. rubric:: Notes
+
+   Outputs a vtk, vtp or vti file that can opened in paraview
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/io/reference/to_vtk.html>`__
+   to view online example.
+

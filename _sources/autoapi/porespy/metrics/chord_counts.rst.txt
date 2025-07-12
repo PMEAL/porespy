@@ -1,0 +1,26 @@
+porespy.metrics.chord_counts
+============================
+
+.. py:function:: porespy.metrics.chord_counts(im)
+
+   Find the length of each chord in the supplied image
+
+   :param im: An image containing chords drawn in the void space.
+   :type im: ndarray
+
+   :returns: **result** -- A 1D array with one element for each chord, containing its length.
+   :rtype: 1D-array
+
+   .. rubric:: Notes
+
+   The returned array can be passed to ``plt.hist`` to plot the histogram,
+   or to ``np.histogram`` to get the histogram data directly. Another useful
+   function is ``np.bincount`` which gives the number of chords of each
+   length in a format suitable for ``plt.plot``.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/reference/metrics/chord_counts.html>`__
+   to view online example.
+

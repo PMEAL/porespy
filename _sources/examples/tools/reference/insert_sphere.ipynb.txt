@@ -30,11 +30,10 @@
    },
    "outputs": [],
    "source": [
-    "import numpy as np\n",
-    "import porespy as ps\n",
-    "import scipy.ndimage as spim\n",
     "import matplotlib.pyplot as plt\n",
-    "import skimage\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()"
    ]
   },
@@ -118,17 +117,17 @@
     }
    ],
    "source": [
-    "im = ps.generators.blobs([100, 100,100])\n",
+    "im = ps.generators.blobs([100, 100, 100])\n",
     "\n",
-    "fig, ax = plt.subplots(figsize=[7, 7]);\n",
-    "ps.visualization.imshow(im);\n",
-    "plt.axis(False);\n",
+    "fig, ax = plt.subplots(figsize=[7, 7])\n",
+    "ps.visualization.imshow(im)\n",
+    "plt.axis(False)\n",
     "\n",
-    "#default values:\n",
-    "c=[50,50,50]\n",
-    "r=50\n",
-    "v=False\n",
-    "overwrite=True"
+    "# default values:\n",
+    "c = [50, 50, 50]\n",
+    "r = 50\n",
+    "v = False\n",
+    "overwrite = True"
    ]
   },
   {
@@ -212,8 +211,8 @@
    ],
    "source": [
     "im = ps.tools.insert_sphere(im=im, c=c, r=r, v=v, overwrite=overwrite)\n",
-    "fig, ax = plt.subplots(figsize=[7, 7]);\n",
-    "ps.visualization.imshow(im);\n",
+    "fig, ax = plt.subplots(figsize=[7, 7])\n",
+    "ps.visualization.imshow(im)\n",
     "plt.axis(False);"
    ]
   }

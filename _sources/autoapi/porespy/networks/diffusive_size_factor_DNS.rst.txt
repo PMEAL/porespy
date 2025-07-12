@@ -1,0 +1,21 @@
+porespy.networks.diffusive_size_factor_DNS
+==========================================
+
+.. py:function:: porespy.networks.diffusive_size_factor_DNS(regions, throat_conns, voxel_size=1)
+
+   Calculates the diffusive size factor of pore to pore regions in
+   a segmented image of porous material using finite difference method.
+
+   :param regions: A segmented 3D image of pore regions/a pair of two regions.
+   :type regions: ndarray
+   :param throat_conns: An Nt by 2 array containing the throat connections. The indices orders
+                        in throat_conns start from 0 to be consistent with network extraction
+                        method.
+   :type throat_conns: array
+   :param voxel_size: Voxel size of the image. The default is 1.
+   :type voxel_size: scalar, optional
+
+   :returns: **diff_size_factor** -- An array of length conns containing diffusive size factor of the
+             conduits in the segmented image (regions).
+   :rtype: array
+

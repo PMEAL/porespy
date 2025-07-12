@@ -1,0 +1,36 @@
+porespy.filters.region_size
+===========================
+
+.. py:function:: porespy.filters.region_size(im: numpy.typing.NDArray, conn: Literal['max', 'min'] = 'min')
+
+   Replace each voxel with the size of the region to which it belongs
+
+   :param im: Either a boolean image wtih `True` indicating the features of
+              interest, in which case `scipy.ndimage.label` will be applied to
+              find regions, or a greyscale image with integer values indicating
+              regions.
+   :type im: ndarray
+   :param conn: Can be either `'min'` or `'max'` and controls the shape of the structuring
+                element used to determine voxel connectivity.  The default if `'min'` which
+                imposes the strictest criteria, so that voxels must share a face to be
+                considered connected.
+   :type conn: str
+
+   :returns: **image** -- A copy of `im` with each voxel value indicating the size of the
+             region to which it belongs.  This is particularly useful for
+             finding chord sizes on the image produced by `apply_chords`.
+   :rtype: ndarray
+
+   .. seealso:: :py:obj:`flood`
+
+   .. rubric:: Notes
+
+   This function provides the same result as `flood` with `mode='size'`,
+   although does the computation in a different way.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/region_size.html>`__
+   to view online example.
+

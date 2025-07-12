@@ -1,0 +1,30 @@
+porespy.networks.add_boundary_regions
+=====================================
+
+.. py:function:: porespy.networks.add_boundary_regions(regions, pad_width=3)
+
+   Add boundary regions on specified faces of an image
+
+   :param regions: An image containing labelled regions, such as a watershed segmentation
+   :type regions: ndarray
+   :param pad_width: Number of layers to add to the beginning and end of each axis. This
+                     argument is handled similarly to the ``pad_width`` in the ``np.pad``
+                     function. A scalar adds the same amount to the beginning and end of
+                     each axis. [A, B] adds A to the beginning of each axis and B to the
+                     ends.  [[A, B], ..., [C, D]] adds A to the beginning and B to the
+                     end of the first axis, and so on. The default is to add 3 voxels on
+                     both ends of each axis.  One exception is is [A, B, C] which A to
+                     the beginning and end of the first axis, and so on. This extra option
+                     is useful for putting 0 on some axes (i.e. [3, 0, 0]).
+   :type pad_width: array_like
+
+   :returns: **padded_regions** -- An image with new regions padded on each side of the specified
+             width.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/networks/reference/add_boundary_regions.html>`__
+   to view online example.
+

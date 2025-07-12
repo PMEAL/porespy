@@ -1,0 +1,31 @@
+porespy.beta.rev_tortuosity
+===========================
+
+.. py:function:: porespy.beta.rev_tortuosity(im, block_sizes=None, use_dask=True)
+
+   Generates the data for creating an REV plot based on tortuosity.
+
+   :param im: The binary image to analyze with ``True`` indicating phase of interest
+   :type im: ndarray
+   :param block_sizes: An array containing integers of block sizes to be calculated
+   :type block_sizes: np.ndarray
+   :param use_dask: A boolean determining the usage of `dask`.
+   :type use_dask: bool
+
+   :returns: **df** -- A `pandas` data frame with the properties for each block on a given row
+
+             ========== ==================================================================
+             Attribute  Description
+             ========== ==================================================================
+             eps_orig   The porosity of the subdomain tested
+             eps_perc   The porosity of the subdomain tested after filling non-percolating paths
+             g          The calculated diffusive conductance for the subdomain tested
+             tau        The calculated tortuosity for the tested subdomain
+             volume     The total volume of each cubic subdomain tested
+             length     The length of one side of the subdomain tested
+             axis       The axis for which the above properties were calculated
+             time       The elapsed time required to perform the calculations
+             slice      The coordinates for the subdomain tested in the original image
+             ========== ==================================================================
+   :rtype: DataFrame
+

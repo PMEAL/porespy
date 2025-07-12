@@ -1,0 +1,54 @@
+porespy.filters.find_trapped_clusters
+=====================================
+
+.. py:function:: porespy.filters.find_trapped_clusters(im: numpy.typing.ArrayLike, seq: numpy.typing.ArrayLike, outlets: numpy.typing.ArrayLike, conn: Literal['min', 'max'] = 'min', method: Literal['queue', 'labels'] = 'labels')
+
+   Find the trapped regions given an invasion sequence map and specified outlets
+
+   :param im: The boolean image of the porous material with `True` indicating the phase
+              of interest.
+   :type im: ndarray
+   :param seq: An image with invasion sequence values in each voxel.  Regions
+               labelled -1 are considered uninvaded, and regions labelled 0 are
+               considered solid. Because sequence values are used, this function is
+               agnostic to whether the invasion followed drainage or imbibition.
+   :type seq: ndarray
+   :param outlets: An image the same size as ``im`` with ``True`` indicating outlets
+                   and ``False`` elsewhere.
+   :type outlets: ndarray
+   :param conn: Controls the shape of the structuring element used to determine if voxels
+                are connected.  Options are:
+
+                ========= ==================================================================
+                Option    Description
+                ========= ==================================================================
+                'min'     This corresponds to a cross with 4 neighbors in 2D and 6 neighbors
+                          in 3D.
+                'max'     This corresponds to a square or cube with 8 neighbors in 2D and
+                          26 neighbors in 3D.
+                ========= ==================================================================
+   :type conn: str
+   :param method: Controls which method is used to analyze the invasion sequence. Options are:
+
+                  ========= ==================================================================
+                  Option    Description
+                  ========= ==================================================================
+                  'labels'  Uses `scipy.ndimage.label` to find all clusters of invading phase
+                            connected to the outlet at each value of sequence found on the
+                            outlet face. This method is faster if `ibop` was used for the
+                            simulation.
+                  'queue'   Uses a priority queue and walks the invasion process in reverse
+                            to find all trapped voxels. This method is faster if `ibip` or
+                            `qbip` was used for the simulation.
+                  ========= ==================================================================
+   :type method: str
+
+   :returns: **trapped** -- A boolean mask indicating which voxels were found to be trapped.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/find_trapped_clusters.html>`__
+   to view online example.
+

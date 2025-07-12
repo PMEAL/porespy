@@ -1,0 +1,143 @@
+porespy.networks.snow2
+======================
+
+.. py:function:: porespy.networks.snow2(phases, phase_alias=None, boundary_width=3, accuracy='standard', voxel_size=1, sigma=0.4, r_max=4, peaks=None, porosity_map=None, parallel_kw={})
+
+   Applies the SNOW algorithm to each phase indicated in ``phases``.
+
+   This function is a combination of ``snow`` [1]_, ``snow_dual`` [2]_,
+   ``snow_n`` [3]_, and ``snow_parallel`` [4]_ from previous versions.
+
+   :param phases: An image indicating the phase(s) of interest. A watershed is
+                  produced for each integer value in ``phases`` (except 0's). These
+                  are then combined into a single image and one network is extracted
+                  using ``regions_to_network``.
+   :type phases: ndarray
+   :param phase_alias: A mapping between integer values in ``phases`` and phase name
+                       used to add labels to the network. For instance, asssuming a
+                       two-phase image, ``{1: 'void', 2: 'solid'}`` will result in the
+                       labels ``'pore.void'`` and ``'pore.solid'``, as well as
+                       ``'throat.solid_void'``, ``'throat.solid_solid'``, and
+                       ``'throat.void_void'``. If not provided, aliases are assumed to be
+                       ``{1: 'phase1', 2: 'phase2, ...}``.  Phase labels can also be
+                       applied afterward using ``label_phases``.
+   :type phase_alias: dict
+   :param boundary_width: Number of voxels to add to the beginning and end of each axis.
+                          This argument can either be a scalar or a list. If a scalar is
+                          passed, it will be applied to the beginning and end of all axes.
+                          If a list, you can specify the number of voxels for each axis
+                          individually. Here are some examples:
+
+                              - [0, 3, 0]: 3 voxels only applied to the y-axis.
+
+                              - [0, [0, 3], 0]: 3 voxels only applied to the end of y-axis.
+
+                              - [0, [3, 0], 0]: 3 voxels only applied to the beginning of y-axis.
+
+                          The default is to add 3 voxels on both ends of all axes. For each
+                          boundary width that is not 0, a label will automatically be
+                          applied indicating which end of which axis (i.e. ``'xmin'`` and
+                          ``'xmax'``).
+   :type boundary_width: depends
+   :param accuracy: Controls how accurately certain properties are calculated during
+                    the analysis of regions in the ``regions_to_network`` function.
+                    Options are:
+
+                    ========== ============================================================
+                    Value      Description
+                    ========== ============================================================
+                    'standard' Computes the surface areas and perimeters by simply counting
+                               voxels. This is *much* faster but does not properly account
+                               for the rough voxelated nature of the surfaces.
+                    'high'     Computes surface areas using the marching cube method, and
+                               perimeters using the fast marching method. These are
+                               substantially slower but better account for the voxelated
+                               nature of the images.
+                    ========== ============================================================
+   :type accuracy: string
+   :param voxel_size: The resolution of the image, expressed as the length of the sides of a
+                      voxel, so the volume of a voxel would be the product of **voxel_size**
+                      coords.
+   :type voxel_size: tuple (default = (1, 1, 1))
+   :param r_max: The radius of the spherical structuring element to use in the
+                 Maximum filter stage that is used to find peaks. The default is 4.
+   :type r_max: int
+   :param sigma: The standard deviation of the Gaussian filter used in step 1. The
+                 default is 0.4.  If 0 is given then the filter is not applied.
+   :type sigma: float
+   :param peaks: Optionally, it is possible to supply an array containing peaks, which
+                 are used as markers in the watershed segmentation. If a boolean array
+                 is received (``True`` indicating peaks), then ``scipy.ndimage.label``
+                 with cubic connectivity is used to label them. If an integer array is
+                 received then it is assumed the peaks have already been labelled.
+                 This allows for comparison of peak finding algorithms for instance.
+                 If this argument is provided, then ``r_max`` and ``sigma`` are ignored
+                 since these are specfically used in the peak finding process. This
+                 array should contain peaks for all phases, and they are masked by
+                 the ``phases`` argument. If ``peaks`` are provided the parallelization
+                 is disabled.
+   :type peaks: ndarray, optional
+   :param parallel_kw: Dictionary containing the settings for parallelization by chunking. The
+                       optional settings include `divs` (scalar or list of scalars,
+                       default = [2, 2, 2]), `overlap` (scalar or list of scalars, optional),
+                       and `cores` (scalar, default is all available cores).
+
+                       ========== ============================================================
+                       Key        Description
+                       ========== ============================================================
+                       'divs'     The number of divisions to make along each axis of the image.
+                                  If a scalar is provided, it is applied to all axes.
+                                  If a list is provided, each axis will be divided by its
+                                  corresponding number in the list.
+                       'overlap'  The amount of overlap to include when dividing up the image.
+                                  This value will almost always be the size (i.e. radius) of
+                                  the structuring element. If not specified then the amount
+                                  of overlap is inferred from the size of the structuring
+                                  element, in which case the `strel_arg` must be specified.
+                       'cores'    The number of cores that will be used to parallel process all
+                                  domains. If ``None`` then all cores will be used but user can
+                                  specify any integer values to control the memory usage.
+                                  Setting value to 1 will effectively process the chunks in
+                                  serial to minimize memory usage.
+                       ========== ============================================================
+   :type parallel_kw: dict
+
+   :returns: **network** -- A custom object is returned with the following data added as attributes:
+
+             - 'phases'
+                 The original ``phases`` image with any padding applied
+
+             - 'regions'
+                 The watershed segmentation of the image, including boundary
+                 regions if padding was applied
+
+             - 'network'
+                 A dictionary containing all the extracted network properties in
+                 OpenPNM format ('pore.coords', 'throat.conns', etc).
+   :rtype: Results object
+
+   .. rubric:: References
+
+   .. [1] Gostick JT. Versatile and efficient pore network extraction
+      method using marker-based watershed segmentation. Phys. Rev. E. 96,
+      023307 (2017)
+   .. [2] Khan ZA, Tranter TG, Agnaou M, Elkamel A, and Gostick JT, Dual
+      network extraction algorithm to investigate multiple transport
+      processes in porous materials: Image-based modeling of pore and
+      grain-scale processes. Computers and Chemical Engineering. 123(6),
+      64-77 (2019)
+   .. [3] Khan ZA, García-Salaberri PA, Heenan T, Jervis R, Shearing P,
+      Brett D, Elkamel A, Gostick JT, Probing the structure-performance
+      relationship of lithium-ion battery cathodes using pore-networks
+      extracted from three-phase tomograms. Journal of the
+      Electrochemical Society. 167(4), 040528 (2020)
+   .. [4] Khan ZA, Elkamel A, Gostick JT, Efficient extraction of pore
+      networks from massive tomograms via geometric domain decomposition.
+      Advances in Water Resources. 145(Nov), 103734 (2020)
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/networks/reference/snow2.html>`__
+   to view online example.
+

@@ -1,20 +1,12 @@
 .. _modules_index:
 
-#############################
-Module and Function Reference
-#############################
+###
+API
+###
 
-.. automodule:: porespy
+This section contains the complete API reference for all PoreSpy modules and functions.
 
-   .. autosummary::
-      :toctree: generated
-      :recursive:
+.. toctree::
+   :maxdepth: 1
 
-      porespy.generators
-      porespy.filters
-      porespy.metrics
-      porespy.networks
-      porespy.simulations
-      porespy.tools
-      porespy.visualization
-      porespy.io
+   /autoapi/porespy/index

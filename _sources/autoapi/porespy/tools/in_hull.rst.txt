@@ -1,0 +1,24 @@
+porespy.tools.in_hull
+=====================
+
+.. py:function:: porespy.tools.in_hull(points, hull)
+
+   Test if a list of coordinates are inside a given convex hull
+
+   :param points: The spatial coordinates of the points to check
+   :type points: array_like (N x ndims)
+   :param hull: Can be either a convex hull object as returned by
+                ``scipy.spatial.ConvexHull`` or simply the coordinates of the points
+                that define the convex hull.
+   :type hull: scipy.spatial.ConvexHull object **OR** array_like
+
+   :returns: **result** -- A 1D-array Boolean array of length *N* indicating whether or not the
+             given points in ``points`` lies within the provided ``hull``.
+   :rtype: 1D-array
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/tools/reference/in_hull.html>`__
+   to view online example.
+

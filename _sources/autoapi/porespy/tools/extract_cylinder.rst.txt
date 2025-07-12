@@ -1,0 +1,29 @@
+porespy.tools.extract_cylinder
+==============================
+
+.. py:function:: porespy.tools.extract_cylinder(im, r=None, axis=0)
+
+   Returns a cylindrical section of the image of specified radius.
+
+   This is useful for making square images look like cylindrical cores such
+   as those obtained from X-ray tomography.
+
+   :param im: The image of the porous material.  Can be any data type.
+   :type im: ndarray
+   :param r: The radius of the cylinder to extract.  If ``None`` is given then the
+             default is the largest cylinder that can fit inside the specified
+             plane.
+   :type r: scalr
+   :param axis: The axis along with the cylinder will be oriented.
+   :type axis: scalar
+
+   :returns: **image** -- A copy of ``im`` with values outside the cylindrical area set to 0 or
+             ``False``.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/tools/reference/extract_cylinder.html>`__
+   to view online example.
+

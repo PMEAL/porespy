@@ -1,0 +1,34 @@
+porespy.filters.trim_disconnected_voxels
+========================================
+
+.. py:function:: porespy.filters.trim_disconnected_voxels(im: numpy.typing.NDArray, inlets: numpy.typing.NDArray = None, conn: Literal['max', 'min'] = 'min')
+
+   Removes foreground voxels not connected to specified inlets.
+
+   :param im: The image to be processed with `True` values indicating the phase of
+              interest
+   :type im: ndarray
+   :param inlets: The locations of the inlets.  Can either be a boolean mask the
+                  same shape as `im`, or a tuple of indices such as that returned
+                  by the `np.where` function.  Any voxels *not* connected directly to
+                  the inlets will be trimmed.
+   :type inlets: ndarray or tuple of indices
+   :param conn: Can be either `'min'` or `'max'` and controls the shape of the structuring
+                element used to determine voxel connectivity.  The default if `'min'` which
+                imposes the strictest criteria, so that voxels must share a face to be
+                considered connected.
+   :type conn: str
+
+   :returns: **image** -- An array of the same shape as `im`, but with all foreground
+             voxels not connected to the `inlets` removed.
+   :rtype: ndarray
+
+   .. seealso:: :py:obj:`find_disconnected_voxels`, :py:obj:`find_nonpercolating_paths`
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/trim_disconnected_voxels.html>`_
+   <https://porespy.org/examples/filters/reference/trim_small_clusters.html>`__
+   to view online example.
+

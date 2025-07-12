@@ -8,4 +8,4 @@ Tutorials
    :maxdepth: 1
    :glob:
 
-   ../../examples/simulations/tutorials/**
+   ../../../examples/simulations/tutorials/**

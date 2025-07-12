@@ -41,10 +41,12 @@
     }
    ],
    "source": [
-    "import matplotlib.pyplot as plt\n",
-    "import numpy as np\n",
-    "import porespy as ps\n",
     "import inspect\n",
+    "\n",
+    "import matplotlib.pyplot as plt\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()\n",
     "inspect.signature(ps.visualization.show_planes)"
    ]
@@ -226,7 +228,7 @@
     }
    ],
    "source": [
-    "planes = ps.visualization.show_planes(im, spacing = 2)\n",
+    "planes = ps.visualization.show_planes(im, spacing=2)\n",
     "fig, ax = plt.subplots(1, 1, figsize=[8, 8])\n",
     "ax.imshow(planes)\n",
     "ax.axis(False);"

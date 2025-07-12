@@ -21,10 +21,11 @@
    },
    "outputs": [],
    "source": [
-    "import numpy as np\n",
-    "import porespy as ps\n",
-    "import scipy.ndimage as spim\n",
     "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()"
    ]
   },
@@ -110,8 +111,8 @@
     "np.random.seed(0)\n",
     "im = ps.generators.blobs(shape=[500, 500], porosity=0.55, blobiness=1.5)\n",
     "\n",
-    "plt.figure(figsize=[6, 6]);\n",
-    "plt.axis(False);\n",
+    "plt.figure(figsize=[6, 6])\n",
+    "plt.axis(False)\n",
     "plt.imshow(im);"
    ]
   },
@@ -747,12 +748,12 @@
     "\n",
     "x = ps.filters.trim_nonpercolating_paths(im=im, inlets=inlets, outlets=outlets)\n",
     "\n",
-    "fig, ax = plt.subplots(1, 2, figsize=[12, 12]);\n",
-    "ax[0].imshow(x);\n",
-    "ax[0].set_title('Trimmed Nonpercolating Paths', fontdict={'fontsize': 18});\n",
-    "ax[0].axis(False);\n",
-    "ax[1].imshow(x + (im != x)*0.5);\n",
-    "ax[1].set_title('Showing Paths Removed', fontdict={'fontsize': 18});\n",
+    "fig, ax = plt.subplots(1, 2, figsize=[12, 12])\n",
+    "ax[0].imshow(x)\n",
+    "ax[0].set_title('Trimmed Nonpercolating Paths', fontdict={'fontsize': 18})\n",
+    "ax[0].axis(False)\n",
+    "ax[1].imshow(x + (im != x)*0.5)\n",
+    "ax[1].set_title('Showing Paths Removed', fontdict={'fontsize': 18})\n",
     "ax[1].axis(False);"
    ]
   }

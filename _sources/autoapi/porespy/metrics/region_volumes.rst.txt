@@ -1,0 +1,32 @@
+porespy.metrics.region_volumes
+==============================
+
+.. py:function:: porespy.metrics.region_volumes(regions, method='marching_cubes', voxel_size=(1, 1, 1))
+
+   Compute volume of each labelled region in an image
+
+   :param regions: An image with labelled regions
+   :type regions: ndarray
+   :param method: Controls the method used. Options are:
+
+                  ================ ===========================================================
+                  Option           Description
+                  ================ ===========================================================
+                  `marching_cubes` (default) Finds a mesh for each region using the marching
+                                   cubes algorithm from ``scikit-image``, then finds the
+                                   volume of the mesh using the ``trimesh`` package.
+                  `voxel`          Calculates the region volume as the sum of voxels within
+                                   each region.
+                  ================ ===========================================================
+   :type method: string
+
+   :returns: **volumes** -- An array of shape [N by 1] where N is the number of labelled regions
+             in the image.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/mesh_volumes.html>`__
+   to view online example.
+

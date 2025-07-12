@@ -1,0 +1,29 @@
+porespy.visualization.show_3D
+=============================
+
+.. py:function:: porespy.visualization.show_3D(im)
+
+   Rotates a 3D image and creates an angled view for rough 2D visualization.
+
+   Because it rotates the image it can be slow for large images, so is mostly
+   meant for rough checking of small prototype images.
+
+   :param im: The 3D array to be viewed from an angle
+   :type im: ndarray
+
+   :returns: **image** -- A 2D view of the given 3D image
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   Although this is meant to be *quick* it can still take on the order of
+   minutes to render very large images.  It uses `scipy.ndimage.rotate`
+   with no interpolation to view the 3D image from an angle, then casts the
+   result into a 2D projection.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/visualization/reference/show_3D.html>`__
+   to view online example.
+

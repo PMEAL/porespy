@@ -1,0 +1,46 @@
+porespy.networks.find_throat_junctions
+======================================
+
+.. py:function:: porespy.networks.find_throat_junctions(im, sk, juncs, throats, dt=None, l_max=7, mode='fast marching')
+
+   Finds local peaks on the throat segments of a skeleton large enough to be
+   considered junctions.
+
+   :param im: A boolean array with `True` values indicating the void phase (or phase
+              of interest).
+   :type im: ndarray
+   :param sk: A boolean image of the skeleton of the phase of interest
+   :type sk: ndarray
+   :param juncs: An ndarray the same shape as `im` with clusters of junction voxels
+                 uniquely labelled (1...Np).  If a boolean array is provided then a
+                 cluster labeling is performed with full cubic connectivity.
+   :type juncs: ndarray
+   :param throats: An ndarray the same shape as `im` with clusters of throat voxels
+                   uniquely labelled (1...Nt). If a boolean array is provided then a
+                   cluster labeling is performed with full cubic connectivity.
+   :type throats: ndarray
+   :param dt: The distance transform of the image. This is used to find local peaks
+              on the segments defined by `throats`. If these local peaks are sufficiently
+              high and spaced apart from each other they are considered throat junctions.
+              If not provided it will be computed from `im`.
+   :type dt: ndarray (optional)
+   :param l_max: The length of the cubical structuring element to use in the maximum
+                 filter, if that mode is specified.
+   :type l_max: int
+   :param mode: Specifies how to find throat junctions.
+   :type mode: string {'maximum filter' | 'fast marching' }
+
+   :returns: **results** -- A dataclass-like object with the following named attributes:
+
+             =============== =============================================================
+             Atribute        Description
+             =============== =============================================================
+             new_juncs       The newly identified junctions on long throat segments. These
+                             are labelled starting from the 1+ the maximum in `pores`
+             juncs           The original juncs image with labels applied (if original
+                             `pores` image was given as a `bool` array.
+             new_throats     The new throat segments after dividing them at the newly
+                             found junction locations.
+             =============== =============================================================
+   :rtype: dataclass
+

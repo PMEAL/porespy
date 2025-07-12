@@ -1,0 +1,20 @@
+porespy.networks.merge_nearby_juncs
+===================================
+
+.. py:function:: porespy.networks.merge_nearby_juncs(sk, juncs, dt=3)
+
+   Merges nearby junctions found in the skeleton
+
+   :param sk: A boolean image of the skeleton of the phase of interest
+   :type sk: ndarray
+   :param juncs: A boolean array the same shape as `sk` with `True` values indicating
+                 the junction points of the skeleton.
+   :type juncs: ndarray
+   :param dt: The distance transform of the phase of interest. If dt is a scalar,
+              then a hard threshold is used to determine "near" junctions.
+   :type dt: ndarray or int, optional
+
+   :returns: **results** -- A `Results` object with images of `pores` and `throats` each containing
+             the labelled clusters of connected voxels.
+   :rtype: dataclass
+

@@ -1,0 +1,37 @@
+porespy.visualization.satn_to_panels
+====================================
+
+.. py:function:: porespy.visualization.satn_to_panels(satn, im, bins=None, axis=0, slice=None, **kwargs)
+
+   Produces a set of images with each panel containing one saturation
+
+   :param satn: An image with each voxel indicating the global saturation at which
+                it was invaded.  0 indicates solid and -1 indicates uninvaded.
+   :type satn: ndarray
+   :param im: A boolean image with ``True`` values indicating the void voxels and
+              ``False`` for solid.
+   :type im: ndarray
+   :param bins: Indicates for which saturations images should be made. If an ``int``
+                then a list of equally space values between 0 and 1 is generated.
+                If ``None`` (default) than all saturation values in the image are used.
+   :type bins: int
+   :param axis: If the image is 3D, a 2D image is extracted at the specified
+                ``slice`` taken along this axis. If the image is 2D this is ignored.
+   :type axis: int, optional
+   :param slice: If the image is 3D, a 2D image is extracted from this slice
+                 along the given ``axis``.  If ``None``, then a slice at the mid-point
+                 of the axis is returned.  If 2D this is ignored.
+   :type slice: int, optional
+   :param \*\*kwargs: Additional keyword arguments are sent to the ``imshow`` function,
+                      such as ``interpolation``.
+   :type \*\*kwargs: various
+
+   :returns: **fig, ax** -- The same things as returned by ``plt.subplots``
+   :rtype: Matplotlib figure and axis objects
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/visualization/reference/satn_to_panels.html>`__
+   to view online example.
+

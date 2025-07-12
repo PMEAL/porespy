@@ -1,0 +1,52 @@
+porespy.filters.local_thickness
+===============================
+
+.. py:function:: porespy.filters.local_thickness(im: numpy.typing.NDArray, dt: numpy.typing.NDArray = None, method: Literal['bf', 'imj', 'conv', 'dt'] = 'dt', smooth: bool = True, mask: numpy.typing.NDArray = None, approx: bool = False, sizes: int = 25)
+
+   Insert a maximally inscribed sphere at every pixel labelled by sphere radius
+
+   This is a wrapper method for computing local thickness via a variety of
+   different methods.
+
+   :param im: Boolean image of the porous material
+   :type im: ndarray
+   :param dt: The distance transform of the image
+   :type dt: ndarray, optional
+   :param method: Which method to use to compute the local thickness. Options are:
+
+                  ======== ===================================================================
+                  Method   Description
+                  ======== ===================================================================
+                  'dt'     Uses distance transforms to perform erosion and dilation for each
+                           radius in the image
+                  'bf'     Uses brute-force to inserts spheres at each voxel
+                  'imj'    Uses the brute-force method but reduces the number of insertion
+                           sites by 80-90% to speed up the process
+                  'conv'   Uses FFT-based convolution to perform erosion and dilation for
+                           each radius in the image
+                  ======== ===================================================================
+   :type method: str
+   :param sizes: This is only used if the method is `dt` or `conv`. If a list of values is
+                 provided they are used directly. If a scalar is provided then that number
+                 of points spanning the min and max of the distance transform are used.
+                 If `None`, then all the unique values in the distance transform are used,
+                 which may become time consuming. This can be sped up if `dt` is provided
+                 and rounded to the nearest integer first.
+   :type sizes: array_like or scalar
+   :param smooth: Indicates if protrusions should be removed from the faces of the spheres
+                  or not. Default is `True`.
+   :type smooth: bool, optional
+   :param mask: This is only used if the method is `bf` or `imj`.  A boolean mask indicating
+                which sites to insert spheres at. If not provided then all `True` values in
+                `im` are used.
+   :type mask: ndarray, optional
+   :param approx: This is only used if the method is `imj`. If `True` the algorithm is more
+                  agressive at skipping voxels to process, which speeds things up, but this
+                  sacrifices accuracy in terms of a voxel-by-voxel match with the reference
+                  implementation. The default is `False`, meaning full accuracy is the default.
+   :type approx: bool, optional
+
+   :returns: **lt** -- The local thickness of the image with each voxel labelled according to the
+             radius of the largest sphere which overlaps it
+   :rtype: ndarray
+

@@ -1,0 +1,35 @@
+porespy.filters.size_to_pc
+==========================
+
+.. py:function:: porespy.filters.size_to_pc(im, size, f=None, **kwargs)
+
+   Converts size map into capillary pressure map
+
+   :param im: A Numpy array with ``True`` values indicating the void space.
+   :type im: ndarray
+   :param size: The image containing invasion size values in each voxel. Solid
+                should be indicated as 0's and uninvaded voxels as -1.
+   :type size: ndarray
+   :param f: A function to compute the capillary pressure which receives `size` as
+             the first argument, followed by any additional `**kwargs`. If not
+             provided then the Washburn equation is used, which requires `theta` and
+             `sigma` to be specified as additional keyword arguments.
+   :type f: function handle, optional
+   :param \*\*kwargs: All additional keyword arguments are passed on to `f`.
+   :type \*\*kwargs: Key word arguments
+
+   :returns: **pc** -- An image with each voxel containing the capillary pressure at which it was
+             invaded. Any uninvaded voxels in `size` are set to `np.inf` which is meant
+             to indicate that these voxels are never invaded.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   The function `f` should be of the form:
+
+   .. code-block::
+
+       def func(r, a, b):
+           pc = ...  # Some equation for capillary pressure using r, a and b
+           return pc
+

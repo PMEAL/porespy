@@ -1,0 +1,39 @@
+porespy.filters.satn_to_seq
+===========================
+
+.. py:function:: porespy.filters.satn_to_seq(satn, im, residual=None, mode='drainage')
+
+   Converts a saturaiton map to a sequence map
+
+   :param satn: A Numpy array with the value in each voxel indicating the global
+                saturation at the point it was invaded. -1 indicates a voxel that
+                not invaded, and 0 indicates solid phase.
+   :type satn: ndarray
+   :param im: A Numpy array with ``True`` values indicating the void space.
+   :type im: ndarray
+   :param residual: An `ndarray` with `True` values indicating the locations of any residual
+                    phase.  If this is not provided, it will be assumed that no residual was
+                    present, which will result in an incorrect conversion to sequence if this
+                    assumption is not correct.
+   :type residual: ndarray
+   :param mode: Controls how the saturations are converted to sequence. The options are:
+
+                ============= ==============================================================
+                `mode`        Description
+                ============= ==============================================================
+                'drainage'    Non-wetting fluid displaces wetting fluid
+                'imbibition'  Wetting fluid dispalces the non-wetting fluid
+                ============= ==============================================================
+   :type mode: str
+
+   :returns: **seq** -- A Numpy array the same shape as `satn` with each voxel value indicating
+             the sequence in which it was invaded, according to the specified `mode`.
+             Solid voxels are indicated by 0 and uninvaded by -1.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/satn_to_seq.html>`__
+   to view online example.
+

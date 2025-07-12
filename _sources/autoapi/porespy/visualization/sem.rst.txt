@@ -1,0 +1,26 @@
+porespy.visualization.sem
+=========================
+
+.. py:function:: porespy.visualization.sem(im, axis=0)
+
+   Simulates an SEM image looking into the porous material.
+
+   Features are colored according to their depth into the image, so
+   darker features are further away.
+
+   :param im: ndarray of the porous material with the solid phase marked as 1 or
+              True
+   :type im: array_like
+   :param axis: Specifes the axis along which the camera will point.
+   :type axis: int
+
+   :returns: **image** -- A 2D greyscale image suitable for use in matplotlib's `imshow`
+             function.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/visualization/reference/sem.html>`__
+   to view online example.
+

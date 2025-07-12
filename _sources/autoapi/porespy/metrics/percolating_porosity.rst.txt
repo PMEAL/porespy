@@ -1,0 +1,32 @@
+porespy.metrics.percolating_porosity
+====================================
+
+.. py:function:: porespy.metrics.percolating_porosity(im, axis=0, inlets=None, outlets=None, conn='min')
+
+   Finds volume fraction of void space which belongs to percolating paths
+   across the domain in the direction specified.
+
+   :param im: Image of the void space with `True` indicating void space
+   :type im: ndarray
+   :param axis: The axis along which percolation is checked
+   :type axis: int
+   :param conn: Can be either `'min'` or `'max'` and controls the shape of the structuring
+                element used to determine voxel connectivity.  The default if `'min'` which
+                imposes the strictest criteria, so that voxels must share a face to be
+                considered connected.
+   :type conn: str
+   :param inlets: Boolean arrays indicating the locations of the inlets and outlets. These
+                  are useful if the domain is not cubic or if special inlet and outlet
+                  locations are desired.
+   :type inlets: ndarray
+   :param outlets: Boolean arrays indicating the locations of the inlets and outlets. These
+                   are useful if the domain is not cubic or if special inlet and outlet
+                   locations are desired.
+   :type outlets: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/percolating_porosity.html>`_
+   to view online example.
+

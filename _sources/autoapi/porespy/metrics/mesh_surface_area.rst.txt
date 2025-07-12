@@ -1,0 +1,31 @@
+porespy.metrics.mesh_surface_area
+=================================
+
+.. py:function:: porespy.metrics.mesh_surface_area(mesh=None, verts=None, faces=None)
+
+   Calculate the surface area of a meshed region
+
+   :param mesh: The tuple returned from the ``mesh_region`` function
+   :type mesh: tuple
+   :param verts: An N-by-ND array containing the coordinates of each mesh vertex
+   :type verts: array
+   :param faces: An N-by-ND array indicating which elements in ``verts`` form a mesh
+                 element.
+   :type faces: array
+
+   :returns: **surface_area** -- The surface area of the mesh, calculated by
+             ``skimage.measure.mesh_surface_area``
+   :rtype: float
+
+   .. rubric:: Notes
+
+   This function simply calls ``scikit-image.measure.mesh_surface_area``, but
+   it allows for the passing of the ``mesh`` tuple returned by the
+   ``mesh_region`` function, entirely for convenience.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/mesh_surface_area.html>`__
+   to view online example.
+

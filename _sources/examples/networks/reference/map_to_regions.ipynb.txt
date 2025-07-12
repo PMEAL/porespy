@@ -21,10 +21,11 @@
    },
    "outputs": [],
    "source": [
-    "import numpy as np\n",
-    "import porespy as ps\n",
-    "import openpnm as op\n",
     "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "import openpnm as op\n",
+    "\n",
+    "import porespy as ps\n",
     "\n",
     "ws = op.Workspace()\n",
     "ws.settings['loglevel'] = 50\n",
@@ -140,7 +141,7 @@
    ],
    "source": [
     "im = ps.generators.blobs(shape=[400, 400], porosity=0.6)\n",
-    "ps.imshow(im);\n",
+    "ps.imshow(im)\n",
     "snow_output = ps.networks.snow2(im, voxel_size=1)\n",
     "pn = op.io.network_from_porespy(snow_output.network)"
    ]

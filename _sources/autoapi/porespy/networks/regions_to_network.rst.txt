@@ -1,0 +1,105 @@
+porespy.networks.regions_to_network
+===================================
+
+.. py:function:: porespy.networks.regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard', porosity_map=None)
+
+   Analyzes an image that has been partitioned into pore regions and extracts
+   the pore and throat geometry as well as network connectivity.
+
+   :param regions: An image of the material partitioned into individual regions.
+                   Zeros in this image are ignored.
+   :type regions: ndarray
+   :param phases: An image indicating to which phase each voxel belongs. The returned
+                  network contains a 'pore.phase' array with the corresponding value.
+                  If not given a value of 1 is assigned to every pore.
+   :type phases: ndarray, optional
+   :param voxel_size: The resolution of the image, expressed as the length of one side of a
+                      voxel, so the volume of a voxel would be **voxel_size**-cubed.
+   :type voxel_size: scalar (default = 1)
+   :param accuracy: Controls how accurately certain properties are calculated. Options are:
+
+                    ========== ============================================================
+                    Value      Description
+                    ========== ============================================================
+                    'standard' Computes the surface areas and perimeters by simply counting
+                               voxels. This is *much* faster but does not properly account
+                               for the rough voxelated nature of the surfaces.
+                    'high'     Computes surface areas using the marching cube method, and
+                               perimeters using the fast marching method. These are
+                               substantially slower but better account for the voxelated
+                               nature of the images.
+                    ========== ============================================================
+   :type accuracy: string
+   :param porosity_map: This is not supported for this version of the function.
+   :type porosity_map: None
+
+   :returns: **net** -- A dictionary containing all the pore and throat size data, as well as
+             the network topological information.  The dictionary names use the
+             OpenPNM convention (i.e. 'pore.coords', 'throat.conns').
+   :rtype: dict
+
+   .. rubric:: Notes
+
+   The meaning of each of the values returned in ``net`` are outlined below:
+
+   'pore.region_label'
+       The region labels corresponding to the watershed extraction. The
+       pore indices and regions labels will be offset by 1, so pore 0
+       will be region 1.
+   'throat.conns'
+       An *Nt-by-2* array indicating which pores are connected to each other
+   'pore.region_label'
+       Mapping of regions in the watershed segmentation to pores in the
+       network
+   'pore.local_peak'
+       The coordinates of the location of the maxima of the distance transform
+       performed on the pore region in isolation
+   'pore.global_peak'
+       The coordinates of the location of the maxima of the distance transform
+       performed on the full image
+   'pore.geometric_centroid'
+       The center of mass of the pore region as calculated by
+       ``skimage.measure.center_of_mass``
+   'throat.global_peak'
+       The coordinates of the location of the maxima of the distance transform
+       performed on the full image
+   'pore.region_volume'
+       The volume of the pore region computed by summing the voxels
+   'pore.volume'
+       The volume of the pore found by as volume of a mesh obtained from the
+       marching cubes algorithm
+   'pore.surface_area'
+       The surface area of the pore region as calculated by either counting
+       voxels or using the fast marching method to generate a tetramesh (if
+       ``accuracy`` is set to ``'high'``.)
+   'throat.cross_sectional_area'
+       The cross-sectional area of the throat found by either counting
+       voxels or using the fast marching method to generate a tetramesh (if
+       ``accuracy`` is set to ``'high'``.)
+   'throat.perimeter'
+       The perimeter of the throat found by counting voxels on the edge of
+       the region defined by the intersection of two regions.
+   'pore.inscribed_diameter'
+       The diameter of the largest sphere inscribed in the pore region. This
+       is found as the maximum of the distance transform on the region in
+       isolation.
+   'pore.extended_diameter'
+       The diamter of the largest sphere inscribed in overal image, which
+       can extend outside the pore region. This is found as the local maximum
+       of the distance transform on the full image.
+   'throat.inscribed_diameter'
+       The diameter of the largest sphere inscribed in the throat.  This
+       is found as the local maximum of the distance transform in the area
+       where to regions meet.
+   'throat.total_length'
+       The length between pore centered via the throat center
+   'throat.direct_length'
+       The length between two pore centers on a straight line between them
+       that does not pass through the throat centroid.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/networks/reference/regions_to_network.html>`__
+   to view online example.
+

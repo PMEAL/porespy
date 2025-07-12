@@ -1,0 +1,40 @@
+porespy.metrics.boxcount
+========================
+
+.. py:function:: porespy.metrics.boxcount(im, bins=10)
+
+   Calculates the fractal dimension of an image using the tiled box counting
+   method [1a]_
+
+   :param im: A boolean image of the porous material with `True` values indicating the
+              phase of interest.
+   :type im: ndarray
+   :param bins: The number of box sizes to use. The default is 10 sizes logarithmically
+                spaced between 1 and ``min(im.shape)``. If an array is provided, this is
+                used directly.
+   :type bins: int or array_like, optional
+
+   :returns: **results** -- An object possessing the following attributes:
+
+             ========== =================================================================
+             Attribute  Description
+             ========== =================================================================
+             size       An array containing the specific box sizes used
+             count      An array containing the number of boxes of each size that
+                        contain both solid and void
+             slope      The gradient of ``count``. This has the same number of elements
+                        as ``count``.
+             ========== =================================================================
+   :rtype: dataclass-like
+
+   .. rubric:: References
+
+   .. [1a] Read more about box counting on `Wikipedia
+      <https://en.wikipedia.org/wiki/Box_counting>`_
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/boxcount.html>`_
+   to view online example.
+

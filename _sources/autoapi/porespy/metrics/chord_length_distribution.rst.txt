@@ -1,0 +1,70 @@
+porespy.metrics.chord_length_distribution
+=========================================
+
+.. py:function:: porespy.metrics.chord_length_distribution(im, bins=10, log=False, voxel_size=1, normalization='count')
+
+   Determines the distribution of chord lengths in an image containing chords.
+
+   :param im: An image with chords drawn in the pore space, as produced by
+              ``apply_chords`` or ``apply_chords_3d``.  ``im`` can be either boolean,
+              in which case each chord will be identified using ``scipy.ndimage.label``,
+              or numerical values in case it is assumed that chords have already been
+              identifed and labeled. In both cases, the size of each chord will be
+              computed as the number of voxels belonging to each labelled region.
+   :type im: ndarray
+   :param bins: If a scalar is given it is interpreted as the number of bins to use,
+                and if an array is given they are used as the bins directly.
+   :type bins: scalar or array_like
+   :param log: If ``True`` (default) the size data is converted to log (base-10)
+               values before processing.  This can help to plot wide size
+               distributions or to better visualize the in the small size region.
+               Note that you should not anti-log the radii values in the retunred
+               ``tuple``, since the binning is performed on the logged radii values.
+   :type log: boolean
+   :param normalization: Indicates how to normalize the bin heights.  Options are:
+
+                         *'count' or 'number'*
+                             (default) This simply counts the number of chords in each bin in
+                             the normal sense of a histogram.  This is the rigorous definition
+                             according to Torquato [1d]_.
+
+                         *'length'*
+                             This multiplies the number of chords in each bin by the
+                             chord length (i.e. bin size).  The normalization scheme accounts for
+                             the fact that long chords are less frequent than shorter chords,
+                             thus giving a more balanced distribution.
+   :type normalization: string
+   :param voxel_size: The size of a voxel side in preferred units.  The default is 1, so the
+                      user can apply the scaling to the returned results after the fact.
+   :type voxel_size: scalar
+
+   :returns: **result** -- A custom object with the following data added as named attributes:
+
+             =============== =============================================================
+             Attribute       Description
+             =============== =============================================================
+             *L* or *LogL*   Chord length, equivalent to ``bin_centers``
+             *pdf*           Probability density function
+             *cdf*           Cumulative density function
+             *relfreq*       Relative frequency chords in each bin.  The sum of all bin
+                             heights is 1.0.  For the cumulative relativce, use *cdf*
+                             which is already normalized to 1.
+             *bin_centers*   The center point of each bin
+             *bin_edges*     Locations of bin divisions, including 1 more value than
+                             the number of bins
+             *bin_widths*    Useful for passing to the ``width`` argument of
+                             ``matplotlib.pyplot.bar``
+             =============== =============================================================
+   :rtype: Results object
+
+   .. rubric:: References
+
+   .. [1d] Torquato, S. Random Heterogeneous Materials: Microstructure and
+      Macroscopic Properties. Springer, New York (2002) - See page 45 & 292
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/chord_length_distribution.html>`__
+   to view online example.
+

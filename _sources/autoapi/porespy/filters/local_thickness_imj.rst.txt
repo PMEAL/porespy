@@ -1,0 +1,29 @@
+porespy.filters.local_thickness_imj
+===================================
+
+.. py:function:: porespy.filters.local_thickness_imj(im, dt=None, smooth=False, approx=False)
+
+   Insert a maximally inscribed sphere at every pixel labelled by sphere radius
+
+   :param im: Boolean image of the porous material
+   :type im: ndarray
+   :param dt: The distance transform of the image
+   :type dt: ndarray, optional
+   :param smooth: Indicates if protrusions should be removed from the faces of the spheres
+                  or not. Default is `True`.
+   :type smooth: bool, optional
+   :param approx: If `True` the algorithm is more agressive at skipping voxels to process,
+                  which speeds things up, but this sacrifices accuracy in terms of a
+                  voxel-by-voxel match with the reference implementation. The default is
+                  `False`, meaning full accuracy is the default.
+   :type approx: bool, optional
+
+   :returns: **lt** -- The local thickness of the image with each voxel labelled according to the
+             radius of the largest sphere which overlaps it
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   This version uses some logic to only insert spheres at locations which
+   are not fully overlapped by larger spheres to reduce the number of insertions
+

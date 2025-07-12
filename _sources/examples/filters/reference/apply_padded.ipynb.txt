@@ -21,12 +21,13 @@
    },
    "outputs": [],
    "source": [
-    "import numpy as np\n",
-    "import porespy as ps\n",
-    "import scipy.ndimage as spim\n",
     "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
     "import skimage\n",
     "from edt import edt\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()"
    ]
   },
@@ -139,11 +140,11 @@
     "x1 = ps.filters.apply_padded(im=im, pad_width=1, func=func, pad_val=1)\n",
     "x2 = ps.filters.apply_padded(im=im, pad_width=100, func=func, pad_val=1)\n",
     "\n",
-    "fig, ax = plt.subplots(1, 2, figsize=[12, 12]);\n",
-    "ax[0].imshow(x1);\n",
+    "fig, ax = plt.subplots(1, 2, figsize=[12, 12])\n",
+    "ax[0].imshow(x1)\n",
     "ax[0].axis(False)\n",
     "ax[0].set_title('pad_width = 1')\n",
-    "ax[1].imshow(x2);\n",
+    "ax[1].imshow(x2)\n",
     "ax[1].axis(False)\n",
     "ax[1].set_title('pad_width = 100');"
    ]
@@ -203,7 +204,7 @@
     "x3 = ps.filters.apply_padded(im=im, pad_width=0, func=func, pad_val=1, footprint=ps.tools.ps_disk(15))\n",
     "x4 = ps.filters.apply_padded(im=im, pad_width=50, func=func, pad_val=1, footprint=ps.tools.ps_disk(15))\n",
     "\n",
-    "fig, ax = plt.subplots(1, 2, figsize=[12, 12]);\n",
+    "fig, ax = plt.subplots(1, 2, figsize=[12, 12])\n",
     "ax[0].imshow(x3)\n",
     "ax[0].axis(False)\n",
     "ax[0].set_title('With no padding')\n",
@@ -268,11 +269,11 @@
     "x5 = ps.filters.apply_padded(im=im, pad_width=10, func=func, pad_val=1)\n",
     "x6 = ps.filters.apply_padded(im=im, pad_width=10, func=func, pad_val=0)\n",
     "\n",
-    "fig, ax = plt.subplots(1, 2, figsize=[12, 12]);\n",
-    "ax[0].imshow(x5);\n",
+    "fig, ax = plt.subplots(1, 2, figsize=[12, 12])\n",
+    "ax[0].imshow(x5)\n",
     "ax[0].axis(False)\n",
     "ax[0].set_title('pad_val = 1')\n",
-    "ax[1].imshow(x6);\n",
+    "ax[1].imshow(x6)\n",
     "ax[1].axis(False)\n",
     "ax[1].set_title('pad_val = 0');"
    ]

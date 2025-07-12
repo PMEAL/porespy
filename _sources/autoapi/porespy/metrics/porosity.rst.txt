@@ -1,0 +1,42 @@
+porespy.metrics.porosity
+========================
+
+.. py:function:: porespy.metrics.porosity(im, mask=None, fill_closed=False, fill_surface=False)
+
+   Calculates the porosity of an image assuming 1's are void space and 0's
+   are solid phase.
+
+   :param im: Image of the void space with 1's indicating void phase (or ``True``)
+              and 0's indicating the solid phase (or ``False``). All other values
+              are ignored (see Notes).
+   :type im: ndarray
+   :param mask: An image the same size as `im` with `True` values indicting the domain. This
+                argument is optional, but can be provided for images that don't fill the
+                entire array, like cylindrical cores.  Note that setting values in `im`
+                to 2 will also exclude them from consideration so provides the same effect
+                as `mask`, but providing a `mask` is usually much easier.
+   :type mask: ndarray
+   :param fill_closed: A flag to indicate if closed pores (not connected to any image boundary)
+                       should be filled or not before computing the porosity.
+   :type fill_closed: bool (default = `False`)
+   :param fill_surface: A flag to indicate if surface pores connected only to one surface should be
+                        filled or not before computing the porosity.
+   :type fill_surface: bool (default = `False`)
+
+   :returns: **porosity** -- Calculated as the sum of all 1's divided by the sum of all 1's and 0's.
+   :rtype: float
+
+   .. seealso:: :py:obj:`phase_fraction`, :py:obj:`find_outer_region`
+
+   .. rubric:: Notes
+
+   This function assumes void is represented by 1 and solid by 0, and all
+   other values are ignored.  This is useful, for example, for images of
+   cylindrical cores, where all voxels outside the core are labelled with 2.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/porosity.html>`__
+   to view online example.
+

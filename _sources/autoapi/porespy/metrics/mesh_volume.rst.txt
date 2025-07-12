@@ -1,0 +1,25 @@
+porespy.metrics.mesh_volume
+===========================
+
+.. py:function:: porespy.metrics.mesh_volume(region, voxel_size=(1.0, 1.0, 1.0))
+
+   Compute the volume of a single region by meshing it
+
+   :param region: An image with a single region labelled as ``True`` (or > 0)
+   :type region: ndarray
+   :param voxel_size: The resolution of the image, expressed as the length of one side of a
+                      voxel, so the volume of a voxel would be **voxel_size**-cubed.  The
+                      default is 1.
+   :type voxel_size: tuple
+
+   :returns: **volume** -- The volume of the region computed by applyuing the marching cubes
+             algorithm to the region, then finding the mesh volume using the
+             ``trimesh`` package.
+   :rtype: float
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/mesh_volume.html>`__
+   to view online example.
+

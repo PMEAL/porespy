@@ -38,11 +38,14 @@
     }
    ],
    "source": [
+    "import inspect\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
-    "import porespy as ps\n",
     "from skimage.morphology import disk\n",
-    "import inspect\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "inspect.signature(ps.metrics.region_surface_areas)"
    ]
   },
@@ -95,7 +98,7 @@
    ],
    "source": [
     "np.random.seed(10)\n",
-    "im = ps.generators.blobs(shape=[200,200])\n",
+    "im = ps.generators.blobs(shape=[200, 200])\n",
     "snow = ps.filters.snow_partitioning(im)\n",
     "regions = snow.regions\n",
     "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
@@ -229,13 +232,13 @@
     }
    ],
    "source": [
-    "voxel_size=1e-3\n",
+    "voxel_size = 1e-3\n",
     "surface_areas = ps.metrics.region_surface_areas(regions=regions, voxel_size=voxel_size)\n",
     "fig, ax = plt.subplots(1, 2, figsize=[10, 4])\n",
-    "ax[0].hist(surface_areas, edgecolor='k');\n",
-    "ax[0].set_title(\"PDF scaling included in the result\");\n",
+    "ax[0].hist(surface_areas, edgecolor='k')\n",
+    "ax[0].set_title(\"PDF scaling included in the result\")\n",
     "surface_areas = ps.metrics.region_surface_areas(regions=regions)\n",
-    "ax[1].hist(surface_areas*voxel_size**2, edgecolor='k');\n",
+    "ax[1].hist(surface_areas*voxel_size**2, edgecolor='k')\n",
     "ax[1].set_title(\"PDF scaling after the result\");"
    ]
   },

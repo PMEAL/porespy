@@ -1,0 +1,26 @@
+porespy.beta.tortuosity_bt
+==========================
+
+.. py:function:: porespy.beta.tortuosity_bt(im, block_size=None, method='chords', use_dask=True)
+
+   Computes the tortuosity of an image in all directions
+
+   :param im: The boolean image of the materials with `True` indicating the void space
+   :type im: ndarray
+   :param block_size: The size of the blocks which the image will be split into. If not provided,
+                      it will be determined by the provided method in `method`
+   :type block_size: int
+   :param method: The method to use to determine block sizes if `block_size` is not provided
+
+                  =========== ==================================================================
+                  method      description
+                  =========== ==================================================================
+                  'chords'    Uses `apply_chords_3D` from Porespy to determine the longest chord
+                              possible in the image as the length of each block.
+                  'dt'        Uses the maximum length of the distance transform to determine
+                              the length of each block.
+                  =========== ==================================================================
+   :type method: str
+   :param use_dask: A boolean determining the usage of `dask` for parallel processing.
+   :type use_dask: bool
+

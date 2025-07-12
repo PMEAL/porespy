@@ -22,11 +22,12 @@
    },
    "outputs": [],
    "source": [
-    "import numpy as np\n",
-    "import porespy as ps\n",
-    "import matplotlib.cm as cm\n",
     "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
     "from skimage.morphology import binary_dilation\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()\n",
     "np.random.seed(1)"
    ]
@@ -2199,9 +2200,9 @@
     "dt_peak[peaks_dilated > 0] = np.nan\n",
     "ax[1, 0].imshow(dt_peak, origin='lower')\n",
     "ax[1, 1].imshow(ps.tools.randomize_colors(snow_out.regions), origin='lower')\n",
-    "ax[0, 0].set_title(\"Binary image\");\n",
-    "ax[0, 1].set_title(\"Distance transform\");\n",
-    "ax[1, 0].set_title(\"Distance transform peaks\");\n",
+    "ax[0, 0].set_title(\"Binary image\")\n",
+    "ax[0, 1].set_title(\"Distance transform\")\n",
+    "ax[1, 0].set_title(\"Distance transform peaks\")\n",
     "ax[1, 1].set_title(\"Segmentation\");"
    ]
   }

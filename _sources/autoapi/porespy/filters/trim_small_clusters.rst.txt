@@ -1,0 +1,24 @@
+porespy.filters.trim_small_clusters
+===================================
+
+.. py:function:: porespy.filters.trim_small_clusters(im: numpy.typing.NDArray, min_size: int = 1)
+
+   Removes clusters voxel of a given size or smaller
+
+   :param im: The binary image from which voxels are to be removed.
+   :type im: ndarray
+   :param min_size: The threshold size of clusters to trim.  As clusters with this
+                    many voxels or fewer will be trimmed.  The default is 1 so only
+                    single voxels are removed.
+   :type min_size: scalar
+
+   :returns: **im** -- A copy of `im` with clusters of voxels smaller than the given
+             `size` removed.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/trim_small_clusters.html>`_
+   to view online example.
+

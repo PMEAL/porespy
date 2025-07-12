@@ -1,0 +1,66 @@
+porespy.filters.snow_partitioning
+=================================
+
+.. py:function:: porespy.filters.snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None)
+
+   Partition the void space into pore regions using a marker-based
+   watershed algorithm
+
+   :param im: A boolean image of the domain, with ``True`` indicating the pore
+              space and ``False`` elsewhere.
+   :type im: array_like
+   :param dt: The distance transform of the pore space.  This is done
+              automatically if not provided, but if the distance transform has
+              already been computed then supplying it can save some time.
+   :type dt: array_like, optional
+   :param r_max: The radius of the spherical structuring element to use in the
+                 Maximum filter stage that is used to find peaks. The default is 4.
+   :type r_max: int
+   :param sigma: The standard deviation of the Gaussian filter used in step 1. The
+                 default is 0.4.  If 0 is given then the filter is not applied,
+                 which is useful if a distance transform is supplied as the ``im``
+                 argument that has already been processed.
+   :type sigma: float
+   :param peaks: Optionally, it is possible to supply an array containing peaks, which
+                 are used as markers in the watershed segmentation. If a boolean array
+                 is received (``True`` indicating peaks), then ``scipy.ndimage.label``
+                 with cubic connectivity is used to label them. If an integer array is
+                 received then it is assumed the peaks have already been labelled.
+                 This allows for comparison of peak finding algorithms for instance.
+                 If this argument is provided, then ``r_max`` and ``sigma`` are ignored
+                 since these are specfically used in the peak finding process.
+   :type peaks: ndarray, optional
+
+   :returns: **results** -- A custom object with the following data as attributes:
+
+             ============ ==========================================================
+             Item         Description
+             ============ ==========================================================
+             ``im``       The binary image of the void space
+             ``dt``       The distance transform of the image
+             ``peaks``    The peaks of the distance transform after applying the
+                          steps of the SNOW algorithm
+             ``regions``  The void space partitioned into pores using a marker
+                          based watershed with the peaks found by the SNOW algorithm
+             ============ ==========================================================
+   :rtype: Results object
+
+   .. rubric:: Notes
+
+   The SNOW network extraction algorithm (Sub-Network of an
+   Over-segmented Watershed) was designed to handle to perculiarities of
+   high porosity materials, but it applies well to other materials as
+   well.
+
+   .. rubric:: References
+
+   [1] Gostick, J. "A versatile and efficient network extraction
+   algorithm using marker-based watershed segmenation".  Physical Review
+   E. (2017)
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/snow_partitioning.html>`__
+   to view online example.
+

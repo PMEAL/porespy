@@ -1,0 +1,25 @@
+porespy.tools.overlay
+=====================
+
+.. py:function:: porespy.tools.overlay(im1, im2, c)
+
+   Overlays ``im2`` onto ``im1``, given voxel coords of center of ``im2``
+   in ``im1``.
+
+   :param im1: Original voxelated image
+   :type im1: ndarray
+   :param im2: Template voxelated image
+   :type im2: ndarray
+   :param c: [x, y, z] coordinates in ``im1`` where ``im2`` will be centered
+   :type c: array_like
+
+   :returns: **image** -- A modified version of ``im1``, with ``im2`` overlaid at the specified
+             location
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/tools/reference/overlay.html>`__
+   to view online example.
+

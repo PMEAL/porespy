@@ -1,0 +1,36 @@
+porespy.simulations.tortuosity_fd
+=================================
+
+.. py:function:: porespy.simulations.tortuosity_fd(im, axis, solver=None)
+
+   Calculates the tortuosity of image in the specified direction.
+
+   :param im: The binary image to analyze with ``True`` indicating phase of interest
+   :type im: ndarray
+   :param axis: The axis along which to apply boundary conditions
+   :type axis: int
+
+   :returns: **results** -- The following values are computed and returned as attributes:
+
+             =================== ===================================================
+             Attribute           Description
+             =================== ===================================================
+             tortuosity          Calculated using the ``effective_porosity`` as
+                                 :math:`\tau = \frac{D_{AB}}{D_{eff}} \cdot
+                                 \varepsilon`.
+             effective_porosity  Porosity of the image after applying
+                                 ``trim_nonpercolating_paths``.  This removes
+                                 disconnected voxels which cause singular matrices.
+             original_porosity   Porosity of the as-received the image
+             formation_factor    Found as :math:`D_{AB}/D_{eff}`.
+             im_conc             An image containing the concentration values from
+                                 the simulation.
+             =================== ===================================================
+   :rtype: Results object
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/simulations/reference/tortuosity_fd.html>`__
+   to view online example.
+

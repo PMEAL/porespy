@@ -1,0 +1,28 @@
+porespy.metrics.porosity_by_type
+================================
+
+.. py:function:: porespy.metrics.porosity_by_type(im, conn='min')
+
+   Computes different types of porosity in an image including total, closed, and
+   surface
+
+   :param im: An image of the void space with 1 (or `True`) representing the phase of
+              interest.  The bulk volume will be computed as the sum of 0's and 1's.
+   :type im: ndarray
+   :param conn: Can be either `'min'` or `'max'` and controls the shape of the structuring
+                element used to determine voxel connectivity.  The default if `'min'` which
+                imposes the strictest criteria, so that voxels must share a face to be
+                considered connected.
+   :type conn: str
+
+   :returns: A dataclass-like object with the following attributes:
+
+             ==========  ================================================================
+             Attribute   Description
+             ==========  ================================================================
+             `total`     The total fraction of the image which is void phase
+             `closed`    The fraction of the image which consists isolated voids
+             `surface`   The fracton of the image which are pores only the surfaces
+             ==========  ================================================================
+   :rtype: results
+

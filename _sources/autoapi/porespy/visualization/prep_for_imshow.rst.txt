@@ -1,0 +1,56 @@
+porespy.visualization.prep_for_imshow
+=====================================
+
+.. py:function:: porespy.visualization.prep_for_imshow(im, mask=None, axis=0, slice=None)
+
+   Adjusts the range of greyscale values in an image to improve visualization
+   by ``matplotlib.pyplot.imshow``
+
+   :param im: The image to show. If ``im`` includes ``+inf`` or ``-inf`` values,
+              they are converted to 1 above or below the minimum and maximum finite
+              values in ``im``, respectively.
+   :type im: ndimage
+   :param mask: An image of the porous material with ``True`` indicating voxels of
+                interest. The ``False`` voxels are excluded from the ``vmax`` and
+                ``vmin`` calculation.
+   :type mask: ndimage, optional
+   :param axis: If the image is 3D, a 2D image is returned with the specified
+                ``slice`` taken along this axis (default = 0).  If ``None`` then a 3D
+                image is returned. If the image is 2D this is ignored.
+   :type axis: int, optional
+   :param slice: If ``im`` is 3D, a 2D image is be returned showing this slice
+                 along the given ``axis``.  If ``None``, then a slice at the mid-point
+                 of the axis is returned.  If ``axis`` is ``None`` or the image is 2D
+                 this is ignored.
+   :type slice: int, optional
+
+   :returns: **kwargs** -- A python dicionary designed to be passed directly to
+             ``matplotlib.pyplot.imshow`` using the "\*\*kwargs" features (i.e.
+             ``plt.imshow(\*\*data)``).  It contains the following key-value pairs:
+
+             =============== =======================================================
+             key             value
+             =============== =======================================================
+             'X'             The adjusted image with ``+inf`` replaced by
+                             ``vmax + 1``, and all solid voxels replacd by
+                             ``np.nan`` to show as white in ``imshow``
+             'vmax'          The maximum of ``values`` not including ``+inf`` or
+                             values in ``False`` voxels in ``mask``.
+             'vmin'          The minimum of ``values`` not including ``-inf`` or
+                             values in ``False`` voxels in ``mask``.
+             'interpolation' Set to 'none' to avoid artifacts in ``imshow``
+             'origin'        Set to 'lower' to put (0, 0) on the bottom-left corner
+             =============== =======================================================
+   :rtype: dict
+
+   .. rubric:: Notes
+
+   If any of the *extra* items are unwanted they can be removed with
+   ``del data['interpolation']`` or ``data.pop('interpolation')``.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/visualization/reference/prep_for_imshow.html>`__
+   to view online example.
+

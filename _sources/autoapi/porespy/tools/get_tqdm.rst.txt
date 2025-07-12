@@ -1,0 +1,13 @@
+porespy.tools.get_tqdm
+======================
+
+.. py:function:: porespy.tools.get_tqdm()
+
+   Fetches a version of ``tqdm`` function that depends on the environment.
+
+   Either text-based for the IPython console or gui-based for Jupyter
+   notebooks.
+
+   :returns: **tqdm** -- The function to use when wrapping an iterator (i.e. tqdm(range(n)))
+   :rtype: function handle
+

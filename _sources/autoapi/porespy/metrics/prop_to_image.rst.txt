@@ -1,0 +1,31 @@
+porespy.metrics.prop_to_image
+=============================
+
+.. py:function:: porespy.metrics.prop_to_image(regionprops, shape, prop)
+
+   Create an image with each region colored according the specified ``prop``,
+   as obtained by ``regionprops_3d``.
+
+   :param regionprops: This is a list of properties for each region that is computed
+                       by PoreSpy's ``regionprops_3D`` or Skimage's ``regionsprops``.
+   :type regionprops: list
+   :param shape: The shape of the original image for which ``regionprops`` was obtained.
+   :type shape: array_like
+   :param prop: The region property of interest.  Can be a scalar item such as 'volume'
+                in which case the the regions will be colored by their respective
+                volumes, or can be an image-type property such as 'border' or
+                'convex_image', which will return an image composed of the sub-images.
+   :type prop: string
+
+   :returns: **image** -- An ndarray the same size as the original image, with each region
+             represented by the values specified in ``prop``.
+   :rtype: ndarray
+
+   .. seealso:: :py:obj:`props_to_DataFrame`, :py:obj:`regionprops_3d`
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/prop_to_image.html>`__
+   to view online example.
+

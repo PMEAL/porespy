@@ -1,0 +1,73 @@
+porespy.generators.pseudo_electrostatic_packing
+===============================================
+
+.. py:function:: porespy.generators.pseudo_electrostatic_packing(shape: List = None, im: numpy.typing.ArrayLike = None, r: int = 5, sites=None, clearance: int = 0, protrusion: int = 0, edges: Literal['extended', 'contained'] = 'extended', phi: float = 1.0, maxiter: int = 1000, seed: int = None, smooth: bool = True, compactness: float = 1.0, value: int = 1)
+
+   Iterativley inserts spheres as close to the given sites as possible.
+
+   :param shape: The shape of the image to create.  This is equivalent to passing an array
+                 of `False` values of the desired size to `im`.
+   :type shape: list
+   :param im: Image with `False` indicating the voxels where spheres should be
+              inserted. This can be used to insert spheres into an image that already
+              has some features (e.g. half filled with larger spheres, or a cylindrical
+              plug).
+   :type im: ndarray
+   :param r: Radius of spheres to insert.
+   :type r: int
+   :param sites: An image with ``True`` values indicating the electrostatic attraction
+                 points. If this is not given then the peaks in the distance transform of
+                 `im` are used, which corresponds to the center of the image for a blank
+                 input.
+   :type sites: ndarray (optional)
+   :param clearance: The amount of space to put between each sphere. Negative values are
+                     acceptable to create overlaps, but ``abs(clearance) < r``.
+   :type clearance: int (optional, default=0)
+   :param protrusion: The amount that spheres are allowed to protrude beyond the active phase.
+                      A negative number will create clearance between spheres and the background.
+   :type protrusion: int (optional, default=0)
+   :param maxiter: The maximum number of spheres to insert.
+   :type maxiter: int (optional, default=1000)
+   :param phi: The "solid volume fraction" of spheres to add (considering spheres as solid).
+               This is used to calculate the discrete number of spheres, *N*, required
+               based on the total volume of the image. If *N* is less than `maxiter` then
+               `maxiter` will be set to *N*. Note that this number is not quite accurate
+               when the `edges='extended'` since it's not possible to know how much of the
+               sphere will be cutoff by the edge.
+   :type phi: float (default is 1.0)
+   :param edges: Controls how spheres at the edges of the image are handled.  Options are:
+
+                 ============ ================================================================
+                 edges        description
+                 ============ ================================================================
+                 'contained'  Spheres are all completely within the image
+                 'extended'   Spheres are allowed to extend beyond the edge of the
+                              image.  In this mode the volume fraction will be less that
+                              requested since some spheres extend beyond the image, but their
+                              entire volume is counted as added for computational efficiency.
+                 ============ ================================================================
+   :type edges: string (default is 'contained')
+   :param seed: The seed to supply to the random number generator. Because this function
+                uses ``numba`` for speed, calling the normal ``numpy.random.seed(<seed>)``
+                has no effect. To get a repeatable image, the seed must be passed to the
+                function so it can be initialized the way ``numba`` requires. The default
+                is ``None``, which means each call will produce a new realization.
+   :type seed: int, optional, default = `None`
+   :param compactness: Controls how tightly the spheres are grouped together. A value of 1.0
+                       (default) results in the tighest possible grouping while values < 1.0
+                       give more loosely or imperfectly packed spheres.
+   :type compactness: float
+   :param value: The value of insert for the spheres. The default is 1, which puts holes
+                 into to the background. Values other than 1 (Foreground) make
+                 it easy to add spheres repeated and identify which were added on each step.
+   :type value: int, default = 1
+
+   :returns: **im** -- An image with inserted spheres indicated by ``True``
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/pseudo_electrostatic_packing.html>`__
+   to view online example.
+

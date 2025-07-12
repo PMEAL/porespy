@@ -1,0 +1,75 @@
+porespy.filters.chunked_func
+============================
+
+.. py:function:: porespy.filters.chunked_func(func, parallel_kw={'divs': 2, 'overlap': None, 'cores': None}, im_arg=['input', 'image', 'im'], strel_arg=['strel', 'structure', 'footprint'], **kwargs)
+
+   Performs the specfied operation "chunk-wise" in parallel using `dask`.
+
+   This can be used to save memory by doing one chunk at a time
+   (`cores=1`) or to increase computation speed by spreading the work
+   across multiple cores (e.g. `cores=8`)
+
+   This function can be used with any operation that applies a
+   structuring element of some sort, since this implies that the
+   operation is local and can be chunked.
+
+   :param func: The function which should be applied to each chunk, such as
+                `spipy.ndimage.binary_dilation`.
+   :type func: function handle
+   :param parallel_kw: Dictionary containing the settings for parallelization by chunking. The
+                       optional settings include divs (scalar or list of scalars,
+                       default = [2, 2, 2]), overlap (scalar or list of scalars, optional),
+                       and cores (scalar, default is all available cores).
+
+                       Divs is the number of times to divide the image for parallel
+                       processing. If `1` then parallel processing does not occur. `2` is
+                       equivalent to `[2, 2, 2]` for a 3D image.
+
+                       Overlap is the amount of overlap to include when dividing up the image.
+                       This value will almost always be the size (i.e. raduis) of the
+                       structuring element. If not specified then the amount of overlap
+                       is inferred from the size of the structuring element, in which
+                       case the `strel_arg` must be specified.
+
+                       Cores is the number of cores that will be used to parallel process all
+                       domains. If ``None`` then all cores will be used but user can specify
+                       any integer values to control the memory usage. Setting value to 1 will
+                       effectively process the chunks in serial to minimize memory usage.
+   :type parallel_kw: dict
+   :param im_arg: The keyword used by `func` for the image to be operated on. By
+                  default this function will look for `image`, `input`, and
+                  `im` which are commonly used by *scipy.ndimage* and *skimage*.
+   :type im_arg: str
+   :param strel_arg: The keyword used by `func` for the structuring element to apply.
+                     This is only needed if `overlap` is not specified. By default
+                     this function will look for `strel`, `structure`, and
+                     `footprint` which are commonly used by *scipy.ndimage* and
+                     *skimage*.
+   :type strel_arg: str
+   :param kwargs: All other arguments are passed to `func` as keyword arguments.
+                  Note that PoreSpy will fetch the image from this list of keywords
+                  using the value provided to `im_arg`.
+
+   :returns: **result** -- An image the same size as the input image, with the specified
+             filter applied as though done on a single large image. There
+             should be *no* difference.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   This function divides the image into the specified number of chunks,
+   but also applies a padding to each chunk to create an overlap with
+   neighboring chunks. This way the operation does not have any edge
+   artifacts. The amount of padding is usually equal to the radius of the
+   structuring element but some functions do not use one, such as the
+   distance transform and Gaussian blur.  In these cases the user can
+   specify `overlap`.
+
+   .. seealso:: :py:obj:`scikit-image.util.apply_parallel`
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/chunked_func.html>`__
+   to view online example.
+

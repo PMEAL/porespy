@@ -16,27 +16,18 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 1,
+   "execution_count": null,
    "metadata": {},
-   "outputs": [
-    {
-     "data": {
-      "text/plain": [
-       "<Signature (regions, throat_conns, voxel_size=1)>"
-      ]
-     },
-     "execution_count": 1,
-     "metadata": {},
-     "output_type": "execute_result"
-    }
-   ],
+   "outputs": [],
    "source": [
     "import inspect\n",
     "import warnings\n",
+    "\n",
     "import numpy as np\n",
-    "import porespy as ps\n",
     "import scipy as sp\n",
     "from matplotlib import pyplot as plt\n",
+    "\n",
+    "import porespy as ps\n",
     "\n",
     "ps.visualization.set_mpl_style()\n",
     "warnings.filterwarnings(\"ignore\")\n",
@@ -59,57 +50,9 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": null,
    "metadata": {},
-   "outputs": [
-    {
-     "data": {
-      "application/json": {
-       "ascii": false,
-       "bar_format": null,
-       "colour": null,
-       "elapsed": 0.020148754119873047,
-       "initial": 0,
-       "n": 0,
-       "ncols": null,
-       "nrows": 29,
-       "postfix": null,
-       "prefix": "",
-       "rate": null,
-       "total": null,
-       "unit": "it",
-       "unit_divisor": 1000,
-       "unit_scale": false
-      },
-      "application/vnd.jupyter.widget-view+json": {
-       "model_id": "",
-       "version_major": 2,
-       "version_minor": 0
-      },
-      "text/plain": [
-       "0it [00:00, ?it/s]"
-      ]
-     },
-     "metadata": {},
-     "output_type": "display_data"
-    },
-    {
-     "data": {
-      "image/png": "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\n",
-      "text/plain": [
-       "<Figure size 288x288 with 1 Axes>"
-      ]
-     },
-     "metadata": {
-      "image/png": {
-       "height": 276,
-       "width": 276
-      },
-      "needs_background": "light"
-     },
-     "output_type": "display_data"
-    }
-   ],
+   "outputs": [],
    "source": [
     "np.random.seed(10)\n",
     "shape = [40, 40, 40]\n",
@@ -149,41 +92,9 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": null,
    "metadata": {},
-   "outputs": [
-    {
-     "data": {
-      "application/json": {
-       "ascii": false,
-       "bar_format": null,
-       "colour": null,
-       "elapsed": 0.017826318740844727,
-       "initial": 0,
-       "n": 0,
-       "ncols": null,
-       "nrows": 29,
-       "postfix": null,
-       "prefix": "Preparing images and DNS calculations",
-       "rate": null,
-       "total": 93,
-       "unit": "it",
-       "unit_divisor": 1000,
-       "unit_scale": false
-      },
-      "application/vnd.jupyter.widget-view+json": {
-       "model_id": "",
-       "version_major": 2,
-       "version_minor": 0
-      },
-      "text/plain": [
-       "Preparing images and DNS calculations:   0%|          | 0/93 [00:00<?, ?it/s]"
-      ]
-     },
-     "metadata": {},
-     "output_type": "display_data"
-    }
-   ],
+   "outputs": [],
    "source": [
     "conns = ps.networks.find_conns(regions)\n",
     "size_factors = ps.networks.diffusive_size_factor_DNS(regions,\n",
@@ -206,41 +117,9 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": null,
    "metadata": {},
-   "outputs": [
-    {
-     "data": {
-      "application/json": {
-       "ascii": false,
-       "bar_format": null,
-       "colour": null,
-       "elapsed": 0.0328059196472168,
-       "initial": 0,
-       "n": 0,
-       "ncols": null,
-       "nrows": 29,
-       "postfix": null,
-       "prefix": "Preparing images and DNS calculations",
-       "rate": null,
-       "total": 93,
-       "unit": "it",
-       "unit_divisor": 1000,
-       "unit_scale": false
-      },
-      "application/vnd.jupyter.widget-view+json": {
-       "model_id": "",
-       "version_major": 2,
-       "version_minor": 0
-      },
-      "text/plain": [
-       "Preparing images and DNS calculations:   0%|          | 0/93 [00:00<?, ?it/s]"
-      ]
-     },
-     "metadata": {},
-     "output_type": "display_data"
-    }
-   ],
+   "outputs": [],
    "source": [
     "voxel_size = 1e-6\n",
     "size_factors = ps.networks.diffusive_size_factor_DNS(regions,\n",

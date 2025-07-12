@@ -1,0 +1,39 @@
+porespy.filters.distance_transform_lin
+======================================
+
+.. py:function:: porespy.filters.distance_transform_lin(im: numpy.typing.NDArray, axis: int = 0, mode: Literal['forward', 'backward', 'both'] = 'both')
+
+   Replaces each void voxel with the linear distance to the nearest solid
+   voxel along the specified axis.
+
+   :param im: The image of the porous material with `True` values indicating
+              the void phase (or phase of interest).
+   :type im: ndarray
+   :param axis: The direction along which the distance should be measured, the
+                default is 0 (i.e. along the x-direction).
+   :type axis: int
+   :param mode: Controls how the distance is measured. Options are:
+
+                ========== =================================================================
+                Mode       Description
+                ========== =================================================================
+                'forward'  Distances are measured in the increasing direction along the
+                           specified axis
+                'reverse'  Distances are measured in the reverse direction. 'backward' is
+                           also accepted.
+                'both'     Distances are calculated in both directions (by recursively
+                           calling itself), then reporting the minimum value of the two
+                           results.
+                ========== =================================================================
+   :type mode: str
+
+   :returns: **image** -- A copy of `im` with each foreground voxel containing the
+             distance to the nearest background along the specified axis.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/distance_transform_lin.html>`__
+   to view online example.
+

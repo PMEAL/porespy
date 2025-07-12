@@ -1,0 +1,28 @@
+porespy.tools.isolate_object
+============================
+
+.. py:function:: porespy.tools.isolate_object(region, i, s=None)
+
+   Given an image containing labels, removes all labels except the specified
+   one.
+
+   :param region: An image containing labelled regions, as returned by
+                  ``scipy.ndimage.label``.
+   :type region: ndarray
+   :param i: The integer value
+   :type i: int
+   :param s: If provided, then a subsection of ``region`` will be extracted and the
+             function will be applied to this subsection only.
+   :type s: tuple of slice objects, optional
+
+   :returns: **label** -- An ndarray the same size as ``region`` containing *only* the objects
+             with the given value ``i``.  If ``s`` is provided, the returned image
+             will be a subsection of ``region``.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/tools/reference/isolate_object.html>`__
+   to view online example.
+

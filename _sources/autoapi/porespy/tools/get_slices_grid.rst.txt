@@ -1,0 +1,49 @@
+porespy.tools.get_slices_grid
+=============================
+
+.. py:function:: porespy.tools.get_slices_grid(im, divs=2, block_size=None, overlap=0, mode='offset')
+
+   Returns slices into an image describing the specified number of sub-arrays.
+
+   This function is useful for performing operations on smaller images for
+   memory or speed.  Note that for most typical operations this will NOT work,
+   since the image borders would cause artifacts (e.g. ``distance_transform``)
+
+   :param im: The image of the porous media
+   :type im: ndarray
+   :param divs: The number of sub-divisions to create along each axis of the image.  If a
+                scalar is given this value is applied in all dimensions. If `block_size` is
+                given this is ignored.
+   :type divs: scalar or array_like
+   :param block_size: The size of the divisions to create. If a scalar is given then cubic
+                      blocks are created. If this argument is given then `divs` is ignored.
+   :type block_size: scalar or array_like
+   :param overlap: The amount of overlap to use when dividing along each axis.  If a
+                   scalar is given it is assumed this value applies in all dimensions.
+   :type overlap: scalar or array_like
+   :param mode: This argument is only used if `block_size` is given and it controls how
+                to handle the situation when given block sizes are not a clean multiple of
+                the image shape. The options are:
+
+                ========== ==================================================================
+                mode       description
+                ========== ==================================================================
+                'whole'    Blocks start at the beginning of each axis, and only "whole"
+                           blocks (that fit within the image) are included in the returned
+                           list of slice objects.
+                'partial'  Blocks start at the beginning of each axis, and any blocks which
+                           partially extend beyond the end of the image are returned.
+                'offset'   Only whole blocks are included, but an offset is applied to the
+                           start of each axis so that an equal amount of voxels are missed
+                           at the start and end of each axis.
+                'strict'   Raises an Exception if the image cannot be evenly divided by the
+                           given block size.
+                ========== ==================================================================
+   :type mode: str
+
+   :returns: **slices** -- An ndarray containing sets of slice objects for indexing into ``im``
+             that extract subdivisions of an image.
+   :rtype: ndarray
+
+   .. seealso:: :py:obj:`chunked_func`, :py:obj:`get_slices_random`, :py:obj:`get_slices_slabs`
+

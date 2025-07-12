@@ -1,0 +1,106 @@
+porespy.simulations.drainage
+============================
+
+.. py:function:: porespy.simulations.drainage(im: numpy.typing.NDArray, pc: numpy.typing.NDArray = None, dt: numpy.typing.NDArray = None, inlets: numpy.typing.NDArray = None, outlets: numpy.typing.NDArray = None, residual: numpy.typing.NDArray = None, steps: int = None, conn: Literal['min', 'max'] = 'min', min_size: int = 0)
+
+   Simulate drainage using image-based sphere insertion, optionally including
+   gravity [4]_.
+
+   :param im: The image of the porous media with ``True`` values indicating the
+              void space.
+   :type im: ndarray
+   :param pc: Precomputed capillary pressure transform which is used to determine
+              the invadability of each voxel. If not provided then it is calculated
+              as `2/dt`.
+   :type pc: ndarray, optional
+   :param dt: The distance transform of ``im``.  If not provided it will be
+              calculated, so supplying it saves time.
+   :type dt: ndarray (optional)
+   :param inlets: A boolean image the same shape as ``im``, with ``True`` values
+                  indicating the inlet locations. If not specified then access limitations
+                  are not applied so the result is essentially a local thickness filter.
+   :type inlets: ndarray, optional
+   :param outlets: A boolean image with ``True`` values indicating the outlet locations.
+                   If this is provided then trapped voxels of wetting phase are found and
+                   all the output images are adjusted accordingly. Note that trapping can
+                   be assessed as a postprocessing step as well, so if this is not provided
+                   trapping can still be considered.
+   :type outlets: ndarray, optional
+   :param residual: A boolean array indicating the locations of any residual invading
+                    phase. This is added to the intermediate image prior to trimming
+                    disconnected clusters, so will create connections to some clusters
+                    that would otherwise be removed. The residual phase is indicated
+                    in the capillary pressure map by ``-np.inf`` values, since these voxels
+                    are invaded at all applied capillary pressures. Note that the presence of
+                    residual non-wetting phase makes it impossible to correctly deal with
+                    trapping, so if both `residual` and `outlets` are given then an error is
+                    raised.
+   :type residual: ndarray, optional
+   :param steps: The range of pressures to apply. If an integer is given then the given
+                 number of steps will be created between the lowest and highest values in
+                 ``pc``. If a list is given, each value in the list is used in ascending
+                 order. If `None` is given then all the possible values in `pc`
+                 are used.
+   :type steps: int or array_like (default = 25)
+   :param conn: Controls the shape of the structuring element used to find neighboring
+                voxels when looking at connectivity of invading blobs.  Options are:
+
+                ========= =============================================================
+                Option    Description
+                ========= =============================================================
+                'min'     This corresponds to a cross with 4 neighbors in 2D and 6
+                          neighbors in 3D.
+                'max'     This corresponds to a square or cube with 8 neighbors in 2D
+                          and 26 neighbors in 3D.
+                ========= =============================================================
+   :type conn: str
+   :param min_size: Any clusters of trapped voxels smaller than this size will be set to not
+                    trapped. This argument is only used if `outlets` is given. This is useful
+                    to prevent small voxels along edges of the void space from being set to
+                    trapped. These can appear to be trapped due to the jagged nature of the
+                    digital image. The default is 0, meaning this adjustment is not applied,
+                    but a value of 3 or 4 is recommended to activate this adjustment.
+   :type min_size: int
+
+   :returns: **results** -- A dataclass-like object with the following attributes:
+
+             ========== ============================================================
+             Attribute  Description
+             ========== ============================================================
+             im_seq     An ndarray with each voxel indicating the step number at
+                        which it was first invaded by non-wetting phase
+             im_snwp    A numpy array with each voxel value indicating the global
+                        value of the non-wetting phase saturation at the point it
+                        was invaded
+             im_size    A numpy array with each voxel containing the radius of the
+                        sphere, in voxels, that first overlapped it.
+             im_pc      A numpy array with each voxel value indicating the
+                        capillary pressure at which it was invaded.
+             im_trapped A numpy array with ``True`` values indicating trapped voxels
+                        if `outlets` was provided, otherwise will be `None`.
+             pc         1D array of capillary pressure values that were applied
+             swnp       1D array of non-wetting phase saturations for each applied
+                        value of capillary pressure (``pc``).
+             ========== ============================================================
+   :rtype: Results object
+
+   .. rubric:: Notes
+
+   This algorithm only provides sensible results for gravity stabilized
+   configurations, meaning the more dense fluid is on the bottom. Be sure that
+   ``inlets`` are specified accordingly.
+
+   .. rubric:: References
+
+   .. [4] Chadwick EA, Hammen LH, Schulz VP, Bazylak A, Ioannidis MA, Gostick JT.
+      Incorporating the effect of gravity into image-based drainage simulations on
+      volumetric images of porous media.
+      `Water Resources Research. <https://doi.org/10.1029/2021WR031509>`__.
+      58(3), e2021WR031509 (2022)
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/simulations/reference/drainage.html>`__
+   to view online example.
+

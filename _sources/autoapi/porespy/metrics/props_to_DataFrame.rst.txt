@@ -1,0 +1,30 @@
+porespy.metrics.props_to_DataFrame
+==================================
+
+.. py:function:: porespy.metrics.props_to_DataFrame(regionprops)
+
+   Create a ``pandas`` DataFrame containing all the scalar metrics for each
+   region, such as volume, sphericity, and so on, calculated by
+   ``regionprops_3D``.
+
+   :param regionprops: This is a list of properties for each region that is computed
+                       by ``regionprops_3D``.  Because ``regionprops_3D`` returns data in
+                       the same ``list`` format as the ``regionprops`` function in **Skimage**
+                       you can pass in either.
+   :type regionprops: list
+
+   :returns: **DataFrame** -- A Pandas DataFrame with each region corresponding to a row and each
+             column corresponding to a key metric.  All the values for a given
+             property (e.g. 'sphericity') can be obtained as
+             ``val = df['sphericity']``.  Conversely, all the key metrics for a
+             given region can be found with ``df.iloc[1]``.
+   :rtype: Pandas DataFrame
+
+   .. seealso:: :py:obj:`prop_to_image`, :py:obj:`regionprops_3d`
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/props_to_DataFrame.html>`__
+   to view online example.
+

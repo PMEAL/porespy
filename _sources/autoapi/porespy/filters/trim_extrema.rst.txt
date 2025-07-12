@@ -1,0 +1,33 @@
+porespy.filters.trim_extrema
+============================
+
+.. py:function:: porespy.filters.trim_extrema(im: numpy.typing.NDArray, h: float, mode='maxima')
+
+   Trims local extrema in greyscale values by a specified amount.
+
+   This essentially decapitates peaks and/or floods valleys.
+
+   :param im: The image whose extrema are to be removed
+   :type im: ndarray
+   :param h: The height to remove from each peak or fill in each valley
+   :type h: float
+   :param mode: Specifies whether to remove maxima or minima or both
+   :type mode: string {'maxima' | 'minima' | 'extrema'}
+
+   :returns: **image** -- A copy of the input image with all the peaks and/or valleys
+             removed.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   (1) This function is referred to as **imhmax** or **imhmin** in Matlab.
+
+   (2) If the provided `h` is larger than ALL peaks in the array, then the
+   baseline values of the array are changed as well.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/trim_extrema.html>`__
+   to view online example.
+

@@ -1,0 +1,28 @@
+porespy.filters.fill_closed_pores
+=================================
+
+.. py:function:: porespy.filters.fill_closed_pores(im: numpy.typing.NDArray, conn: Literal['max', 'min'] = 'min')
+
+   Fills all closed pores that are isolated from the main void space.
+
+   :param im: The image of the porous material
+   :type im: ndarray
+
+   :returns: * **im** (*ndarray*) -- A Boolean image, with `True` values indicating the phase of interest.
+             * **conn** (*str*) -- Can be either `'min'` or `'max'` and controls the shape of the structuring
+               element used to determine voxel connectivity.  The default if `'min'` which
+               imposes the strictest criteria, so that voxels must share a face to be
+               considered connected.
+
+   :returns: **im** -- A version of `im` but with all the closed or disconnected pores converted
+             to solid (i.e. `False`)
+   :rtype: ndarray
+
+   .. seealso:: :py:obj:`find_disconnected_voxels`, :py:obj:`trim_nonpercolating_paths`
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/fill_closed_pores.html>`_
+   to view online example.
+

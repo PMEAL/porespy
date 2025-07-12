@@ -21,10 +21,10 @@
    },
    "outputs": [],
    "source": [
-    "import numpy as np\n",
-    "import porespy as ps\n",
-    "import scipy.ndimage as spim\n",
     "import matplotlib.pyplot as plt\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()"
    ]
   },
@@ -50,6 +50,7 @@
    ],
    "source": [
     "import inspect\n",
+    "\n",
     "print(inspect.signature(ps.filters.apply_chords_3D))"
    ]
   },
@@ -230,7 +231,7 @@
    ],
    "source": [
     "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
-    "ax.imshow(chords[20, ...] ==2)\n",
+    "ax.imshow(chords[20, ...] == 2)\n",
     "ax.axis(False);"
    ]
   },

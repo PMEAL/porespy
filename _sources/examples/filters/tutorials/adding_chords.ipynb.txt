@@ -20,11 +20,10 @@
    },
    "outputs": [],
    "source": [
-    "import scipy as sp\n",
-    "import scipy.ndimage as spim\n",
     "import matplotlib.pyplot as plt\n",
-    "import time\n",
+    "\n",
     "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()"
    ]
   },
@@ -292,8 +291,8 @@
    ],
    "source": [
     "fig, ax = plt.subplots(figsize=(5, 4))\n",
-    "ax.bar(x=data_y.L, height=data_y.cdf, width=data_y.bin_widths, color='b', edgecolor='k', alpha=0.5);\n",
-    "ax.bar(x=data_x.L, height=data_x.cdf, width=data_x.bin_widths, color='r', edgecolor='k', alpha=0.5);\n",
+    "ax.bar(x=data_y.L, height=data_y.cdf, width=data_y.bin_widths, color='b', edgecolor='k', alpha=0.5)\n",
+    "ax.bar(x=data_x.L, height=data_x.cdf, width=data_x.bin_widths, color='r', edgecolor='k', alpha=0.5)\n",
     "ax.set_xlabel(\"Chord length\")\n",
     "ax.set_ylabel(\"Frequency\");"
    ]
@@ -426,7 +425,7 @@
    "source": [
     "data = ps.metrics.chord_length_distribution(crds, bins=25)\n",
     "fig, ax = plt.subplots(figsize=(5, 4))\n",
-    "ax.bar(x=data_y.L, height=data.cdf, width=data.bin_widths, color='b', edgecolor='k', alpha=0.5);\n",
+    "ax.bar(x=data_y.L, height=data.cdf, width=data.bin_widths, color='b', edgecolor='k', alpha=0.5)\n",
     "ax.set_xlabel(\"Chord length\")\n",
     "ax.set_ylabel(\"Frequency\");"
    ]
@@ -434,7 +433,7 @@
  ],
  "metadata": {
   "kernelspec": {
-   "display_name": ".venv",
+   "display_name": "PoreSpy",
    "language": "python",
    "name": "python3"
   },

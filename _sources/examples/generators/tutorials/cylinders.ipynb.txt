@@ -22,9 +22,12 @@
    "outputs": [],
    "source": [
     "import time\n",
-    "import porespy as ps\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()\n",
     "np.random.seed(5)\n",
     "ps.settings.tqdm[\"disable\"] = True"
@@ -94,7 +97,7 @@
     "    \"phi_max\": phi_max,\n",
     "    \"theta_max\": theta_max,\n",
     "    \"length\": length,\n",
-    "    \"maxiter\": maxiter    \n",
+    "    \"maxiter\": maxiter\n",
     "}"
    ]
   },
@@ -2596,8 +2599,8 @@
     "\n",
     "ax[0].plot(porosity_target, runtime_ncylinder, \"o-\", label='using # cylinders')\n",
     "ax[0].plot(porosity_target, runtime_porosity, \"o-\", label='using porosity')\n",
-    "ax[0].set_xlabel('target porosity');\n",
-    "ax[0].set_ylabel('duration [sec]');\n",
+    "ax[0].set_xlabel('target porosity')\n",
+    "ax[0].set_ylabel('duration [sec]')\n",
     "ax[0].legend()\n",
     "\n",
     "ax[1].scatter(porosity_target, porosity_actual)\n",
@@ -3702,7 +3705,7 @@
     }
    ],
    "source": [
-    "fig, ax = plt.subplots(figsize=(5, 4));\n",
+    "fig, ax = plt.subplots(figsize=(5, 4))\n",
     "ax.plot(maxiter, porosity_actual, \"o-\")\n",
     "ax.set_xlabel(\"Number of iterations\")\n",
     "ax.set_ylabel(\"Obtained porosity\")\n",

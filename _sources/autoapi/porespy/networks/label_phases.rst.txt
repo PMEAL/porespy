@@ -1,0 +1,28 @@
+porespy.networks.label_phases
+=============================
+
+.. py:function:: porespy.networks.label_phases(network, alias={1: 'void', 2: 'solid'})
+
+   Create pore and throat labels based on 'pore.phase' values
+
+   :param network: The network stored as a dictionary as returned from the
+                   ``regions_to_network`` function
+   :type network: dict
+   :param alias: A mapping between integer values in 'pore.phase' and string labels.
+                 The default is ``{1: 'void', 2: 'solid'}`` which will result in the
+                 labels ``'pore.void'`` and ``'pore.solid'``, as well as
+                 ``'throat.solid_void'``, ``'throat.solid_solid'``, and
+                 ``'throat.void_void'``.  The reverse labels are also added for
+                 convenience like ``throat.void_solid``.
+   :type alias: dict
+
+   :returns: **network** -- The same ``network`` as passed in but with new boolean arrays added
+             for the phase labels.
+   :rtype: dict
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/networks/reference/label_phases.html>`__
+   to view online example.
+

@@ -38,10 +38,13 @@
     }
    ],
    "source": [
+    "import inspect\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
+    "\n",
     "import porespy as ps\n",
-    "import inspect\n",
+    "\n",
     "inspect.signature(ps.metrics.region_volumes)"
    ]
   },
@@ -82,7 +85,7 @@
     "snow = ps.filters.snow_partitioning(im)\n",
     "regions = snow.regions\n",
     "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
-    "ax.imshow(regions[:,:,20], origin='lower', interpolation='none')\n",
+    "ax.imshow(regions[:, :, 20], origin='lower', interpolation='none')\n",
     "ax.axis(False);"
    ]
   },
@@ -123,7 +126,7 @@
     "    mask = np.array(np.where(regions_vol == i, regions_vol, 0), dtype=bool)\n",
     "    regions_vol[mask] = vols[i]\n",
     "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
-    "plt.imshow(regions_vol[:,:,10], origin='lower', interpolation='none')\n",
+    "plt.imshow(regions_vol[:, :, 10], origin='lower', interpolation='none')\n",
     "cbar = plt.colorbar(ax=ax, shrink=0.8)\n",
     "ax.axis(False);"
    ]
@@ -172,7 +175,7 @@
     "    mask = np.array(np.where(regions_vol == i, regions_vol, 0), dtype=bool)\n",
     "    regions_vol[mask] = vols[i]\n",
     "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
-    "plt.imshow(regions_vol[:,:,10], origin='lower', interpolation='none')\n",
+    "plt.imshow(regions_vol[:, :, 10], origin='lower', interpolation='none')\n",
     "cbar = plt.colorbar(ax=ax, shrink=0.8)\n",
     "ax.axis(False);"
    ]

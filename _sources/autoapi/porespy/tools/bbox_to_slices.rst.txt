@@ -1,0 +1,28 @@
+porespy.tools.bbox_to_slices
+============================
+
+.. py:function:: porespy.tools.bbox_to_slices(bbox)
+
+   Given a tuple containing bounding box coordinates, return a tuple of slice
+   objects.
+
+   A bounding box in the form of a straight list is returned by several
+   functions in `skimage`, but these cannot be used to directly index into an
+   image.  This function returns a tuples of slices can be, such as:
+   ``im[bbox_to_slices([xmin, ymin, xmax, ymax])]``.
+
+   :param bbox: The bounding box indices in the form (``xmin``, ``ymin``, ``zmin``,
+                ``xmax``, ``ymax``, ``zmax``).  For a 2D image, simply omit the
+                ``zmin`` and ``zmax`` entries.
+   :type bbox: tuple of ints
+
+   :returns: **slices** -- A tuple of slice objects that can be used to directly index into a
+             larger image.
+   :rtype: tuple
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/tools/reference/bbox_to_slices.html>`__
+   to view online example.
+

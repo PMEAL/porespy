@@ -1,0 +1,51 @@
+porespy.networks.skeleton
+=========================
+
+.. py:function:: porespy.networks.skeleton(im, surface=False, parallel_kw=None)
+
+   Takes the skeleton of an image. This function ensures that no shells are
+   found in the resulting skeleton by trimming floating solids from the image
+   beforehand and by checking for shells after taking the skeleton. The
+   skeleton is taken using Lee's method as available in scikit-image. For
+   faster skeletonization, a parallel mode is available.
+
+   :param im: A binary image of porous media with 'True' values indicating phase of
+              interest.
+   :type im: ndarray
+   :param surface:    If `False` disconnected solid at the surface of the image is NOT
+                      trimmed. This is the default mode. However, if `True`, disconnected
+                      solid at the surface of the image is trimmed. Note that disconnected
+                      solids are NOT removed if a 2D image is passed.
+                   parallel_kw : dict
+                       Dictionary containing the settings for parallelization by chunking. If
+                       `None` is provided, parallelization does not occur. The default is
+                       `None`.
+
+                       The optional settings include `divs` (scalar or list of scalars,
+                       default = [2, 2, 2]), `overlap` (scalar or list of scalars, optional),
+                       and `cores` (scalar, default is all available cores).
+
+                       `divs` is the number of times to divide the image for parallel
+                       processing. If `1` then parallel processing does not occur. `2` is
+                       equivalent to `[2, 2, 2]` for a 3D image. If a list is provided, each
+                       respective axis will be divided by its corresponding number in the
+                       list. For example, [2, 3, 4] will divide z, y, and x axis to 2, 3,
+                       and 4 respectively.
+
+                       `overlap` is the amount of overlap to include when dividing up the
+                       image. This value will almost always be the size (i.e. raduis) of the
+                       structuring element. If not specified then the amount of overlap
+                       is inferred from the size of the structuring element, in which
+                       case the `strel_arg` must be specified.
+
+                       `cores` is the number of cores that will be used to parallel process
+                       all domains. If ``None`` then all cores will be used but user can
+                       specify any integer values to control the memory usage. Setting value
+                       to 1 will effectively process the chunks in serial to minimize memory
+                       usage.
+   :type surface: boolean
+
+   :returns: * **sk** (*ndarray*) -- Skeleton of image
+             * **im** (*ndarray*) -- The image used to take the skeleton, the same as the input image except
+               for floating solids removed if the image supplied is 3D
+

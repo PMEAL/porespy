@@ -1,0 +1,42 @@
+porespy.filters.flood_func
+==========================
+
+.. py:function:: porespy.filters.flood_func(im: numpy.typing.NDArray, func, labels: numpy.typing.NDArray = None)
+
+   Flood each isolated region in an image with a constant value calculated by
+   the given function.
+
+   :param im: An image with the numerical values of interest in each voxel,
+              and 0's elsewhere.
+   :type im: ndarray
+   :param func: The function to be applied to each region in the image.  Any Numpy
+                function that returns a scalar value can be passed, such as `amin`,
+                `amax`, `sum`, `mean`, `median`, etc.
+   :type func: Numpy function handle
+   :param labels: An array containing labels identifying each individual region to be
+                  flooded. If not provided then `scipy.ndimage.label` is applied to
+                  `im > 0`.
+   :type labels: ndarray
+
+   :returns: **flooded** -- An image the same size as `im` with each isolated region flooded
+             with a constant value based on the given `func` and the values
+             in `im`.
+   :rtype: ndarray
+
+   .. seealso:: :py:obj:`flood`, :py:obj:`region_size`
+
+   .. rubric:: Notes
+
+   Many of the functions in `scipy.ndimage` can be applied to
+   individual regions using the `index` argument.  This function extends
+   that behavior to all numpy function, in the event you wanted to compute
+   the cosine of the values in each region for some reason. This function
+   also floods the original image instead of returning a list of values for
+   each region.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/flood_func.html>`__
+   to view online example.
+

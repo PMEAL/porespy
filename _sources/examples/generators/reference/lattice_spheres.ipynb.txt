@@ -23,6 +23,7 @@
    "outputs": [],
    "source": [
     "import matplotlib.pyplot as plt\n",
+    "\n",
     "import porespy as ps"
    ]
   },
@@ -48,6 +49,7 @@
    ],
    "source": [
     "import inspect\n",
+    "\n",
     "b = inspect.signature(ps.generators.lattice_spheres)\n",
     "print(b)"
    ]
@@ -89,13 +91,13 @@
     "fig, ax = plt.subplots(1, 2, figsize=[8, 4])\n",
     "\n",
     "shape = [200, 200]\n",
-    "r=10\n",
+    "r = 10\n",
     "im1 = ps.generators.lattice_spheres(shape=shape, r=r)\n",
     "ax[0].imshow(im1, interpolation='none')\n",
     "ax[0].axis(False)\n",
     "ax[0].set_title(f'radius = {r}')\n",
     "\n",
-    "r= 20\n",
+    "r = 20\n",
     "im2 = ps.generators.lattice_spheres(shape=shape, r=r)\n",
     "ax[1].imshow(im2, interpolation='none')\n",
     "ax[1].axis(False)\n",
@@ -237,7 +239,7 @@
    "source": [
     "fig, ax = plt.subplots(1, 2, figsize=[8, 4])\n",
     "\n",
-    "L='sc'\n",
+    "L = 'sc'\n",
     "r = 10\n",
     "im1 = ps.generators.lattice_spheres(shape=shape, r=r, spacing=s, offset=o, lattice=L)\n",
     "\n",
@@ -245,7 +247,7 @@
     "ax[0].axis(False)\n",
     "ax[0].set_title(f'lattice = {L}')\n",
     "\n",
-    "L='tri'\n",
+    "L = 'tri'\n",
     "im2 = ps.generators.lattice_spheres(shape=shape, r=r, spacing=s, offset=o, lattice=L)\n",
     "\n",
     "ax[1].imshow(im2, interpolation='none')\n",
@@ -301,7 +303,7 @@
     "im2 = ps.generators.lattice_spheres(shape=shape, r=r, spacing=s, offset=o, lattice=L)\n",
     "ax[1].imshow(ps.visualization.show_3D(im2))\n",
     "ax[1].axis(False)\n",
-    "ax[1].set_title(f'lattice = {L}');\n",
+    "ax[1].set_title(f'lattice = {L}')\n",
     "\n",
     "L = 'bcc'\n",
     "im3 = ps.generators.lattice_spheres(shape=shape, r=r, spacing=s, offset=o, lattice=L)\n",

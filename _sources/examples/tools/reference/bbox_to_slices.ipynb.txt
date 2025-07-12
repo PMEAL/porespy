@@ -30,11 +30,11 @@
    },
    "outputs": [],
    "source": [
-    "import numpy as np\n",
-    "import porespy as ps\n",
-    "import scipy.ndimage as spim\n",
     "import matplotlib.pyplot as plt\n",
-    "import skimage\n",
+    "import numpy as np\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()"
    ]
   },
@@ -62,7 +62,7 @@
    "source": [
     "np.random.seed(0)\n",
     "im = ps.generators.blobs([500, 500])\n",
-    "im3d = ps.generators.blobs([100, 100,100])"
+    "im3d = ps.generators.blobs([100, 100, 100])"
    ]
   },
   {
@@ -395,11 +395,11 @@
     }
    ],
    "source": [
-    "fig, ax = plt.subplots(1, 2, figsize=[8, 4]);\n",
-    "ax[0].imshow(im);\n",
+    "fig, ax = plt.subplots(1, 2, figsize=[8, 4])\n",
+    "ax[0].imshow(im)\n",
     "ax[0].axis(False)\n",
     "ax[0].set_title('2D image')\n",
-    "ax[1].imshow(im3d[25,...]);\n",
+    "ax[1].imshow(im3d[25, ...])\n",
     "ax[1].axis(False)\n",
     "ax[1].set_title('3D image');"
    ]
@@ -460,8 +460,8 @@
    },
    "outputs": [],
    "source": [
-    "box2d = ps.tools.bbox_to_slices(bbox = bbox2d)\n",
-    "box3d = ps.tools.bbox_to_slices(bbox = bbox3d)"
+    "box2d = ps.tools.bbox_to_slices(bbox=bbox2d)\n",
+    "box3d = ps.tools.bbox_to_slices(bbox=bbox3d)"
    ]
   },
   {

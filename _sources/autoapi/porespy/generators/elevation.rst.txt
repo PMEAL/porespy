@@ -1,0 +1,28 @@
+porespy.generators.elevation
+============================
+
+.. py:function:: porespy.generators.elevation(shape: List, voxel_size: float, axis: int = 0)
+
+   Generates a image of distances from given axis
+
+   :param shape: This dictates the shape of the output image. If an image is supplied, then
+                 it's shape is used. Otherwise, the shape should be supplied as a N-D long
+                 list of the shape for each axis (i.e. `[200, 200]` or `[300, 300, 300]`).
+   :type shape: ndarray or list
+   :param voxel_size: The size of the voxels in physical units (i.e. `100e-6` would be 100 um per
+                      voxel side).
+   :type voxel_size: scalar
+   :param axis: The direction along which the height is calculated.  The default is 0, which
+                is the 'x-axis'.
+   :type axis: int, optional, default is 0
+
+   :returns: **elevation** -- A numpy array of the specified shape with the values in each voxel indicating
+             the height of that voxel from the beginning of the specified axis.
+   :rtype: ndarray
+
+   .. seealso:: :py:obj:`ramp`
+
+   .. rubric:: Examples
+
+   # TODO: Create a notebook example for this function
+

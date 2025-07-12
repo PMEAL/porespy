@@ -21,12 +21,11 @@
    },
    "outputs": [],
    "source": [
-    "import numpy as np\n",
-    "import porespy as ps\n",
-    "import scipy.ndimage as spim\n",
     "import matplotlib.pyplot as plt\n",
-    "import skimage\n",
     "from edt import edt\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()"
    ]
   },
@@ -112,8 +111,8 @@
     "im = ps.generators.blobs(shape=[200, 200], blobiness=[2, .5], porosity=0.65)\n",
     "dt = edt(im)\n",
     "\n",
-    "plt.figure(figsize=[6, 6]);\n",
-    "plt.axis(False);\n",
+    "plt.figure(figsize=[6, 6])\n",
+    "plt.axis(False)\n",
     "plt.imshow(dt/im);"
    ]
   },
@@ -404,9 +403,9 @@
     "fix, ax = plt.subplots(1, 2, figsize=[12, 12])\n",
     "ax[0].axis(False)\n",
     "ax[0].imshow(peaks/im)\n",
-    "ax[0].set_title('Before', fontdict={'fontsize': 18});\n",
+    "ax[0].set_title('Before', fontdict={'fontsize': 18})\n",
     "ax[1].axis(False)\n",
-    "ax[1].imshow(x/im);\n",
+    "ax[1].imshow(x/im)\n",
     "ax[1].set_title('After', fontdict={'fontsize': 18});"
    ]
   }

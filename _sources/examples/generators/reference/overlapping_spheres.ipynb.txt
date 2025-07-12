@@ -23,6 +23,7 @@
    "source": [
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
+    "\n",
     "import porespy as ps"
    ]
   },
@@ -55,6 +56,7 @@
    ],
    "source": [
     "import inspect\n",
+    "\n",
     "print(inspect.signature(ps.generators.overlapping_spheres))"
    ]
   },
@@ -218,7 +220,7 @@
     "im2 = ps.generators.overlapping_spheres(shape=shape, r=r, porosity=e, maxiter=mi)\n",
     "ax[1].imshow(im2)\n",
     "ax[1].axis(False)\n",
-    "ax[1].set_title(f'maxiter = {mi}');\n",
+    "ax[1].set_title(f'maxiter = {mi}')\n",
     "print('porosity = ', ps.metrics.porosity(im2))"
    ]
   },
@@ -270,7 +272,7 @@
     "\n",
     "np.random.seed(0)\n",
     "t = 1e-2\n",
-    "mi=100\n",
+    "mi = 100\n",
     "im1 = ps.generators.overlapping_spheres(shape=shape, r=r, porosity=e, maxiter=mi, tol=t)\n",
     "ax[0].imshow(im1)\n",
     "ax[0].axis(False)\n",
@@ -282,7 +284,7 @@
     "im2 = ps.generators.overlapping_spheres(shape=shape, r=r, porosity=e, maxiter=mi, tol=t)\n",
     "ax[1].imshow(im2)\n",
     "ax[1].axis(False)\n",
-    "ax[1].set_title(f'tol = {t}');\n",
+    "ax[1].set_title(f'tol = {t}')\n",
     "print('porosity = ', ps.metrics.porosity(im2))"
    ]
   }

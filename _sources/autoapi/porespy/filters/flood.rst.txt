@@ -1,0 +1,53 @@
+porespy.filters.flood
+=====================
+
+.. py:function:: porespy.filters.flood(im: numpy.typing.NDArray, labels: numpy.typing.NDArray, mode: Literal['maximum', 'minimum', 'median', 'mean', 'size', 'standard_deviations', 'variance'] = 'max')
+
+   Floods/fills each region in an image with a single value based on the
+   specific values in that region.
+
+   This function calls the various functions in `scipy.ndimage.measurements`
+   but instead of returning a list of values, it fills each region with its
+   value.  This is useful for visualization and statistics.
+
+   :param im: An image with the numerical values of interest in each voxel,
+              and 0's elsewhere.
+   :type im: array_like
+   :param labels: An array containing labels identifying each individual region to be
+                  flooded. If not provided then `scipy.ndimage.label` is applied to
+                  `im > 0`.
+   :type labels: array_like
+   :param mode: Specifies how to determine the value to flood each region. Options
+                taken from the `scipy.ndimage.measurements` function include:
+
+                ===================== ======================================================
+                Option                Description
+                ===================== ======================================================
+                maximum               Floods each region with the local max in that region.
+                                      The keyword `max` is also accepted.
+                minimum               Floods each region the local minimum in that region.
+                                      The keyword `min` is also accepted.
+                median                Floods each region the local median in that region
+                mean                  Floods each region the local mean in that region
+                size                  Floods each region with the size of that region.  This
+                                      is actually accomplished with `scipy.ndimage.sum` by
+                                      converting `im` to a boolean image (`im = im > 0`).
+                standard_deviation    Floods each region with the value of the standard
+                                      deviation of the voxels in `im`.
+                variance              Floods each region with the value of the variance of
+                                      the voxels in `im`.
+                ===================== ======================================================
+   :type mode: string
+
+   :returns: **flooded** -- A copy of `im` with new values placed in each forground voxel
+             based on the `mode`.
+   :rtype: ndarray
+
+   .. seealso:: :py:obj:`prop_to_image`, :py:obj:`flood_func`, :py:obj:`region_size`
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/flood.html>`__
+   to view online example.
+

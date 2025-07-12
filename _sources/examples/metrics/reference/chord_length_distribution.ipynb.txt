@@ -38,10 +38,13 @@
     }
    ],
    "source": [
-    "import matplotlib.pyplot as plt\n",
-    "import porespy as ps\n",
-    "import numpy as np\n",
     "import inspect\n",
+    "\n",
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "inspect.signature(ps.metrics.chord_length_distribution)"
    ]
   },
@@ -122,8 +125,8 @@
    "source": [
     "data = ps.metrics.chord_length_distribution(im=im)\n",
     "fig, ax = plt.subplots(1, 3, figsize=[10, 4])\n",
-    "ax[0].plot(data.L,data.pdf)\n",
-    "ax[1].plot(data.L,data.cdf)\n",
+    "ax[0].plot(data.L, data.pdf)\n",
+    "ax[1].plot(data.L, data.cdf)\n",
     "ax[2].bar(data.L, data.cdf, data.bin_widths, edgecolor='k')\n",
     "ax[0].set_title(\"Probability Density Function\")\n",
     "ax[1].set_title(\"Cumulative Density Function\")\n",
@@ -172,8 +175,8 @@
    "source": [
     "data = ps.metrics.chord_length_distribution(im=im, bins=100)\n",
     "fig, ax = plt.subplots(1, 3, figsize=[10, 4])\n",
-    "ax[0].plot(data.L,data.pdf)\n",
-    "ax[1].plot(data.L,data.cdf)\n",
+    "ax[0].plot(data.L, data.pdf)\n",
+    "ax[1].plot(data.L, data.cdf)\n",
     "ax[2].bar(data.L, data.cdf, data.bin_widths, edgecolor='k')\n",
     "ax[0].set_title(\"Probability Density Function\")\n",
     "ax[1].set_title(\"Cumulative Density Function\")\n",
@@ -223,8 +226,8 @@
    "source": [
     "data = ps.metrics.chord_length_distribution(im=im, log=True)\n",
     "fig, ax = plt.subplots(1, 3, figsize=[10, 4])\n",
-    "ax[0].plot(data.LogL,data.pdf)\n",
-    "ax[1].plot(data.LogL,data.cdf)\n",
+    "ax[0].plot(data.LogL, data.pdf)\n",
+    "ax[1].plot(data.LogL, data.cdf)\n",
     "ax[2].bar(data.LogL, data.cdf, data.bin_widths, edgecolor='k')\n",
     "ax[0].set_title(\"Probability Density Function\")\n",
     "ax[1].set_title(\"Cumulative Density Function\")\n",
@@ -281,7 +284,7 @@
     }
    ],
    "source": [
-    "voxel_size=1e-3\n",
+    "voxel_size = 1e-3\n",
     "data = ps.metrics.chord_length_distribution(im=im, voxel_size=voxel_size)\n",
     "fig, ax = plt.subplots(1, 2, figsize=[10, 4])\n",
     "ax[0].bar(data.L, data.cdf, data.bin_widths, edgecolor='k')\n",
@@ -333,8 +336,8 @@
    "source": [
     "data = ps.metrics.chord_length_distribution(im=im, normalization='length')\n",
     "fig, ax = plt.subplots(1, 3, figsize=[10, 4])\n",
-    "ax[0].plot(data.L,data.pdf)\n",
-    "ax[1].plot(data.L,data.cdf)\n",
+    "ax[0].plot(data.L, data.pdf)\n",
+    "ax[1].plot(data.L, data.cdf)\n",
     "ax[2].bar(data.L, data.cdf, data.bin_widths, edgecolor='k')\n",
     "ax[0].set_title(\"Probability Density Function\")\n",
     "ax[1].set_title(\"Cumulative Density Function\")\n",

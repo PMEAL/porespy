@@ -1,0 +1,17 @@
+porespy.networks.find_junctions
+===============================
+
+.. py:function:: porespy.networks.find_junctions(sk)
+
+   Finds all junctions and endpoints in a skeleton.
+
+   :param sk: The skeleton of an image (boolean).
+   :type sk: ndarray
+
+   :returns: **pt** -- A custom object with the following data added as named attributes:
+             'juncs'
+             An array of ones where all the junction points were found
+             'endpts'
+             An array of ones where all the endpoints were found
+   :rtype: Results object
+

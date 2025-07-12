@@ -1,0 +1,25 @@
+porespy.tools.extract_regions
+=============================
+
+.. py:function:: porespy.tools.extract_regions(regions, labels: list, trim=True)
+
+   Combine given regions into a single boolean mask
+
+   :param regions: An image containing an arbitrary number of labeled regions
+   :type regions: ndarray
+   :param labels: A list of labels indicating which region or regions to extract
+   :type labels: array_like or scalar
+   :param trim: If ``True`` then image shape will trimmed to a bounding box around the
+                given regions.
+   :type trim: bool
+
+   :returns: **im** -- A boolean mask with ``True`` values indicating where the given labels
+             exist
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/tools/reference/extract_regions.html>`__
+   to view online example.
+

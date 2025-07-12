@@ -1,0 +1,78 @@
+porespy.networks.magnet
+=======================
+
+.. py:function:: porespy.networks.magnet(im, sk=None, parallel_kw=None, surface=False, voxel_size=1, s=None, l_max=7, throat_junctions=None, throat_area=False, **kwargs)
+
+   Perform a Medial Axis Guided Network ExtracTion (MAGNET) on an image of
+   porous media.
+
+   This is a modernized python implementation of a classical
+   network extraction method. First, the skeleton of the provided image is
+   determined. The skeleton can be computed in serial or parallel modes.
+   Next, all the junction points of the skeleton are determined by using
+   convolution including terminal points on the ends of branches. ClustersPores are
+   then inserted at these points. The size of the pores inserted is based on
+   the distance transform value at it's junction. This approach results in
+   many long throats so more pores are added using a maximum filter along long
+   throats to find openings. To ensure an efficient network extraction method,
+   only the most fundamential pore and throat properties are returned.
+
+   :param im: An image of the porous material of interest. Be careful of floating
+              solids in the 3D image as this will result in a hollow shell after
+              taking the skeleton. Floating solids are removed from the image by
+              default prior to taking the skeleton.
+   :type im: ndarray
+   :param sk: Optionally provide your own skeleton of the image. If `sk` is `None` the
+              skeleton is computed using `skimage.morphology.skeleton_3d`.  A check
+              is made to ensure no shells are found in the resulting skeleton.
+   :type sk: ndarray
+   :param surface: If `False` disconnected solid at the surface of the image is NOT
+                   trimmed. This is the default mode. However, if `True`, disconnected
+                   solid at the surface of the image is trimmed. This is NOT applied when
+                   im is 2d.
+   :type surface: boolean
+   :param parallel_kw: Dictionary containing the settings for parallelization by chunking. If
+                       `None` is provided, parallelization does not occur. The default is
+                       `None`. The optional settings include `divs` (scalar or list of scalars,
+                       default = [2, 2, 2]), `overlap` (scalar or list of scalars, optional),
+                       and `cores` (scalar, default is all available cores). See documentaion
+                       on `ps.networks.skeleton` for more information.
+   :type parallel_kw: dict
+   :param voxel_size: The resolution of the image, expressed as the length of one side of a
+                      voxel, so the volume of a voxel would be voxel_size-cubed
+   :type voxel_size: scalar (default = 1)
+   :param s: The hard threshold for determining "near" junctions. If None is passed,
+             then the distance transform is used to merge junctions. The default is
+             None.
+   :type s: int (default = None)
+   :param l_max: The size of the maximum filter used in finding junction along long
+                 throats. This argument is only used when throat_junctions is set to
+                 "maximum filter" mode.
+   :type l_max: scalar (default = 7)
+   :param throat_junctions: The mode to use when finding throat junctions. The options are "maximum
+                            filter" or "fast marching". If None is given, then throat junctions are
+                            not found (this is the default).
+   :type throat_junctions: str
+   :param throat_area: Set this argument to TRUE to calculate throat area using
+                       get_throat_area. The area is calculated at the throat voxel with the
+                       minimum distance transform value. If TRUE, an equivalent throat
+                       diameter is returned. The default value is FALSE, for computational
+                       efficiency sake. See get_throat_area() documentation for more
+                       information.
+   :type throat_area: boolean (default = FALSE)
+
+   :returns: **results** -- A custom object with the following data added as named attributes:
+             'network'
+             A dictionary containing the most important pore and throat size data
+             and topological data.
+             'sk'
+             The skeleton of the image is also returned.
+             'juncs'
+             An ndarray the same shape as `im` with clusters of junction voxels not
+             uniquely labelled.
+             'throat_area'
+             If throat_area argument is set to FALSE (default), then None is
+             returned. However, if throat_area is set to TRUE, then the measured
+             throat area from get_throat_area is returned here.
+   :rtype: Results object
+

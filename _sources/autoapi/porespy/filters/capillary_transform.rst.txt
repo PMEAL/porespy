@@ -1,0 +1,42 @@
+porespy.filters.capillary_transform
+===================================
+
+.. py:function:: porespy.filters.capillary_transform(im: numpy.typing.NDArray, dt: numpy.typing.NDArray = None, sigma: float = 1.0, theta: float = 180, g: float = 0.0, rho_wp: float = 0.0, rho_nwp: float = 0.0, voxel_size: float = 1.0, spacing: float = None)
+
+   Uses the Washburn equation to convert distance transform values to a capillary
+   transform.
+
+   :param im: A boolean image describing the porous medium with ``True`` values indicating
+              the phase of interest.
+   :type im: ndarray
+   :param dt: The distance transform of the void phase. If not provided it will be
+              calculated, so some time can be save if a pre-computed array is already
+              available.
+   :type dt: ndarray, optional
+   :param sigma: The surface tension of the fluid-fluid interface.
+   :type sigma: scalar (default = 1.0)
+   :param theta: The contact angle of the fluid-fluid-solid system, in degrees, measured through
+                 the non-wetting phase.  It must be >90.
+   :type theta: scalar (default = 180)
+   :param g: The gravitational constant acting on the fluids. Gravity is assumed to act
+             toward the x=0 axis. To have gravity act in different directions use
+             `np.swapaxes(im, 0, ax)` where `ax` is the desired direction.
+   :type g: scalar (default = 0)
+   :param rho_nwp: The density of the non-wetting fluid
+   :type rho_nwp: scalar
+   :param rho_wp: The density of the wetting fluid
+   :type rho_wp: scalar
+   :param voxel_size: The resolution of the image
+   :type voxel_size: scalar (default = 0.0)
+   :param spacing: If a 2D image is provided, this value is used to compute the second
+                   radii of curvature.  Setting it to `np.inf` will make the calculation truly
+                   2D since only one radii of curvature is considered. Setting it to `None`
+                   will force the calculation to be 3D.  If `im` is 3D this argument is
+                   ignored.  This should be in units of physical length, not voxels.
+   :type spacing: scalar (default = None)
+
+   .. rubric:: Notes
+
+   All physical properties should be in self-consistent units, and it is strongly
+   recommended to use SI for everything.
+

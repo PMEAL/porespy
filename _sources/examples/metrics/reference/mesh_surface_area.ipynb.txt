@@ -38,10 +38,13 @@
     }
    ],
    "source": [
+    "import inspect\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
+    "\n",
     "import porespy as ps\n",
-    "import inspect\n",
+    "\n",
     "inspect.signature(ps.metrics.mesh_surface_area)"
    ]
   },
@@ -92,7 +95,7 @@
     "surface_area = ps.metrics.mesh_surface_area(mesh=mesh)\n",
     "print('surface area of void space is', str(surface_area))\n",
     "fig, ax = plt.subplots(1, 1, figsize=[4, 4])\n",
-    "ax.imshow(im[:,:,5], origin='lower', interpolation='none')\n",
+    "ax.imshow(im[:, :, 5], origin='lower', interpolation='none')\n",
     "ax.axis(False);"
    ]
   },
@@ -186,7 +189,7 @@
    "source": [
     "snow = ps.filters.snow_partitioning(im)\n",
     "regions = snow.regions/im\n",
-    "region = regions==30\n",
+    "region = regions == 30\n",
     "mesh = ps.tools.mesh_region(region=region)\n",
     "ps.visualization.show_mesh(mesh)\n",
     "area = ps.metrics.mesh_surface_area(verts=verts, faces=faces)\n",

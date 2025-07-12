@@ -1,0 +1,44 @@
+porespy.metrics.find_porosity_threshold
+=======================================
+
+.. py:function:: porespy.metrics.find_porosity_threshold(im, axis=0, conn='min')
+
+   Finds the porosity of the image at the percolation threshold
+
+   This function progressively dilates the solid and reports the porosity at the
+   step just before there are no percolating paths (in the specified direction)
+
+   :param im: Image of the void space with `True` indicating void space
+   :type im: ndarray
+   :param axis: The axis along which percolation is checked
+   :type axis: int
+   :param conn: Can be either `'min'` or `'max'` and controls the shape of the structuring
+                element used to determine voxel connectivity.  The default if `'min'` which
+                imposes the strictest criteria, so that voxels must share a face to be
+                considered connected.
+   :type conn: str
+
+   :returns: A Results object with the following attributes:
+
+             ================ ===========================================================
+             Attribute        Description
+             ================ ===========================================================
+             eps_orig         The total porosity of the original image, including closed
+                              and surface pores
+             eps_orig_perc    The percolating porosity of the original image (i.e. with
+                              closed and surface pores filled)
+             eps_thresh       The total porosity of the image after eroding the void
+                              space results in no percolating paths
+             eps_thresh_perc  The percolating porosity of the eroded image (with closed
+                              and surface pores filled)
+             R                The threshold to apply to the distance transform to
+                              obtain the percolating image (i.e. im = dt >= R)
+             ================ ===========================================================
+   :rtype: results
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/find_porosity_threshodl.html>`_
+   to view online example.
+

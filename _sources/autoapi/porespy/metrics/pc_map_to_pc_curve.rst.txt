@@ -1,0 +1,56 @@
+porespy.metrics.pc_map_to_pc_curve
+==================================
+
+.. py:function:: porespy.metrics.pc_map_to_pc_curve(pc, im, seq=None, mode='drainage', pc_min=None, pc_max=None, fix_ends=True)
+
+   Converts a pc map into a capillary pressure curve
+
+   :param pc: A numpy array with each voxel containing the capillary pressure at which
+              it was invaded. `-inf` indicates voxels which are filled with non-wetting
+              fluid at all pressures, and `+inf` indicates voxels that are filled by
+              wetting fluid at all pressures. Values in the solid phase are masked by
+              `im` so are ignored.
+   :type pc: ndarray
+   :param im: A numpy array with `True` values indicating the void space and `False`
+              elsewhere. This is necessary to define the total void volume of the domain
+              when computing the saturation.
+   :type im: ndarray
+   :param seq: A numpy array with each voxel containing the sequence at which it was
+               invaded. This is required when analyzing results from injection simulations
+               since the pressures in `pc` do not correspond to the sequence in which
+               they were filled.
+   :type seq: ndarray, optional
+   :param mode: Indicates whether the invasion was a drainage or an imbibition process.
+                Options are 'drainage' and 'imbibition'.
+   :type mode: str
+   :param fix_ends: A flag to control whether to adjust the endpoints of the curve or not.
+                    The default is `True`, which will put add a point at the beginning and end
+                    the curves corresponding to residual and trapped invading phase saturations.
+                    This makes the curves look better when plotted. Disabling this correction
+                    ensures that the (Pc, Snwp) data match the values in the displacement maps,
+                    which is useful for making animations for instance.
+   :type fix_ends: bool (default is `True`)
+
+   :returns: **results** -- A dataclass like object with the following attributes:
+
+             ================== =========================================================
+             Attribute          Description
+             ================== =========================================================
+             pc                 The capillary pressure
+             snwp               The fraction of void space filled by non-wetting
+                                phase at each pressure in ``pc``
+             ================== =========================================================
+   :rtype: dataclass-like
+
+   .. rubric:: Notes
+
+   To use this function with the results of `porosimetry` or `ibip` the sizes map
+   must be converted to a capillary pressure map first.  `drainage` and `invasion`
+   both return capillary pressure maps which can be passed directly as `pc`.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/pc_map_to_pc_curve.html>`_
+   to view online example.
+

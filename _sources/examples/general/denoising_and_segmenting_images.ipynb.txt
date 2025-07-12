@@ -28,9 +28,10 @@
    "outputs": [],
    "source": [
     "import imageio.v2 as imageio\n",
-    "import porespy as ps\n",
     "import numpy as np\n",
-    "from matplotlib.pyplot import subplots"
+    "from matplotlib.pyplot import subplots\n",
+    "\n",
+    "import porespy as ps"
    ]
   },
   {
@@ -322,6 +323,7 @@
    ],
    "source": [
     "import scipy.ndimage as spim\n",
+    "\n",
     "im = imageio.volread('../../docs/_static/images/Sample 1.tif')\n",
     "im = (im - im.min())/(im.max() - im.min())\n",
     "im = im[0, ...]\n",
@@ -418,7 +420,8 @@
     }
    ],
    "source": [
-    "from skimage.restoration import non_local_means, estimate_sigma\n",
+    "from skimage.restoration import estimate_sigma, non_local_means\n",
+    "\n",
     "im = imageio.volread('../../docs/_static/images/Sample 1.tif')\n",
     "im = (im - im.min())/(im.max() - im.min())\n",
     "im = im[0, ...]\n",

@@ -41,10 +41,12 @@
     }
    ],
    "source": [
-    "import matplotlib.pyplot as plt\n",
-    "import numpy as np\n",
-    "import porespy as ps\n",
     "import inspect\n",
+    "\n",
+    "import numpy as np\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()\n",
     "inspect.signature(ps.visualization.show_mesh)"
    ]
@@ -3120,7 +3122,7 @@
     "im = ps.generators.blobs(shape=[50, 50, 50])\n",
     "snow = ps.filters.snow_partitioning(im)\n",
     "regions = snow.regions/im\n",
-    "region = regions==30\n",
+    "region = regions == 30\n",
     "mesh = ps.tools.mesh_region(region=region)\n",
     "fig = ps.visualization.show_mesh(mesh)"
    ]

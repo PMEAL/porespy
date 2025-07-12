@@ -1,0 +1,36 @@
+porespy.filters.apply_chords
+============================
+
+.. py:function:: porespy.filters.apply_chords(im: numpy.typing.NDArray, spacing: int = 1, axis: int = 0, trim_edges: bool = True, label: bool = False)
+
+   Adds chords to the void space in the specified direction.
+
+   :param im: An image of the porous material with void marked as `True`.
+   :type im: ndarray
+   :param spacing: Separation between chords.  The default is 1 voxel.  This can be
+                   decreased to 0, meaning that the chords all touch each other,
+                   which automatically sets to the `label` argument to `True`.
+   :type spacing: int
+   :param axis: The axis along which the chords are drawn.
+   :type axis: int (default = 0)
+   :param trim_edges: Whether or not to remove chords that touch the edges of the image.
+                      These chords are artifically shortened, so skew the chord length
+                      distribution.
+   :type trim_edges: bool (default = `True`)
+   :param label: If `True` the chords in the returned image are each given a
+                 unique label, such that all voxels lying on the same chord have
+                 the same value.  This is automatically set to `True` if spacing
+                 is 0, but is `False` otherwise.
+   :type label: bool (default is `False`)
+
+   :returns: **image** -- A copy of `im` with non-zero values indicating the chords.
+   :rtype: ndarray
+
+   .. seealso:: :py:obj:`apply_chords_3D`
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/apply_chords.html>`__
+   to view online example.
+

@@ -38,10 +38,13 @@
     }
    ],
    "source": [
+    "import inspect\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
+    "\n",
     "import porespy as ps\n",
-    "import inspect\n",
+    "\n",
     "inspect.signature(ps.metrics.mesh_volume)"
    ]
   },
@@ -101,7 +104,7 @@
    ],
    "source": [
     "np.random.seed(10)\n",
-    "im = ps.generators.blobs(shape=[50,50])\n",
+    "im = ps.generators.blobs(shape=[50, 50])\n",
     "snow = ps.filters.snow_partitioning(im)\n",
     "regions = snow.regions\n",
     "region = regions == 10\n",

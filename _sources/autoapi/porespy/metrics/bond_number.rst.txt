@@ -1,0 +1,56 @@
+porespy.metrics.bond_number
+===========================
+
+.. py:function:: porespy.metrics.bond_number(im: numpy.typing.NDArray, delta_rho: float, g: float, sigma: float, voxel_size: float, source: str = 'lt', method: str = 'median', mask_source: bool = False, use_diameter: bool = False)
+
+   Computes the Bond number for an image
+
+   :param im: The image of the domain with `True` values indicating the phase of interest
+   :type im: ndarray
+   :param delta_rho: The difference in the density of the non-wetting and wetting phase
+   :type delta_rho: float
+   :param g: The gravitational constant for the system
+   :type g: float
+   :param sigma: The surface tension of the fluid pair
+   :type sigma: float
+   :param voxel_size: The size of the voxels
+   :type voxel_size: float
+   :param source: The source of the pore size values to use when computing the characteristic
+                  length *R*. Options are:
+
+                  ============== =============================================================
+                  Option         Description
+                  ============== =============================================================
+                  dt             Uses the distance transform
+                  lt             Uses the local thickness
+                  ============== =============================================================
+   :type source: str
+   :param method: The method to use for finding the characteristic length *R* from the
+                  values in `source`. Options are:
+
+                  ============== =============================================================
+                  Option         Description
+                  ============== =============================================================
+                  mean           The arithmetic mean (using `numpy.mean`)
+                  min (or amin)  The minimum value (using `numpy.amin`)
+                  max (or amax)  The maximum value (using `numpy.amax`)
+                  mode           The mode of the values (using `scipy.stats.mode`)
+                  gmean          The geometric mean of the values (using `scipy.stats.gmean`)
+                  hmean          The harmonic mean of the values (using `scipy.stats.hmean`)
+                  pmean          The power mean of the values (using `scipy.stats.pmean`)
+                  ============== =============================================================
+   :type method: str
+   :param mask_source: If `True` then the distance values in `source` are masked by the skeleton
+                       before computing the average value using the specified `method`. This
+                       requires computing the skeleton which can take a few moments.
+   :type mask_source: bool (default is `False`)
+   :param use_diameter: If `True` then the characteristic size obtaine from `source` is multiplied by
+                        2 to convert radius to diameter.
+   :type use_diameter: bool (default is `False`)
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/bond_number.html>`_
+   to view online example.
+

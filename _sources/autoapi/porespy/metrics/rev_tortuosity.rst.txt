@@ -1,0 +1,43 @@
+porespy.metrics.rev_tortuosity
+==============================
+
+.. py:function:: porespy.metrics.rev_tortuosity(im, n=100, axis=None, slices=None, dask_on=False)
+
+   Calculates the tortuosity for a range of subdomain sizes suitable for an REV plot
+
+   :param im: The binary image to analyze with ``True`` indicating the phase of interest
+   :type im: ndarray
+   :param n: The number of random blocks to analyze. If `slices` are provided this is
+             ignored.
+   :type n: int, default = 1000
+   :param slices: A list of `slice` objects into the image which define the subdomains. If
+                  not provided then `n` random blocks are used.
+   :type slices: list
+   :param axis: The axis along which to simulate the diffusion. If `None` then all
+                axes are considered.
+   :type axis: int
+
+   :returns: **df** -- A `pandas` data frame with the properties for each block on a given row
+
+             ========== ==================================================================
+             Attribute  Description
+             ========== ==================================================================
+             eps_orig   The original porosity of the subdomain tested
+             eps_perc   The porosity of the subdomain after filling non-percolating
+                        paths (e.g. blind and closed pores). This is the domain on which
+                        the calculation of tortuosity is performed.
+             g          The calculated diffusive conductance for the subdomain tested
+             tau        The calculated tortuosity for the tested subdomain
+             volume     The total volume of each cubic subdomain tested
+             length     The length of one side of the subdomain tested
+             axis       The axis for which the above properties were calculated
+             time       The elapsed time required to perform the calculations
+             slice      The coordinates for the subdomain tested in the original image
+             ========== ==================================================================
+   :rtype: DataFrame
+
+   .. rubric:: Notes
+
+   If both `block_sizes` and `slices` are left empty, the default mode of block
+   generation is gridding the image.
+

@@ -1,0 +1,44 @@
+porespy.metrics.region_interface_areas
+======================================
+
+.. py:function:: porespy.metrics.region_interface_areas(regions, areas, voxel_size=1, strel=None)
+
+   Calculate the interfacial area between all pairs of adjecent regions
+
+   :param regions: An image of the pore space partitioned into individual pore regions.
+                   Note that zeros in the image will not be considered for area
+                   calculation.
+   :type regions: ndarray
+   :param areas: A list containing the areas of each regions, as determined by
+                 ``region_surface_area``.  Note that the region number and list index
+                 are offset by 1, such that the area for region 1 is stored in
+                 ``areas[0]``.
+   :type areas: array_like
+   :param voxel_size: The resolution of the image, expressed as the length of one side of a
+                      voxel, so the volume of a voxel would be **voxel_size**-cubed.  The
+                      default is 1.
+   :type voxel_size: scalar
+   :param strel: The structuring element used to blur the region.  If not provided,
+                 then a spherical element (or disk) with radius 1 is used.  See the
+                 docstring for ``mesh_region`` for more details, as this argument is
+                 passed to there.
+   :type strel: array_like
+
+   :returns: **areas** -- A custom object with the following data added as named attributes:
+
+             'conns'
+                 An N-regions by 2 array with each row containing the region
+                 number of an adjacent pair of regions.  For instance, if
+                 ``conns[0, 0]`` is 0 and ``conns[0, 1]`` is 5, then row 0 of
+                 ``area`` contains the interfacial area shared by regions 0 and 5.
+
+             'area'
+                 The area calculated for each pair of regions in ``conns``
+   :rtype: Results object
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/metrics/reference/region_interface_areas.html>`__
+   to view online example.
+

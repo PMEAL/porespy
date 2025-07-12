@@ -1,0 +1,29 @@
+porespy.filters.nphase_border
+=============================
+
+.. py:function:: porespy.filters.nphase_border(im: numpy.typing.NDArray, conn: Literal['min', 'max'] = 'min')
+
+   Identifies the voxels in regions that border *N* other regions.
+
+   Useful for finding triple-phase boundaries.
+
+   :param im: An ND image of the porous material containing discrete values in
+              the pore space identifying different regions. e.g. the result of a
+              snow-partition
+   :type im: ndarray
+   :param conn: Can be either `'min'` or `'max'` and controls the shape of the structuring
+                element used to determine voxel connectivity.  The default if `'min'` which
+                imposes the strictest criteria, so that voxels must share a face to be
+                considered connected.
+   :type conn: str
+
+   :returns: **image** -- A copy of `im` with voxel values equal to the number of uniquely
+             different bordering values
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/nphase_border.html>`__
+   to view online example.
+

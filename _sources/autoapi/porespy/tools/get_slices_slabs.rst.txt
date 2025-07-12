@@ -1,0 +1,42 @@
+porespy.tools.get_slices_slabs
+==============================
+
+.. py:function:: porespy.tools.get_slices_slabs(im, axis=0, span=50, step=None, mode='tile')
+
+   Generates a list of slice objects which can be used to obtain slabs of an image
+
+   :param im: The image for which the slices are desired
+   :type im: ndarray
+   :param axis: The axis along which the image will be sliced into slabs
+   :type axis: int (Default = 0)
+   :param span: The thickness of the slabs
+   :type span: int (Default = 50)
+   :param step: The spacing between the midpoints of the slabs. The default is `None` which
+                sets `step=1` voxel if `mode='slide'` and `step=span` if `mode='tile'`.
+                This can be used to create overlaps between slabs when `mode='tile'` by
+                setting `step<span`, or to reduce the number of slabs created when
+                `mode='slide'` by setting `step>1`.
+   :type step: int (Default = None)
+   :param mode: Determines how the images is sliced into slabs. Options are:
+
+                =========== ================================================================
+                `mode`      Description
+                =========== ================================================================
+                'tile'      The returned slice objects produce discrete non-overlapping
+                            slabs with a thickness of `span`.
+                'slide'     The returned slice objects produce overlapping slabs
+                            representing a moving window of size `span` and the start of
+                            each slab is offsets from the start of the previous one by
+                            `step`.
+                =========== ================================================================
+   :type mode: str (Default = 'tile')
+
+   :returns: **slices** -- The retuned list contains `tuples` for each slab, with each `tuple`
+             containing `ndim` slice objects. These can be used to obtain slabs of
+             `im` using `slab_i = im[slices[i]]`.
+   :rtype: list of tuples contains `slice` objects
+
+   .. rubric:: Notes
+
+   When `span=step` the result is identical for `mode` of `'tile'` or `'slide'`.
+

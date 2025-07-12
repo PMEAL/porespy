@@ -77,8 +77,9 @@
    "outputs": [],
    "source": [
     "import matplotlib.pyplot as plt\n",
-    "import porespy as ps\n",
     "import numpy as np\n",
+    "\n",
+    "import porespy as ps\n",
     "\n",
     "ps.visualization.set_mpl_style()"
    ]
@@ -286,7 +287,7 @@
     }
    ],
    "source": [
-    "plt.imshow(results.im_conc,origin='lower', interpolation='none', cmap=plt.cm.plasma)\n",
+    "plt.imshow(results.im_conc, origin='lower', interpolation='none', cmap=plt.cm.plasma)\n",
     "plt.colorbar()\n",
     "results.formation_factor"
    ]

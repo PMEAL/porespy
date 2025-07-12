@@ -1,0 +1,49 @@
+porespy.filters.size_to_satn
+============================
+
+.. py:function:: porespy.filters.size_to_satn(size, im=None, bins=None, mode='drainage')
+
+   Converts size map to a saturation map
+
+   :param size: The image containing invasion size values in each voxel. Solid
+                should be indicated as 0's and uninvaded voxels as -1.
+   :type size: ndarray
+   :param im: A binary image of the porous media, with ``True`` indicating the
+              void space and ``False`` indicating the solid phase. If not given
+              then it is assumed that the solid is identified as ``size == 0``.
+   :type im: ndarray, optional
+   :param bins: The bins to use when converting sizes to saturation.  The default is
+                to create 1 bin for each unique value in ``size``.  If an **int**
+                is supplied it is interpreted as the number of bins between 0 and the
+                maximum value in ``size``.  If an array is supplied it is used as
+                the bins directly.
+   :type bins: array_like or int (optional)
+   :param mode: Controls how the sizes are converted to saturations. The options are:
+
+                ============= ==============================================================
+                `mode`        Description
+                ============= ==============================================================
+                'drainage'    The sizes are assumed to have been filled from largest to
+                              smallest, ignoring 0's and -1's
+                'imbibition'  The sizes are assumed to have been filled from smallest to
+                              largest, ignoring 0's and -1's
+                ============= ==============================================================
+   :type mode: str
+
+   :returns: **satn** -- An ndarray the same shape as ``size`` but with size values replaced
+             by the fraction of void space invaded at each size, according to the
+             specified `mode`. Solid voxels and uninvaded voxels are represented by 0
+             and -1, respectively.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   If any ``-1`` values are present in `size` the maximum saturation will be less
+   than 1.0 since this means that not all wetting phase was displaced.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/size_to_satn.html>`__
+   to view online example.
+

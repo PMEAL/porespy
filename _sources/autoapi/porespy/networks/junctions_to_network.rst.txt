@@ -1,0 +1,37 @@
+porespy.networks.junctions_to_network
+=====================================
+
+.. py:function:: porespy.networks.junctions_to_network(sk, juncs, throats, dt, throat_area, voxel_size=1)
+
+   Assemble a dictionary object containing essential topological and
+   geometrical data for a pore network. The information is retrieved from the
+   distance transform, an image of labelled junctions, and an image of
+   labelled throats.
+
+   :param sk: A boolean image of the skeleton of the phase of interest
+   :type sk: ndarray
+   :param juncs: An ndarray the same shape as `im` with clusters of junction voxels
+                 uniquely labelled (1...Np).  If a boolean array is provided then a
+                 cluster labeling is performed with full cubic connectivity.
+   :type juncs: ndarray
+   :param throats: An ndarray the same shape as `im` with clusters of throat voxels
+                   uniquely labelled (1...Nt). If a boolean array is provided then a
+                   cluster labeling is performed with full cubic connectivity.
+   :type throats: ndarray
+   :param dt: The distance transform of the image.
+   :type dt: ndarray (optional)
+   :param throat_area: The throat area returned from get_throat_area where the labelled voxels
+                       in the original throats image is overwritten by the measured area.
+   :type throat_area: ndarray
+   :param voxel_size: The resolution of the image, expressed as the length of one side of a
+                      voxel, so the volume of a voxel would be **voxel_size**-cubed.
+   :type voxel_size: scalar (default = 1)
+
+   :returns: **net** -- A dictionary containing the most important pore and throat size data
+             and topological data. These are pore radius, throat radius, pore
+             coordinates, and throat connections. The dictionary names use the
+             OpenPNM convention (i.e. 'pore.coords', 'throat.conns', 'pore.radius',
+             'throat.radius'). Labels for boundary pores and overlapping throats
+             are also returned.
+   :rtype: dict
+

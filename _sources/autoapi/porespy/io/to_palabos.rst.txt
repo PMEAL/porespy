@@ -1,0 +1,30 @@
+porespy.io.to_palabos
+=====================
+
+.. py:function:: porespy.io.to_palabos(im, filename, solid=0)
+
+   Converts an ndarray image to a text file that Palabos can read in as a
+   geometry for Lattice Boltzmann simulations. Uses a Euclidean distance
+   transform to identify solid voxels neighboring fluid voxels and labels
+   them as the interface.
+
+   :param im: The image of the porous material
+   :type im: ndarray
+   :param filename: Path to output file
+   :type filename: string
+   :param solid: The value of the solid voxels in the image used to convert image to
+                 binary with all other voxels assumed to be fluid.
+   :type solid: int
+
+   .. rubric:: Notes
+
+   File produced contains 3 values: 2 = Solid, 1 = Interface, 0 = Pore
+   Palabos will run the simulation applying the specified pressure drop from
+   x = 0 to x = -1.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/io/reference/to_palabos.html>`__
+   to view online example.
+

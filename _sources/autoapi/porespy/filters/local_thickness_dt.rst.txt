@@ -1,0 +1,34 @@
+porespy.filters.local_thickness_dt
+==================================
+
+.. py:function:: porespy.filters.local_thickness_dt(im: numpy.typing.NDArray, dt: numpy.typing.NDArray = None, sizes: int = 25, smooth: bool = True)
+
+   Calculates the radius of the largest sphere that overlaps each voxel while
+   fitting entirely within the void space.
+
+   :param im: A binary image with the phase of interest set to `True`
+   :type im: ndarray
+   :param dt: The distance transform of the void space. If not provided it will be computed
+              but providing it saves time. Note that rounding and/or converting the values
+              to integers and using `sizes=None` can save time by limiting the number of
+              sizes that are used.
+   :type dt: ndarray
+   :param sizes: The sizes to insert. If a list of values is provided they are
+                 used directly. If a scalar is provided then that number of points
+                 spanning the min and max of the distance transform are used. If `None`, then
+                 all the unique values in the distance transform are used, which may become
+                 time consuming.
+   :type sizes: array_like or scalar
+   :param smooth: Indicates if protrusions should be removed from the faces of the spheres
+                  or not. Default is `True`.
+   :type smooth: bool, optional
+
+   :returns: **image** -- A copy of `im` with the pore size values in each voxel
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/local_thickness_dt.html>`_
+   to view online example.
+

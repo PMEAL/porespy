@@ -1,0 +1,31 @@
+porespy.generators.bundle_of_tubes
+==================================
+
+.. py:function:: porespy.generators.bundle_of_tubes(shape: List[int], spacing: int, distribution=None, smooth: bool = True, seed: int = None)
+
+   Create a 3D image of a bundle of tubes, in the form of a rectangular
+   plate with randomly sized holes through it.
+
+   :param shape: The size the image, with the 3rd dimension indicating the plate
+                 thickness.  If the 3rd dimension is not given then a thickness of
+                 1 voxel is assumed.
+   :type shape: list
+   :param spacing: The center to center distance of the holes.  The hole sizes will
+                   be distributed between this values down to 3 voxels.
+   :type spacing: int
+   :param distribution: A handle to a scipy stats object with the desired parameters.
+   :type distribution: scipy.stats object
+   :param seed: Initializes numpy's random number generator to the specified state. If not
+                provided, the current global value is used. This means calls to
+                ``np.random.seed(seed)`` prior to calling this function will be respected.
+   :type seed: int, optional, default = `None`
+
+   :returns: **image** -- A boolean array with ``True`` values denoting the pore space
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/bundle_of_tubes.html>`__
+   to view online example.
+

@@ -30,11 +30,9 @@
    },
    "outputs": [],
    "source": [
-    "import numpy as np\n",
-    "import porespy as ps\n",
-    "import scipy.ndimage as spim\n",
     "import matplotlib.pyplot as plt\n",
-    "import skimage\n",
+    "\n",
+    "import porespy as ps\n",
     "\n",
     "ps.visualization.set_mpl_style()"
    ]
@@ -121,7 +119,7 @@
    "source": [
     "im = ps.generators.blobs([100, 100, 100], blobiness=[1, 2, 3])\n",
     "\n",
-    "fig, ax = plt.subplots(figsize=[4, 4]);\n",
+    "fig, ax = plt.subplots(figsize=[4, 4])\n",
     "ax.imshow(im[50, ...])\n",
     "ax.axis(False);"
    ]
@@ -224,8 +222,8 @@
     }
    ],
    "source": [
-    "im1,im2,im3 = ps.tools.get_planes(im=im, squeeze=True)\n",
-    "fig, ax = plt.subplots(1, 3, figsize=[8, 4]);\n",
+    "im1, im2, im3 = ps.tools.get_planes(im=im, squeeze=True)\n",
+    "fig, ax = plt.subplots(1, 3, figsize=[8, 4])\n",
     "ax[0].axis(False)\n",
     "ax[0].imshow(im1)\n",
     "ax[1].axis(False)\n",

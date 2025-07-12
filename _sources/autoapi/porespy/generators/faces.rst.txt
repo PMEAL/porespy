@@ -1,0 +1,32 @@
+porespy.generators.faces
+========================
+
+.. py:function:: porespy.generators.faces(shape, inlet: int = None, outlet: int = None)
+
+   Generate an image with ``True`` values on the specified ``inlet`` and
+   ``outlet`` faces
+
+   :param shape: The ``[x, y, z (optional)]`` shape to generate. This will likely
+                 be obtained from ``im.shape`` where ``im`` is the image for which
+                 an array of faces is required.
+   :type shape: list
+   :param inlet: The axis where the faces should be added (e.g. ``inlet=0`` will
+                 put ``True`` values on the ``x=0`` face). A value of ``None``
+                 bypasses the addition of inlets.
+   :type inlet: int
+   :param outlet: Same as ``inlet`` except for the outlet face. This is optional. It
+                  can be be applied at the same time as ``inlet``, instead of
+                  ``inlet`` (if ``inlet`` is set to ``None``), or ignored
+                  (if ``outlet = None``).
+   :type outlet: int
+
+   :returns: **faces** -- A boolean image of the given ``shape`` with ``True`` values on the
+             specified ``inlet`` and/or ``outlet`` face(s).
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/faces.html>`__
+   to view online example.
+

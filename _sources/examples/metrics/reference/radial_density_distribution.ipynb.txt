@@ -38,11 +38,14 @@
     }
    ],
    "source": [
+    "import inspect\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
-    "import porespy as ps\n",
     "from edt import edt\n",
-    "import inspect\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "inspect.signature(ps.metrics.radial_density_distribution)"
    ]
   },
@@ -123,8 +126,8 @@
    "source": [
     "data = ps.metrics.radial_density_distribution(dt=dt)\n",
     "fig, ax = plt.subplots(1, 3, figsize=[10, 4])\n",
-    "ax[0].plot(data.bin_centers,data.pdf)\n",
-    "ax[1].plot(data.bin_centers,data.cdf)\n",
+    "ax[0].plot(data.bin_centers, data.pdf)\n",
+    "ax[1].plot(data.bin_centers, data.cdf)\n",
     "ax[2].bar(data.bin_centers, data.cdf, data.bin_widths, edgecolor='k')\n",
     "ax[0].set_title(\"Probability Density Function\")\n",
     "ax[1].set_title(\"Cumulative Density Function\")\n",
@@ -173,8 +176,8 @@
    "source": [
     "data = ps.metrics.radial_density_distribution(dt=dt, bins=100)\n",
     "fig, ax = plt.subplots(1, 3, figsize=[10, 4])\n",
-    "ax[0].plot(data.bin_centers,data.pdf)\n",
-    "ax[1].plot(data.bin_centers,data.cdf)\n",
+    "ax[0].plot(data.bin_centers, data.pdf)\n",
+    "ax[1].plot(data.bin_centers, data.cdf)\n",
     "ax[2].bar(data.bin_centers, data.cdf, data.bin_widths, edgecolor='k')\n",
     "ax[0].set_title(\"Probability Density Function\")\n",
     "ax[1].set_title(\"Cumulative Density Function\")\n",
@@ -223,8 +226,8 @@
    "source": [
     "data = ps.metrics.radial_density_distribution(dt=dt, log=True)\n",
     "fig, ax = plt.subplots(1, 3, figsize=[10, 4])\n",
-    "ax[0].plot(data.bin_centers,data.pdf)\n",
-    "ax[1].plot(data.bin_centers,data.cdf)\n",
+    "ax[0].plot(data.bin_centers, data.pdf)\n",
+    "ax[1].plot(data.bin_centers, data.cdf)\n",
     "ax[2].bar(data.bin_centers, data.cdf, data.bin_widths, edgecolor='k')\n",
     "ax[0].set_title(\"Probability Density Function\")\n",
     "ax[1].set_title(\"Cumulative Density Function\")\n",
@@ -271,13 +274,13 @@
     }
    ],
    "source": [
-    "voxel_size=1e-3\n",
+    "voxel_size = 1e-3\n",
     "data = ps.metrics.radial_density_distribution(dt=dt, voxel_size=voxel_size, log=False)\n",
     "fig, ax = plt.subplots(1, 2, figsize=[10, 4])\n",
-    "ax[0].bar(data.bin_centers, data.cdf, data.bin_widths, edgecolor='k');\n",
-    "ax[0].set_title(\"PDF scaling included in the result\");\n",
+    "ax[0].bar(data.bin_centers, data.cdf, data.bin_widths, edgecolor='k')\n",
+    "ax[0].set_title(\"PDF scaling included in the result\")\n",
     "data = ps.metrics.radial_density_distribution(dt=dt, log=False)\n",
-    "ax[1].bar(data.bin_centers*voxel_size, data.cdf, data.bin_widths*voxel_size, edgecolor='k');\n",
+    "ax[1].bar(data.bin_centers*voxel_size, data.cdf, data.bin_widths*voxel_size, edgecolor='k')\n",
     "ax[1].set_title(\"PDF scaling after the result\");"
    ]
   }

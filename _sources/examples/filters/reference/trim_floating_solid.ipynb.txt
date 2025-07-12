@@ -21,12 +21,10 @@
    },
    "outputs": [],
    "source": [
-    "import numpy as np\n",
-    "import porespy as ps\n",
-    "import scipy.ndimage as spim\n",
-    "import scipy\n",
     "import matplotlib.pyplot as plt\n",
-    "import skimage\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()"
    ]
   },
@@ -69,7 +67,7 @@
    "source": [
     "im = ps.generators.blobs(shape=[500, 500])\n",
     "\n",
-    "fig, ax = plt.subplots(figsize=[5, 5]);\n",
+    "fig, ax = plt.subplots(figsize=[5, 5])\n",
     "ax.imshow(im)\n",
     "ax.axis(False);\n"
    ]
@@ -114,19 +112,19 @@
     "x1 = ps.filters.trim_floating_solid(im=im, conn=\"min\")\n",
     "x2 = ps.filters.trim_floating_solid(im=im, conn=\"max\")\n",
     "\n",
-    "fig, ax = plt.subplots(1, 2, figsize=[12, 12]);\n",
-    "ax[0].imshow(x1);\n",
-    "ax[0].axis(False);\n",
-    "ax[0].set_title('conn = \"min\"', fontdict={'fontsize': 18});\n",
-    "ax[1].imshow(x2);\n",
-    "ax[1].axis(False);\n",
+    "fig, ax = plt.subplots(1, 2, figsize=[12, 12])\n",
+    "ax[0].imshow(x1)\n",
+    "ax[0].axis(False)\n",
+    "ax[0].set_title('conn = \"min\"', fontdict={'fontsize': 18})\n",
+    "ax[1].imshow(x2)\n",
+    "ax[1].axis(False)\n",
     "ax[1].set_title('conn = \"max\"', fontdict={'fontsize': 18});"
    ]
   }
  ],
  "metadata": {
   "kernelspec": {
-   "display_name": ".venv",
+   "display_name": "PoreSpy",
    "language": "python",
    "name": "python3"
   },

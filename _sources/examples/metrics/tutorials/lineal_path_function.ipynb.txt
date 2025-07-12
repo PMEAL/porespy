@@ -23,9 +23,10 @@
    },
    "outputs": [],
    "source": [
-    "import porespy as ps\n",
-    "import numpy as np\n",
     "import matplotlib.pyplot as plt\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()"
    ]
   },
@@ -4238,7 +4239,7 @@
    ],
    "source": [
     "lpf = ps.metrics.lineal_path_distribution(paths, bins=range(1, 200, 10))\n",
-    "ax.bar(x=lpf.L, height=lpf.cdf, width=lpf.bin_widths, edgecolor='k', alpha=0.8);\n",
+    "ax.bar(x=lpf.L, height=lpf.cdf, width=lpf.bin_widths, edgecolor='k', alpha=0.8)\n",
     "fig"
    ]
   },

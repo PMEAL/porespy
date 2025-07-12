@@ -1,0 +1,34 @@
+porespy.generators.voronoi_edges
+================================
+
+.. py:function:: porespy.generators.voronoi_edges(shape: List[int], ncells: int, r: int = 0, flat_faces: bool = True, seed: int = None, **kwargs)
+
+   Create an image from the edges of a Voronoi tessellation.
+
+   :param shape: The size of the image to generate in [Nx, Ny, <Nz>] where Ni is the
+                 number of voxels in each direction.  If Nz is not given a 2D image
+                 is returned.
+   :type shape: array_like
+   :param ncells: The number of Voronoi cells to include in the tesselation.
+   :type ncells: int
+   :param r: The radius to which Voronoi edges should be dilated in the final
+             image.  If not given then edges are a single pixel/voxel thick.
+   :type r: int, optional
+   :param flat_faces: Whether the Voronoi edges should lie on the boundary of the
+                      image (``True``), or if edges outside the image should be removed
+                      (``False``).
+   :type flat_faces: bool
+   :param seed: Initializes numpy's random number generator to the specified state. If not
+                provided, the current global value is used. This means calls to
+                ``np.random.seed(seed)`` prior to calling this function will be respected.
+   :type seed: int, optional, default = `None`
+
+   :returns: **image** -- A boolean array with ``True`` values denoting the pore space
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/voronoi_edges.html>`__
+   to view online example.
+

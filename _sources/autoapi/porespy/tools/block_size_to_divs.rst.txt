@@ -1,0 +1,16 @@
+porespy.tools.block_size_to_divs
+================================
+
+.. py:function:: porespy.tools.block_size_to_divs(shape, block_size)
+
+   Finds the number of blocks in each direction given the size of the blocks
+
+   :param shape: The [x, y, z] shape of the image
+   :type shape: sequence of ints
+   :param block_size: The size of the blocks
+   :type block_size: int or sequence of ints
+
+   :returns: **divs** -- The number of blocks to divide the image into along each axis. The minimum
+             number of blocks is 2.
+   :rtype: list of ints
+

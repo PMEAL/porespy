@@ -1,0 +1,54 @@
+porespy.simulations.ibip
+========================
+
+.. py:function:: porespy.simulations.ibip(im: numpy.typing.NDArray, inlets: numpy.typing.NDArray = None, outlets: numpy.typing.NDArray = None, dt: numpy.typing.NDArray = None, maxiter: int = 10000, return_sizes: bool = True, conn: str = 'min', min_size: int = 0)
+
+   Simulates non-wetting fluid injection on an image using the IBIP algorithm [3]_
+
+   :param im: Boolean array with ``True`` values indicating void voxels
+   :type im: ND-array
+   :param inlets: Boolean array with ``True`` values indicating where the invading fluid
+                  is injected from.  If ``None``, all faces will be used.
+   :type inlets: ND-array
+   :param dt: The distance transform of ``im``.  If not provided it will be
+              calculated, so supplying it saves time.
+   :type dt: ND-array (optional)
+   :param maxiter: The number of steps to apply before stopping.  The default is to run
+                   for 10,000 steps which is almost certain to reach completion if the
+                   image is smaller than about 250-cubed.
+   :type maxiter: scalar
+   :param return_sizes: If ``True`` then an array containing the size of the sphere which first
+                        overlapped each voxel is returned. This array is not computed by default
+                        as it increases computation time.
+   :type return_sizes: bool
+
+   :returns: **results** -- A dataclass-like object with the following arrays as attributes:
+
+             ============= ================================================================
+             Attribute     Description
+             ============= ================================================================
+             im_seq        A numpy array with each voxel value containing the step at
+                           which it was invaded.  Uninvaded voxels are set to -1.
+             im_snwp       A numpy array with each voxel value indicating the saturation
+                           present in the domain it was invaded. Solids are given 0, and
+                           uninvaded regions are given -1.
+             im_size       If ``return_sizes`` was set to ``True``, then a numpy array with
+                           each voxel containing the radius of the sphere, in voxels,
+                           that first overlapped it.
+             ============= ================================================================
+   :rtype: dataclass-like
+
+   .. seealso:: :py:obj:`porosimetry`, :py:obj:`drainage`
+
+   .. rubric:: References
+
+   .. [3] Gostick JT, Misaghian N, Yang J, Boek ES. Simulating volume-controlled
+      invasion of a non-wetting fluid in volumetric images using basic image
+      processing tools. Computers & Geosciences. 158(1), 104978 (2022).
+      `Link. <https://doi.org/10.1016/j.cageo.2021.104978>`__
+
+   .. rubric:: Notes
+
+   This function is slower and is less capable than ``qbip``, which returns
+   identical results, so it is recommended to use that instead.
+

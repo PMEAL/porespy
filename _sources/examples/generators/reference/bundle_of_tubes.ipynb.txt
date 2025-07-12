@@ -38,10 +38,13 @@
     }
    ],
    "source": [
+    "import inspect\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
+    "\n",
     "import porespy as ps\n",
-    "import inspect\n",
+    "\n",
     "inspect.signature(ps.generators.bundle_of_tubes)"
    ]
   },
@@ -129,6 +132,7 @@
    ],
    "source": [
     "import scipy.stats as spst\n",
+    "\n",
     "fig, ax = plt.subplots(1, 2, figsize=[8, 4])\n",
     "\n",
     "dst = spst.norm(loc=8, scale=1)\n",

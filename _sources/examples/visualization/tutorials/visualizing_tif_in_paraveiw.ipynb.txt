@@ -27,10 +27,11 @@
    },
    "outputs": [],
    "source": [
+    "import imageio\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
-    "import porespy as ps\n",
-    "import imageio"
+    "\n",
+    "import porespy as ps"
    ]
   },
   {
@@ -81,11 +82,11 @@
    ],
    "source": [
     "np.random.seed(10)\n",
-    "im = ps.generators.blobs(shape=[50,50,50])\n",
+    "im = ps.generators.blobs(shape=[50, 50, 50])\n",
     "snow = ps.filters.snow_partitioning(im)\n",
     "regions = snow.regions\n",
     "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
-    "ax.imshow(regions[:,:,20], origin='lower', interpolation='none')\n",
+    "ax.imshow(regions[:, :, 20], origin='lower', interpolation='none')\n",
     "ax.axis(False);"
    ]
   },

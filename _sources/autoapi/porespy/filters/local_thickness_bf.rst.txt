@@ -1,0 +1,29 @@
+porespy.filters.local_thickness_bf
+==================================
+
+.. py:function:: porespy.filters.local_thickness_bf(im, dt=None, mask=None, smooth=True)
+
+   Insert a maximally inscribed sphere at every pixel labelled by sphere radius
+
+   :param im: Boolean image of the porous material
+   :type im: ndarray
+   :param dt: The distance transform of the image
+   :type dt: ndarray, optional
+   :param mask: A boolean mask indicating which sites to insert spheres at. If not provided
+                then all `True` values in `im` are used.
+   :type mask: ndarray, optional
+   :param smooth: Indicates if protrusions should be removed from the faces of the spheres
+                  or not. Default is `True`.
+   :type smooth: bool, optional
+
+   :returns: **lt** -- The local thickness of the image with each voxel labelled according to the
+             radius of the largest sphere which overlaps it
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   This function uses brute force, meaning that is inserts spheres at every single
+   pixel or voxel in the void phase without making any attempt to reduce the number
+   of insertion sites. This provides a reference implementation for comparing
+   accuracy of other methods.
+

@@ -1,20 +1,27 @@
 Traceback (most recent call last):
-  File "/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 154, in wrapped
+    asyncio.get_running_loop()
+RuntimeError: no running event loop
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
     executenb(
-  File "/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/nbclient/client.py", line 1319, in execute
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/nbclient/client.py", line 1319, in execute
     return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 158, in wrapped
     return loop.run_until_complete(inner)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
     return future.result()
            ^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/nbclient/client.py", line 709, in async_execute
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/nbclient/client.py", line 709, in async_execute
     await self.async_execute_cell(
-  File "/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/nbclient/client.py", line 1062, in async_execute_cell
     await self._check_raise_for_error(cell, cell_index, exec_reply)
-  File "/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
@@ -24,10 +31,11 @@ import warnings
 import h5py
 import numpy as np
 import openpnm as op
-import porespy as ps
 import scipy as sp
 from matplotlib import pyplot as plt
 from sklearn.metrics import r2_score
+
+import porespy as ps
 
 ps.visualization.set_mpl_style()
 warnings.filterwarnings("ignore")
@@ -39,62 +47,15 @@ model = ps.networks.create_model()
 model.load_weights(path_weights)
 ------------------
 
------ stdout -----
-No module named 'pyedt'
------ stderr -----
-2025-04-19 19:58:19.455515: E external/local_xla/xla/stream_executor/cuda/cuda_platform.cc:51] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: UNKNOWN ERROR (303)
-------------------
 
 [31m---------------------------------------------------------------------------[39m
-[31mValueError[39m                                Traceback (most recent call last)
-[36mCell[39m[36m [39m[32mIn[3][39m[32m, line 18[39m
-[32m     16[39m path_weights = os.path.join(path, [33m'[39m[33mmodel_weights.h5[39m[33m'[39m)
-[32m     17[39m g_train = h5py.File(path_train, [33m'[39m[33mr[39m[33m'[39m)[[33m'[39m[33mg_train[39m[33m'[39m][()]
-[32m---> [39m[32m18[39m model = [43mps[49m[43m.[49m[43mnetworks[49m[43m.[49m[43mcreate_model[49m[43m([49m[43m)[49m
-[32m     19[39m model.load_weights(path_weights)
+[31mModuleNotFoundError[39m                       Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[3][39m[32m, line 6[39m
+[32m      4[39m [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mh5py[39;00m
+[32m      5[39m [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mnumpy[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[34;01mnp[39;00m
+[32m----> [39m[32m6[39m [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mopenpnm[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[34;01mop[39;00m
+[32m      7[39m [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mscipy[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[34;01msp[39;00m
+[32m      8[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mmatplotlib[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m pyplot [38;5;28;01mas[39;00m plt
 
-[36mFile [39m[32m~/work/porespy/porespy/src/porespy/networks/_size_factors.py:616[39m, in [36mcreate_model[39m[34m()[39m
-[32m    614[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mtensorflow[39;00m[34;01m.[39;00m[34;01mkeras[39;00m[34;01m.[39;00m[34;01moptimizers[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m Adam
-[32m    615[39m model = _resnet3d()
-[32m--> [39m[32m616[39m model.compile(loss=[33m'[39m[33mmse[39m[33m'[39m, optimizer=[43mAdam[49m[43m([49m[43mlr[49m[43m=[49m[32;43m1e-4[39;49m[43m)[49m, metrics=[[33m'[39m[33mmse[39m[33m'[39m])
-[32m    617[39m [38;5;28;01mreturn[39;00m model
-
-[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/keras/src/optimizers/adam.py:62[39m, in [36mAdam.__init__[39m[34m(self, learning_rate, beta_1, beta_2, epsilon, amsgrad, weight_decay, clipnorm, clipvalue, global_clipnorm, use_ema, ema_momentum, ema_overwrite_frequency, loss_scale_factor, gradient_accumulation_steps, name, **kwargs)[39m
-[32m     43[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34m__init__[39m(
-[32m     44[39m     [38;5;28mself[39m,
-[32m     45[39m     learning_rate=[32m0.001[39m,
-[32m   (...)[39m[32m     60[39m     **kwargs,
-[32m     61[39m ):
-[32m---> [39m[32m62[39m     [38;5;28;43msuper[39;49m[43m([49m[43m)[49m[43m.[49m[34;43m__init__[39;49m[43m([49m
-[32m     63[39m [43m        [49m[43mlearning_rate[49m[43m=[49m[43mlearning_rate[49m[43m,[49m
-[32m     64[39m [43m        [49m[43mname[49m[43m=[49m[43mname[49m[43m,[49m
-[32m     65[39m [43m        [49m[43mweight_decay[49m[43m=[49m[43mweight_decay[49m[43m,[49m
-[32m     66[39m [43m        [49m[43mclipnorm[49m[43m=[49m[43mclipnorm[49m[43m,[49m
-[32m     67[39m [43m        [49m[43mclipvalue[49m[43m=[49m[43mclipvalue[49m[43m,[49m
-[32m     68[39m [43m        [49m[43mglobal_clipnorm[49m[43m=[49m[43mglobal_clipnorm[49m[43m,[49m
-[32m     69[39m [43m        [49m[43muse_ema[49m[43m=[49m[43muse_ema[49m[43m,[49m
-[32m     70[39m [43m        [49m[43mema_momentum[49m[43m=[49m[43mema_momentum[49m[43m,[49m
-[32m     71[39m [43m        [49m[43mema_overwrite_frequency[49m[43m=[49m[43mema_overwrite_frequency[49m[43m,[49m
-[32m     72[39m [43m        [49m[43mloss_scale_factor[49m[43m=[49m[43mloss_scale_factor[49m[43m,[49m
-[32m     73[39m [43m        [49m[43mgradient_accumulation_steps[49m[43m=[49m[43mgradient_accumulation_steps[49m[43m,[49m
-[32m     74[39m [43m        [49m[43m*[49m[43m*[49m[43mkwargs[49m[43m,[49m
-[32m     75[39m [43m    [49m[43m)[49m
-[32m     76[39m     [38;5;28mself[39m.beta_1 = beta_1
-[32m     77[39m     [38;5;28mself[39m.beta_2 = beta_2
-
-[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/keras/src/backend/tensorflow/optimizer.py:21[39m, in [36mTFOptimizer.__init__[39m[34m(self, *args, **kwargs)[39m
-[32m     20[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34m__init__[39m([38;5;28mself[39m, *args, **kwargs):
-[32m---> [39m[32m21[39m     [38;5;28;43msuper[39;49m[43m([49m[43m)[49m[43m.[49m[34;43m__init__[39;49m[43m([49m[43m*[49m[43margs[49m[43m,[49m[43m [49m[43m*[49m[43m*[49m[43mkwargs[49m[43m)[49m
-[32m     22[39m     [38;5;28mself[39m._distribution_strategy = tf.distribute.get_strategy()
-
-[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/keras/src/optimizers/base_optimizer.py:90[39m, in [36mBaseOptimizer.__init__[39m[34m(self, learning_rate, weight_decay, clipnorm, clipvalue, global_clipnorm, use_ema, ema_momentum, ema_overwrite_frequency, loss_scale_factor, gradient_accumulation_steps, name, **kwargs)[39m
-[32m     86[39m     warnings.warn(
-[32m     87[39m         [33m"[39m[33mArgument `decay` is no longer supported and will be ignored.[39m[33m"[39m
-[32m     88[39m     )
-[32m     89[39m [38;5;28;01mif[39;00m kwargs:
-[32m---> [39m[32m90[39m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([33mf[39m[33m"[39m[33mArgument(s) not recognized: [39m[38;5;132;01m{[39;00mkwargs[38;5;132;01m}[39;00m[33m"[39m)
-[32m     92[39m [38;5;28;01mif[39;00m name [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
-[32m     93[39m     name = auto_name([38;5;28mself[39m.[34m__class__[39m.[34m__name__[39m)
-
-[31mValueError[39m: Argument(s) not recognized: {'lr': 0.0001}
+[31mModuleNotFoundError[39m: No module named 'openpnm'
 

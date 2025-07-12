@@ -21,12 +21,14 @@
    },
    "outputs": [],
    "source": [
-    "import numpy as np\n",
-    "import porespy as ps\n",
     "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
     "import scipy.ndimage as spim\n",
     "from edt import edt\n",
     "from skimage.segmentation import watershed\n",
+    "\n",
+    "import porespy as ps\n",
+    "\n",
     "ps.visualization.set_mpl_style()\n",
     "np.random.seed(0)"
    ]
@@ -63,6 +65,7 @@
    ],
    "source": [
     "import inspect\n",
+    "\n",
     "inspect.signature(ps.filters.flood_func)"
    ]
   },
