@@ -60,9 +60,9 @@ def get_skel():
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         try:
-            func = package.skeletonize_3d
-        except (FutureWarning, AttributeError):
             func = package.skeletonize
+        except (AttributeError):
+            func = package.skeletonize_3d
     return func
 
 
