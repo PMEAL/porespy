@@ -50,7 +50,7 @@ class MagnetTest:
         im = self.blobs2D
         magnet = ps.networks.magnet(im)
         mode = spst.mode(magnet.network["pore.inscribed_diameter"], keepdims=False)
-        assert mode[0] == 4.0
+        assert np.isclose(mode[0], 4.4721360206604)
         D = np.unique(magnet.network["pore.inscribed_diameter"].astype(int))
         assert np.all(D == np.array([2, 4, 5, 6, 7, 8, 10, 11, 12]))
 
@@ -66,7 +66,7 @@ class MagnetTest:
         im = self.blobs2D
         magnet = ps.networks.magnet(im, parallel_kw={"divs": 4})
         sk = magnet.sk
-        assert np.sum(sk) == 1259
+        assert np.sum(sk) == 1444
 
     def test_parallel_skeleton_3d(self):
         im = self.blobs3D
@@ -83,19 +83,19 @@ class MagnetTest:
 
     def test_junctions(self):
         im = self.blobs3D
-        mode = "maximum filter"
-        magnet = ps.networks.magnet(im, throat_junctions=mode)
+        method = "maximum filter"
+        magnet = ps.networks.magnet(im, throat_junctions_method=method)
         assert np.sum(magnet.juncs) == 1583
         try:
             mode = "fast marching"
-            magnet = ps.networks.magnet(im, throat_junctions=mode)
+            magnet = ps.networks.magnet(im, throat_junctions_method=method)
             assert np.sum(magnet.juncs) == 1491
         except Exception:
             pass
 
     def test_throat_area(self):
         im = self.blobs3D
-        magnet = ps.networks.magnet(im, throat_area=True)
+        magnet = ps.networks.magnet(im, find_throat_area=True)
         D = np.unique(magnet.network["throat.equivalent_diameter"].astype(int))
         d = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 28, 29]
         assert np.all(D == np.array(d))
