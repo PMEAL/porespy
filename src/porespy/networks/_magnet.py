@@ -55,27 +55,22 @@ __all__ = [
 def magnet(im,
            sk=None,
            parallel_kw=None,
-           surface=False,
+           incl_surface=False,
            voxel_size=1,
            s=None,
            l_max=7,
-           throat_junctions=None,
-           throat_area=False,
+           throat_junctions_method=None,
+           find_throat_area=False,
            **kwargs):
     r"""
     Perform a Medial Axis Guided Network ExtracTion (MAGNET) on an image of
     porous media.
 
-    This is a modernized python implementation of a classical
-    network extraction method. First, the skeleton of the provided image is
-    determined. The skeleton can be computed in serial or parallel modes.
-    Next, all the junction points of the skeleton are determined by using
-    convolution including terminal points on the ends of branches. ClustersPores are
-    then inserted at these points. The size of the pores inserted is based on
-    the distance transform value at it's junction. This approach results in
-    many long throats so more pores are added using a maximum filter along long
-    throats to find openings. To ensure an efficient network extraction method,
-    only the most fundamential pore and throat properties are returned.
+    This is a modern python implementation of a classsic network extraction
+    method. It uses the skeleton to find pores located at junctions. Two
+    different methods were written for locating additional junctions along long
+    throats. There is also an option to calculate throat area using the
+    "get_throat_area" method.
 
     Parameters
     ------------
@@ -88,7 +83,7 @@ def magnet(im,
         Optionally provide your own skeleton of the image. If `sk` is `None` the
         skeleton is computed using `skimage.morphology.skeleton_3d`.  A check
         is made to ensure no shells are found in the resulting skeleton.
-    surface : boolean
+    incl_surface : boolean
         If `False` disconnected solid at the surface of the image is NOT
         trimmed. This is the default mode. However, if `True`, disconnected
         solid at the surface of the image is trimmed. This is NOT applied when
@@ -109,13 +104,13 @@ def magnet(im,
         None.
     l_max : scalar (default = 7)
         The size of the maximum filter used in finding junction along long
-        throats. This argument is only used when throat_junctions is set to
-        "maximum filter" mode.
-    throat_junctions : str
+        throats. This argument is only used when throat_junctions_method is set
+        to "maximum filter" mode.
+    throat_junctions_method : str
         The mode to use when finding throat junctions. The options are "maximum
         filter" or "fast marching". If None is given, then throat junctions are
         not found (this is the default).
-    throat_area: boolean (default = FALSE)
+    find_throat_area: boolean (default = FALSE)
         Set this argument to TRUE to calculate throat area using
         get_throat_area. The area is calculated at the throat voxel with the
         minimum distance transform value. If TRUE, an equivalent throat
@@ -142,7 +137,7 @@ def magnet(im,
     """
     # get the skeleton
     if sk is None:
-        sk, im = skeleton(im, surface, parallel_kw)  # take skeleton
+        sk, im = skeleton(im, incl_surface, parallel_kw)  # take skeleton
     else:
         if im.ndim == 3:
             _check_skeleton_health(sk.astype('bool'))
@@ -154,20 +149,19 @@ def magnet(im,
     # if int is not passed, s is dt
     if s is None:
         s = dt
-    juncs = merge_nearby_juncs(sk, juncs, s)  # FIXME: merge juncs AND endpts?
-    # find throats
+    juncs = merge_nearby_juncs(sk, juncs, s)
     throats = (~juncs) * sk
     # find throat junctions
-    if throat_junctions is not None:
-        mode = throat_junctions
-        ftj = find_throat_junctions(im, sk, juncs, throats, dt, l_max, mode)
+    if throat_junctions_method is not None:
+        method = throat_junctions_method
+        ftj = find_throat_junctions(im, sk, juncs, throats, dt, l_max, method)
         # add throat juncs to juncs
         juncs = ftj.new_juncs.astype('bool') + juncs
         # get new throats
         throats = ftj.new_throats
     # use walk to get throat area
-    if throat_area is True:
-        dt_inv = 1/spim.gaussian_filter(dt, sigma=0.4)  # FIXME: this is slow
+    if find_throat_area is True:
+        dt_inv = 1/spim.gaussian_filter(dt, sigma=0.4)
         nodes = juncs_to_pore_centers(throats, dt_inv)  # find area at min
         if "step_size" not in kwargs:
             kwargs["step_size"] = dt
@@ -185,7 +179,7 @@ def magnet(im,
     return results
 
 
-def skeleton(im, surface=False, parallel_kw=None):
+def skeleton(im, incl_surface=False, parallel_kw=None):
     r"""
     Takes the skeleton of an image. This function ensures that no shells are
     found in the resulting skeleton by trimming floating solids from the image
@@ -198,7 +192,7 @@ def skeleton(im, surface=False, parallel_kw=None):
     im : ndarray
         A binary image of porous media with 'True' values indicating phase of
         interest.
-    surface : boolean
+    incl_surface : boolean
         If `False` disconnected solid at the surface of the image is NOT
         trimmed. This is the default mode. However, if `True`, disconnected
         solid at the surface of the image is trimmed. Note that disconnected
@@ -241,7 +235,7 @@ def skeleton(im, surface=False, parallel_kw=None):
     """
     # trim floating solid from 3D images
     if im.ndim == 3:
-        im = trim_floating_solid(im, conn='min', incl_surface=surface)
+        im = trim_floating_solid(im, conn='min', incl_surface=incl_surface)
     # perform skeleton
     if parallel_kw is None:  # serial
         sk = skeletonize(im).astype('bool')
@@ -360,7 +354,7 @@ def find_throat_junctions(im,
                           throats,
                           dt=None,
                           l_max=7,
-                          mode="fast marching"):
+                          method="fast marching"):
     r"""
     Finds local peaks on the throat segments of a skeleton large enough to be
     considered junctions.
@@ -388,7 +382,7 @@ def find_throat_junctions(im,
     l_max: int
         The length of the cubical structuring element to use in the maximum
         filter, if that mode is specified.
-    mode : string {'maximum filter' | 'fast marching' }
+    method : string {'maximum filter' | 'fast marching' }
         Specifies how to find throat junctions.
 
     Returns
@@ -415,7 +409,7 @@ def find_throat_junctions(im,
         juncs = spim.label(juncs > 0, structure=strel)[0]
     if throats.dtype == bool:
         throats = spim.label(throats > 0, structure=strel)[0]
-    if mode == "maximum filter":
+    if method == "maximum filter":
         # reduce clusters to pore centers
         ct = juncs_to_pore_centers(juncs, dt)
         # find coords of pore centers and radii
@@ -437,7 +431,7 @@ def find_throat_junctions(im,
         mx = make_contiguous(mx)  # make contiguous again
         # set new_juncs equal to mx
         new_juncs = mx
-    if mode == "fast marching":
+    if method == "fast marching":
         try:
             from skfmm import distance
         except ModuleNotFoundError:
@@ -678,25 +672,20 @@ def junctions_to_network(sk, juncs, throats, dt, throat_area, voxel_size=1):
     p_radius = p_radius[ct[np.where(ct)].T.argsort()]
     p_radius = p_radius[:, 0].reshape(Np)
     p_diameter = p_radius * 2
-    # clipped diameters
-    V_p = p_diameter**3  # volume of a cube!
-    p_diameter_equivalent = (6*V_p/np.pi)**(1/3)
     # create network dictionary
     net = {}
     net['throat.conns'] = t_conns
     net['pore.coords'] = p_coords * voxel_size
     net['throat.actual_length'] = t_length * voxel_size
-    net['throat.area'] = t_area * voxel_size ** 2
     net['throat.max_diameter'] = t_max_diameter * voxel_size
     net['throat.min_diameter'] = t_min_diameter * voxel_size
     net['throat.avg_diameter'] = t_avg_diameter * voxel_size
     net['throat.inscribed_diameter'] = t_ins_diameter * voxel_size
     net['throat.integrated_diameter'] = t_int_diameter * voxel_size
     if throat_area is not None:
+        net['throat.area'] = t_area * voxel_size ** 2
         net['throat.equivalent_diameter'] = t_equ_diameter * voxel_size
     net['pore.inscribed_diameter'] = p_diameter * voxel_size
-    net['pore.equivalent_diameter'] = p_diameter_equivalent * voxel_size
-    net['pore.index'] = np.arange(0, Np)
     return net
 
 
