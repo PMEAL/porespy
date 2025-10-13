@@ -63,7 +63,7 @@ jobs:
           echo "VERSION=v$(uv run hatch version)" >> $GITHUB_ENV
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.1.4
+        uses: pypa/cibuildwheel@v3.2.1
         env:
           CIBW_PLATFORM: ${{ matrix.platform }}
           CIBW_ARCHS: ${{ matrix.archs }}
