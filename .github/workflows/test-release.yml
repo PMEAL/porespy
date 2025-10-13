@@ -111,7 +111,7 @@ jobs:
           echo "VERSION=v$(uv run hatch version)" >> $GITHUB_ENV
 
       - name: Commit version bump, create and push tag
-        uses: stefanzweifel/git-auto-commit-action@v6
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: Bump version to ${{ env.VERSION }}
           commit_author: GitHub Actions <actions@github.com>
