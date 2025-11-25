@@ -63,7 +63,7 @@
     }
    ],
    "source": [
-    "df = pd.read_csv('finney_packing.csv')\n",
+    "df = pd.read_csv(\"finney_packing.csv\")\n",
     "print(df)"
    ]
   },
@@ -94,10 +94,10 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "df['X'] *= 10\n",
-    "df['Y'] *= 10\n",
-    "df['Z'] *= 10\n",
-    "df['R'] = 10.0"
+    "df[\"X\"] *= 10\n",
+    "df[\"Y\"] *= 10\n",
+    "df[\"Z\"] *= 10\n",
+    "df[\"R\"] = 10.0"
    ]
   },
   {
@@ -229,7 +229,7 @@
     }
    ],
    "source": [
-    "df = pd.read_csv(\"5to1_VL49.9_2.csv\", header=None, names=['X', 'Y', 'Z', 'R'])\n",
+    "df = pd.read_csv(\"5to1_VL49.9_2.csv\", header=None, names=[\"X\", \"Y\", \"Z\", \"R\"])\n",
     "print(df)"
    ]
   },
@@ -248,10 +248,10 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "df['X'] *= 50\n",
-    "df['Y'] *= 50\n",
-    "df['Z'] *= 50\n",
-    "df['R'] *= 50"
+    "df[\"X\"] *= 50\n",
+    "df[\"Y\"] *= 50\n",
+    "df[\"Z\"] *= 50\n",
+    "df[\"R\"] *= 50"
    ]
   },
   {
@@ -311,7 +311,7 @@
     }
    ],
    "source": [
-    "(df['X'].max()*df['Y'].max()*df['Z'].max())**0.333"
+    "(df[\"X\"].max() * df[\"Y\"].max() * df[\"Z\"].max()) ** 0.333"
    ]
   },
   {
@@ -359,7 +359,12 @@
    ],
    "source": [
     "fig, ax = plt.subplots()\n",
-    "ax.imshow(ps.visualization.xray(~im[..., :100], axis=2), interpolation='none', origin='lower', cmap=plt.cm.bone)\n",
+    "ax.imshow(\n",
+    "    ps.visualization.xray(~im[..., :100], axis=2),\n",
+    "    interpolation=\"none\",\n",
+    "    origin=\"lower\",\n",
+    "    cmap=plt.cm.bone,\n",
+    ")\n",
     "ax.axis(False);"
    ]
   }

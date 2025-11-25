@@ -25,11 +25,11 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-im = imageio.volread('../../docs/_static/images/Sample 1.tif')
-im = (im - im.min())/(im.max() - im.min())
+im = imageio.volread("../../docs/_static/images/Sample 1.tif")
+im = (im - im.min()) / (im.max() - im.min())
 fig, ax = subplots(1, 3, figsize=[15, 5])
 ax[0].imshow(im[0, ...].T)
-ax[1].hist(im.flatten(), bins=25, edgecolor='k')
+ax[1].hist(im.flatten(), bins=25, edgecolor="k")
 ax[2].imshow(im[0, ...].T > 0.6);
 ------------------
 
@@ -37,8 +37,8 @@ ax[2].imshow(im[0, ...].T > 0.6);
 [31m---------------------------------------------------------------------------[39m
 [31mFileNotFoundError[39m                         Traceback (most recent call last)
 [36mCell[39m[36m [39m[32mIn[8][39m[32m, line 1[39m
-[32m----> [39m[32m1[39m im = [43mimageio[49m[43m.[49m[43mvolread[49m[43m([49m[33;43m'[39;49m[33;43m../../docs/_static/images/Sample 1.tif[39;49m[33;43m'[39;49m[43m)[49m
-[32m      2[39m im = (im - im.min())/(im.max() - im.min())
+[32m----> [39m[32m1[39m im = [43mimageio[49m[43m.[49m[43mvolread[49m[43m([49m[33;43m"[39;49m[33;43m../../docs/_static/images/Sample 1.tif[39;49m[33;43m"[39;49m[43m)[49m
+[32m      2[39m im = (im - im.min()) / (im.max() - im.min())
 [32m      3[39m fig, ax = subplots([32m1[39m, [32m3[39m, figsize=[[32m15[39m, [32m5[39m])
 
 [36mFile [39m[32m~/work/porespy/porespy/.venv/lib/python3.12/site-packages/imageio/v2.py:522[39m, in [36mvolread[39m[34m(uri, format, **kwargs)[39m

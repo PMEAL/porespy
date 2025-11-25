@@ -40,9 +40,9 @@ import porespy as ps
 ps.visualization.set_mpl_style()
 warnings.filterwarnings("ignore")
 path = "./sf-model-lib/diffusion"
-path_train = os.path.join(path, 'g_train_original.hdf5')
-path_weights = os.path.join(path, 'model_weights.h5')
-g_train = h5py.File(path_train, 'r')['g_train'][()]
+path_train = os.path.join(path, "g_train_original.hdf5")
+path_weights = os.path.join(path, "model_weights.h5")
+g_train = h5py.File(path_train, "r")["g_train"][()]
 model = ps.networks.create_model()
 model.load_weights(path_weights)
 ------------------

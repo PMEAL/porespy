@@ -43,7 +43,7 @@
    "source": [
     "np.random.seed(13)\n",
     "im = ps.generators.overlapping_spheres([100, 100], r=7, porosity=0.7)\n",
-    "plt.imshow(im, origin='lower', interpolation='none');"
+    "plt.imshow(im, origin=\"lower\", interpolation=\"none\");"
    ]
   },
   {
@@ -207,7 +207,7 @@
    ],
    "source": [
     "snow = ps.filters.snow_partitioning(im)\n",
-    "plt.imshow(snow.regions/im, origin='lower', interpolation='none');"
+    "plt.imshow(snow.regions / im, origin=\"lower\", interpolation=\"none\");"
    ]
   },
   {
@@ -327,7 +327,7 @@
    ],
    "source": [
     "snow2 = ps.filters.snow_partitioning(~im)\n",
-    "plt.imshow(snow2.regions, origin='lower', interpolation='none');"
+    "plt.imshow(snow2.regions, origin=\"lower\", interpolation=\"none\");"
    ]
   },
   {
@@ -356,8 +356,8 @@
     }
    ],
    "source": [
-    "ws = snow.regions + (snow2.regions + snow.regions.max())*~im\n",
-    "plt.imshow(ws, origin='lower', interpolation='none');"
+    "ws = snow.regions + (snow2.regions + snow.regions.max()) * ~im\n",
+    "plt.imshow(ws, origin=\"lower\", interpolation=\"none\");"
    ]
   },
   {
@@ -390,7 +390,7 @@
     }
    ],
    "source": [
-    "net2 = ps.networks.regions_to_network(regions=ws, phases=im.astype(int)+1)"
+    "net2 = ps.networks.regions_to_network(regions=ws, phases=im.astype(int) + 1)"
    ]
   },
   {
@@ -460,7 +460,7 @@
     }
    ],
    "source": [
-    "net1['pore.phase']"
+    "net1[\"pore.phase\"]"
    ]
   },
   {
@@ -482,7 +482,7 @@
     }
    ],
    "source": [
-    "net2['pore.phase']"
+    "net2[\"pore.phase\"]"
    ]
   },
   {

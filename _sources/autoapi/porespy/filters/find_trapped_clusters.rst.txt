@@ -1,7 +1,7 @@
 porespy.filters.find_trapped_clusters
 =====================================
 
-.. py:function:: porespy.filters.find_trapped_clusters(im: numpy.typing.ArrayLike, seq: numpy.typing.ArrayLike, outlets: numpy.typing.ArrayLike, conn: Literal['min', 'max'] = 'min', method: Literal['queue', 'labels'] = 'labels')
+.. py:function:: porespy.filters.find_trapped_clusters(im: numpy.typing.ArrayLike, seq: numpy.typing.ArrayLike, outlets: numpy.typing.ArrayLike, min_size: int = 0, conn: Literal['min', 'max'] = 'min', method: Literal['queue', 'labels'] = 'labels')
 
    Find the trapped regions given an invasion sequence map and specified outlets
 
@@ -16,6 +16,9 @@ porespy.filters.find_trapped_clusters
    :param outlets: An image the same size as ``im`` with ``True`` indicating outlets
                    and ``False`` elsewhere.
    :type outlets: ndarray
+   :param min_size: The threshold size of clusters.  Clusters with this many voxels or fewer
+                    will be ignored.
+   :type min_size: scalar
    :param conn: Controls the shape of the structuring element used to determine if voxels
                 are connected.  Options are:
 

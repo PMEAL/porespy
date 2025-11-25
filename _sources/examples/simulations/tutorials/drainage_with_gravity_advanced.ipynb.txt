@@ -63,7 +63,7 @@
     "im = ps.generators.blobs([600, 300], porosity=0.65, blobiness=1.5, seed=4)\n",
     "im = ps.filters.fill_invalid_pores(im)\n",
     "fig, ax = plt.subplots(figsize=[6, 5.4])\n",
-    "ax.imshow(im, origin='lower', interpolation='none');"
+    "ax.imshow(im, origin=\"lower\", interpolation=\"none\");"
    ]
   },
   {
@@ -103,7 +103,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "dt = edt(im)*voxel_size  # convert from voxels to meters"
+    "dt = edt(im) * voxel_size  # convert from voxels to meters"
    ]
   },
   {
@@ -137,10 +137,10 @@
     }
    ],
    "source": [
-    "pc = -2*sigma*np.cos(np.deg2rad(theta))/dt\n",
+    "pc = -2 * sigma * np.cos(np.deg2rad(theta)) / dt\n",
     "fig, ax = plt.subplots(1, 2, figsize=[6, 8])\n",
-    "ax[0].imshow(pc, origin='lower', interpolation='none')\n",
-    "ax[1].imshow(pc[:50, :50], origin='lower', interpolation='none');"
+    "ax[0].imshow(pc, origin=\"lower\", interpolation=\"none\")\n",
+    "ax[1].imshow(pc[:50, :50], origin=\"lower\", interpolation=\"none\");"
    ]
   },
   {
@@ -190,11 +190,11 @@
    "source": [
     "bottom = np.ones_like(im)\n",
     "bottom[0, :] = False\n",
-    "h = (edt(bottom) + 1)*voxel_size\n",
+    "h = (edt(bottom) + 1) * voxel_size\n",
     "pc = pc + delta_rho * g * h\n",
     "fig, ax = plt.subplots(1, 2, figsize=[6, 8])\n",
-    "ax[0].imshow(pc, origin='lower', interpolation='none')\n",
-    "ax[1].imshow(pc[:50, :50], origin='lower', interpolation='none');"
+    "ax[0].imshow(pc, origin=\"lower\", interpolation=\"none\")\n",
+    "ax[1].imshow(pc[:50, :50], origin=\"lower\", interpolation=\"none\");"
    ]
   },
   {
@@ -230,11 +230,11 @@
     }
    ],
    "source": [
-    "pc_applied = np.median(pc)/2\n",
+    "pc_applied = np.median(pc) / 2\n",
     "seeds = pc < pc_applied\n",
     "fig, ax = plt.subplots(1, 2, figsize=[6, 8])\n",
-    "ax[0].imshow(seeds/im, origin='lower', interpolation='none')\n",
-    "ax[1].imshow((seeds/im)[200:400, ...], origin='lower', interpolation='none');"
+    "ax[0].imshow(seeds / im, origin=\"lower\", interpolation=\"none\")\n",
+    "ax[1].imshow((seeds / im)[200:400, ...], origin=\"lower\", interpolation=\"none\");"
    ]
   },
   {
@@ -270,8 +270,8 @@
    "source": [
     "labels = spim.label(seeds)[0]\n",
     "fig, ax = plt.subplots(1, 2, figsize=[6, 8])\n",
-    "ax[0].imshow(labels/im, origin='lower', interpolation='none')\n",
-    "ax[1].imshow((labels/im)[200:400, ...], origin='lower', interpolation='none');"
+    "ax[0].imshow(labels / im, origin=\"lower\", interpolation=\"none\")\n",
+    "ax[1].imshow((labels / im)[200:400, ...], origin=\"lower\", interpolation=\"none\");"
    ]
   },
   {
@@ -309,8 +309,8 @@
     "keep = keep[keep > 0]  # Remove 0's if any\n",
     "seeds = np.isin(labels, keep)\n",
     "fig, ax = plt.subplots(1, 2, figsize=[6, 8])\n",
-    "ax[0].imshow(seeds/im, origin='lower', interpolation='none')\n",
-    "ax[1].imshow((seeds/im)[200:400, ...], origin='lower', interpolation='none');"
+    "ax[0].imshow(seeds / im, origin=\"lower\", interpolation=\"none\")\n",
+    "ax[1].imshow((seeds / im)[200:400, ...], origin=\"lower\", interpolation=\"none\");"
    ]
   },
   {
@@ -347,7 +347,7 @@
     "hits = np.where(seeds)\n",
     "for loc in tqdm(range(len(hits[0]))):\n",
     "    i, j = hits[0][loc], hits[1][loc]\n",
-    "    r = int(dt[i, j]/voxel_size)  # Convert back into voxels\n",
+    "    r = int(dt[i, j] / voxel_size)  # Convert back into voxels\n",
     "    ps.tools.insert_sphere(im=blobs, c=np.hstack([[i, j]]), r=r, v=True)"
    ]
   },
@@ -385,7 +385,7 @@
    ],
    "source": [
     "fig, ax = plt.subplots(figsize=[6, 5.4])\n",
-    "ax.imshow((seeds*1.0 + blobs*1.0)/im, origin='lower');"
+    "ax.imshow((seeds * 1.0 + blobs * 1.0) / im, origin=\"lower\");"
    ]
   },
   {
@@ -411,7 +411,7 @@
     }
    ],
    "source": [
-    "satn = blobs.sum()/im.sum()\n",
+    "satn = blobs.sum() / im.sum()\n",
     "print(pc_applied, satn)"
    ]
   },
@@ -451,7 +451,7 @@
     "inlets = ps.generators.faces(im.shape, inlet=0)\n",
     "pc1 = ps.simulations.drainage(pc=pc, im=im, inlets=inlets, steps=25)\n",
     "fig, ax = plt.subplots(figsize=[6, 5.4])\n",
-    "ax.imshow(pc1.im_pc/im, origin='lower');"
+    "ax.imshow(pc1.im_pc / im, origin=\"lower\");"
    ]
   },
   {
@@ -518,9 +518,9 @@
    ],
    "source": [
     "fig, ax = plt.subplots()\n",
-    "ax.plot(pc_curve.pc, pc_curve.snwp, 'b-o')\n",
-    "ax.set_xlabel('Pseudo Capillary Pressure [Pa]')\n",
-    "ax.set_ylabel('Non-wetting phase saturation');"
+    "ax.plot(pc_curve.pc, pc_curve.snwp, \"b-o\")\n",
+    "ax.set_xlabel(\"Pseudo Capillary Pressure [Pa]\")\n",
+    "ax.set_ylabel(\"Non-wetting phase saturation\");"
    ]
   },
   {
@@ -555,9 +555,9 @@
     }
    ],
    "source": [
-    "pc = -2*sigma*np.cos(np.deg2rad(theta))/dt\n",
+    "pc = -2 * sigma * np.cos(np.deg2rad(theta)) / dt\n",
     "pc2 = ps.simulations.drainage(pc=pc, im=im, inlets=inlets, steps=25)\n",
-    "ax.plot(pc2.pc, pc2.snwp, 'r-o')\n",
+    "ax.plot(pc2.pc, pc2.snwp, \"r-o\")\n",
     "fig"
    ]
   },

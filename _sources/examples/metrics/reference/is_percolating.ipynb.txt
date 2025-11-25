@@ -12,7 +12,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 54,
+   "execution_count": 11,
    "id": "596753fa",
    "metadata": {},
    "outputs": [],
@@ -36,7 +36,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 55,
+   "execution_count": 12,
    "id": "70e01193",
    "metadata": {},
    "outputs": [
@@ -75,7 +75,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 56,
+   "execution_count": 13,
    "id": "bcea54aa",
    "metadata": {},
    "outputs": [
@@ -109,7 +109,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 57,
+   "execution_count": 14,
    "id": "6899fb14",
    "metadata": {},
    "outputs": [
@@ -148,7 +148,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 58,
+   "execution_count": 15,
    "id": "4bf3ed80",
    "metadata": {},
    "outputs": [
@@ -174,7 +174,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 59,
+   "execution_count": 16,
    "id": "4fbcdf3b",
    "metadata": {},
    "outputs": [
@@ -204,7 +204,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 60,
+   "execution_count": 17,
    "id": "5291632c",
    "metadata": {},
    "outputs": [
@@ -230,13 +230,13 @@
     "fig, ax = plt.subplots(1, 2, figsize=[8, 4])\n",
     "ax[0].imshow(im1)\n",
     "ax[0].axis(False)\n",
-    "ax[1].imshow(inlets*1.0 + outlets*2.0)\n",
+    "ax[1].imshow(inlets * 1.0 + outlets * 2.0)\n",
     "ax[1].axis(False);"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 61,
+   "execution_count": 18,
    "id": "a35c8501",
    "metadata": {},
    "outputs": [
@@ -263,7 +263,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 62,
+   "execution_count": 19,
    "id": "079610a2",
    "metadata": {},
    "outputs": [
@@ -302,7 +302,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 63,
+   "execution_count": 20,
    "id": "be868e53",
    "metadata": {},
    "outputs": [
@@ -316,8 +316,8 @@
     }
    ],
    "source": [
-    "print(ps.metrics.is_percolating(im2, axis=1, conn='min'))\n",
-    "print(ps.metrics.is_percolating(im2, axis=1, conn='max'))"
+    "print(ps.metrics.is_percolating(im2, axis=1, conn=\"min\"))\n",
+    "print(ps.metrics.is_percolating(im2, axis=1, conn=\"max\"))"
    ]
   }
  ],

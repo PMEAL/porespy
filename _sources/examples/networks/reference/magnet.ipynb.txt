@@ -102,7 +102,7 @@
    "source": [
     "plt.figure(figsize=[5, 5])\n",
     "plt.imshow(im * dt)\n",
-    "plt.axis('off');"
+    "plt.axis(\"off\");"
    ]
   },
   {
@@ -142,9 +142,9 @@
    "source": [
     "sk = ski.morphology.skeletonize(im)\n",
     "plt.figure(figsize=[5, 5])\n",
-    "plt.title('Serial Skeleton')\n",
-    "plt.imshow(~sk*im*dt)\n",
-    "plt.axis('off');"
+    "plt.title(\"Serial Skeleton\")\n",
+    "plt.imshow(~sk * im * dt)\n",
+    "plt.axis(\"off\");"
    ]
   },
   {
@@ -194,12 +194,14 @@
     }
    ],
    "source": [
-    "overlap = 2*np.max(dt)\n",
-    "sk_p = ps.networks.skeleton_parallel(im, parallel_kw={'divs': 2, 'overlap': overlap, 'cores': None})\n",
+    "overlap = 2 * np.max(dt)\n",
+    "sk_p = ps.networks.skeleton_parallel(\n",
+    "    im, parallel_kw={\"divs\": 2, \"overlap\": overlap, \"cores\": None}\n",
+    ")\n",
     "plt.figure(figsize=[5, 5])\n",
-    "plt.title('Parallel Skeleton')\n",
-    "plt.imshow(~sk_p*im*dt)\n",
-    "plt.axis('off');"
+    "plt.title(\"Parallel Skeleton\")\n",
+    "plt.imshow(~sk_p * im * dt)\n",
+    "plt.axis(\"off\");"
    ]
   },
   {
@@ -253,12 +255,12 @@
     "juncs_m = ps.networks.merge_nearby_juncs(sk, fj.juncs, dt=s)\n",
     "\n",
     "fig, ax = plt.subplots(1, 2, figsize=[10, 5])\n",
-    "ax[0].imshow(juncs*2 + sk + ~im, origin='lower', interpolation='none')\n",
-    "ax[0].set_title('Junctions Before Merging')\n",
-    "ax[0].axis('off')\n",
-    "ax[1].imshow(juncs_m*2 + sk + ~im, origin='lower', interpolation='none')\n",
-    "ax[1].set_title('Junctions After Merging')\n",
-    "ax[1].axis('off');"
+    "ax[0].imshow(juncs * 2 + sk + ~im, origin=\"lower\", interpolation=\"none\")\n",
+    "ax[0].set_title(\"Junctions Before Merging\")\n",
+    "ax[0].axis(\"off\")\n",
+    "ax[1].imshow(juncs_m * 2 + sk + ~im, origin=\"lower\", interpolation=\"none\")\n",
+    "ax[1].set_title(\"Junctions After Merging\")\n",
+    "ax[1].axis(\"off\");"
    ]
   },
   {
@@ -295,12 +297,11 @@
    ],
    "source": [
     "throats = (~juncs_m) * sk\n",
-    "ftj = ps.networks.find_throat_junctions(\n",
-    "    im, sk, juncs_m, throats, dt, mode=\"maximum filter\")\n",
+    "ftj = ps.networks.find_throat_junctions(im, sk, juncs_m, throats, dt, mode=\"maximum filter\")\n",
     "plt.figure(figsize=[5, 5])\n",
-    "plt.imshow(ftj.new_juncs.astype('bool')*3 + juncs_m*2 + sk + ~im)\n",
-    "plt.title('Fast Marching')\n",
-    "plt.axis('off');"
+    "plt.imshow(ftj.new_juncs.astype(\"bool\") * 3 + juncs_m * 2 + sk + ~im)\n",
+    "plt.title(\"Fast Marching\")\n",
+    "plt.axis(\"off\");"
    ]
   },
   {
@@ -337,17 +338,27 @@
    ],
    "source": [
     "ftj1 = ps.networks.find_throat_junctions(\n",
-    "    im, sk, juncs_m, throats, dt, l_max=3, mode=\"maximum filter\")\n",
+    "    im, sk, juncs_m, throats, dt, l_max=3, mode=\"maximum filter\"\n",
+    ")\n",
     "ftj2 = ps.networks.find_throat_junctions(\n",
-    "    im, sk, juncs_m, throats, dt, l_max=7, mode=\"maximum filter\")\n",
+    "    im, sk, juncs_m, throats, dt, l_max=7, mode=\"maximum filter\"\n",
+    ")\n",
     "\n",
     "fig, ax = plt.subplots(1, 2, figsize=[10, 5])\n",
-    "ax[0].imshow(ftj1.new_juncs.astype('bool')*3 + juncs_m*2 + sk + ~im, origin='lower', interpolation='none')\n",
-    "ax[0].set_title('l_max=3')\n",
-    "ax[0].axis('off')\n",
-    "ax[1].imshow(ftj2.new_juncs.astype('bool')*3 + juncs_m*2 + sk + ~im, origin='lower', interpolation='none')\n",
-    "ax[1].set_title('l_max=7')\n",
-    "ax[1].axis('off');"
+    "ax[0].imshow(\n",
+    "    ftj1.new_juncs.astype(\"bool\") * 3 + juncs_m * 2 + sk + ~im,\n",
+    "    origin=\"lower\",\n",
+    "    interpolation=\"none\",\n",
+    ")\n",
+    "ax[0].set_title(\"l_max=3\")\n",
+    "ax[0].axis(\"off\")\n",
+    "ax[1].imshow(\n",
+    "    ftj2.new_juncs.astype(\"bool\") * 3 + juncs_m * 2 + sk + ~im,\n",
+    "    origin=\"lower\",\n",
+    "    interpolation=\"none\",\n",
+    ")\n",
+    "ax[1].set_title(\"l_max=7\")\n",
+    "ax[1].axis(\"off\");"
    ]
   },
   {
@@ -369,9 +380,11 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "dt_inv = 1/spim.gaussian_filter(dt, sigma=0.4)\n",
+    "dt_inv = 1 / spim.gaussian_filter(dt, sigma=0.4)\n",
     "nodes = ps.networks.juncs_to_pore_centers(throats, dt_inv)\n",
-    "throat_area = ps.networks.get_throat_area(im, sk, nodes, n_walkers=10, step_size=0.5, max_n_steps=None)"
+    "throat_area = ps.networks.get_throat_area(\n",
+    "    im, sk, nodes, n_walkers=10, step_size=0.5, max_n_steps=None\n",
+    ")"
    ]
   },
   {
@@ -424,8 +437,8 @@
     }
    ],
    "source": [
-    "ax = op.visualization.plot_connections(net, throats=net['throat.all'], c='k')\n",
-    "ax = op.visualization.plot_coordinates(net, pores=net['pore.all'], c='r', markersize=50, ax=ax)\n",
+    "ax = op.visualization.plot_connections(net, throats=net[\"throat.all\"], c=\"k\")\n",
+    "ax = op.visualization.plot_coordinates(net, pores=net[\"pore.all\"], c=\"r\", markersize=50, ax=ax)\n",
     "fig, ax = plt.gcf(), plt.gca()\n",
     "ax.imshow(im.T * dt.T)\n",
     "ax.axis(False);"

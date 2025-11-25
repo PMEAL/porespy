@@ -141,7 +141,7 @@
    "source": [
     "cr = ps.filters.apply_chords(im)\n",
     "labels, N = spim.label(cr)\n",
-    "cr = ps.filters.flood(cr, labels=labels, mode='size')\n",
+    "cr = ps.filters.flood(cr, labels=labels, mode=\"size\")\n",
     "\n",
     "fig, ax = plt.subplots(figsize=[3, 3])\n",
     "ax.imshow(cr);"
@@ -190,9 +190,9 @@
     "data = ps.metrics.two_point_correlation(im)\n",
     "\n",
     "fig, ax = plt.subplots(figsize=[6, 3])\n",
-    "ax.plot(data.distance, data.probability_scaled, 'bo-', markersize=3)\n",
-    "ax.set_ylabel('probability')\n",
-    "ax.set_xlabel('correlation length [voxels]');"
+    "ax.plot(data.distance, data.probability_scaled, \"bo-\", markersize=3)\n",
+    "ax.set_ylabel(\"probability\")\n",
+    "ax.set_xlabel(\"correlation length [voxels]\");"
    ]
   },
   {
@@ -232,9 +232,9 @@
     "fig, ax = plt.subplots(1, 2, figsize=[6, 3])\n",
     "ax[0].imshow(mip)\n",
     "# Now show intrusion curve\n",
-    "ax[1].plot(data.R, data.cdf, 'bo-')\n",
-    "ax[1].set_xlabel('Pore Radius [voxels]')\n",
-    "ax[1].set_ylabel('Volume Invaded [voxels]');"
+    "ax[1].plot(data.R, data.cdf, \"bo-\")\n",
+    "ax[1].set_xlabel(\"Pore Radius [voxels]\")\n",
+    "ax[1].set_ylabel(\"Volume Invaded [voxels]\");"
    ]
   }
  ],

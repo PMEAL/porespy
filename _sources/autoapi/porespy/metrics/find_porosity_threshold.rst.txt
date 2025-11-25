@@ -1,7 +1,7 @@
 porespy.metrics.find_porosity_threshold
 =======================================
 
-.. py:function:: porespy.metrics.find_porosity_threshold(im, axis=0, conn='min')
+.. py:function:: porespy.metrics.find_porosity_threshold(im, axis=0, dt=None, conn='min')
 
    Finds the porosity of the image at the percolation threshold
 
@@ -12,6 +12,9 @@ porespy.metrics.find_porosity_threshold
    :type im: ndarray
    :param axis: The axis along which percolation is checked
    :type axis: int
+   :param dt: The distance transform of the void space. If not provide it will be computed
+              so providing one can save time if it is available.
+   :type dt: ndarray
    :param conn: Can be either `'min'` or `'max'` and controls the shape of the structuring
                 element used to determine voxel connectivity.  The default if `'min'` which
                 imposes the strictest criteria, so that voxels must share a face to be
@@ -27,10 +30,17 @@ porespy.metrics.find_porosity_threshold
                               and surface pores
              eps_orig_perc    The percolating porosity of the original image (i.e. with
                               closed and surface pores filled)
-             eps_thresh       The total porosity of the image after eroding the void
-                              space results in no percolating paths
-             eps_thresh_perc  The percolating porosity of the eroded image (with closed
-                              and surface pores filled)
+             eps_thresh       The total porosity of the image just before the percolation
+                              threshold was reached (i.e at the point where one
+                              additional dilation would result in no connected void
+                              space.)
+             eps_thresh_perc  The percolating porosity (with closed and surface pores
+                              filled) just before the percolation threshold was reached
+                              (i.e at the point where one additional dilation would
+                              result in no connected void space.)
+             eps_thresh_post  The total porosity after the percolation threshold was
+                              reached (i.e. one step *after* the dilation which
+                              resulted in no connected pore space)
              R                The threshold to apply to the distance transform to
                               obtain the percolating image (i.e. im = dt >= R)
              ================ ===========================================================
@@ -39,6 +49,6 @@ porespy.metrics.find_porosity_threshold
    .. rubric:: Examples
 
    `Click here
-   <https://porespy.org/examples/metrics/reference/find_porosity_threshodl.html>`_
+   <https://porespy.org/examples/metrics/reference/find_porosity_threshold.html>`_
    to view online example.
 

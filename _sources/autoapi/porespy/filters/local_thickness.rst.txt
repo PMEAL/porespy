@@ -41,12 +41,18 @@ porespy.filters.local_thickness
                 `im` are used.
    :type mask: ndarray, optional
    :param approx: This is only used if the method is `imj`. If `True` the algorithm is more
-                  agressive at skipping voxels to process, which speeds things up, but this
+                  aggressive at skipping voxels to process, which speeds things up, but this
                   sacrifices accuracy in terms of a voxel-by-voxel match with the reference
                   implementation. The default is `False`, meaning full accuracy is the default.
    :type approx: bool, optional
 
    :returns: **lt** -- The local thickness of the image with each voxel labelled according to the
-             radius of the largest sphere which overlaps it
+             radius of the largest sphere which overlaps it.
    :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/filters/reference/local_thickness.html>`_
+   to view online example.
 

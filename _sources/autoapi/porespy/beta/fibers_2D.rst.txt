@@ -1,0 +1,30 @@
+porespy.beta.fibers_2D
+======================
+
+.. py:function:: porespy.beta.fibers_2D(shape, r, n=None, porosity=None)
+
+   Generates randomly located fibers which are randomly oriented in the x-y plane
+   but aligned in the z-plane
+
+   :param shape: The shape of the image to generate.  This must be 3D.
+   :type shape: list
+   :param r: The radius of the fibers to generate
+   :type r: int
+   :param porosity: The radius of the fibers
+   :type porosity: float
+
+   :returns: **im** -- An `ndarray` of the given shape with fibers indicated by `False` and void
+             by `True`.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   Drawing randomly oriented fibers with a uniform density is a surprizingly
+   tricky task. The problem was recently discussed and a solution proposed by
+   Beckman et al [1]_.
+
+   ..  [1] Beckman IP, Beckman PM, Cho H, Riveros G. Modeling uniform random
+       distributions of nonwoven fibers for computational analysis of
+       composite materials. Composite Structures. 301(12), 116242 (2022).
+       `doi <https://doi.org/10.1016/j.compstruct.2022.116242>`_
+

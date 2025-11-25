@@ -1,0 +1,25 @@
+porespy.beta.fibers_1D
+======================
+
+.. py:function:: porespy.beta.fibers_1D(shape, r, n, overlap=None)
+
+   Generates randomly located fibers which are all oriented in z-direction
+
+   :param shape: The shape of the image to generate.  This must be 3D.
+   :type shape: list
+   :param r: The radius of the fibers to generate
+   :type r: int
+   :param n: The number of fibers to draw
+   :type n: int
+
+   :returns: **im** -- An `ndarray` of the given shape with fibers indicated by `False` and void
+             by `True`.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   ..  [1] Tomadakis MM, Sotirchos SV. Effective diffusivities and conductivities
+       of random dispersions of nonoverlapping and partially overlapping
+       unidirectional fibers. Journal of Chemical Physics. 99, 9820–9827 (1993).
+       `doi <https://doi.org/10.1063/1.465464>`_
+

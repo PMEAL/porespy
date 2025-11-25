@@ -8,7 +8,7 @@ porespy.metrics.lineal_path_distribution
 
    This relates directly the radial density function defined by Torquato [1c]_,
    but instead of reporting the probability of lying within a stated distance
-   to the nearest solid in any direciton, it considers only linear distances
+   to the nearest solid in any direction, it considers only linear distances
    along orthogonal directions.The benefit of this is that anisotropy can be
    detected in materials by performing the analysis in multiple orthogonal
    directions.
@@ -25,7 +25,7 @@ porespy.metrics.lineal_path_distribution
    :param log: If ``True`` (default) the size data is converted to log (base-10)
                values before processing.  This can help to plot wide size
                distributions or to better visualize data in the small size region.
-               Note that you should not anti-log the radii values in the retunred
+               Note that you should not anti-log the radii values in the returned
                ``results``, since the binning is performed on the logged radii values.
    :type log: boolean
 
@@ -38,7 +38,7 @@ porespy.metrics.lineal_path_distribution
              *pdf*           Probability density function
              *cdf*           Cumulative density function
              *relfreq*       Relative frequency chords in each bin.  The sum of all bin
-                             heights is 1.0.  For the cumulative relativce, use *cdf*
+                             heights is 1.0.  For the cumulative relative, use *cdf*
                              which is already normalized to 1.
              *bin_centers*   The center point of each bin
              *bin_edges*     Locations of bin divisions, including 1 more value than

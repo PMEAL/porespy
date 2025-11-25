@@ -1,0 +1,39 @@
+porespy.generators.conical_capillary
+====================================
+
+.. py:function:: porespy.generators.conical_capillary(shape, r, axis=0)
+
+   Generates a single conical hole with specified start and stop radii
+
+   :param shape: The shape of the image to create
+   :type shape: list
+   :param r: The radii of the beginning and end of the tube. If an `int` is given the
+             a cylindrical capillary of radius `r` is created, which is the same as
+             `r = [r, r]`.
+   :type r: list of ints or int
+   :param axis: The axis along with the tube should be oriented
+   :type axis: int
+
+   :returns: **im** -- An image of the specified `shape` with the conical capillary indicated by
+             `True` values.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   It may be useful to stack multiple images together to make converging/diverging
+   cones. This can be done with:
+
+   .. code:: python
+
+       fig, ax = plt.subplots()
+       c1 = cone([31, 31, 31], r=[15, 3], axis=2)
+       c2 = cone([31, 31, 31], r=[3, 8], axis=2)
+       c = np.vstack((c1, c2))
+       plt.imshow(ps.visualization.xray(c, axis=2))
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/conical_capillary.html>`__
+   to view online example.
+

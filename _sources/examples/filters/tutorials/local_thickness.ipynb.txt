@@ -73,7 +73,7 @@
     "im = ps.generators.random_spheres(im=im, r=15, phi=0.4, smooth=False)\n",
     "im = ps.generators.random_spheres(im=im, r=10, phi=0.6, smooth=False)\n",
     "fig, ax = plt.subplots()\n",
-    "ax.imshow(im, interpolation='none', origin='lower')\n",
+    "ax.imshow(im, interpolation=\"none\", origin=\"lower\")\n",
     "ax.axis(False);"
    ]
   },
@@ -116,7 +116,7 @@
    "source": [
     "thk = ps.filters.local_thickness(im)\n",
     "fig, ax = plt.subplots()\n",
-    "ax.imshow(thk, interpolation='none', origin='lower', cmap=plt.cm.viridis)\n",
+    "ax.imshow(thk, interpolation=\"none\", origin=\"lower\", cmap=plt.cm.viridis)\n",
     "ax.axis(False);"
    ]
   },
@@ -222,9 +222,9 @@
    ],
    "source": [
     "fig, ax = plt.subplots(figsize=(5, 4))\n",
-    "ax.set_xlabel('log(Pore Radius) [voxels]')\n",
-    "ax.set_ylabel('Normalized Volume Fraction')\n",
-    "ax.bar(x=psd.LogR, height=psd.pdf, width=psd.bin_widths, edgecolor='k');"
+    "ax.set_xlabel(\"log(Pore Radius) [voxels]\")\n",
+    "ax.set_ylabel(\"Normalized Volume Fraction\")\n",
+    "ax.bar(x=psd.LogR, height=psd.pdf, width=psd.bin_widths, edgecolor=\"k\");"
    ]
   },
   {
@@ -269,7 +269,7 @@
     "strel = ps.tools.ps_disk(R)\n",
     "im_temp = spim.binary_opening(im, structure=strel)\n",
     "fig, ax = plt.subplots()\n",
-    "ax.imshow(im_temp*2.0, interpolation='none', origin='lower');"
+    "ax.imshow(im_temp * 2.0, interpolation=\"none\", origin=\"lower\");"
    ]
   },
   {
@@ -292,7 +292,7 @@
    },
    "outputs": [],
    "source": [
-    "im_result = im_temp*R"
+    "im_result = im_temp * R"
    ]
   },
   {
@@ -340,7 +340,7 @@
    },
    "outputs": [],
    "source": [
-    "im_result[(im_result == 0)*im_temp] = R"
+    "im_result[(im_result == 0) * im_temp] = R"
    ]
   },
   {
@@ -381,7 +381,7 @@
    ],
    "source": [
     "fig, ax = plt.subplots()\n",
-    "ax.imshow(im_result, interpolation='none', origin='lower');"
+    "ax.imshow(im_result, interpolation=\"none\", origin=\"lower\");"
    ]
   },
   {
@@ -421,7 +421,7 @@
    ],
    "source": [
     "fig, ax = plt.subplots()\n",
-    "ax.imshow(thk, cmap=plt.cm.viridis, interpolation='none', origin='lower');"
+    "ax.imshow(thk, cmap=plt.cm.viridis, interpolation=\"none\", origin=\"lower\");"
    ]
   },
   {

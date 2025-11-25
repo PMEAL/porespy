@@ -1016,7 +1016,7 @@
     }
    ],
    "source": [
-    "paths = ps.filters.distance_transform_lin(im, mode='forward', axis=0)\n",
+    "paths = ps.filters.distance_transform_lin(im, mode=\"forward\", axis=0)\n",
     "ps.imshow(paths);"
    ]
   },
@@ -2319,9 +2319,9 @@
    ],
    "source": [
     "fig, ax = plt.subplots(1, 1)\n",
-    "ax.bar(x=lpf.L, height=lpf.cdf, width=lpf.bin_widths, edgecolor='k', alpha=0.8)\n",
-    "ax.set_xlabel('Path length [voxels]')\n",
-    "ax.set_ylabel('Fraction of voxels within stated distance to solid');"
+    "ax.bar(x=lpf.L, height=lpf.cdf, width=lpf.bin_widths, edgecolor=\"k\", alpha=0.8)\n",
+    "ax.set_xlabel(\"Path length [voxels]\")\n",
+    "ax.set_ylabel(\"Fraction of voxels within stated distance to solid\");"
    ]
   },
   {
@@ -2815,7 +2815,7 @@
     }
    ],
    "source": [
-    "paths = ps.filters.distance_transform_lin(im, mode='forward', axis=1)\n",
+    "paths = ps.filters.distance_transform_lin(im, mode=\"forward\", axis=1)\n",
     "ps.imshow(paths);"
    ]
   },
@@ -4239,7 +4239,7 @@
    ],
    "source": [
     "lpf = ps.metrics.lineal_path_distribution(paths, bins=range(1, 200, 10))\n",
-    "ax.bar(x=lpf.L, height=lpf.cdf, width=lpf.bin_widths, edgecolor='k', alpha=0.8)\n",
+    "ax.bar(x=lpf.L, height=lpf.cdf, width=lpf.bin_widths, edgecolor=\"k\", alpha=0.8)\n",
     "fig"
    ]
   },

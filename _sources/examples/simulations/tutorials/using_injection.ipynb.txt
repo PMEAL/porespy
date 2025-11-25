@@ -29,7 +29,6 @@
    },
    "outputs": [],
    "source": [
-    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
     "\n",
@@ -132,7 +131,7 @@
     "    inlets=bd,\n",
     "    maxiter=25000,\n",
     "    return_pressures=True,\n",
-    "    method='qbip',\n",
+    "    method=\"qbip\",\n",
     ")\n",
     "inv_satn = ps.filters.seq_to_satn(seq=inv.im_seq, im=im)"
    ]
@@ -166,7 +165,7 @@
     "    steps=None,\n",
     ")\n",
     "drn_seq = ps.filters.satn_to_seq(satn=drn.im_snwp, im=im)\n",
-    "drn_seq[im*(drn_seq == 0)] = -1  # Adjust to set uninvaded to -1\n",
+    "drn_seq[im * (drn_seq == 0)] = -1  # Adjust to set uninvaded to -1\n",
     "drn_satn = ps.filters.seq_to_satn(drn_seq, im=im)"
    ]
   },
@@ -213,8 +212,8 @@
    ],
    "source": [
     "fig, ax = plt.subplots(1, 2, figsize=[8, 4])\n",
-    "ax[0].imshow(inv_satn/im, origin='lower', interpolation='none')\n",
-    "ax[1].imshow(drn_satn/im, origin='lower', interpolation='none');"
+    "ax[0].imshow(inv_satn / im, origin=\"lower\", interpolation=\"none\")\n",
+    "ax[1].imshow(drn_satn / im, origin=\"lower\", interpolation=\"none\");"
    ]
   },
   {
@@ -245,8 +244,8 @@
     "for s in satns:\n",
     "    inv_mask = (inv_satn_t <= s) * (inv_satn_t > 0)\n",
     "    drn_mask = (drn_satn_t <= s) * (drn_satn_t > 0)\n",
-    "    diff[(drn_mask == 1)*(inv_mask == 0)*(im == 1)] = 1\n",
-    "    diff[(drn_mask == 0)*(inv_mask == 1)*(im == 1)] = -1\n",
+    "    diff[(drn_mask == 1) * (inv_mask == 0) * (im == 1)] = 1\n",
+    "    diff[(drn_mask == 0) * (inv_mask == 1) * (im == 1)] = -1\n",
     "    err.append((drn_mask != inv_mask).sum())"
    ]
   },
@@ -287,10 +286,10 @@
    ],
    "source": [
     "fig, ax = plt.subplots(1, 2, figsize=[8, 4])\n",
-    "ax[0].imshow(diff/im, origin='lower', vmin=-1, vmax=1)\n",
-    "ax[1].plot(satns, err, 'o-')\n",
-    "ax[1].set_xlabel('Saturation')\n",
-    "ax[1].set_ylabel('Number of Pixels');"
+    "ax[0].imshow(diff / im, origin=\"lower\", vmin=-1, vmax=1)\n",
+    "ax[1].plot(satns, err, \"o-\")\n",
+    "ax[1].set_xlabel(\"Saturation\")\n",
+    "ax[1].set_ylabel(\"Number of Pixels\");"
    ]
   },
   {
@@ -352,24 +351,24 @@
     "ax.plot(\n",
     "    np.log10(pc_curve_inv.pc),\n",
     "    pc_curve_inv.snwp,\n",
-    "    'g-',\n",
+    "    \"g-\",\n",
     "    linewidth=1,\n",
-    "    label='invasion',\n",
+    "    label=\"invasion\",\n",
     ")\n",
     "ax.step(\n",
     "    np.array(np.log10(pc_curve_drn.pc)),\n",
     "    pc_curve_drn.snwp,\n",
-    "    'r--',\n",
-    "    where='post',\n",
+    "    \"r--\",\n",
+    "    where=\"post\",\n",
     "    markersize=20,\n",
     "    linewidth=3,\n",
     "    alpha=0.6,\n",
-    "    label='drainage',\n",
+    "    label=\"drainage\",\n",
     ")\n",
-    "plt.xlabel('log(Capillary Pressure [Pa])')\n",
-    "plt.ylabel('Non-wetting Phase Saturation')\n",
+    "plt.xlabel(\"log(Capillary Pressure [Pa])\")\n",
+    "plt.ylabel(\"Non-wetting Phase Saturation\")\n",
     "plt.legend()\n",
-    "ax.xaxis.grid(True, which='both')"
+    "ax.xaxis.grid(True, which=\"both\")"
    ]
   },
   {
@@ -418,7 +417,7 @@
  ],
  "metadata": {
   "kernelspec": {
-   "display_name": ".venv",
+   "display_name": "PoreSpy",
    "language": "python",
    "name": "python3"
   },

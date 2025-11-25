@@ -29,7 +29,7 @@ np.random.seed(10)
 shape = [200, 200]
 im = ps.generators.fractal_noise(shape=shape)
 fig, ax = plt.subplots(1, 1, figsize=[4, 4])
-ax.imshow(im, origin='lower', interpolation='none')
+ax.imshow(im, origin="lower", interpolation="none")
 ax.axis(False);
 ------------------
 
@@ -51,7 +51,7 @@ During handling of the above exception, another exception occurred:
 [32m      2[39m shape = [[32m200[39m, [32m200[39m]
 [32m----> [39m[32m3[39m im = [43mps[49m[43m.[49m[43mgenerators[49m[43m.[49m[43mfractal_noise[49m[43m([49m[43mshape[49m[43m=[49m[43mshape[49m[43m)[49m
 [32m      4[39m fig, ax = plt.subplots([32m1[39m, [32m1[39m, figsize=[[32m4[39m, [32m4[39m])
-[32m      5[39m ax.imshow(im, origin=[33m'[39m[33mlower[39m[33m'[39m, interpolation=[33m'[39m[33mnone[39m[33m'[39m)
+[32m      5[39m ax.imshow(im, origin=[33m"[39m[33mlower[39m[33m"[39m, interpolation=[33m"[39m[33mnone[39m[33m"[39m)
 
 [36mFile [39m[32m~/work/porespy/porespy/src/porespy/generators/_noise.py:96[39m, in [36mfractal_noise[39m[34m(shape, porosity, frequency, octaves, gain, mode, seed, cores, uniform)[39m
 [32m     94[39m     [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mpyfastnoisesimd[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m Noise, NoiseType, PerturbType

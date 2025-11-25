@@ -1,7 +1,7 @@
 porespy.simulations.imbibition_dt
 =================================
 
-.. py:function:: porespy.simulations.imbibition_dt(im, inlets=None, outlets=None, residual=None, dt=None, steps=None, smooth=True)
+.. py:function:: porespy.simulations.imbibition_dt(im, inlets=None, outlets=None, dt=None, steps=None, smooth=True)
 
    Performs a distance transform based imbibition simulation using distance
    transform thresholding for the erosion step and a second distance transform
@@ -28,21 +28,23 @@ porespy.simulations.imbibition_dt
                  and stop of the integer values. A `list` or `ndarray` is used directly. If
                  `None` (default) then each unique value in the distance transform is used.
    :type steps: scalar or array_like
-   :param smooth: If `True` (default) then the spheres are drawn without any single voxel
-                  protrusions on the faces.
-   :type smooth: boolean
 
    :returns: **results** -- A dataclass-like object with the following attributes:
 
-             ========== ============================================================
-             Attribute  Description
-             ========== ============================================================
-             im_seq     A numpy array with each voxel value indicating the sequence
-                        at which it was invaded.  Values of -1 indicate that it was
-                        not invaded.
-             im_size    A numpy array with each voxel value indicating the radius of
-                        spheres being inserted when it was invaded.
-             ========== ============================================================
+             =========== ================================================================
+             Attribute   Description
+             =========== ================================================================
+             `im_seq`    An ndarray with each voxel indicating the step number at which
+                         it was first invaded. -1 indicates uninavded, either due to
+                         the applied `steps` not spanning the full range of sizes in the
+                         image, or due to trapping, while 0 indicates residual invading
+                         phase.
+             `im_size`   A numpy array with each voxel containing the radius of the
+                         sphere, in voxels, that first overlapped it. `inf` indicates
+                         uninavded, either due to the applied `steps` not spanning the
+                         full range of sizes in the image, or due to trapping, while 0
+                         indicates residual invading phase.
+             =========== ================================================================
    :rtype: Results object
 
    .. rubric:: Notes

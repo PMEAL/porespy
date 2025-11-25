@@ -87,7 +87,7 @@
    "source": [
     "im = ps.generators.overlapping_spheres([1000, 1000], r=10, porosity=0.5)\n",
     "fig, ax = plt.subplots()\n",
-    "ax.imshow(im, origin='lower');"
+    "ax.imshow(im, origin=\"lower\");"
    ]
   },
   {
@@ -117,7 +117,8 @@
    "source": [
     "parallel_kw = {\"divs\": 2}\n",
     "snow_out = ps.filters.snow_partitioning_parallel(\n",
-    "    im=im, parallel_kw=parallel_kw, r_max=5, sigma=0.4)"
+    "    im=im, parallel_kw=parallel_kw, r_max=5, sigma=0.4\n",
+    ")"
    ]
   },
   {
@@ -160,7 +161,7 @@
    "source": [
     "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
     "ax.imshow(randomize_colors(snow_out.regions))\n",
-    "ax.set_title('Segmented Image');"
+    "ax.set_title(\"Segmented Image\");"
    ]
   },
   {

@@ -137,9 +137,9 @@
    "outputs": [],
    "source": [
     "path = \"./sf-model-lib/diffusion\"\n",
-    "path_train = os.path.join(path, 'g_train_original.hdf5')\n",
-    "path_weights = os.path.join(path, 'model_weights.h5')\n",
-    "g_train = h5py.File(path_train, 'r')['g_train'][()]\n",
+    "path_train = os.path.join(path, \"g_train_original.hdf5\")\n",
+    "path_weights = os.path.join(path, \"model_weights.h5\")\n",
+    "g_train = h5py.File(path_train, \"r\")[\"g_train\"][()]\n",
     "model = ps.networks.create_model()\n",
     "model.load_weights(path_weights)"
    ]
@@ -167,14 +167,11 @@
     "np.random.seed(17)\n",
     "shape = [120, 120, 120]\n",
     "dist = sp.stats.norm(loc=7, scale=5)\n",
-    "im = ps.generators.polydisperse_spheres(shape=shape,\n",
-    "                                        porosity=0.7,\n",
-    "                                        dist=dist,\n",
-    "                                        r_min=7)\n",
+    "im = ps.generators.polydisperse_spheres(shape=shape, porosity=0.7, dist=dist, r_min=7)\n",
     "results = ps.filters.snow_partitioning(im=im.astype(bool))\n",
-    "regions = results['regions']\n",
+    "regions = results[\"regions\"]\n",
     "fig, ax = plt.subplots(1, 1, figsize=[4, 4])\n",
-    "ax.imshow(regions[:, :, 20], origin='lower', interpolation='none')\n",
+    "ax.imshow(regions[:, :, 20], origin=\"lower\", interpolation=\"none\")\n",
     "ax.axis(False);"
    ]
   },
@@ -199,10 +196,9 @@
    "outputs": [],
    "source": [
     "conns = ps.networks.find_conns(regions)\n",
-    "size_factors = ps.networks.diffusive_size_factor_AI(regions,\n",
-    "                                                    model=model,\n",
-    "                                                    g_train=g_train,\n",
-    "                                                    throat_conns=conns)"
+    "size_factors = ps.networks.diffusive_size_factor_AI(\n",
+    "    regions, model=model, g_train=g_train, throat_conns=conns\n",
+    ")"
    ]
   },
   {
@@ -235,14 +231,14 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "fname = os.path.join(path, 'g_finite_difference120-phi7.hdf5')\n",
-    "g_FD = h5py.File(fname, 'r')['g_finite_difference'][()]\n",
+    "fname = os.path.join(path, \"g_finite_difference120-phi7.hdf5\")\n",
+    "g_FD = h5py.File(fname, \"r\")[\"g_finite_difference\"][()]\n",
     "g_AI = size_factors\n",
     "max_val = np.max([g_FD, g_AI])\n",
     "plt.figure(figsize=[4, 4])\n",
-    "plt.plot(g_FD, g_AI, '*', [0, max_val], [0, max_val], 'r')\n",
-    "plt.xlabel('g reference')\n",
-    "plt.ylabel('g prediction')\n",
+    "plt.plot(g_FD, g_AI, \"*\", [0, max_val], [0, max_val], \"r\")\n",
+    "plt.xlabel(\"g reference\")\n",
+    "plt.ylabel(\"g prediction\")\n",
     "r2 = r2_score(g_FD, g_AI)\n",
     "print(f\"The R^2 prediction accuracy is {r2:.3}\")"
    ]
@@ -274,15 +270,14 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "fname = os.path.join(path, 'pair.hdf5')\n",
-    "pair_in = h5py.File(fname, 'r')\n",
-    "im_pair = pair_in['pair'][()]\n",
+    "fname = os.path.join(path, \"pair.hdf5\")\n",
+    "pair_in = h5py.File(fname, \"r\")\n",
+    "im_pair = pair_in[\"pair\"][()]\n",
     "conns = ps.networks.find_conns(im_pair)\n",
     "sf_FD = ps.networks.diffusive_size_factor_DNS(im_pair, throat_conns=conns)\n",
-    "sf_AI = ps.networks.diffusive_size_factor_AI(im_pair,\n",
-    "                                             model=model,\n",
-    "                                             g_train=g_train,\n",
-    "                                             throat_conns=conns)\n",
+    "sf_AI = ps.networks.diffusive_size_factor_AI(\n",
+    "    im_pair, model=model, g_train=g_train, throat_conns=conns\n",
+    ")\n",
     "print(f\"Diffusive size factor from FD: {sf_FD[0]:.2f}, and AI: {sf_AI[0]:.2f}\")"
    ]
   }

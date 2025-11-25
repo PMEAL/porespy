@@ -366,6 +366,8 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../beta/index.html">porespy.beta</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../beta/df_to_tortuosity.html">porespy.beta.df_to_tortuosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../beta/fibers_1D.html">porespy.beta.fibers_1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../beta/fibers_2D.html">porespy.beta.fibers_2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/flux.html">porespy.beta.flux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/get_block_sizes.html">porespy.beta.get_block_sizes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/local_diff.html">porespy.beta.local_diff</a></li>
@@ -373,7 +375,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../beta/rev_tortuosity.html">porespy.beta.rev_tortuosity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/tau_from_cmap.html">porespy.beta.tau_from_cmap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/tortuosity_bt.html">porespy.beta.tortuosity_bt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../beta/walk.html">porespy.beta.walk</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../filters/index.html">porespy.filters</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -435,7 +436,7 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">porespy.generators</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="blobs.html">porespy.generators.blobs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="borders.html">porespy.generators.borders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bundle_of_tubes.html">porespy.generators.bundle_of_tubes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conical_capillary.html">porespy.generators.conical_capillary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cylinders.html">porespy.generators.cylinders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cylindrical_pillars_array.html">porespy.generators.cylindrical_pillars_array</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">porespy.generators.cylindrical_pillars_mesh</a></li>
@@ -537,17 +538,16 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../simulations/index.html">porespy.simulations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage.html">porespy.simulations.drainage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dsi.html">porespy.simulations.drainage_dsi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_bf.html">porespy.simulations.drainage_bf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_conv.html">porespy.simulations.drainage_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt.html">porespy.simulations.drainage_dt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt_fft.html">porespy.simulations.drainage_dt_fft</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_fft.html">porespy.simulations.drainage_fft</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/hg_porosimetry.html">porespy.simulations.hg_porosimetry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt_conv.html">porespy.simulations.drainage_dt_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/ibip.html">porespy.simulations.ibip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition.html">porespy.simulations.imbibition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_dsi.html">porespy.simulations.imbibition_dsi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_bf.html">porespy.simulations.imbibition_bf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_conv.html">porespy.simulations.imbibition_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_dt.html">porespy.simulations.imbibition_dt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_dt_fft.html">porespy.simulations.imbibition_dt_fft</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_fft.html">porespy.simulations.imbibition_fft</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_dt_conv.html">porespy.simulations.imbibition_dt_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/injection.html">porespy.simulations.injection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/qbip.html">porespy.simulations.qbip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/tortuosity_fd.html">porespy.simulations.tortuosity_fd</a></li>

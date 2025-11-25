@@ -3,11 +3,11 @@
 Installation
 ############
 
-The recommended way to install Python and desired packages (like porespy) is using `uv <https://docs.astral.sh/uv>_`. `uv` has rapidly become the most popular package manager for Python. You'll be able to find lots of blog articles extolling the virtues of `uv`, but its main feature is speed. 
+The recommended way to install Python and desired packages (like PoreSpy) is using `uv <https://docs.astral.sh/uv>`_. `uv` has rapidly become the most popular package manager for Python. You'll be able to find lots of blog articles extolling the virtues of `uv`, but its main feature is speed. 
 
 1. First you need to install `uv`. The official installation instructions are provided on the `astral website <https://docs.astral.sh/uv/getting-started/installation>`_. This will install `uv` on your system so it will be available from the terminal or command line. 
-2. Next you navigate to the folder where the project files and data will be or already stored, like scripts and tomograms. 
-3. Then you create a virtual environment in that directory using `uv venv`. This adds a `.venv` folder, where `uv` will store all its information. 
+2. Next you navigate to the folder where the project files and data will be or already are stored, like scripts and tomograms. 
+3. Then you create a virtual environment in that directory using `uv venv --python 3.12`. This adds a `.venv` folder, where `uv` will store all its information. Note that PoreSpy only supports python version 3.10, 3.11 and 3.12.  This is largely because of dependencies which have firm version requirements. 
 4. Finally, you run `uv pip install porespy`.  The first time you do this `uv` will download and compile a few things, which may take some time, but it will store all of this so subsequent usage will be much faster. 
 
 When using `uv` we recommend `VSCode <https://code.visualstudio.com/>`_ as the IDE to write and edit scripts. VSCode will automatically find the `venv` inside the current folder, which is very handy. Spyder is a good IDE for scientific programming, but it does not (yet) have automatic support for finding `venvs` so is cumbersome to use when switching between projects.
@@ -15,20 +15,20 @@ When using `uv` we recommend `VSCode <https://code.visualstudio.com/>`_ as the I
 Installing the `dev` version
 ############################
 
-If you are a porespy contributor or want to get the newest updates as they roll in, you need to clone the porespy repository from Github and install it locally. It's not as difficult as it sounds, just follow these steps:
+If you are a PoreSpy contributor or want to get the newest updates as they roll in, you need to clone the PoreSpy repository from Github and install it locally. It's not as difficult as it sounds, just follow these steps:
 
-Open up the terminal/cmd and use ``cd`` to navigate to the directory where you want to store the ``porespy`` codebase. Clone the repo to your disk using:
+Open up the terminal/cmd and use ``cd`` to navigate to the directory where you want to store the PoreSpy code. Clone the repo to your disk using:
 
    $ git clone https://github.com/PMEAL/porespy
 
-Since your terminal is currently in the porespy directory, you can now install ``porespy`` and all its dependencies with:
+Since your terminal is currently in the PoreSpy directory, you can now install PoreSpy and all its dependencies with:
 
    $ uv pip install -e .
 
-Voila! You can now use the latest features available on the ``dev`` branch. To keep your "local" ``porespy`` installation up to date, you should regularly pull the latest changes:
+Voila! You can now use the latest features available on the ``dev`` branch. To keep your "local" PoreSpy installation up to date, you should regularly pull the latest changes:
 
    $ git pull
 
 .. warning::
-   For the development version of ``porespy`` to work, you need to first remove
-   the ``porespy`` that you've previously installed using ``uv pip uninstall porespy``
+   For the development version of PoreSpy to work, you need to first remove
+   any versions that you may have previously installed using ``uv pip uninstall porespy``

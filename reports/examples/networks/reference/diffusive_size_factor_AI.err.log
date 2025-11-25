@@ -32,9 +32,8 @@ The message was: Cell execution timed out.
 Here is a preview of the cell contents:
 -------------------
 conns = ps.networks.find_conns(regions)
-size_factors = ps.networks.diffusive_size_factor_AI(regions,
-                                                    model=model,
-                                                    g_train=g_train,
-                                                    throat_conns=conns)
+size_factors = ps.networks.diffusive_size_factor_AI(
+    regions, model=model, g_train=g_train, throat_conns=conns
+)
 -------------------
 

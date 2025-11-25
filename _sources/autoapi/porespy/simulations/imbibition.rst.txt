@@ -1,7 +1,7 @@
 porespy.simulations.imbibition
 ==============================
 
-.. py:function:: porespy.simulations.imbibition(im, pc=None, dt=None, inlets=None, outlets=None, residual=None, steps=25, min_size=0, conn='min')
+.. py:function:: porespy.simulations.imbibition(im, pc=None, dt=None, inlets=None, outlets=None, residual=None, steps=25, min_size=0, conn='min', smooth=False)
 
    Performs an imbibition simulation using image-based sphere insertion
 
@@ -9,22 +9,26 @@ porespy.simulations.imbibition
    :type im: ndarray
    :param pc: An array containing precomputed capillary pressure values in each
               voxel. This can include gravity effects or not. This can be generated
-              by ``capillary_transform``. If not provided then `2/dt` is used.
+              by `capillary_transform`. If not provided then `2/dt` is used.
    :type pc: ndarray
-   :param dt: The distance transform of ``im``.  If not provided it will be
+   :param dt: The distance transform of `im`.  If not provided it will be
               calculated, so supplying it saves time.
    :type dt: ndarray (optional)
-   :param inlets: An image the same shape as ``im`` with ``True`` values indicating the
-                  wetting fluid inlet(s).  If ``None`` then the wetting film is able to
+   :param inlets: An image the same shape as `im` with `True` values indicating the
+                  wetting fluid inlet(s).  If `None` then the wetting film is able to
                   appear anywhere within the domain.
    :type inlets: ndarray
-   :param residual: A boolean mask the same shape as ``im`` with ``True`` values
+   :param outlets: A boolean image with ``True`` values indicating the outlet locations.
+                   If this is provided then trapped voxels of non-wetting phase are found and
+                   all the output images are adjusted accordingly.
+   :type outlets: ndarray, optional
+   :param residual: A boolean mask the same shape as `im` with `True` values
                     indicating to locations of residual wetting phase.
    :type residual: ndarray, optional
-   :param steps: The range of pressures to apply. If an integer is given
-                 then steps will be created between the lowest and highest pressures
-                 in ``pc``. If a list is given, each value in the list is used
-                 directly in order.
+   :param steps: The range of pressures to apply. If an integer is given then logarithmically
+                 spaced steps will be created between the lowest and highest pressures in
+                 `pc`. If a `list` is given, each value in the list is used directly, in
+                 order.
    :type steps: int or array_like (default = 25)
    :param min_size: Any clusters of trapped voxels smaller than this size will be set to not
                     trapped. This argument is only used if `outlets` is given. This is useful
@@ -34,9 +38,9 @@ porespy.simulations.imbibition
                     but a value of 3 or 4 is recommended to activate this adjustment.
    :type min_size: int
    :param conn: Can be either `'min'` or `'max'` and controls the shape of the structuring
-                element used to determine voxel connectivity.  The default is `'min'` which
-                imposes the strictest criteria, so that voxels must share a face to be
-                considered connected.
+                element used to determine voxel connectivity when assessing trapping. The
+                default is `'min'` which imposes the strictest criteria, so that voxels
+                must share a face to be considered connected.
    :type conn: str
 
    :returns: **results** -- A dataclass-like object with the following attributes:
@@ -64,9 +68,9 @@ porespy.simulations.imbibition
    .. rubric:: Notes
 
    The simulation proceeds as though the non-wetting phase pressure is very
-   high and is slowly lowered. Then imbibition occurs into the smallest
-   accessible regions at each step. Closed or inaccessible pores are
-   assumed to be filled with wetting phase.
+   high and is incrementally lowered. Then imbibition occurs into the smallest
+   accessible regions at each step. Closed or inaccessible pores are assumed
+   to be filled with wetting phase.
 
    .. rubric:: Examples
 

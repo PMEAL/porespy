@@ -57,15 +57,12 @@
     "np.random.seed(10)\n",
     "shape = [40, 40, 40]\n",
     "dist = sp.stats.norm(loc=7, scale=5)\n",
-    "im = ps.generators.polydisperse_spheres(shape=shape,\n",
-    "                                        porosity=0.7,\n",
-    "                                        dist=dist,\n",
-    "                                        r_min=3)\n",
+    "im = ps.generators.polydisperse_spheres(shape=shape, porosity=0.7, dist=dist, r_min=3)\n",
     "\n",
     "results = ps.filters.snow_partitioning(im=im.astype(bool))\n",
-    "regions = results['regions']\n",
+    "regions = results[\"regions\"]\n",
     "fig, ax = plt.subplots(1, 1, figsize=[4, 4])\n",
-    "ax.imshow(regions[:, :, 5], origin='lower', interpolation='none')\n",
+    "ax.imshow(regions[:, :, 5], origin=\"lower\", interpolation=\"none\")\n",
     "ax.axis(False);"
    ]
   },
@@ -97,8 +94,7 @@
    "outputs": [],
    "source": [
     "conns = ps.networks.find_conns(regions)\n",
-    "size_factors = ps.networks.diffusive_size_factor_DNS(regions,\n",
-    "                                                    throat_conns=conns)"
+    "size_factors = ps.networks.diffusive_size_factor_DNS(regions, throat_conns=conns)"
    ]
   },
   {
@@ -122,9 +118,9 @@
    "outputs": [],
    "source": [
     "voxel_size = 1e-6\n",
-    "size_factors = ps.networks.diffusive_size_factor_DNS(regions,\n",
-    "                                                    throat_conns=conns,\n",
-    "                                                    voxel_size=1e-6)"
+    "size_factors = ps.networks.diffusive_size_factor_DNS(\n",
+    "    regions, throat_conns=conns, voxel_size=1e-6\n",
+    ")"
    ]
   }
  ],

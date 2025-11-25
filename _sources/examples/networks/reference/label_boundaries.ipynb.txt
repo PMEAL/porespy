@@ -29,7 +29,7 @@
     "import porespy as ps\n",
     "\n",
     "ws = op.Workspace()\n",
-    "ws.settings['loglevel'] = 50\n",
+    "ws.settings[\"loglevel\"] = 50\n",
     "np.random.seed(10)\n",
     "ps.visualization.set_mpl_style()"
    ]
@@ -171,7 +171,7 @@
    ],
    "source": [
     "net = ps.networks.regions_to_network(snow.regions)\n",
-    "net = ps.networks.label_boundaries(network=net, labels=[['north', 'south'], ['east', 'west']])\n",
+    "net = ps.networks.label_boundaries(network=net, labels=[[\"north\", \"south\"], [\"east\", \"west\"]])\n",
     "for item in net.keys():\n",
     "    print(item)"
    ]

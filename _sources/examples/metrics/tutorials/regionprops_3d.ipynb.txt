@@ -539,7 +539,7 @@
    ],
    "source": [
     "snow = ps.filters.snow_partitioning(im=im)\n",
-    "regions = snow.regions*snow.im"
+    "regions = snow.regions * snow.im"
    ]
   },
   {
@@ -1068,7 +1068,7 @@
    ],
    "source": [
     "r = props[3]\n",
-    "attrs = [a for a in r.__dir__() if not a.startswith('_')]\n",
+    "attrs = [a for a in r.__dir__() if not a.startswith(\"_\")]\n",
     "print(attrs)"
    ]
   },
@@ -2382,7 +2382,7 @@
    ],
    "source": [
     "fig, ax = plt.subplots()\n",
-    "ax.imshow(r.border + 0.5*r.inscribed_sphere);"
+    "ax.imshow(r.border + 0.5 * r.inscribed_sphere);"
    ]
   },
   {
@@ -3038,7 +3038,7 @@
    ],
    "source": [
     "fig, ax = plt.subplots()\n",
-    "ax.imshow(r.image + 1.0*r.convex_image);"
+    "ax.imshow(r.image + 1.0 * r.convex_image);"
    ]
   },
   {
@@ -4592,9 +4592,9 @@
    ],
    "source": [
     "fig, ax = plt.subplots(1, 3, figsize=(8, 3))\n",
-    "ax[0].hist(df['volume'], edgecolor=\"k\")\n",
-    "ax[1].hist(df['solidity'], edgecolor=\"k\")\n",
-    "ax[2].hist(df['sphericity'], edgecolor=\"k\")\n",
+    "ax[0].hist(df[\"volume\"], edgecolor=\"k\")\n",
+    "ax[1].hist(df[\"solidity\"], edgecolor=\"k\")\n",
+    "ax[2].hist(df[\"sphericity\"], edgecolor=\"k\")\n",
     "ax[0].set_title(\"Volume\")\n",
     "ax[1].set_title(\"Solidity\")\n",
     "ax[2].set_title(\"Sphericity\");"
@@ -5123,9 +5123,9 @@
    ],
    "source": [
     "# Create an image of maximally inscribed spheres\n",
-    "sph = ps.metrics.prop_to_image(regionprops=props, shape=im.shape, prop='inscribed_sphere')\n",
+    "sph = ps.metrics.prop_to_image(regionprops=props, shape=im.shape, prop=\"inscribed_sphere\")\n",
     "fig, ax = plt.subplots()\n",
-    "ax.imshow(sph + 0.5*(~im), cmap=plt.cm.inferno);"
+    "ax.imshow(sph + 0.5 * (~im), cmap=plt.cm.inferno);"
    ]
   },
   {
@@ -5596,9 +5596,9 @@
    ],
    "source": [
     "# Create an image colorized by solidity\n",
-    "sph = ps.metrics.prop_to_image(regionprops=props, shape=im.shape, prop='solidity')\n",
+    "sph = ps.metrics.prop_to_image(regionprops=props, shape=im.shape, prop=\"solidity\")\n",
     "fig, ax = plt.subplots()\n",
-    "ax.imshow(sph + 0.5*(~im), cmap=plt.cm.jet);"
+    "ax.imshow(sph + 0.5 * (~im), cmap=plt.cm.jet);"
    ]
   },
   {

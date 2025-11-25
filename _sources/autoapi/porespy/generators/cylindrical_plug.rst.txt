@@ -1,7 +1,7 @@
 porespy.generators.cylindrical_plug
 ===================================
 
-.. py:function:: porespy.generators.cylindrical_plug(shape, r=None, axis=2)
+.. py:function:: porespy.generators.cylindrical_plug(shape, r=None, axis=2, smooth=True)
 
    Generates a cylindrical plug suitable for use as a mask on a tomogram
 
@@ -14,6 +14,9 @@ porespy.generators.cylindrical_plug
    :param axis: The direction along with the cylinder's axis of rotation should be
                 oriented.  The default is 2, which is the z-direction.
    :type axis: int
+   :param smooth: Boolean flag to indicate if the cylinder should have the single voxels
+                  protrusion on each face or not (Default if `True`)
+   :type smooth: bool
 
    :returns: **cylinder** -- A boolean image of the size given by ``shape`` with ``True``'s
              inside the cylinder and ``False``'s outside.

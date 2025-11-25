@@ -18,7 +18,7 @@
    "source": [
     "import matplotlib.pyplot as plt\n",
     "\n",
-    "import porespy as ps\n"
+    "import porespy as ps"
    ]
   },
   {
@@ -50,7 +50,7 @@
    "source": [
     "im1 = ps.generators.blobs([500, 500], blobiness=0.5, porosity=0.6)\n",
     "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
-    "ax.imshow(im1, interpolation='none')\n",
+    "ax.imshow(im1, interpolation=\"none\")\n",
     "ax.axis(False);"
    ]
   },
@@ -82,7 +82,7 @@
    "source": [
     "im2 = ps.generators.blobs([500, 500], blobiness=2.5, porosity=0.5)\n",
     "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
-    "ax.imshow(im2, interpolation='none')\n",
+    "ax.imshow(im2, interpolation=\"none\")\n",
     "ax.axis(False);"
    ]
   },
@@ -112,9 +112,9 @@
     }
    ],
    "source": [
-    "im3 = ~(~im1*im2)\n",
+    "im3 = ~(~im1 * im2)\n",
     "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
-    "ax.imshow(im3, interpolation='none')\n",
+    "ax.imshow(im3, interpolation=\"none\")\n",
     "ax.axis(False);"
    ]
   },
@@ -203,7 +203,7 @@
     "im1 = ps.generators.blobs([300, 300], blobiness=0.5, porosity=0.6)\n",
     "im2 = ~ps.generators.random_spheres(im=~im1, r=10, clearance=-2)\n",
     "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
-    "ax.imshow(im2, interpolation='none')\n",
+    "ax.imshow(im2, interpolation=\"none\")\n",
     "ax.axis(False);"
    ]
   },

@@ -177,15 +177,15 @@
    ],
    "source": [
     "fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))\n",
-    "ax1.set_yscale('log')\n",
-    "ax1.set_xscale('log')\n",
-    "ax1.set_xlabel('box edge length')\n",
-    "ax1.set_ylabel('number of boxes spanning phases')\n",
-    "ax2.set_xlabel('box edge length')\n",
-    "ax2.set_ylabel('slope')\n",
-    "ax2.set_xscale('log')\n",
-    "ax1.plot(data.size, data.count, '-o')\n",
-    "ax2.plot(data.size, data.slope, '-o');"
+    "ax1.set_yscale(\"log\")\n",
+    "ax1.set_xscale(\"log\")\n",
+    "ax1.set_xlabel(\"box edge length\")\n",
+    "ax1.set_ylabel(\"number of boxes spanning phases\")\n",
+    "ax2.set_xlabel(\"box edge length\")\n",
+    "ax2.set_ylabel(\"slope\")\n",
+    "ax2.set_xscale(\"log\")\n",
+    "ax1.plot(data.size, data.count, \"-o\")\n",
+    "ax2.plot(data.size, data.slope, \"-o\");"
    ]
   },
   {

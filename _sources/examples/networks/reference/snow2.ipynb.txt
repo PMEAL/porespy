@@ -146,8 +146,8 @@
    ],
    "source": [
     "fig, ax = plt.subplots(1, 2, figsize=[12, 6])\n",
-    "ax[0].imshow(net1.regions, origin='lower', interpolation='none')\n",
-    "ax[1].imshow(net2.regions, origin='lower', interpolation='none');"
+    "ax[0].imshow(net1.regions, origin=\"lower\", interpolation=\"none\")\n",
+    "ax[1].imshow(net2.regions, origin=\"lower\", interpolation=\"none\");"
    ]
   },
   {
@@ -188,7 +188,7 @@
     }
    ],
    "source": [
-    "ax = op.visualization.plot_connections(pn1, c='k')\n",
+    "ax = op.visualization.plot_connections(pn1, c=\"k\")\n",
     "ax = op.visualization.plot_coordinates(pn1, markersize=50, ax=ax)\n",
     "fig, ax = plt.gcf(), plt.gca()\n",
     "ax.imshow(net1.regions.T)\n",
@@ -233,7 +233,7 @@
     }
    ],
    "source": [
-    "ax = op.visualization.plot_connections(pn2, c='k')\n",
+    "ax = op.visualization.plot_connections(pn2, c=\"k\")\n",
     "ax = op.visualization.plot_coordinates(pn2, markersize=50, ax=ax)\n",
     "fig, ax = plt.gcf(), plt.gca()\n",
     "ax.imshow(net2.regions.T)\n",
@@ -1736,10 +1736,16 @@
     }
    ],
    "source": [
-    "ax = op.visualization.plot_connections(pn2, throats=pn2['throat.phase2_phase2'], c='k')\n",
-    "ax = op.visualization.plot_connections(pn2, throats=pn2['throat.phase2_phase1'], c='grey', ax=ax)\n",
-    "ax = op.visualization.plot_coordinates(pn2, pores=pn2['pore.phase2'], c='r', markersize=50, ax=ax)\n",
-    "ax = op.visualization.plot_coordinates(pn2, pores=pn2['pore.phase1'], c='g', markersize=50, ax=ax)\n",
+    "ax = op.visualization.plot_connections(pn2, throats=pn2[\"throat.phase2_phase2\"], c=\"k\")\n",
+    "ax = op.visualization.plot_connections(\n",
+    "    pn2, throats=pn2[\"throat.phase2_phase1\"], c=\"grey\", ax=ax\n",
+    ")\n",
+    "ax = op.visualization.plot_coordinates(\n",
+    "    pn2, pores=pn2[\"pore.phase2\"], c=\"r\", markersize=50, ax=ax\n",
+    ")\n",
+    "ax = op.visualization.plot_coordinates(\n",
+    "    pn2, pores=pn2[\"pore.phase1\"], c=\"g\", markersize=50, ax=ax\n",
+    ")\n",
     "fig, ax = plt.gcf(), plt.gca()\n",
     "ax.imshow(net2.regions.T)\n",
     "ax.axis(False);"
@@ -1770,7 +1776,9 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "net3 = ps.networks.snow2(phases=im.astype(int) + 1, phase_alias={1: 'solid', 2: 'void'}, boundary_width=0)"
+    "net3 = ps.networks.snow2(\n",
+    "    phases=im.astype(int) + 1, phase_alias={1: \"solid\", 2: \"void\"}, boundary_width=0\n",
+    ")"
    ]
   },
   {
@@ -3291,7 +3299,7 @@
     "im = ps.generators.blobs([400, 400], porosity=0.6)\n",
     "a = ps.networks.snow2(im, boundary_width=[[5, 0], 10])\n",
     "fig, ax = plt.subplots(figsize=[6, 6])\n",
-    "ax.imshow(a.regions, origin='lower', interpolation='none')\n",
+    "ax.imshow(a.regions, origin=\"lower\", interpolation=\"none\")\n",
     "ax.axis(False);"
    ]
   },
@@ -3336,7 +3344,7 @@
    ],
    "source": [
     "pn = op.io.network_from_porespy(a.network)\n",
-    "ax = op.visualization.plot_connections(pn, c='k')\n",
+    "ax = op.visualization.plot_connections(pn, c=\"k\")\n",
     "ax = op.visualization.plot_coordinates(pn, markersize=50, ax=ax)\n",
     "fig, ax = plt.gcf(), plt.gca()\n",
     "ax.imshow(a.regions.T)\n",
@@ -3406,12 +3414,12 @@
     "mx2 = spim.maximum_filter(dt_blur, footprint=ps.tools.ps_disk(r=4, smooth=False))\n",
     "pk2 = dt_blur == mx2\n",
     "fig, ax = plt.subplots(3, 2, figsize=[8, 12])\n",
-    "ax[0][0].imshow(dt, origin='lower', interpolation='none')\n",
-    "ax[1][0].imshow(mx1, origin='lower', interpolation='none')\n",
-    "ax[2][0].imshow(pk1/im, origin='lower', interpolation='none')\n",
-    "ax[0][1].imshow(dt_blur, origin='lower', interpolation='none')\n",
-    "ax[1][1].imshow(mx2, origin='lower', interpolation='none')\n",
-    "ax[2][1].imshow(pk2/im, origin='lower', interpolation='none');"
+    "ax[0][0].imshow(dt, origin=\"lower\", interpolation=\"none\")\n",
+    "ax[1][0].imshow(mx1, origin=\"lower\", interpolation=\"none\")\n",
+    "ax[2][0].imshow(pk1 / im, origin=\"lower\", interpolation=\"none\")\n",
+    "ax[0][1].imshow(dt_blur, origin=\"lower\", interpolation=\"none\")\n",
+    "ax[1][1].imshow(mx2, origin=\"lower\", interpolation=\"none\")\n",
+    "ax[2][1].imshow(pk2 / im, origin=\"lower\", interpolation=\"none\");"
    ]
   },
   {
@@ -3456,8 +3464,8 @@
    ],
    "source": [
     "fig, ax = plt.subplots(1, 2, figsize=[8, 4])\n",
-    "ax[0].imshow(net1.regions, origin='lower', interpolation='none')\n",
-    "ax[1].imshow(net2.regions, origin='lower', interpolation='none')\n",
+    "ax[0].imshow(net1.regions, origin=\"lower\", interpolation=\"none\")\n",
+    "ax[1].imshow(net2.regions, origin=\"lower\", interpolation=\"none\")\n",
     "ax[0].axis(False)\n",
     "ax[1].axis(False);"
    ]
@@ -3534,9 +3542,9 @@
    "source": [
     "np.random.seed(0)\n",
     "im = ps.generators.overlapping_spheres([400, 400], r=20, porosity=0.8)\n",
-    "parallel_kw = {'cores': 1, 'divs': [2, 2], 'overlap': 1}\n",
+    "parallel_kw = {\"cores\": 1, \"divs\": [2, 2], \"overlap\": 1}\n",
     "net1 = ps.networks.snow2(phases=im, parallel_kw=parallel_kw)\n",
-    "parallel_kw = {'cores': 1, 'divs': [2, 2], 'overlap': None}\n",
+    "parallel_kw = {\"cores\": 1, \"divs\": [2, 2], \"overlap\": None}\n",
     "net2 = ps.networks.snow2(phases=im, parallel_kw=parallel_kw)"
    ]
   },
@@ -3560,10 +3568,10 @@
    "source": [
     "fig, ax = plt.subplots(1, 2, figsize=[8, 4])\n",
     "temp = ps.tools.randomize_colors(net1.regions)\n",
-    "ax[0].imshow(temp, origin='lower', interpolation='none')\n",
+    "ax[0].imshow(temp, origin=\"lower\", interpolation=\"none\")\n",
     "ax[0].axis(False)\n",
     "temp = ps.tools.randomize_colors(net2.regions)\n",
-    "ax[1].imshow(temp, origin='lower', interpolation='none')\n",
+    "ax[1].imshow(temp, origin=\"lower\", interpolation=\"none\")\n",
     "ax[1].axis(False);"
    ]
   }

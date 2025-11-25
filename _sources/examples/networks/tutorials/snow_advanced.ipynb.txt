@@ -38,7 +38,7 @@
     "from porespy.filters import find_peaks, trim_nearby_peaks, trim_saddle_points\n",
     "from porespy.tools import randomize_colors\n",
     "\n",
-    "ps.settings.tqdm['disable'] = True\n",
+    "ps.settings.tqdm[\"disable\"] = True\n",
     "ps.visualization.set_mpl_style()\n",
     "np.random.seed(10)"
    ]
@@ -134,12 +134,12 @@
     }
    ],
    "source": [
-    "print('Initial number of peaks: ', spim.label(peaks)[1])\n",
+    "print(\"Initial number of peaks: \", spim.label(peaks)[1])\n",
     "peaks = trim_saddle_points(peaks=peaks, dt=dt1)\n",
-    "print('Peaks after trimming saddle points: ', spim.label(peaks)[1])\n",
+    "print(\"Peaks after trimming saddle points: \", spim.label(peaks)[1])\n",
     "peaks = trim_nearby_peaks(peaks=peaks, dt=dt)\n",
     "peaks, N = spim.label(peaks)\n",
-    "print('Peaks after trimming nearby peaks: ', N)"
+    "print(\"Peaks after trimming nearby peaks: \", N)"
    ]
   },
   {
@@ -190,7 +190,7 @@
    ],
    "source": [
     "fig, ax = plt.subplots()\n",
-    "ax.imshow((regions*im)[:, :, 100], cmap=plt.cm.nipy_spectral);"
+    "ax.imshow((regions * im)[:, :, 100], cmap=plt.cm.nipy_spectral);"
    ]
   },
   {
@@ -206,7 +206,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "net = ps.networks.regions_to_network(regions*im, voxel_size=1)"
+    "net = ps.networks.regions_to_network(regions * im, voxel_size=1)"
    ]
   },
   {
@@ -295,7 +295,7 @@
    "outputs": [],
    "source": [
     "im = ps.tools.align_image_with_openpnm(im)\n",
-    "imageio.volsave('image.tif', np.array(im, dtype=np.int8))"
+    "imageio.volsave(\"image.tif\", np.array(im, dtype=np.int8))"
    ]
   },
   {

@@ -88,8 +88,8 @@
    ],
    "source": [
     "fig, ax = plt.subplots()\n",
-    "ax.imshow(im, interpolation='none', origin='lower')\n",
-    "ax.axis('off');"
+    "ax.imshow(im, interpolation=\"none\", origin=\"lower\")\n",
+    "ax.axis(\"off\");"
    ]
   },
   {
@@ -131,9 +131,9 @@
     "crds_x = ps.filters.apply_chords(im=im, spacing=4, axis=0)\n",
     "crds_y = ps.filters.apply_chords(im=im, spacing=4, axis=1)\n",
     "fig, ax = plt.subplots(1, 2, figsize=[8, 4])\n",
-    "ax[0].imshow(crds_x, interpolation='none', origin='lower')\n",
+    "ax[0].imshow(crds_x, interpolation=\"none\", origin=\"lower\")\n",
     "ax[0].axis(False)\n",
-    "ax[1].imshow(crds_y, interpolation='none', origin='lower')\n",
+    "ax[1].imshow(crds_y, interpolation=\"none\", origin=\"lower\")\n",
     "ax[1].axis(False);"
    ]
   },
@@ -183,9 +183,9 @@
     "sz_x = ps.filters.region_size(crds_x)\n",
     "sz_y = ps.filters.region_size(crds_y)\n",
     "fig, ax = plt.subplots(1, 2, figsize=[8, 4])\n",
-    "ax[0].imshow(sz_x, interpolation='none', origin='lower')\n",
+    "ax[0].imshow(sz_x, interpolation=\"none\", origin=\"lower\")\n",
     "ax[0].axis(False)\n",
-    "ax[1].imshow(sz_y, interpolation='none', origin='lower')\n",
+    "ax[1].imshow(sz_y, interpolation=\"none\", origin=\"lower\")\n",
     "ax[1].axis(False);"
    ]
   },
@@ -291,8 +291,12 @@
    ],
    "source": [
     "fig, ax = plt.subplots(figsize=(5, 4))\n",
-    "ax.bar(x=data_y.L, height=data_y.cdf, width=data_y.bin_widths, color='b', edgecolor='k', alpha=0.5)\n",
-    "ax.bar(x=data_x.L, height=data_x.cdf, width=data_x.bin_widths, color='r', edgecolor='k', alpha=0.5)\n",
+    "ax.bar(\n",
+    "    x=data_y.L, height=data_y.cdf, width=data_y.bin_widths, color=\"b\", edgecolor=\"k\", alpha=0.5\n",
+    ")\n",
+    "ax.bar(\n",
+    "    x=data_x.L, height=data_x.cdf, width=data_x.bin_widths, color=\"r\", edgecolor=\"k\", alpha=0.5\n",
+    ")\n",
     "ax.set_xlabel(\"Chord length\")\n",
     "ax.set_ylabel(\"Frequency\");"
    ]
@@ -390,7 +394,7 @@
    "source": [
     "crds = ps.filters.apply_chords(im=im, axis=0)\n",
     "fig, ax = plt.subplots()\n",
-    "ax.imshow(crds[:, :, 50], interpolation='none', origin='lower')\n",
+    "ax.imshow(crds[:, :, 50], interpolation=\"none\", origin=\"lower\")\n",
     "ax.axis(False);"
    ]
   },
@@ -425,7 +429,7 @@
    "source": [
     "data = ps.metrics.chord_length_distribution(crds, bins=25)\n",
     "fig, ax = plt.subplots(figsize=(5, 4))\n",
-    "ax.bar(x=data_y.L, height=data.cdf, width=data.bin_widths, color='b', edgecolor='k', alpha=0.5)\n",
+    "ax.bar(x=data_y.L, height=data.cdf, width=data.bin_widths, color=\"b\", edgecolor=\"k\", alpha=0.5)\n",
     "ax.set_xlabel(\"Chord length\")\n",
     "ax.set_ylabel(\"Frequency\");"
    ]

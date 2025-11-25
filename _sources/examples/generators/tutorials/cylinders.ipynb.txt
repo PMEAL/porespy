@@ -97,7 +97,7 @@
     "    \"phi_max\": phi_max,\n",
     "    \"theta_max\": theta_max,\n",
     "    \"length\": length,\n",
-    "    \"maxiter\": maxiter\n",
+    "    \"maxiter\": maxiter,\n",
     "}"
    ]
   },
@@ -2597,16 +2597,16 @@
    "source": [
     "fig, ax = plt.subplots(1, 2, figsize=(8, 4))\n",
     "\n",
-    "ax[0].plot(porosity_target, runtime_ncylinder, \"o-\", label='using # cylinders')\n",
-    "ax[0].plot(porosity_target, runtime_porosity, \"o-\", label='using porosity')\n",
-    "ax[0].set_xlabel('target porosity')\n",
-    "ax[0].set_ylabel('duration [sec]')\n",
+    "ax[0].plot(porosity_target, runtime_ncylinder, \"o-\", label=\"using # cylinders\")\n",
+    "ax[0].plot(porosity_target, runtime_porosity, \"o-\", label=\"using porosity\")\n",
+    "ax[0].set_xlabel(\"target porosity\")\n",
+    "ax[0].set_ylabel(\"duration [sec]\")\n",
     "ax[0].legend()\n",
     "\n",
     "ax[1].scatter(porosity_target, porosity_actual)\n",
     "ax[1].plot(porosity_target, porosity_target, \"g--\")\n",
-    "ax[1].set_xlabel('target porosity')\n",
-    "ax[1].set_ylabel('attained porosity');"
+    "ax[1].set_xlabel(\"target porosity\")\n",
+    "ax[1].set_ylabel(\"attained porosity\");"
    ]
   },
   {

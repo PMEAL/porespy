@@ -1,0 +1,149 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "2b99c145",
+   "metadata": {},
+   "source": [
+    "# `elevation`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "eb67c841",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import porespy as ps\n",
+    "import matplotlib.pyplot as plt"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1333209b",
+   "metadata": {},
+   "source": [
+    "## `shape`\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "e0e72549",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "image/png": "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",
+      "text/plain": [
+       "<Figure size 640x480 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "x = ps.generators.elevation(shape=[50, 50], voxel_size=1e-5)\n",
+    "\n",
+    "fig, ax = plt.subplots()\n",
+    "ax.imshow(x)\n",
+    "ax.axis(False);"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0cb391fd",
+   "metadata": {},
+   "source": [
+    "## `axis`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "b07634e5",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "image/png": "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",
+      "text/plain": [
+       "<Figure size 400x400 with 2 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "x = ps.generators.elevation(shape=[50, 20], axis=0, voxel_size=1e-5)\n",
+    "y = ps.generators.elevation(shape=[50, 20], axis=1, voxel_size=1e-5)\n",
+    "\n",
+    "fig, ax = plt.subplots(1, 2, figsize=[4, 4])\n",
+    "ax[0].imshow(x)\n",
+    "ax[0].axis(False)\n",
+    "ax[1].imshow(y)\n",
+    "ax[1].axis(False);"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1a2a5a3c",
+   "metadata": {},
+   "source": [
+    "## `voxel_size`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "070b59f8",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "image/png": "iVBORw0KGgoAAAANSUhEUgAAATgAAAFICAYAAADEXeKrAAAAOnRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjEwLjMsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmcvZiW1igAAAAlwSFlzAAAPYQAAD2EBqD+naQAABeVJREFUeJzt3VtuI1UUQNH4HSdAj4oh8M00mBNDYDRMglcnLgTftrglVQnX1lqfjrtzP6KtI5269m6apukFIGj/fx8AYC0CB2QJHJAlcECWwAFZAgdkCRyQJXBAlsABWcfRN36//2Hdk/BUfrn9/LI1j/5G929vd1/fvb8//L9279e7r0/Xy93Xb2/nu69/Xk/3X389PPzdn9f7P/u43p9HPi67B7/j5f77X++//99/c5n5+uv9i1C387z3/2O63O7/4PJ59+Vff/zp5b+Y4IAsgQOyBA7IEjggS+CArOEt6u7yYI0C8KRMcECWwAFZAgdkCRyQJXBA1vAWdW+LCmyMCQ7IEjggS+CALIEDsgQOyBreor7YogIbY4IDsgQOyBI4IEvggCyBA7IEDsia8ZHlD77JFeBJmeCALIEDsgQOyBI4IEvggKzxy/bn06oHAViaCQ7IEjggS+CALIEDsgQOyBreok4XW1RgW0xwQJbAAVkCB2QJHJAlcEDW+Bb1PH5tFeAZmOCALIEDsgQOyBI4IEvggCxbVCDLBAdkCRyQJXBAlsABWQIHZA2vRj8vh3VPArAwExyQJXBAlsABWQIHZAkckCVwQNbwYyK3s8dEgG0xwQFZAgdkCRyQJXBAlsABWTO2qFoIbItqAVkCB2QJHJAlcECWwAFZ41vU027dkwAszAQHZAkckCVwQJbAAVkCB2SNf/Hz2RYV2BYTHJAlcECWwAFZAgdkCRyQ5S4qkGWCA7IEDsgSOCBL4IAsgQOyxu+i2qICG2OCA7IEDsgSOCBL4IAsgQOyBA7ImnHZft2DACzNBAdkCRyQJXBAlsABWQIHZM344ud1DwKwNBMckCVwQJbAAVkCB2QJHJDli5+BLBMckCVwQJbAAVkCB2QJHJDlE32BLBMckCVwQJbAAVkCB2QJHJBliwpkmeCALIEDsgQOyBI4IEvggKzxLerwOwGegwkOyBI4IEvggCyBA7IEDsgSOCBr+OGPyWV7YGNMcECWwAFZAgdkCRyQJXBA1oyPLJ/WPQnAwkxwQJbAAVkCB2QJHJAlcECWjywHskxwQJbAAVkCB2QJHJAlcEDW+Bb17C4qsC0mOCBL4IAsgQOyBA7IEjgga8b3otqiAttiggOyBA7IEjggS+CALIEDssa3qEdbVGBbTHBAlsABWQIHZAkckCVwQNb4t52ebqseBGBpJjggS+CALIEDsgQOyBI4IEvggKzhx0R2HhMBNsYEB2QJHJAlcECWwAFZAgdkDW9RD0dbVGBbTHBAlsABWQIHZAkckCVwQNbwFvV4+lz3JAALM8EBWQIHZAkckCVwQJbAAVnDW9TT6WPdkwAszAQHZAkckCVwQJbAAVkCB2QNb1EvR3dRgW0xwQFZAgdkCRyQJXBAlsABWcNb1Ovp67onAViYCQ7IEjggS+CALIEDsgQOyBI4IGv8MZGjx0SAbTHBAVkCB2QJHJAlcECWwAFZtqhAlgkOyBI4IEvggCyBA7IEDsga3qK+Hf9a9yQACzPBAVkCB2QJHJAlcECWwAFZw1vUd1tUYGNMcECWwAFZAgdkCRyQJXBA1owt6p/rngRgYSY4IEvggCyBA7IEDsgSOCBreIv6zcEWFdgWExyQJXBAlsABWQIHZAkckCVwQNbwYyLfHv5Y9yQACzPBAVkCB2QJHJAlcECWwAFZw1vUL4ff1j0JwMJMcECWwAFZAgdkCRyQJXBAlruoQJYJDsgSOCBL4IAsgQOyBA7IGt+i7n9f9yQACzPBAVkCB2QJHJAlcECWwAFZw1vU7/buogLbYoIDsgQOyBI4IEvggCyBA7Jm3EW1RQW2xQQHZAkckCVwQJbAAVkCB2QJHJA14zGRr+ueBGBhJjggS+CALIEDsgQOyBI4IGt8i7qb1j0JwMJMcECWwAFZAgdkCRyQJXBA1oy7qMNvBXgKJjggS+CALIEDsgQOyBI4IGs3TZNLpkCSCQ7IEjggS+CALIEDsgQOyBI4IEvggCyBA7IEDnip+hs/PFRE1uif1gAAAABJRU5ErkJggg==",
+      "text/plain": [
+       "<Figure size 400x400 with 2 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "x = ps.generators.elevation(shape=[50, 20], axis=0, voxel_size=1e-4)\n",
+    "y = ps.generators.elevation(shape=[50, 20], axis=1, voxel_size=3e-4)\n",
+    "\n",
+    "fig, ax = plt.subplots(1, 2, figsize=[4, 4])\n",
+    "ax[0].imshow(x, vmax=5 * 1e-3)\n",
+    "ax[0].axis(False)\n",
+    "ax[1].imshow(y, vmax=10 * 1e-3)\n",
+    "ax[1].axis(False);"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "PoreSpy",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.7"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

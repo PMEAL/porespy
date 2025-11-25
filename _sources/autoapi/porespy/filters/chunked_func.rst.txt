@@ -3,7 +3,7 @@ porespy.filters.chunked_func
 
 .. py:function:: porespy.filters.chunked_func(func, parallel_kw={'divs': 2, 'overlap': None, 'cores': None}, im_arg=['input', 'image', 'im'], strel_arg=['strel', 'structure', 'footprint'], **kwargs)
 
-   Performs the specfied operation "chunk-wise" in parallel using `dask`.
+   Performs the specified operation "chunk-wise" in parallel using `dask`.
 
    This can be used to save memory by doing one chunk at a time
    (`cores=1`) or to increase computation speed by spreading the work
@@ -26,7 +26,7 @@ porespy.filters.chunked_func
                        equivalent to `[2, 2, 2]` for a 3D image.
 
                        Overlap is the amount of overlap to include when dividing up the image.
-                       This value will almost always be the size (i.e. raduis) of the
+                       This value will almost always be the size (i.e. radius) of the
                        structuring element. If not specified then the amount of overlap
                        is inferred from the size of the structuring element, in which
                        case the `strel_arg` must be specified.

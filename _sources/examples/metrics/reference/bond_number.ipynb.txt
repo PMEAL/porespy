@@ -29,7 +29,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": 1,
    "id": "a162a36a",
    "metadata": {},
    "outputs": [
@@ -39,13 +39,12 @@
        "0.008817170868430176"
       ]
      },
-     "execution_count": 4,
+     "execution_count": 1,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "\n",
     "import porespy as ps\n",
     "\n",
     "im = ps.generators.blobs([100, 100], porosity=0.8, seed=0)\n",
@@ -55,7 +54,7 @@
     "    sigma=0.01,\n",
     "    voxel_size=1e-5,\n",
     "    delta_rho=1000,\n",
-    ")\n"
+    ")"
    ]
   },
   {
@@ -74,7 +73,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": 2,
    "id": "27f00931",
    "metadata": {},
    "outputs": [
@@ -84,7 +83,7 @@
        "0.008817170868430176"
       ]
      },
-     "execution_count": 5,
+     "execution_count": 2,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -96,8 +95,8 @@
     "    sigma=0.01,\n",
     "    voxel_size=1e-5,\n",
     "    delta_rho=1000,\n",
-    "    source='lt',\n",
-    "    method='median',\n",
+    "    source=\"lt\",\n",
+    "    method=\"median\",\n",
     ")"
    ]
   },
@@ -112,7 +111,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 8,
+   "execution_count": 3,
    "id": "c633db32",
    "metadata": {},
    "outputs": [
@@ -122,7 +121,7 @@
        "0.0030404821622150796"
       ]
      },
-     "execution_count": 8,
+     "execution_count": 3,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -134,8 +133,8 @@
     "    sigma=0.01,\n",
     "    voxel_size=1e-5,\n",
     "    delta_rho=1000,\n",
-    "    source='dt',\n",
-    "    method='mean',\n",
+    "    source=\"dt\",\n",
+    "    method=\"mean\",\n",
     "    mask_source=True,\n",
     ")"
    ]
@@ -151,7 +150,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 9,
+   "execution_count": 4,
    "id": "abcae79f",
    "metadata": {},
    "outputs": [
@@ -161,7 +160,7 @@
        "0.012161928648860319"
       ]
      },
-     "execution_count": 9,
+     "execution_count": 4,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -173,8 +172,8 @@
     "    sigma=0.01,\n",
     "    voxel_size=1e-5,\n",
     "    delta_rho=1000,\n",
-    "    source='dt',\n",
-    "    method='mean',\n",
+    "    source=\"dt\",\n",
+    "    method=\"mean\",\n",
     "    mask_source=True,\n",
     "    use_diameter=True,\n",
     ")"

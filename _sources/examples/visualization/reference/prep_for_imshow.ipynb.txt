@@ -1012,7 +1012,7 @@
    "source": [
     "kw = ps.visualization.prep_for_imshow(im=dt, mask=im)\n",
     "cmap = copy(plt.cm.plasma)\n",
-    "cmap.set_under('grey')\n",
+    "cmap.set_under(\"grey\")\n",
     "plt.imshow(**kw, cmap=cmap);"
    ]
   },
@@ -1460,8 +1460,8 @@
     "mask = im * (dt < 3)\n",
     "kw = ps.visualization.prep_for_imshow(im=dt, mask=mask)\n",
     "cmap = copy(plt.cm.plasma)\n",
-    "cmap.set_under('grey')\n",
-    "cmap.set_over('green')\n",
+    "cmap.set_under(\"grey\")\n",
+    "cmap.set_over(\"green\")\n",
     "plt.imshow(**kw, cmap=cmap);"
    ]
   },
@@ -2139,7 +2139,7 @@
     "kw2 = ps.visualization.prep_for_imshow(im=dt, mask=im, axis=2)\n",
     "\n",
     "cmap = copy(plt.cm.plasma)\n",
-    "cmap.set_under('grey')\n",
+    "cmap.set_under(\"grey\")\n",
     "fig, ax = plt.subplots(1, 2, figsize=[12, 6])\n",
     "ax[0].imshow(**kw1, cmap=cmap)\n",
     "ax[1].imshow(**kw2, cmap=cmap);"
@@ -2819,7 +2819,7 @@
     "kw2 = ps.visualization.prep_for_imshow(im=dt, mask=im, slice=20)\n",
     "\n",
     "cmap = copy(plt.cm.plasma)\n",
-    "cmap.set_under('grey')\n",
+    "cmap.set_under(\"grey\")\n",
     "fig, ax = plt.subplots(1, 2, figsize=[12, 6])\n",
     "ax[0].imshow(**kw1, cmap=cmap)\n",
     "ax[1].imshow(**kw2, cmap=cmap);"

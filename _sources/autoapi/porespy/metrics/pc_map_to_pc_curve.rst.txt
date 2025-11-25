@@ -23,13 +23,20 @@ porespy.metrics.pc_map_to_pc_curve
    :param mode: Indicates whether the invasion was a drainage or an imbibition process.
                 Options are 'drainage' and 'imbibition'.
    :type mode: str
-   :param fix_ends: A flag to control whether to adjust the endpoints of the curve or not.
-                    The default is `True`, which will put add a point at the beginning and end
-                    the curves corresponding to residual and trapped invading phase saturations.
-                    This makes the curves look better when plotted. Disabling this correction
-                    ensures that the (Pc, Snwp) data match the values in the displacement maps,
-                    which is useful for making animations for instance.
+   :param fix_ends: If `True` (default) this puts values at + and - infinity corresponding to
+                    maximum and minimum non-wetting phase saturations. This helps when plotting
+                    as it adds plateaus.
    :type fix_ends: bool (default is `True`)
+   :param pc_min: Minimum and maximum values to clip the capillary pressures. This is useful
+                  if the minimum or maximum capillary pressure values are -/+ infinity, which
+                  means they do not show up when plotting.  Using `pc_min=1` and `pc_max=1e6`
+                  for instance, will make plateaus render when plotting.
+   :type pc_min: float
+   :param pc_max: Minimum and maximum values to clip the capillary pressures. This is useful
+                  if the minimum or maximum capillary pressure values are -/+ infinity, which
+                  means they do not show up when plotting.  Using `pc_min=1` and `pc_max=1e6`
+                  for instance, will make plateaus render when plotting.
+   :type pc_max: float
 
    :returns: **results** -- A dataclass like object with the following attributes:
 

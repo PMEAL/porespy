@@ -421,34 +421,34 @@
                   
   <section id="installation">
 <span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h1>
-<p>The recommended way to install Python and desired packages (like porespy) is using <cite>uv &lt;https://docs.astral.sh/uv&gt;_</cite>. <cite>uv</cite> has rapidly become the most popular package manager for Python. You’ll be able to find lots of blog articles extolling the virtues of <cite>uv</cite>, but its main feature is speed.</p>
+<p>The recommended way to install Python and desired packages (like PoreSpy) is using <a class="reference external" href="https://docs.astral.sh/uv">uv</a>. <cite>uv</cite> has rapidly become the most popular package manager for Python. You’ll be able to find lots of blog articles extolling the virtues of <cite>uv</cite>, but its main feature is speed.</p>
 <ol class="arabic simple">
 <li><p>First you need to install <cite>uv</cite>. The official installation instructions are provided on the <a class="reference external" href="https://docs.astral.sh/uv/getting-started/installation">astral website</a>. This will install <cite>uv</cite> on your system so it will be available from the terminal or command line.</p></li>
-<li><p>Next you navigate to the folder where the project files and data will be or already stored, like scripts and tomograms.</p></li>
-<li><p>Then you create a virtual environment in that directory using <cite>uv venv</cite>. This adds a <cite>.venv</cite> folder, where <cite>uv</cite> will store all its information.</p></li>
+<li><p>Next you navigate to the folder where the project files and data will be or already are stored, like scripts and tomograms.</p></li>
+<li><p>Then you create a virtual environment in that directory using <cite>uv venv –python 3.12</cite>. This adds a <cite>.venv</cite> folder, where <cite>uv</cite> will store all its information. Note that PoreSpy only supports python version 3.10, 3.11 and 3.12.  This is largely because of dependencies which have firm version requirements.</p></li>
 <li><p>Finally, you run <cite>uv pip install porespy</cite>.  The first time you do this <cite>uv</cite> will download and compile a few things, which may take some time, but it will store all of this so subsequent usage will be much faster.</p></li>
 </ol>
 <p>When using <cite>uv</cite> we recommend <a class="reference external" href="https://code.visualstudio.com/">VSCode</a> as the IDE to write and edit scripts. VSCode will automatically find the <cite>venv</cite> inside the current folder, which is very handy. Spyder is a good IDE for scientific programming, but it does not (yet) have automatic support for finding <cite>venvs</cite> so is cumbersome to use when switching between projects.</p>
 </section>
 <section id="installing-the-dev-version">
 <h1>Installing the <cite>dev</cite> version<a class="headerlink" href="#installing-the-dev-version" title="Link to this heading">#</a></h1>
-<p>If you are a porespy contributor or want to get the newest updates as they roll in, you need to clone the porespy repository from Github and install it locally. It’s not as difficult as it sounds, just follow these steps:</p>
-<p>Open up the terminal/cmd and use <code class="docutils literal notranslate"><span class="pre">cd</span></code> to navigate to the directory where you want to store the <code class="docutils literal notranslate"><span class="pre">porespy</span></code> codebase. Clone the repo to your disk using:</p>
+<p>If you are a PoreSpy contributor or want to get the newest updates as they roll in, you need to clone the PoreSpy repository from Github and install it locally. It’s not as difficult as it sounds, just follow these steps:</p>
+<p>Open up the terminal/cmd and use <code class="docutils literal notranslate"><span class="pre">cd</span></code> to navigate to the directory where you want to store the PoreSpy code. Clone the repo to your disk using:</p>
 <blockquote>
 <div><p>$ git clone <a class="github reference external" href="https://github.com/PMEAL/porespy">PMEAL/porespy</a></p>
 </div></blockquote>
-<p>Since your terminal is currently in the porespy directory, you can now install <code class="docutils literal notranslate"><span class="pre">porespy</span></code> and all its dependencies with:</p>
+<p>Since your terminal is currently in the PoreSpy directory, you can now install PoreSpy and all its dependencies with:</p>
 <blockquote>
 <div><p>$ uv pip install -e .</p>
 </div></blockquote>
-<p>Voila! You can now use the latest features available on the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch. To keep your “local” <code class="docutils literal notranslate"><span class="pre">porespy</span></code> installation up to date, you should regularly pull the latest changes:</p>
+<p>Voila! You can now use the latest features available on the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch. To keep your “local” PoreSpy installation up to date, you should regularly pull the latest changes:</p>
 <blockquote>
 <div><p>$ git pull</p>
 </div></blockquote>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>For the development version of <code class="docutils literal notranslate"><span class="pre">porespy</span></code> to work, you need to first remove
-the <code class="docutils literal notranslate"><span class="pre">porespy</span></code> that you’ve previously installed using <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">pip</span> <span class="pre">uninstall</span> <span class="pre">porespy</span></code></p>
+<p>For the development version of PoreSpy to work, you need to first remove
+any versions that you may have previously installed using <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">pip</span> <span class="pre">uninstall</span> <span class="pre">porespy</span></code></p>
 </div>
 </section>
 

@@ -54,7 +54,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="porespy.filters.apply_chords" href="apply_chords.html" />
-    <link rel="prev" title="porespy.beta.walk" href="../beta/walk.html" />
+    <link rel="prev" title="porespy.beta.tortuosity_bt" href="../beta/tortuosity_bt.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -366,6 +366,8 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../beta/index.html">porespy.beta</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../beta/df_to_tortuosity.html">porespy.beta.df_to_tortuosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../beta/fibers_1D.html">porespy.beta.fibers_1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../beta/fibers_2D.html">porespy.beta.fibers_2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/flux.html">porespy.beta.flux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/get_block_sizes.html">porespy.beta.get_block_sizes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/local_diff.html">porespy.beta.local_diff</a></li>
@@ -373,7 +375,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../beta/rev_tortuosity.html">porespy.beta.rev_tortuosity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/tau_from_cmap.html">porespy.beta.tau_from_cmap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/tortuosity_bt.html">porespy.beta.tortuosity_bt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../beta/walk.html">porespy.beta.walk</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">porespy.filters</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -435,7 +436,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../generators/index.html">porespy.generators</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../generators/blobs.html">porespy.generators.blobs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/borders.html">porespy.generators.borders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../generators/bundle_of_tubes.html">porespy.generators.bundle_of_tubes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/conical_capillary.html">porespy.generators.conical_capillary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/cylinders.html">porespy.generators.cylinders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/cylindrical_pillars_array.html">porespy.generators.cylindrical_pillars_array</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/cylindrical_pillars_mesh.html">porespy.generators.cylindrical_pillars_mesh</a></li>
@@ -537,17 +538,16 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../simulations/index.html">porespy.simulations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage.html">porespy.simulations.drainage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dsi.html">porespy.simulations.drainage_dsi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_bf.html">porespy.simulations.drainage_bf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_conv.html">porespy.simulations.drainage_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt.html">porespy.simulations.drainage_dt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt_fft.html">porespy.simulations.drainage_dt_fft</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_fft.html">porespy.simulations.drainage_fft</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/hg_porosimetry.html">porespy.simulations.hg_porosimetry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt_conv.html">porespy.simulations.drainage_dt_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/ibip.html">porespy.simulations.ibip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition.html">porespy.simulations.imbibition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_dsi.html">porespy.simulations.imbibition_dsi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_bf.html">porespy.simulations.imbibition_bf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_conv.html">porespy.simulations.imbibition_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_dt.html">porespy.simulations.imbibition_dt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_dt_fft.html">porespy.simulations.imbibition_dt_fft</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_fft.html">porespy.simulations.imbibition_fft</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_dt_conv.html">porespy.simulations.imbibition_dt_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/injection.html">porespy.simulations.injection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/qbip.html">porespy.simulations.qbip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/tortuosity_fd.html">porespy.simulations.tortuosity_fd</a></li>
@@ -723,7 +723,7 @@ image, but with altered values.</p>
 <td><p>Uses the Washburn equation to convert distance transform values to a capillary</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="chunked_func.html#porespy.filters.chunked_func" title="porespy.filters.chunked_func"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chunked_func</span></code></a>(func[, parallel_kw, im_arg, strel_arg])</p></td>
-<td><p>Performs the specfied operation &quot;chunk-wise&quot; in parallel using <cite>dask</cite>.</p></td>
+<td><p>Performs the specified operation &quot;chunk-wise&quot; in parallel using <cite>dask</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="dilate.html#porespy.filters.dilate" title="porespy.filters.dilate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dilate</span></code></a>(im, r[, dt, method, smooth])</p></td>
 <td><p>Perform dilation with a round structuring element</p></td>
@@ -770,7 +770,7 @@ image, but with altered values.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="find_surface_pores.html#porespy.filters.find_surface_pores" title="porespy.filters.find_surface_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_surface_pores</span></code></a>(im[, axis, conn])</p></td>
 <td><p>Finds surface pores that do not span the domain</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="find_trapped_clusters.html#porespy.filters.find_trapped_clusters" title="porespy.filters.find_trapped_clusters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_trapped_clusters</span></code></a>(im, seq, outlets[, conn, method])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="find_trapped_clusters.html#porespy.filters.find_trapped_clusters" title="porespy.filters.find_trapped_clusters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_trapped_clusters</span></code></a>(im, seq, outlets[, min_size, ...])</p></td>
 <td><p>Find the trapped regions given an invasion sequence map and specified outlets</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="flood.html#porespy.filters.flood" title="porespy.filters.flood"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flood</span></code></a>(im, labels[, mode])</p></td>

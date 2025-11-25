@@ -43,7 +43,7 @@
     "np.random.seed(13)\n",
     "im = ps.generators.overlapping_spheres([100, 100], r=7, porosity=0.7)\n",
     "snow = ps.filters.snow_partitioning_n(im=im.astype(int) + 1)\n",
-    "ps.imshow(snow.regions, origin='lower', interpolation='none');"
+    "ps.imshow(snow.regions, origin=\"lower\", interpolation=\"none\");"
    ]
   },
   {
@@ -183,7 +183,7 @@
    ],
    "source": [
     "net = ps.networks.regions_to_network(regions=snow.regions, phases=snow.im)\n",
-    "net = ps.networks.label_phases(network=net, alias={1: 'void', 2: 'grain'})\n",
+    "net = ps.networks.label_phases(network=net, alias={1: \"void\", 2: \"grain\"})\n",
     "for item in net.keys():\n",
     "    print(item)"
    ]

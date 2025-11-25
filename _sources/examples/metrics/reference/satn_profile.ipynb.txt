@@ -10,7 +10,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 1,
+   "execution_count": 3,
    "metadata": {
     "execution": {
      "iopub.execute_input": "2022-04-25T01:55:01.295039Z",
@@ -38,7 +38,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": 4,
    "metadata": {
     "execution": {
      "iopub.execute_input": "2022-04-25T01:55:03.554036Z",
@@ -73,12 +73,12 @@
     "inv = ps.simulations.drainage(im=im, pc=pc, inlets=inlets)\n",
     "\n",
     "fig, ax = plt.subplots(1, 2, figsize=[8, 4])\n",
-    "ax[0].imshow(inv.im_snwp/im, interpolation='none', origin='lower')\n",
+    "ax[0].imshow(inv.im_snwp / im, interpolation=\"none\", origin=\"lower\")\n",
     "ax[0].axis(False)\n",
-    "ax[0].set_title('Saturation map')\n",
-    "ax[1].imshow((inv.im_snwp < 0.6)*(inv.im_snwp > 0)/im, interpolation='none', origin='lower')\n",
+    "ax[0].set_title(\"Saturation map\")\n",
+    "ax[1].imshow((inv.im_snwp < 0.6) * (inv.im_snwp > 0) / im, interpolation=\"none\", origin=\"lower\")\n",
     "ax[1].axis(False)\n",
-    "ax[1].set_title('Fluid distribution at saturation = 0.6');"
+    "ax[1].set_title(\"Fluid distribution at saturation = 0.6\");"
    ]
   },
   {
@@ -91,7 +91,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": 5,
    "metadata": {
     "execution": {
      "iopub.execute_input": "2022-04-25T01:55:04.440670Z",
@@ -121,7 +121,7 @@
     "s_prof = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6)\n",
     "\n",
     "fig, ax = plt.subplots(figsize=[4, 4])\n",
-    "ax.plot(s_prof.position, s_prof.saturation, 'b-o')\n",
+    "ax.plot(s_prof.position, s_prof.saturation, \"b-o\")\n",
     "ax.set_xlabel(\"distance from injection face\")\n",
     "ax.set_ylabel(\"non-wetting phase saturation\")\n",
     "ax.set_ylim([0, 1]);"
@@ -137,7 +137,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": 6,
    "metadata": {
     "execution": {
      "iopub.execute_input": "2022-04-25T01:55:04.547962Z",
@@ -168,15 +168,15 @@
     "s_prof1 = ps.metrics.satn_profile(satn=inv.im_snwp, s=s)\n",
     "\n",
     "fig, ax = plt.subplots(figsize=[4, 4])\n",
-    "ax.plot(s_prof1.position, s_prof1.saturation, 'b-o', label=s)\n",
+    "ax.plot(s_prof1.position, s_prof1.saturation, \"b-o\", label=s)\n",
     "\n",
     "s = 0.4\n",
     "s_prof2 = ps.metrics.satn_profile(satn=inv.im_snwp, s=s)\n",
-    "ax.plot(s_prof2.position, s_prof2.saturation, 'r-o', label=s)\n",
+    "ax.plot(s_prof2.position, s_prof2.saturation, \"r-o\", label=s)\n",
     "\n",
     "s = 0.1\n",
     "s_prof3 = ps.metrics.satn_profile(satn=inv.im_snwp, s=s)\n",
-    "ax.plot(s_prof3.position, s_prof3.saturation, 'g-o', label=s)\n",
+    "ax.plot(s_prof3.position, s_prof3.saturation, \"g-o\", label=s)\n",
     "\n",
     "ax.set_xlabel(\"distance from injection face\")\n",
     "ax.set_ylabel(\"non-wetting phase saturation\")\n",
@@ -193,7 +193,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": 7,
    "metadata": {
     "execution": {
      "iopub.execute_input": "2022-04-25T01:55:04.755648Z",
@@ -224,15 +224,15 @@
     "s_prof1 = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6, span=s)\n",
     "\n",
     "fig, ax = plt.subplots(figsize=[4, 4])\n",
-    "ax.plot(s_prof1.position, s_prof1.saturation, 'b-o', label=s)\n",
+    "ax.plot(s_prof1.position, s_prof1.saturation, \"b-o\", label=s)\n",
     "\n",
     "s = 10\n",
     "s_prof2 = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6, span=s)\n",
-    "ax.plot(s_prof2.position, s_prof2.saturation, 'r-o', label=s)\n",
+    "ax.plot(s_prof2.position, s_prof2.saturation, \"r-o\", label=s)\n",
     "\n",
     "s = 30\n",
     "s_prof3 = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6, span=s)\n",
-    "ax.plot(s_prof3.position, s_prof3.saturation, 'g-o', label=s)\n",
+    "ax.plot(s_prof3.position, s_prof3.saturation, \"g-o\", label=s)\n",
     "\n",
     "ax.set_xlabel(\"distance from injection face\")\n",
     "ax.set_ylabel(\"non-wetting phase saturation\")\n",
@@ -249,7 +249,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
+   "execution_count": 8,
    "metadata": {
     "execution": {
      "iopub.execute_input": "2022-04-25T01:55:04.866040Z",
@@ -276,13 +276,13 @@
     }
    ],
    "source": [
-    "s_prof1 = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6, mode='slide')\n",
+    "s_prof1 = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6, mode=\"slide\")\n",
     "\n",
     "fig, ax = plt.subplots(figsize=[4, 4])\n",
-    "ax.plot(s_prof1.position, s_prof1.saturation, 'b-o', label='slide')\n",
+    "ax.plot(s_prof1.position, s_prof1.saturation, \"b-o\", label=\"slide\")\n",
     "\n",
-    "s_prof2 = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6, mode='tile')\n",
-    "ax.plot(s_prof2.position, s_prof2.saturation, 'r-o', label='tile')\n",
+    "s_prof2 = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6, mode=\"tile\")\n",
+    "ax.plot(s_prof2.position, s_prof2.saturation, \"r-o\", label=\"tile\")\n",
     "\n",
     "ax.set_xlabel(\"distance from injection face\")\n",
     "ax.set_ylabel(\"non-wetting phase saturation\")\n",
@@ -299,7 +299,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 8,
+   "execution_count": 9,
    "metadata": {
     "execution": {
      "iopub.execute_input": "2022-04-25T01:55:04.978579Z",
@@ -329,10 +329,10 @@
     "s_prof1 = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6, axis=0)\n",
     "\n",
     "fig, ax = plt.subplots(figsize=[4, 4])\n",
-    "ax.plot(s_prof1.position, s_prof1.saturation, 'b-o', label='Axis:0')\n",
+    "ax.plot(s_prof1.position, s_prof1.saturation, \"b-o\", label=\"Axis:0\")\n",
     "\n",
     "s_prof2 = ps.metrics.satn_profile(satn=inv.im_snwp, s=0.6, axis=1)\n",
-    "ax.plot(s_prof2.position, s_prof2.saturation, 'r-o', label='Axis:1')\n",
+    "ax.plot(s_prof2.position, s_prof2.saturation, \"r-o\", label=\"Axis:1\")\n",
     "\n",
     "ax.set_xlabel(\"distance from injection face\")\n",
     "ax.set_ylabel(\"non-wetting phase saturation\")\n",

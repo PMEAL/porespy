@@ -1,14 +1,15 @@
 porespy.tools.parse_steps
 =========================
 
-.. py:function:: porespy.tools.parse_steps(steps, vals, mask=None, descending=True)
+.. py:function:: porespy.tools.parse_steps(steps, vals, mask=None, descending=True, log=False, pad=(0, 0))
 
-   Converts given steps into a list of sizes
+   Generates an array of step sizes to iterate through for the displacement
+   simulations
 
-   :param steps: If an `int` then `steps` is treated as the number of steps between 1 and the
-                 maximum in `vals`. If a `tuple` is received then this is used as the first
-                 and last values of an integer range. If a `list` or `ndarray` is received
-                 they are used directly. If `None` then all unique values in `vals` are used.
+   :param steps: If an `int` then `steps` is treated as the number of steps between minimum
+                 and maximum in `vals`. If a `tuple` is received then this is passed to
+                 `np.arange`. If `None` then all unique values in `vals` are used. If a
+                 `list` or `ndarray` is received they are used directly.
    :type steps: int, tuple, list or ndarray, or None
    :param vals: An array containing the values to be scanned, such as a distance or
                 capillary transform.
@@ -19,7 +20,16 @@ porespy.tools.parse_steps
    :type mask: ndarray
    :param descending: If `True` (default), then the returned list of sizes is in descending order
    :type descending: bool, optional
+   :param log: If `True` then the range of values generated is logarithmically spaced when
+               `steps` is an `int`.
+   :type log: bool, default is `False`
+   :param pad: This will extend the range of steps by the given number in each direction
+               using the spacing of the adjacent points. For example, `pad=(1, 1)` will
+               extend the range of the bins by 1 both up and down, so `[1, 2, 3]` will
+               become `[0, 1, 2, 3, 4]`. This is applied *after* putting the values into
+               ascending or descending order.
+   :type pad: tuple of ints
 
-   :returns: **bins** -- Array of values spanning the desired start and stop limits
+   :returns: **steps** -- Array of values spanning the desired start and stop limits
    :rtype: ndarray
 

@@ -310,11 +310,13 @@
    "source": [
     "fig, ax = plt.subplots(figsize=[5, 5])\n",
     "ax.imshow(im.T, cmap=plt.cm.bone)\n",
-    "op.visualization.plot_coordinates(ax=fig,\n",
-    "                                  network=pn,\n",
-    "                                  size_by=pn[\"pore.inscribed_diameter\"],\n",
-    "                                  color_by=pn[\"pore.inscribed_diameter\"],\n",
-    "                                  markersize=200)\n",
+    "op.visualization.plot_coordinates(\n",
+    "    ax=fig,\n",
+    "    network=pn,\n",
+    "    size_by=pn[\"pore.inscribed_diameter\"],\n",
+    "    color_by=pn[\"pore.inscribed_diameter\"],\n",
+    "    markersize=200,\n",
+    ")\n",
     "op.visualization.plot_connections(network=pn, ax=fig)\n",
     "ax.axis(\"off\");"
    ]

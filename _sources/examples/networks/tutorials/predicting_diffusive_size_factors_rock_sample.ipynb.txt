@@ -109,9 +109,9 @@
    "outputs": [],
    "source": [
     "path_AI = \"./sf-model-lib/diffusion\"\n",
-    "path_train = os.path.join(path_AI, 'g_train_original.hdf5')\n",
-    "path_weights = os.path.join(path_AI, 'model_weights.h5')\n",
-    "g_train = h5py.File(path_train, 'r')['g_train'][()]"
+    "path_train = os.path.join(path_AI, \"g_train_original.hdf5\")\n",
+    "path_weights = os.path.join(path_AI, \"model_weights.h5\")\n",
+    "g_train = h5py.File(path_train, \"r\")[\"g_train\"][()]"
    ]
   },
   {
@@ -138,7 +138,7 @@
    "outputs": [],
    "source": [
     "voxel_size = 2.25e-6\n",
-    "with open('../../../test/fixtures/image_Leopard_slice100.npy', 'rb') as f:\n",
+    "with open(\"../../../test/fixtures/image_Leopard_slice100.npy\", \"rb\") as f:\n",
     "    im = np.load(f)"
    ]
   },
@@ -295,7 +295,7 @@
     "snow = ps.networks.snow2(im, boundary_width=0, parallelization=None, voxel_size=voxel_size)\n",
     "regions = snow.regions\n",
     "net = snow.network\n",
-    "conns = net['throat.conns']"
+    "conns = net[\"throat.conns\"]"
    ]
   },
   {
@@ -364,11 +364,7 @@
    ],
    "source": [
     "predicted_ai = ps.networks.diffusive_size_factor_AI(\n",
-    "    regions,\n",
-    "    model=model,\n",
-    "    g_train=g_train,\n",
-    "    throat_conns=conns,\n",
-    "    voxel_size=voxel_size\n",
+    "    regions, model=model, g_train=g_train, throat_conns=conns, voxel_size=voxel_size\n",
     ")"
    ]
   },
@@ -410,11 +406,11 @@
    ],
    "source": [
     "startTime = time.time()\n",
-    "predicted_dns = ps.networks.diffusive_size_factor_DNS(regions,\n",
-    "                                                    throat_conns=conns,\n",
-    "                                                         voxel_size=voxel_size)\n",
-    "executionTime_dns = (time.time() - startTime)\n",
-    "print('Execution time in seconds: ' + str(executionTime_dns))"
+    "predicted_dns = ps.networks.diffusive_size_factor_DNS(\n",
+    "    regions, throat_conns=conns, voxel_size=voxel_size\n",
+    ")\n",
+    "executionTime_dns = time.time() - startTime\n",
+    "print(\"Execution time in seconds: \" + str(executionTime_dns))"
    ]
   },
   {
@@ -469,10 +465,10 @@
    "source": [
     "max_val = np.max([predicted_ai, predicted_dns])\n",
     "plt.figure(figsize=[8, 8])\n",
-    "plt.plot(predicted_ai, predicted_dns, '*', [0, max_val], [0, max_val], 'r')\n",
-    "plt.title(r'$R^2$ = ' + str(np.round(r2_score(predicted_dns, predicted_ai), 2)))\n",
-    "plt.xlabel('AI_based size factor values')\n",
-    "plt.ylabel('DNS_based size factor values')"
+    "plt.plot(predicted_ai, predicted_dns, \"*\", [0, max_val], [0, max_val], \"r\")\n",
+    "plt.title(r\"$R^2$ = \" + str(np.round(r2_score(predicted_dns, predicted_ai), 2)))\n",
+    "plt.xlabel(\"AI_based size factor values\")\n",
+    "plt.ylabel(\"DNS_based size factor values\")"
    ]
   }
  ],

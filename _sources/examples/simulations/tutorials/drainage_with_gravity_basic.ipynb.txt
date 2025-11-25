@@ -89,7 +89,7 @@
    "source": [
     "voxel_size = 1e-4  # m/voxel side, a large value is used illustrate the gravity effect\n",
     "dt = edt(im)  # Obtain the distance transform, using the terrific edt package\n",
-    "pc = -2*0.072*np.cos(np.deg2rad(180))/(dt*voxel_size)  # Apply Washburn equation"
+    "pc = -2 * 0.072 * np.cos(np.deg2rad(180)) / (dt * voxel_size)  # Apply Washburn equation"
    ]
   },
   {
@@ -134,8 +134,8 @@
     "drn = ps.simulations.drainage(pc=pc, im=im, inlets=inlets, steps=25)\n",
     "\n",
     "fig, ax = plt.subplots(1, 2, figsize=[7, 14])\n",
-    "ax[0].imshow(drn.im_pc/im, origin='lower', interpolation='none')\n",
-    "ax[1].imshow(np.log10(drn.im_pc), origin='lower', interpolation='none');"
+    "ax[0].imshow(drn.im_pc / im, origin=\"lower\", interpolation=\"none\")\n",
+    "ax[1].imshow(np.log10(drn.im_pc), origin=\"lower\", interpolation=\"none\");"
    ]
   },
   {
@@ -176,11 +176,11 @@
     "Pc, Snwp = ps.metrics.pc_map_to_pc_curve(\n",
     "    im=im,\n",
     "    pc=drn.im_pc,\n",
-    "    mode='drainage',\n",
+    "    mode=\"drainage\",\n",
     ")\n",
-    "plt.plot(Pc, Snwp, 'b-o')\n",
-    "plt.xlabel('Capillary Pressure [Pa]')\n",
-    "plt.ylabel('Non-wetting Phase Saturation');"
+    "plt.plot(Pc, Snwp, \"b-o\")\n",
+    "plt.xlabel(\"Capillary Pressure [Pa]\")\n",
+    "plt.ylabel(\"Non-wetting Phase Saturation\");"
    ]
   },
   {
@@ -225,8 +225,8 @@
     ")\n",
     "drn2 = ps.simulations.drainage(pc=pc, im=im, inlets=inlets, steps=25)\n",
     "fig, ax = plt.subplots(1, 2, figsize=[7, 14])\n",
-    "ax[0].imshow(drn2.im_pc/im, origin='lower', interpolation='none')\n",
-    "ax[1].imshow(np.log10(drn2.im_pc), origin='lower', interpolation='none');"
+    "ax[0].imshow(drn2.im_pc / im, origin=\"lower\", interpolation=\"none\")\n",
+    "ax[1].imshow(np.log10(drn2.im_pc), origin=\"lower\", interpolation=\"none\");"
    ]
   },
   {
@@ -263,11 +263,11 @@
     "Pc2, Snwp2 = ps.metrics.pc_map_to_pc_curve(\n",
     "    im=im,\n",
     "    pc=drn2.im_pc,\n",
-    "    mode='drainage',\n",
+    "    mode=\"drainage\",\n",
     ")\n",
-    "plt.plot(Pc2, Snwp2, 'r-o')\n",
-    "plt.xlabel('Capillary Pressure [Pa]')\n",
-    "plt.ylabel('Non-wetting Phase Saturation');"
+    "plt.plot(Pc2, Snwp2, \"r-o\")\n",
+    "plt.xlabel(\"Capillary Pressure [Pa]\")\n",
+    "plt.ylabel(\"Non-wetting Phase Saturation\");"
    ]
   },
   {
@@ -301,10 +301,10 @@
     }
    ],
    "source": [
-    "plt.plot(Pc, Snwp, 'b-o')\n",
-    "plt.plot(Pc2, Snwp2, 'r-o')\n",
-    "plt.xlabel('Capillary Pressure [Pa]')\n",
-    "plt.ylabel('Non-wetting Phase Saturation');"
+    "plt.plot(Pc, Snwp, \"b-o\")\n",
+    "plt.plot(Pc2, Snwp2, \"r-o\")\n",
+    "plt.xlabel(\"Capillary Pressure [Pa]\")\n",
+    "plt.ylabel(\"Non-wetting Phase Saturation\");"
    ]
   },
   {

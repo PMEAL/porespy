@@ -13,7 +13,7 @@
    "id": "92b13e95",
    "metadata": {},
    "source": [
-    "Visualizes a meshed region. This function works with taking in a meshed region and displaying the reiangular mesh using `Matplotlib` 3D visualization."
+    "Visualizes a meshed region. This function works with taking in a meshed region and displaying the triangular mesh using `Matplotlib` 3D visualization."
    ]
   },
   {
@@ -3121,7 +3121,7 @@
     "np.random.seed(10)\n",
     "im = ps.generators.blobs(shape=[50, 50, 50])\n",
     "snow = ps.filters.snow_partitioning(im)\n",
-    "regions = snow.regions/im\n",
+    "regions = snow.regions / im\n",
     "region = regions == 30\n",
     "mesh = ps.tools.mesh_region(region=region)\n",
     "fig = ps.visualization.show_mesh(mesh)"

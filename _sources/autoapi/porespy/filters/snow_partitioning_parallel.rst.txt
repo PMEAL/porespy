@@ -4,7 +4,7 @@ porespy.filters.snow_partitioning_parallel
 .. py:function:: porespy.filters.snow_partitioning_parallel(im, r_max=4, sigma=0.4, parallel_kw={})
 
    Performs SNOW algorithm in parallel (or serial) to reduce time
-   (or memory usage) by geomertirc domain decomposition of large images.
+   (or memory usage) by geometric domain decomposition of large images.
 
    :param im: A binary image of porous media with 'True' values indicating
               phase of interest.
@@ -22,7 +22,7 @@ porespy.filters.snow_partitioning_parallel
                        and 4 respectively.
 
                        `overlap` is the amount of overlap to include when dividing up the image.
-                       This value will almost always be the size (i.e. raduis) of the
+                       This value will almost always be the size (i.e. radius) of the
                        structuring element. If not specified then the amount of overlap
                        is inferred from the size of the structuring element, in which
                        case the `strel_arg` must be specified.
@@ -33,7 +33,7 @@ porespy.filters.snow_partitioning_parallel
                        effectively process the chunks in serial to minimize memory usage.
    :type parallel_kw: dict
 
-   :returns: **regions** -- Partitioned image of segmentated regions with unique labels. Each
+   :returns: **regions** -- Partitioned image of segmented regions with unique labels. Each
              region correspond to pore body while intersection with other
              region correspond throat area.
    :rtype: ndarray

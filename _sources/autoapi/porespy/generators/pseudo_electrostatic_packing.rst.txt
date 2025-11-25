@@ -3,7 +3,7 @@ porespy.generators.pseudo_electrostatic_packing
 
 .. py:function:: porespy.generators.pseudo_electrostatic_packing(shape: List = None, im: numpy.typing.ArrayLike = None, r: int = 5, sites=None, clearance: int = 0, protrusion: int = 0, edges: Literal['extended', 'contained'] = 'extended', phi: float = 1.0, maxiter: int = 1000, seed: int = None, smooth: bool = True, compactness: float = 1.0, value: int = 1)
 
-   Iterativley inserts spheres as close to the given sites as possible.
+   Iteratively inserts spheres as close to the given sites as possible.
 
    :param shape: The shape of the image to create.  This is equivalent to passing an array
                  of `False` values of the desired size to `im`.
@@ -54,7 +54,7 @@ porespy.generators.pseudo_electrostatic_packing
                 is ``None``, which means each call will produce a new realization.
    :type seed: int, optional, default = `None`
    :param compactness: Controls how tightly the spheres are grouped together. A value of 1.0
-                       (default) results in the tighest possible grouping while values < 1.0
+                       (default) results in the tightest possible grouping while values < 1.0
                        give more loosely or imperfectly packed spheres.
    :type compactness: float
    :param value: The value of insert for the spheres. The default is 1, which puts holes

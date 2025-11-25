@@ -26,8 +26,7 @@ Traceback (most recent call last):
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
 conns = ps.networks.find_conns(regions)
-size_factors = ps.networks.diffusive_size_factor_DNS(regions,
-                                                    throat_conns=conns)
+size_factors = ps.networks.diffusive_size_factor_DNS(regions, throat_conns=conns)
 ------------------
 
 
@@ -35,8 +34,7 @@ size_factors = ps.networks.diffusive_size_factor_DNS(regions,
 [31mModuleNotFoundError[39m                       Traceback (most recent call last)
 [36mCell[39m[36m [39m[32mIn[3][39m[32m, line 2[39m
 [32m      1[39m conns = ps.networks.find_conns(regions)
-[32m----> [39m[32m2[39m size_factors = [43mps[49m[43m.[49m[43mnetworks[49m[43m.[49m[43mdiffusive_size_factor_DNS[49m[43m([49m[43mregions[49m[43m,[49m
-[32m      3[39m [43m                                                    [49m[43mthroat_conns[49m[43m=[49m[43mconns[49m[43m)[49m
+[32m----> [39m[32m2[39m size_factors = [43mps[49m[43m.[49m[43mnetworks[49m[43m.[49m[43mdiffusive_size_factor_DNS[49m[43m([49m[43mregions[49m[43m,[49m[43m [49m[43mthroat_conns[49m[43m=[49m[43mconns[49m[43m)[49m
 
 [36mFile [39m[32m~/work/porespy/porespy/src/porespy/networks/_size_factors.py:127[39m, in [36mdiffusive_size_factor_DNS[39m[34m(regions, throat_conns, voxel_size)[39m
 [32m    125[39m     [38;5;66;03m# label two pore regions as 1,2[39;00m

@@ -28,7 +28,7 @@
     "import porespy as ps\n",
     "\n",
     "ws = op.Workspace()\n",
-    "ws.settings['loglevel'] = 50\n",
+    "ws.settings[\"loglevel\"] = 50\n",
     "np.random.seed(10)\n",
     "ps.visualization.set_mpl_style()"
    ]
@@ -184,10 +184,10 @@
    ],
    "source": [
     "fig, ax = plt.subplots()\n",
-    "op.visualization.plot_connections(pn, c='w', linewidth=2, ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, c='w', s=100, ax=ax)\n",
-    "plt.imshow(snow_output.regions.T, origin='lower')\n",
-    "plt.axis('off');"
+    "op.visualization.plot_connections(pn, c=\"w\", linewidth=2, ax=ax)\n",
+    "op.visualization.plot_coordinates(pn, c=\"w\", s=100, ax=ax)\n",
+    "plt.imshow(snow_output.regions.T, origin=\"lower\")\n",
+    "plt.axis(\"off\");"
    ]
   },
   {
@@ -210,7 +210,7 @@
    },
    "outputs": [],
    "source": [
-    "pn['pore.values'] = np.random.rand(pn.Np)"
+    "pn[\"pore.values\"] = np.random.rand(pn.Np)"
    ]
   },
   {
@@ -250,8 +250,8 @@
     }
    ],
    "source": [
-    "reg = ps.networks.map_to_regions(regions=snow_output.regions.T, values=pn['pore.values'])\n",
-    "plt.imshow(reg, origin='lower');"
+    "reg = ps.networks.map_to_regions(regions=snow_output.regions.T, values=pn[\"pore.values\"])\n",
+    "plt.imshow(reg, origin=\"lower\");"
    ]
   }
  ],

@@ -53,7 +53,7 @@
     <script src="../../../_static/js/custom.js?v=8f029c3b"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="porespy.simulations.drainage_dsi" href="drainage_dsi.html" />
+    <link rel="next" title="porespy.simulations.drainage_bf" href="drainage_bf.html" />
     <link rel="prev" title="porespy.simulations" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -366,6 +366,8 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../beta/index.html">porespy.beta</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../beta/df_to_tortuosity.html">porespy.beta.df_to_tortuosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../beta/fibers_1D.html">porespy.beta.fibers_1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../beta/fibers_2D.html">porespy.beta.fibers_2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/flux.html">porespy.beta.flux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/get_block_sizes.html">porespy.beta.get_block_sizes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/local_diff.html">porespy.beta.local_diff</a></li>
@@ -373,7 +375,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../beta/rev_tortuosity.html">porespy.beta.rev_tortuosity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/tau_from_cmap.html">porespy.beta.tau_from_cmap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/tortuosity_bt.html">porespy.beta.tortuosity_bt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../beta/walk.html">porespy.beta.walk</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../filters/index.html">porespy.filters</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -435,7 +436,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../generators/index.html">porespy.generators</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../generators/blobs.html">porespy.generators.blobs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/borders.html">porespy.generators.borders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../generators/bundle_of_tubes.html">porespy.generators.bundle_of_tubes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/conical_capillary.html">porespy.generators.conical_capillary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/cylinders.html">porespy.generators.cylinders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/cylindrical_pillars_array.html">porespy.generators.cylindrical_pillars_array</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/cylindrical_pillars_mesh.html">porespy.generators.cylindrical_pillars_mesh</a></li>
@@ -537,17 +538,16 @@
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">porespy.simulations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">porespy.simulations.drainage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="drainage_dsi.html">porespy.simulations.drainage_dsi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drainage_bf.html">porespy.simulations.drainage_bf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drainage_conv.html">porespy.simulations.drainage_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="drainage_dt.html">porespy.simulations.drainage_dt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="drainage_dt_fft.html">porespy.simulations.drainage_dt_fft</a></li>
-<li class="toctree-l2"><a class="reference internal" href="drainage_fft.html">porespy.simulations.drainage_fft</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hg_porosimetry.html">porespy.simulations.hg_porosimetry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drainage_dt_conv.html">porespy.simulations.drainage_dt_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ibip.html">porespy.simulations.ibip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imbibition.html">porespy.simulations.imbibition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="imbibition_dsi.html">porespy.simulations.imbibition_dsi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="imbibition_bf.html">porespy.simulations.imbibition_bf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="imbibition_conv.html">porespy.simulations.imbibition_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imbibition_dt.html">porespy.simulations.imbibition_dt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="imbibition_dt_fft.html">porespy.simulations.imbibition_dt_fft</a></li>
-<li class="toctree-l2"><a class="reference internal" href="imbibition_fft.html">porespy.simulations.imbibition_fft</a></li>
+<li class="toctree-l2"><a class="reference internal" href="imbibition_dt_conv.html">porespy.simulations.imbibition_dt_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="injection.html">porespy.simulations.injection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qbip.html">porespy.simulations.qbip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tortuosity_fd.html">porespy.simulations.tortuosity_fd</a></li>
@@ -705,9 +705,9 @@
 <h1>porespy.simulations.drainage<a class="headerlink" href="#porespy-simulations-drainage" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.simulations.drainage">
-<span class="sig-prename descclassname"><span class="pre">porespy.simulations.</span></span><span class="sig-name descname"><span class="pre">drainage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'min'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'max'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'min'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#porespy.simulations.drainage" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">porespy.simulations.</span></span><span class="sig-name descname"><span class="pre">drainage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'min'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'max'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'min'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#porespy.simulations.drainage" title="Link to this definition">#</a></dt>
 <dd><p>Simulate drainage using image-based sphere insertion, optionally including
-gravity <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>.</p>
+gravity <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -716,25 +716,20 @@ void space.</p></li>
 <li><p><strong>pc</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – Precomputed capillary pressure transform which is used to determine
 the invadability of each voxel. If not provided then it is calculated
 as <cite>2/dt</cite>.</p></li>
-<li><p><strong>dt</strong> (<em>ndarray</em><em> (</em><em>optional</em><em>)</em>) – The distance transform of <code class="docutils literal notranslate"><span class="pre">im</span></code>.  If not provided it will be
-calculated, so supplying it saves time.</p></li>
+<li><p><strong>dt</strong> (<em>ndarray</em><em> (</em><em>optional</em><em>)</em>) – The distance transform of <code class="docutils literal notranslate"><span class="pre">im</span></code>. If not provided it will be calculated,
+so supplying it saves time.</p></li>
 <li><p><strong>inlets</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – A boolean image the same shape as <code class="docutils literal notranslate"><span class="pre">im</span></code>, with <code class="docutils literal notranslate"><span class="pre">True</span></code> values
 indicating the inlet locations. If not specified then access limitations
-are not applied so the result is essentially a local thickness filter.</p></li>
+are not applied so invading phase can appear anywhere within the domain.</p></li>
 <li><p><strong>outlets</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – A boolean image with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating the outlet locations.
 If this is provided then trapped voxels of wetting phase are found and
-all the output images are adjusted accordingly. Note that trapping can
-be assessed as a postprocessing step as well, so if this is not provided
-trapping can still be considered.</p></li>
+all the output images are adjusted accordingly.</p></li>
 <li><p><strong>residual</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – A boolean array indicating the locations of any residual invading
 phase. This is added to the intermediate image prior to trimming
 disconnected clusters, so will create connections to some clusters
 that would otherwise be removed. The residual phase is indicated
 in the capillary pressure map by <code class="docutils literal notranslate"><span class="pre">-np.inf</span></code> values, since these voxels
-are invaded at all applied capillary pressures. Note that the presence of
-residual non-wetting phase makes it impossible to correctly deal with
-trapping, so if both <cite>residual</cite> and <cite>outlets</cite> are given then an error is
-raised.</p></li>
+are invaded at all applied capillary pressures.</p></li>
 <li><p><strong>steps</strong> (<em>int</em><em> or </em><em>array_like</em><em> (</em><em>default = 25</em><em>)</em>) – The range of pressures to apply. If an integer is given then the given
 number of steps will be created between the lowest and highest values in
 <code class="docutils literal notranslate"><span class="pre">pc</span></code>. If a list is given, each value in the list is used in ascending
@@ -778,31 +773,39 @@ but a value of 3 or 4 is recommended to activate this adjustment.</p></li>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>im_seq</p></td>
+<tr class="row-even"><td><p><cite>im_seq</cite></p></td>
 <td><p>An ndarray with each voxel indicating the step number at
-which it was first invaded by non-wetting phase</p></td>
+which it was first invaded by non-wetting phase. -1 indicates
+uninvaded, either due to the maximum pressure being too low,
+or trapping, while 0 indicates residual.</p></td>
 </tr>
-<tr class="row-odd"><td><p>im_snwp</p></td>
+<tr class="row-odd"><td><p><cite>im_pc</cite></p></td>
+<td><p>A numpy array with each voxel value indicating the capillary
+pressure at which it was invaded. <cite>inf</cite> indicates uninvaded,
+either due to the maximum pressure being too low, or due to
+trapping.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>im_snwp</cite></p></td>
 <td><p>A numpy array with each voxel value indicating the global
 value of the non-wetting phase saturation at the point it
-was invaded</p></td>
+was invaded. -1 indicates uninvaded, either due to the maximum
+pressure being too low, or trapping, while 0 indicates
+residual.</p></td>
 </tr>
-<tr class="row-even"><td><p>im_size</p></td>
+<tr class="row-odd"><td><p><cite>im_size</cite></p></td>
 <td><p>A numpy array with each voxel containing the radius of the
-sphere, in voxels, that first overlapped it.</p></td>
+sphere, in voxels, that first overlapped it. <cite>inf</cite> indicates
+uninvaded, either due to the maximum pressure being too low,
+or trapping, while 0 indicates residual.</p></td>
 </tr>
-<tr class="row-odd"><td><p>im_pc</p></td>
-<td><p>A numpy array with each voxel value indicating the
-capillary pressure at which it was invaded.</p></td>
+<tr class="row-even"><td><p><cite>im_trapped</cite></p></td>
+<td><p>A numpy array with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating trapped voxels.
+If <cite>outlets</cite> was not provided it will be all <cite>False</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p>im_trapped</p></td>
-<td><p>A numpy array with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating trapped voxels
-if <cite>outlets</cite> was provided, otherwise will be <cite>None</cite>.</p></td>
+<tr class="row-odd"><td><p><cite>pc</cite></p></td>
+<td><p>1D array of capillary pressure values that were applied.</p></td>
 </tr>
-<tr class="row-odd"><td><p>pc</p></td>
-<td><p>1D array of capillary pressure values that were applied</p></td>
-</tr>
-<tr class="row-even"><td><p>swnp</p></td>
+<tr class="row-even"><td><p><cite>swnp</cite></p></td>
 <td><p>1D array of non-wetting phase saturations for each applied
 value of capillary pressure (<code class="docutils literal notranslate"><span class="pre">pc</span></code>).</p></td>
 </tr>
@@ -815,19 +818,15 @@ value of capillary pressure (<code class="docutils literal notranslate"><span cl
 <dd class="field-odd"><p>Results object</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>This algorithm only provides sensible results for gravity stabilized
-configurations, meaning the more dense fluid is on the bottom. Be sure that
-<code class="docutils literal notranslate"><span class="pre">inlets</span></code> are specified accordingly.</p>
 <p class="rubric">References</p>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="id2" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">4</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>Chadwick EA, Hammen LH, Schulz VP, Bazylak A, Ioannidis MA, Gostick JT.
 Incorporating the effect of gravity into image-based drainage simulations on
 volumetric images of porous media.
-<a class="reference external" href="https://doi.org/10.1029/2021WR031509">Water Resources Research.</a>.
-58(3), e2021WR031509 (2022)</p>
+Water Resources Research. 58(3), e2021WR031509 (2022).
+doi: <a class="reference external" href="https://doi.org/10.1029/2021WR031509">10.1029/2021WR031509</a></p>
 </aside>
 </aside>
 <p class="rubric">Examples</p>
