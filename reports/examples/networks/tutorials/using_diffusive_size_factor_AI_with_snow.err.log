@@ -25,37 +25,18 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-import os
-import warnings
-
-import h5py
-import numpy as np
-import openpnm as op
-import scipy as sp
-from matplotlib import pyplot as plt
-from sklearn.metrics import r2_score
-
-import porespy as ps
-
-ps.visualization.set_mpl_style()
-warnings.filterwarnings("ignore")
-path = "./sf-model-lib/diffusion"
-path_train = os.path.join(path, "g_train_original.hdf5")
-path_weights = os.path.join(path, "model_weights.h5")
-g_train = h5py.File(path_train, "r")["g_train"][()]
-model = ps.networks.create_model()
-model.load_weights(path_weights)
+snow = ps.networks.snow2(im, boundary_width=0, parallelization=None)
+regions = snow.regions
+net = snow.network
 ------------------
 
 
 [31m---------------------------------------------------------------------------[39m
-[31mModuleNotFoundError[39m                       Traceback (most recent call last)
-[36mCell[39m[36m [39m[32mIn[3][39m[32m, line 6[39m
-[32m      4[39m [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mh5py[39;00m
-[32m      5[39m [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mnumpy[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[34;01mnp[39;00m
-[32m----> [39m[32m6[39m [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mopenpnm[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[34;01mop[39;00m
-[32m      7[39m [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mscipy[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[34;01msp[39;00m
-[32m      8[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mmatplotlib[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m pyplot [38;5;28;01mas[39;00m plt
+[31mTypeError[39m                                 Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[5][39m[32m, line 1[39m
+[32m----> [39m[32m1[39m snow = [43mps[49m[43m.[49m[43mnetworks[49m[43m.[49m[43msnow2[49m[43m([49m[43mim[49m[43m,[49m[43m [49m[43mboundary_width[49m[43m=[49m[32;43m0[39;49m[43m,[49m[43m [49m[43mparallelization[49m[43m=[49m[38;5;28;43;01mNone[39;49;00m[43m)[49m
+[32m      2[39m regions = snow.regions
+[32m      3[39m net = snow.network
 
-[31mModuleNotFoundError[39m: No module named 'openpnm'
+[31mTypeError[39m: snow2() got an unexpected keyword argument 'parallelization'
 

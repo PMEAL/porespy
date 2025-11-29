@@ -911,17 +911,17 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-11-25 22:01:26.677008: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
-2025-11-25 22:01:26.681467: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
-2025-11-25 22:01:26.697702: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:467] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-11-29 00:41:06.887906: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2025-11-29 00:41:06.891130: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2025-11-29 00:41:06.899675: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:467] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
 WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
-E0000 00:00:1764108086.724706   12917 cuda_dnn.cc:8579] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
-E0000 00:00:1764108086.732262   12917 cuda_blas.cc:1407] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
-W0000 00:00:1764108086.750643   12917 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
-W0000 00:00:1764108086.750682   12917 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
-W0000 00:00:1764108086.750685   12917 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
-W0000 00:00:1764108086.750687   12917 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
-2025-11-25 22:01:26.756033: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+E0000 00:00:1764376866.914085   21325 cuda_dnn.cc:8579] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+E0000 00:00:1764376866.918242   21325 cuda_blas.cc:1407] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+W0000 00:00:1764376866.929867   21325 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1764376866.929879   21325 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1764376866.929881   21325 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1764376866.929883   21325 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+2025-11-29 00:41:06.933815: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
 To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
 </pre></div>
 </div>
@@ -967,16 +967,10 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">6</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="ne">----&gt; </span><span class="mi">6</span> <span class="kn">import</span><span class="w"> </span><span class="nn">openpnm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span> <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;openpnm&#39;
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[00:41:09] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
+</pre>
+</div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-11-29 00:41:10.870471: E external/local_xla/xla/stream_executor/cuda/cuda_platform.cc:51] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: UNKNOWN ERROR (303)
 </pre></div>
 </div>
 </div>
@@ -997,8 +991,7 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/e46df43382af2d1a9e6f9b1253d87137d390111d28a10e32d8ea9d884f0ce2c0.png"><img alt="../../../_images/e46df43382af2d1a9e6f9b1253d87137d390111d28a10e32d8ea9d884f0ce2c0.png" src="../../../_images/e46df43382af2d1a9e6f9b1253d87137d390111d28a10e32d8ea9d884f0ce2c0.png" style="width: 383px; height: 383px;" />
-</a>
+<img alt="../../../_images/91ea9478ba2bfe0959fdc853b1be3340a32ab9665266a373e09ae16c7cbf3bb8.png" src="../../../_images/91ea9478ba2bfe0959fdc853b1be3340a32ab9665266a373e09ae16c7cbf3bb8.png" />
 </div>
 </div>
 </section>
@@ -1014,7 +1007,17 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "de8c4d327a7a4bb9babb88cde3d452d3", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "f4af1db9c2bb417ea4d56bdaf20cd4d2", "version_major": 2, "version_minor": 0}</script></div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">snow</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">snow2</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">boundary_width</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parallelization</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">regions</span> <span class="o">=</span> <span class="n">snow</span><span class="o">.</span><span class="n">regions</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">net</span> <span class="o">=</span> <span class="n">snow</span><span class="o">.</span><span class="n">network</span>
+
+<span class="ne">TypeError</span>: snow2() got an unexpected keyword argument &#39;parallelization&#39;
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="apply-diffusive-size-factor-ai">

@@ -955,24 +955,17 @@ $<span class="math notranslate nohighlight">\(\tau = \frac{D_{AB}}{D_{Eff}} \cdo
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">results</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">tortuosity_fd</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-
-<span class="nn">File ~/work/porespy/porespy/src/porespy/simulations/_dns.py:54,</span> in <span class="ni">tortuosity_fd</span><span class="nt">(im, axis, solver)</span>
-<span class="g g-Whitespace">     </span><span class="mi">16</span> <span class="k">def</span><span class="w"> </span><span class="nf">tortuosity_fd</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="g g-Whitespace">     </span><span class="mi">17</span><span class="w">     </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="g g-Whitespace">     </span><span class="mi">18</span><span class="sd">     Calculates the tortuosity of image in the specified direction.</span>
-<span class="g g-Whitespace">     </span><span class="mi">19</span><span class="sd"> </span>
-<span class="sd">   (...)     52 </span>
-<span class="g g-Whitespace">     </span><span class="mi">53</span><span class="sd">     &quot;&quot;&quot;</span>
-<span class="ne">---&gt; </span><span class="mi">54</span>     <span class="kn">import</span><span class="w"> </span><span class="nn">openpnm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
-<span class="g g-Whitespace">     </span><span class="mi">55</span>     <span class="n">ws</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">Workspace</span><span class="p">()</span>
-<span class="g g-Whitespace">     </span><span class="mi">57</span>     <span class="k">if</span> <span class="n">axis</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;openpnm&#39;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+Results of tortuosity_fd generated at Sat Nov 29 00:43:02 2025
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+im                        Array of size (200, 200)
+tortuosity                1.8776173160636371
+formation_factor          2.9043927701204795
+original_porosity         0.646575
+effective_porosity        0.646475
+im_conc                   Array of size (200, 200)
+time                      0.218789274
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
 </div>
@@ -1016,11 +1009,10 @@ $<span class="math notranslate nohighlight">\(\tau = \frac{D_{AB}}{D_{Eff}} \cdo
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2.9043927701204564
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2.9043927701204795
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="../../../_images/ff081a641c02daaa8609b232fe5cc62cdc8064be3297e8dd748b0ed97faee845.png"><img alt="../../../_images/ff081a641c02daaa8609b232fe5cc62cdc8064be3297e8dd748b0ed97faee845.png" src="../../../_images/ff081a641c02daaa8609b232fe5cc62cdc8064be3297e8dd748b0ed97faee845.png" style="width: 555px; height: 463px;" />
-</a>
+<img alt="../../../_images/da7c88420c72525c16927891e85793ce4b87d999971addc436bc86bb82216574.png" src="../../../_images/da7c88420c72525c16927891e85793ce4b87d999971addc436bc86bb82216574.png" />
 </div>
 </div>
 </section>

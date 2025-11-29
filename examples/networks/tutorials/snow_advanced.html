@@ -900,19 +900,10 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="ne">----&gt; </span><span class="mi">4</span> <span class="kn">import</span><span class="w"> </span><span class="nn">openpnm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spim</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="kn">from</span><span class="w"> </span><span class="nn">skimage.segmentation</span><span class="w"> </span><span class="kn">import</span> <span class="n">watershed</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;openpnm&#39;
-</pre></div>
-</div>
-</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[00:40:28] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
+</pre>
+</div></div>
 </div>
 <section id="generate-artificial-image">
 <h2>Generate artificial image<a class="headerlink" href="#generate-artificial-image" title="Link to this heading">#</a></h2>
@@ -926,8 +917,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/907e452ee9456be296ea3f776845de525ec1d0b5713552bc83385c96eac6b9a3.png"><img alt="../../../_images/907e452ee9456be296ea3f776845de525ec1d0b5713552bc83385c96eac6b9a3.png" src="../../../_images/907e452ee9456be296ea3f776845de525ec1d0b5713552bc83385c96eac6b9a3.png" style="width: 282px; height: 276px;" />
-</a>
+<img alt="../../../_images/bf90a079d13bef2aad233a6c10f2529e064514951d38049122a7db1b58f03c84.png" src="../../../_images/bf90a079d13bef2aad233a6c10f2529e064514951d38049122a7db1b58f03c84.png" />
 </div>
 </div>
 </section>
@@ -957,9 +947,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Initial number of peaks:  1539
-Peaks after trimming saddle points:  683
-Peaks after trimming nearby peaks:  519
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Initial number of peaks:  1167
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Peaks after trimming saddle points:  568
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Peaks after trimming nearby peaks:  410
 </pre></div>
 </div>
 </div>
@@ -982,8 +976,7 @@ Peaks after trimming nearby peaks:  519
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/45f081b8e94a64d80996a94504f02c8601124f82a7c75ac345fcc8c6069e5048.png"><img alt="../../../_images/45f081b8e94a64d80996a94504f02c8601124f82a7c75ac345fcc8c6069e5048.png" src="../../../_images/45f081b8e94a64d80996a94504f02c8601124f82a7c75ac345fcc8c6069e5048.png" style="width: 283px; height: 276px;" />
-</a>
+<img alt="../../../_images/16999308f0c0521f0a34ba217f08d049f2e470dd9e8b3a5b3754c9bef05dd04c.png" src="../../../_images/16999308f0c0521f0a34ba217f08d049f2e470dd9e8b3a5b3754c9bef05dd04c.png" />
 </div>
 </div>
 <p>Finally, this partitioned image can be passed to the network extraction function which analyzes the image and returns a Python <em>dict</em> containing the numerical properties of the network.</p>
@@ -1011,36 +1004,36 @@ Peaks after trimming nearby peaks:  519
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Network at 0x2763a509450&gt;
+net : &lt;openpnm.network.Network at 0x7ffa9ac91360&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  throat.conns                                                  2169 / 2169
-  3  pore.coords                                                     519 / 519
-  4  pore.region_label                                               519 / 519
-  5  pore.phase                                                      519 / 519
-  6  throat.phases                                                 2169 / 2169
-  7  pore.region_volume                                              519 / 519
-  8  pore.equivalent_diameter                                        519 / 519
-  9  pore.local_peak                                                 519 / 519
- 10  pore.global_peak                                                519 / 519
- 11  pore.geometric_centroid                                         519 / 519
- 12  throat.global_peak                                            2169 / 2169
- 13  pore.inscribed_diameter                                         519 / 519
- 14  pore.extended_diameter                                          519 / 519
- 15  throat.inscribed_diameter                                     2169 / 2169
- 16  throat.total_length                                           2169 / 2169
- 17  throat.direct_length                                          2169 / 2169
- 18  throat.perimeter                                              2169 / 2169
- 19  pore.volume                                                     519 / 519
- 20  pore.surface_area                                               519 / 519
- 21  throat.cross_sectional_area                                   2169 / 2169
- 22  throat.equivalent_diameter                                    2169 / 2169
+  2  throat.conns                                                  1653 / 1653
+  3  pore.coords                                                     410 / 410
+  4  pore.region_label                                               410 / 410
+  5  pore.phase                                                      410 / 410
+  6  throat.phases                                                 1653 / 1653
+  7  pore.region_volume                                              410 / 410
+  8  pore.equivalent_diameter                                        410 / 410
+  9  pore.local_peak                                                 410 / 410
+ 10  pore.global_peak                                                410 / 410
+ 11  pore.geometric_centroid                                         410 / 410
+ 12  throat.global_peak                                            1653 / 1653
+ 13  pore.inscribed_diameter                                         410 / 410
+ 14  pore.extended_diameter                                          410 / 410
+ 15  throat.inscribed_diameter                                     1653 / 1653
+ 16  throat.total_length                                           1653 / 1653
+ 17  throat.direct_length                                          1653 / 1653
+ 18  throat.perimeter                                              1653 / 1653
+ 19  pore.volume                                                     410 / 410
+ 20  pore.surface_area                                               410 / 410
+ 21  throat.cross_sectional_area                                   1653 / 1653
+ 22  throat.equivalent_diameter                                    1653 / 1653
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.all                                                              519
-  3  throat.all                                                           2169
+  2  pore.all                                                              410
+  3  throat.all                                                           1653
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
