@@ -16,9 +16,20 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 1,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Signature (regions, throat_conns, voxel_size=1)>"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "import inspect\n",
     "import warnings\n",
@@ -50,9 +61,20 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 2,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "image/png": "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",
+      "text/plain": [
+       "<Figure size 400x400 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
    "source": [
     "np.random.seed(10)\n",
     "shape = [40, 40, 40]\n",
@@ -89,9 +111,24 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 3,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "747076f837164f2e84a21deea626698a",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "diffusive_size_factor_DNS:   0%|          | 0/94 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
    "source": [
     "conns = ps.networks.find_conns(regions)\n",
     "size_factors = ps.networks.diffusive_size_factor_DNS(regions, throat_conns=conns)"
@@ -113,9 +150,24 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 4,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "01244dff4c8846e99b89a3026a5373b5",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "diffusive_size_factor_DNS:   0%|          | 0/94 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
    "source": [
     "voxel_size = 1e-6\n",
     "size_factors = ps.networks.diffusive_size_factor_DNS(\n",
@@ -126,7 +178,7 @@
  ],
  "metadata": {
   "kernelspec": {
-   "display_name": "Python 3",
+   "display_name": "porespy",
    "language": "python",
    "name": "python3"
   },
@@ -140,15 +192,10 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.8.3"
+   "version": "3.12.9"
   },
   "nbsphinx": {
    "execute": "auto"
-  },
-  "vscode": {
-   "interpreter": {
-    "hash": "b58bd5559424689280ce24ff6229e536533c877108d283a6d2846312dfd182d7"
-   }
   }
  },
  "nbformat": 4,

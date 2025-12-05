@@ -887,20 +887,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
-</pre></div>
-</div>
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:12:19] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
-</pre>
-</div></div>
 </div>
 <section id="using-blobs-of-different-blobiness">
 <h2>Using <code class="docutils literal notranslate"><span class="pre">blobs</span></code> of different <code class="docutils literal notranslate"><span class="pre">blobiness</span></code><a class="headerlink" href="#using-blobs-of-different-blobiness" title="Link to this heading">#</a></h2>
@@ -915,7 +901,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/f4f88931f92ae7ec3147bda63d44cf0d7d9e37163b699a827dc5f3731862719f.png" src="../../../_images/f4f88931f92ae7ec3147bda63d44cf0d7d9e37163b699a827dc5f3731862719f.png" />
+<img alt="../../../_images/67af46f4e8293ea9f6d72401b7c750e22bc36b921c226db45613bf94049dc5e9.png" src="../../../_images/67af46f4e8293ea9f6d72401b7c750e22bc36b921c226db45613bf94049dc5e9.png" />
 </div>
 </div>
 <p>Now we’ll can create a second image of <code class="docutils literal notranslate"><span class="pre">blobs</span></code>, but with a different scale.  These will represent the ‘sub-structure’:</p>
@@ -929,7 +915,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/866e77ba88a759c6448e5e5f803bbedcd32b651784ee51bb13b6227701dbb2e5.png" src="../../../_images/866e77ba88a759c6448e5e5f803bbedcd32b651784ee51bb13b6227701dbb2e5.png" />
+<img alt="../../../_images/976678f4d1281b20e4821f6f72eb3f296f9d6c5e529be3d595a90a1c17348424.png" src="../../../_images/976678f4d1281b20e4821f6f72eb3f296f9d6c5e529be3d595a90a1c17348424.png" />
 </div>
 </div>
 <p>Finally, we can multiply these two image (i.e. arrays) together, which will have the effect of perforating the foreground phase of <code class="docutils literal notranslate"><span class="pre">im1</span></code> with holes defined by the background phase of <code class="docutils literal notranslate"><span class="pre">im2</span></code>.  Note the inverting of the image to ensure the foreground and background are maintained:</p>
@@ -943,7 +929,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/c1b7299c6cd8ce387343e290127d2d21dfad84e85b5c14b228088a4027fb3c10.png" src="../../../_images/c1b7299c6cd8ce387343e290127d2d21dfad84e85b5c14b228088a4027fb3c10.png" />
+<img alt="../../../_images/29bc02a3c4e134a6ac3303c653b40d8c586981db935044831bff56c525215b37.png" src="../../../_images/29bc02a3c4e134a6ac3303c653b40d8c586981db935044831bff56c525215b37.png" />
 </div>
 </div>
 <p>The pore sizes can be analyzed using <code class="docutils literal notranslate"><span class="pre">local_thickess</span></code>, to confirm a bi-modal pore size distribution:</p>
@@ -962,7 +948,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/9f01fee787556786544f6012d723c287717447dfea107b42660203a91afcfdd9.png" src="../../../_images/9f01fee787556786544f6012d723c287717447dfea107b42660203a91afcfdd9.png" />
+<img alt="../../../_images/32564e363c99a9dc3ca729bd58051d06a0da1976f896db36a3649879b52e6a94.png" src="../../../_images/32564e363c99a9dc3ca729bd58051d06a0da1976f896db36a3649879b52e6a94.png" />
 </div>
 </div>
 </section>
@@ -980,7 +966,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/b89d7176f37fa53987e590ac8de81c78d6a658fab84e9b3b9288d94dad1cc012.png" src="../../../_images/b89d7176f37fa53987e590ac8de81c78d6a658fab84e9b3b9288d94dad1cc012.png" />
+<img alt="../../../_images/6c1e1f4875d5049f65708182140026b52b68be0f5f0c1dac25cb7d7238ca1c82.png" src="../../../_images/6c1e1f4875d5049f65708182140026b52b68be0f5f0c1dac25cb7d7238ca1c82.png" />
 </div>
 </div>
 </section>

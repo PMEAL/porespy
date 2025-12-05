@@ -889,20 +889,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
-</pre></div>
-</div>
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:13:37] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
-</pre>
-</div></div>
 </div>
 <p>Let’s generate a fake image and add some noise that is ‘easy’ to deal with:</p>
 <div class="cell docutils container">
@@ -916,7 +902,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f6fdad1d7c90f6effecf3d5219fd8366a50105d33848d8e0ff74859c288f9970.png" src="../../_images/f6fdad1d7c90f6effecf3d5219fd8366a50105d33848d8e0ff74859c288f9970.png" />
+<img alt="../../_images/4994fb4350aed62d4ca42af9854b39832329fae963ab54aef8e46da0d9c0eb6e.png" src="../../_images/4994fb4350aed62d4ca42af9854b39832329fae963ab54aef8e46da0d9c0eb6e.png" />
 </div>
 </div>
 <p>The above image now contains some noise in each phase, which is more realistic, though as we will see it not close to reality.  Let’s look at a histogram of this image:</p>
@@ -928,7 +914,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/750f8fdd630f2c94a9df8a22d6f00ad7da50d2c2053bc92a3fdddf609d056d83.png" src="../../_images/750f8fdd630f2c94a9df8a22d6f00ad7da50d2c2053bc92a3fdddf609d056d83.png" />
+<img alt="../../_images/fa64090d44209c9feb842cd626767915a99971f5bd331f3c7eb444dab7f5fa56.png" src="../../_images/fa64090d44209c9feb842cd626767915a99971f5bd331f3c7eb444dab7f5fa56.png" />
 </div>
 </div>
 <p>We can see above that all pixels with a value less than 0.5 belong to the dark phase, while the other pixels belong to the light phase.  A simple global threshold can reproduce the original image perfectly:</p>
@@ -940,7 +926,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/561aa51ccc954c341005b8fe2330121d7fbe1a3d89b57410894b03efaed454d7.png" src="../../_images/561aa51ccc954c341005b8fe2330121d7fbe1a3d89b57410894b03efaed454d7.png" />
+<img alt="../../_images/9d0cff5c5d1d0ebb463f0a3347bc1ffebd452720e3d9b0aa660d70c4e8b1bad2.png" src="../../_images/9d0cff5c5d1d0ebb463f0a3347bc1ffebd452720e3d9b0aa660d70c4e8b1bad2.png" />
 </div>
 </div>
 <p>Now let’s look at a more realistic noise distribution, though still artificially generated:</p>
@@ -955,7 +941,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5a38edf5f700ce6a27d46fed6a152c5f2296d1a49621cf1694283ea7f38f4cb4.png" src="../../_images/5a38edf5f700ce6a27d46fed6a152c5f2296d1a49621cf1694283ea7f38f4cb4.png" />
+<img alt="../../_images/935b8de4d64e83ae30990106a5716e0519a6dd5ce379dd9c90db33f76c498c0c.png" src="../../_images/935b8de4d64e83ae30990106a5716e0519a6dd5ce379dd9c90db33f76c498c0c.png" />
 </div>
 </div>
 <p>Now we can see that the noise is much less separated, and in fact the tails of the distributions just touch each other in the middle.  Let’s see how the simple threshold we used above would work now:</p>
@@ -967,7 +953,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e81a454c55b71938d2bae3e7e90418d7c4b0de2939a17539714465af55b5b8af.png" src="../../_images/e81a454c55b71938d2bae3e7e90418d7c4b0de2939a17539714465af55b5b8af.png" />
+<img alt="../../_images/c0fbca80f014204d5ca9321c787aea276155914836d7fb27063de09000dcacfc.png" src="../../_images/c0fbca80f014204d5ca9321c787aea276155914836d7fb27063de09000dcacfc.png" />
 </div>
 </div>
 <p>Now there are a few pixels in the dark phase which have been identified as bright and vice-versa. Let’s take this further but putting more extreme, but more realistic noise:</p>
@@ -983,7 +969,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/3bc638b86e404dee21720a67494d03c1976c49fb8759aaacd2ba7ccbcec09c51.png" src="../../_images/3bc638b86e404dee21720a67494d03c1976c49fb8759aaacd2ba7ccbcec09c51.png" />
+<img alt="../../_images/25398107885e1b87a3aef4c61732a528254085754544b6f26dd371d366cd10e2.png" src="../../_images/25398107885e1b87a3aef4c61732a528254085754544b6f26dd371d366cd10e2.png" />
 </div>
 </div>
 <p>In the above case our eyes can differentiate the light and dark phases pretty well, but the histogram is fully merged into one, and the global threshold produces a very problematic result. Just to show this is not an exageration, below is an actual slice of a tomogram taken of an electrospun flow-battery electrode:</p>
@@ -1006,13 +992,13 @@
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.12/site-packages/imageio/v2.py:522,</span> in <span class="ni">volread</span><span class="nt">(uri, format, **kwargs)</span>
+<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/imageio/v2.py:522,</span> in <span class="ni">volread</span><span class="nt">(uri, format, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">520</span> <span class="n">imopen_args</span> <span class="o">=</span> <span class="n">decypher_format_arg</span><span class="p">(</span><span class="nb">format</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">521</span> <span class="n">imopen_args</span><span class="p">[</span><span class="s2">&quot;legacy_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="ne">--&gt; </span><span class="mi">522</span> <span class="k">with</span> <span class="n">imopen</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="s2">&quot;rv&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">imopen_args</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">523</span>     <span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.12/site-packages/imageio/core/imopen.py:113,</span> in <span class="ni">imopen</span><span class="nt">(uri, io_mode, plugin, extension, format_hint, legacy_mode, **kwargs)</span>
+<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/imageio/core/imopen.py:113,</span> in <span class="ni">imopen</span><span class="nt">(uri, io_mode, plugin, extension, format_hint, legacy_mode, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">111</span>     <span class="n">request</span><span class="o">.</span><span class="n">format_hint</span> <span class="o">=</span> <span class="n">format_hint</span>
 <span class="g g-Whitespace">    </span><span class="mi">112</span> <span class="k">else</span><span class="p">:</span>
 <span class="ne">--&gt; </span><span class="mi">113</span>     <span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">io_mode</span><span class="p">,</span> <span class="n">format_hint</span><span class="o">=</span><span class="n">format_hint</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
@@ -1020,14 +1006,14 @@
 <span class="g g-Whitespace">    </span><span class="mi">117</span> <span class="c1"># fast-path based on plugin</span>
 <span class="g g-Whitespace">    </span><span class="mi">118</span> <span class="c1"># (except in legacy mode)</span>
 
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.12/site-packages/imageio/core/request.py:250,</span> in <span class="ni">Request.__init__</span><span class="nt">(self, uri, mode, extension, format_hint, **kwargs)</span>
+<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/imageio/core/request.py:250,</span> in <span class="ni">Request.__init__</span><span class="nt">(self, uri, mode, extension, format_hint, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">247</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Request.Mode: </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">249</span> <span class="c1"># Parse what was given</span>
 <span class="ne">--&gt; </span><span class="mi">250</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">252</span> <span class="c1"># Set extension</span>
 <span class="g g-Whitespace">    </span><span class="mi">253</span> <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.12/site-packages/imageio/core/request.py:410,</span> in <span class="ni">Request._parse_uri</span><span class="nt">(self, uri)</span>
+<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/imageio/core/request.py:410,</span> in <span class="ni">Request._parse_uri</span><span class="nt">(self, uri)</span>
 <span class="g g-Whitespace">    </span><span class="mi">407</span> <span class="k">if</span> <span class="n">is_read_request</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">408</span>     <span class="c1"># Reading: check that the file exists (but is allowed a dir)</span>
 <span class="g g-Whitespace">    </span><span class="mi">409</span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>

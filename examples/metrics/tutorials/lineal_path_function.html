@@ -888,20 +888,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
-</pre></div>
-</div>
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:13:05] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
-</pre>
-</div></div>
 </div>
 <p>First generate an anisotropic image using the <code class="docutils literal notranslate"><span class="pre">blobs</span></code> generator:</p>
 <div class="cell docutils container">
@@ -912,7 +898,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/ad09d82f7c47518e3224442201a3df0f47f89613f10334c71782b1e119cabacd.png" src="../../../_images/ad09d82f7c47518e3224442201a3df0f47f89613f10334c71782b1e119cabacd.png" />
+<img alt="../../../_images/5519846bf042ab3386de5e3f1b6786300631d7fb8858c24688e0237db5eb5751.png" src="../../../_images/5519846bf042ab3386de5e3f1b6786300631d7fb8858c24688e0237db5eb5751.png" />
 </div>
 </div>
 <p>Next apply the <code class="docutils literal notranslate"><span class="pre">distance_transform_lin</span></code> function along the 0 axis.</p>
@@ -924,7 +910,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/1aec5e218d8758f333378b611a4219422a544c8ae5a996430b314fbc56b35a2e.png" src="../../../_images/1aec5e218d8758f333378b611a4219422a544c8ae5a996430b314fbc56b35a2e.png" />
+<img alt="../../../_images/862da9fc945297d196bc0871bfa69c7d12e06ee3e5f1773784ba3339b410d564.png" src="../../../_images/862da9fc945297d196bc0871bfa69c7d12e06ee3e5f1773784ba3339b410d564.png" />
 </div>
 </div>
 <p>The greyscale values of the above image are worth a comment. They indicated the length of a path that can be drawn from each voxel to the nearest solid voxel, in the specified direction.  Or in terms of Torquato’s definition, each greyscale value represents a random starting point (A) and moving along this line until solid is encountered represents the end of the line (B), providing the path length A <span class="math notranslate nohighlight">\(\rightarrow\)</span> B.  The ‘counter associated with the distance between A and B is then incremented’, which corresponds to the binning the greyscale values in the above image. In other words, the above representation includes ALL possible starting points on each path, so provides the largest possible data set.</p>
@@ -947,7 +933,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/af930c610a873b28acbe93bb2b4b0346bf842a0d1ac849b926905a0245b1d251.png" src="../../../_images/af930c610a873b28acbe93bb2b4b0346bf842a0d1ac849b926905a0245b1d251.png" />
+<img alt="../../../_images/d43ed37aa83cbee249d398fd7d0face484ffe01b28bf4d4e120fda854e9f10ef.png" src="../../../_images/d43ed37aa83cbee249d398fd7d0face484ffe01b28bf4d4e120fda854e9f10ef.png" />
 </div>
 </div>
 <p>Since the image is anisotropic, the process will yeild a different result in the perpendicular direction, so repeating the above with <code class="docutils literal notranslate"><span class="pre">axis=1</span></code> instead of the default <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>.</p>
@@ -959,7 +945,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/f6109a12bbb1df146f10029270b2e30f65b7c506acdc7c4324470e3f59acb4ec.png" src="../../../_images/f6109a12bbb1df146f10029270b2e30f65b7c506acdc7c4324470e3f59acb4ec.png" />
+<img alt="../../../_images/0ada142e37029dab678687b25e7c464982761319552a0b559f2c1fb3c574e454.png" src="../../../_images/0ada142e37029dab678687b25e7c464982761319552a0b559f2c1fb3c574e454.png" />
 </div>
 </div>
 <p>Overlaying this result wit the previous one:</p>
@@ -972,7 +958,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/c3bd48e134e116fc782a7de05b2a4103ba182b1f8569edb30eaa9013c5de998a.png" src="../../../_images/c3bd48e134e116fc782a7de05b2a4103ba182b1f8569edb30eaa9013c5de998a.png" />
+<img alt="../../../_images/32f6cdbc707fd9adcd0cc2e6e34c7cdfd189f94cfee6a1a3474e9678ea11e7f5.png" src="../../../_images/32f6cdbc707fd9adcd0cc2e6e34c7cdfd189f94cfee6a1a3474e9678ea11e7f5.png" />
 </div>
 </div>
 <p>The anisotropy of the image is clearly visible with the first axis possessing longer lineal-path values.</p>

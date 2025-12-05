@@ -894,20 +894,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
-</pre></div>
-</div>
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:16:52] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
-</pre>
-</div></div>
 </div>
 <section id="im">
 <h2><code class="docutils literal notranslate"><span class="pre">im</span></code><a class="headerlink" href="#im" title="Link to this heading">#</a></h2>
@@ -1025,7 +1011,7 @@
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.12/site-packages/numba/core/serialize.py:30,</span> in <span class="ni">_numba_unpickle</span><span class="nt">(address, bytedata, hashed)</span>
+<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/numba/core/serialize.py:30,</span> in <span class="ni">_numba_unpickle</span><span class="nt">(address, bytedata, hashed)</span>
 <span class="g g-Whitespace">     </span><span class="mi">27</span> <span class="n">_unpickled_memo</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="ne">---&gt; </span><span class="mi">30</span> <span class="k">def</span><span class="w"> </span><span class="nf">_numba_unpickle</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">bytedata</span><span class="p">,</span> <span class="n">hashed</span><span class="p">):</span>
 <span class="g g-Whitespace">     </span><span class="mi">31</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Used by `numba_unpickle` from _helperlib.c</span>
@@ -1049,51 +1035,21 @@
 <span class="g g-Whitespace">      </span><span class="mi">8</span> <span class="p">)</span>
 <span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="n">plot_results</span><span class="p">(</span><span class="n">drn</span><span class="p">)</span>
 
-<span class="nn">File ~/work/porespy/porespy/src/porespy/simulations/_drainage.py:680,</span> in <span class="ni">drainage</span><span class="nt">(im, pc, dt, inlets, outlets, residual, steps, conn, min_size, smooth)</span>
-<span class="g g-Whitespace">    </span><span class="mi">678</span> <span class="c1"># Analyze trapping as a post-processing step if no residual</span>
-<span class="g g-Whitespace">    </span><span class="mi">679</span> <span class="k">if</span> <span class="p">(</span><span class="n">outlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">residual</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">680</span>     <span class="n">trapped</span> <span class="o">=</span> <span class="n">find_trapped_clusters</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">681</span>         <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">682</span>         <span class="n">seq</span><span class="o">=</span><span class="n">im_seq</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">683</span>         <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">684</span>         <span class="n">min_size</span><span class="o">=</span><span class="n">min_size</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">685</span>         <span class="n">method</span><span class="o">=</span><span class="s2">&quot;labels&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">100</span> <span class="k">else</span> <span class="s2">&quot;queue&quot;</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">686</span>         <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">687</span>     <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">688</span>     <span class="n">trapped</span><span class="p">[</span><span class="n">im_seq</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># TODO: This probably isn&#39;t necessary?</span>
-<span class="g g-Whitespace">    </span><span class="mi">689</span>     <span class="n">im_pc</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>  <span class="c1"># Trapped defender only displaced at Pc -&gt; inf</span>
+<span class="nn">File ~/work/porespy/porespy/src/porespy/simulations/_drainage.py:621,</span> in <span class="ni">drainage</span><span class="nt">(im, pc, dt, inlets, outlets, residual, steps, conn, min_size, smooth)</span>
+<span class="g g-Whitespace">    </span><span class="mi">619</span> <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>  <span class="c1"># Find (i, j, k) coordinates of edges</span>
+<span class="g g-Whitespace">    </span><span class="mi">620</span> <span class="n">radii</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">coords</span><span class="p">]</span>  <span class="c1"># Extract sphere sizes to insert at each new location</span>
+<span class="ne">--&gt; </span><span class="mi">621</span> <span class="n">nwp_mask</span> <span class="o">=</span> <span class="n">_insert_disks_at_points_parallel</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">622</span>     <span class="n">im</span><span class="o">=</span><span class="n">nwp_mask</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">623</span>     <span class="n">coords</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">coords</span><span class="p">),</span>
+<span class="g g-Whitespace">    </span><span class="mi">624</span>     <span class="n">radii</span><span class="o">=</span><span class="n">radii</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
+<span class="g g-Whitespace">    </span><span class="mi">625</span>     <span class="n">v</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">626</span>     <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">627</span>     <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">628</span> <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">629</span> <span class="n">nwp_mask</span><span class="p">[</span><span class="n">seeds</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Fill in center in case spheres did not reach</span>
+<span class="g g-Whitespace">    </span><span class="mi">630</span> <span class="c1"># Connect residual to invasion front</span>
 
-<span class="nn">File ~/work/porespy/porespy/src/porespy/filters/_displacement.py:278,</span> in <span class="ni">find_trapped_clusters</span><span class="nt">(im, seq, outlets, min_size, conn, method)</span>
-<span class="g g-Whitespace">    </span><span class="mi">276</span> <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;queue&quot;</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">277</span>     <span class="n">seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>  <span class="c1"># Need a copy since the queue method updates &#39;in-place&#39;</span>
-<span class="ne">--&gt; </span><span class="mi">278</span>     <span class="n">seq_temp</span> <span class="o">=</span> <span class="n">_find_trapped_clusters_queue</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">279</span>         <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">280</span>         <span class="n">seq</span><span class="o">=</span><span class="n">seq</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">281</span>         <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">282</span>         <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">283</span>     <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">284</span> <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;labels&quot;</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">285</span>     <span class="n">seq_temp</span> <span class="o">=</span> <span class="n">_find_trapped_clusters_labels</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">286</span>         <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">287</span>         <span class="n">seq</span><span class="o">=</span><span class="n">seq</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">288</span>         <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">289</span>         <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">290</span>     <span class="p">)</span>
-
-<span class="nn">File ~/work/porespy/porespy/src/porespy/filters/_displacement.py:368,</span> in <span class="ni">_find_trapped_clusters_queue</span><span class="nt">(im, seq, outlets, conn)</span>
-<span class="g g-Whitespace">    </span><span class="mi">366</span> <span class="n">edge</span> <span class="o">=</span> <span class="n">out_temp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_3d</span><span class="p">(</span><span class="n">im</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_3d</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">367</span> <span class="c1"># seq = np.copy(np.atleast_3d(seq))</span>
-<span class="ne">--&gt; </span><span class="mi">368</span> <span class="n">trapped</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="n">_trapped_regions_inner_loop</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">369</span>     <span class="n">seq</span><span class="o">=</span><span class="n">seq_temp</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">370</span>     <span class="n">edge</span><span class="o">=</span><span class="n">edge</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">371</span>     <span class="n">trapped</span><span class="o">=</span><span class="n">im_trapped</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">372</span>     <span class="n">outlets</span><span class="o">=</span><span class="n">out_temp</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">373</span>     <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">374</span> <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">375</span> <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exited after </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2"> steps&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">376</span> <span class="c1"># Finalize images</span>
-
-<span class="ne">SystemError</span>: CPUDispatcher(&lt;function _trapped_regions_inner_loop at 0x7f719d9c5d00&gt;) returned a result with an exception set
+<span class="ne">SystemError</span>: CPUDispatcher(&lt;function _insert_disks_at_points_parallel at 0x7fc180ad7d80&gt;) returned a result with an exception set
 </pre></div>
 </div>
 </div>

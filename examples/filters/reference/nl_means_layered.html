@@ -890,20 +890,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
-</pre></div>
-</div>
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:17:57] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
-</pre>
-</div></div>
 </div>
 <section id="im">
 <h2><code class="docutils literal notranslate"><span class="pre">im</span></code><a class="headerlink" href="#im" title="Link to this heading">#</a></h2>
@@ -921,7 +907,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/4bb3140544f1299d2d9f0acbe36cf24c8f129118a83574a70edc3b9dc8b35fc1.png" src="../../../_images/4bb3140544f1299d2d9f0acbe36cf24c8f129118a83574a70edc3b9dc8b35fc1.png" />
+<img alt="../../../_images/8a037b1e96e4dd7fbb9a85e502a45dfb38674dffa22018d929db89a32ae9c6d7.png" src="../../../_images/8a037b1e96e4dd7fbb9a85e502a45dfb38674dffa22018d929db89a32ae9c6d7.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -937,7 +923,47 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/a52d46b207f6437c92b1001bfda8f8eaee2da839226b9bd3918dda6908ff7851.png" src="../../../_images/a52d46b207f6437c92b1001bfda8f8eaee2da839226b9bd3918dda6908ff7851.png" />
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/skimage/restoration/_denoise.py:1102,</span> in <span class="ni">estimate_sigma</span><span class="nt">(image, average_sigmas, channel_axis)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1101</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1102</span>     <span class="kn">import</span><span class="w"> </span><span class="nn">pywt</span>
+<span class="g g-Whitespace">   </span><span class="mi">1103</span> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;pywt&#39;
+
+<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
+
+<span class="ne">ImportError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">filtered_im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">filtered_im</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
+
+<span class="nn">File ~/work/porespy/porespy/src/porespy/filters/_nlmeans.py:75,</span> in <span class="ni">nl_means_layered</span><span class="nt">(im, cores, axis, patch_size, patch_distance, h)</span>
+<span class="g g-Whitespace">     </span><span class="mi">73</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">rescale_intensity</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">in_range</span><span class="o">=</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">p98</span><span class="p">))</span>
+<span class="g g-Whitespace">     </span><span class="mi">74</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">/</span> <span class="n">temp</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="ne">---&gt; </span><span class="mi">75</span> <span class="n">sigma_est</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">estimate_sigma</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">]))</span>
+<span class="g g-Whitespace">     </span><span class="mi">77</span> <span class="n">kw</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="n">temp</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">78</span>       <span class="s1">&#39;patch_size&#39;</span><span class="p">:</span> <span class="n">patch_size</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">79</span>       <span class="s1">&#39;patch_distance&#39;</span><span class="p">:</span> <span class="n">patch_distance</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">80</span>       <span class="s1">&#39;h&#39;</span><span class="p">:</span> <span class="n">h</span> <span class="o">*</span> <span class="n">sigma_est</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">81</span>       <span class="s1">&#39;fast_mode&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+<span class="g g-Whitespace">     </span><span class="mi">83</span> <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/skimage/restoration/_denoise.py:1104,</span> in <span class="ni">estimate_sigma</span><span class="nt">(image, average_sigmas, channel_axis)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1102</span>     <span class="kn">import</span><span class="w"> </span><span class="nn">pywt</span>
+<span class="g g-Whitespace">   </span><span class="mi">1103</span> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1104</span>     <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1105</span>         <span class="s1">&#39;PyWavelets is not installed. Please ensure it is installed in &#39;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1106</span>         <span class="s1">&#39;order to use this function.&#39;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1107</span>     <span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1109</span> <span class="k">if</span> <span class="n">channel_axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1110</span>     <span class="n">channel_axis</span> <span class="o">=</span> <span class="n">channel_axis</span> <span class="o">%</span> <span class="n">image</span><span class="o">.</span><span class="n">ndim</span>
+
+<span class="ne">ImportError</span>: PyWavelets is not installed. Please ensure it is installed in order to use this function.
+</pre></div>
+</div>
 </div>
 </div>
 </section>
@@ -954,7 +980,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/0c34d1fbdd7920892c3594af34c7b2f6e8db587e43cc4e4b638db5b95d3a304a.png" src="../../../_images/0c34d1fbdd7920892c3594af34c7b2f6e8db587e43cc4e4b638db5b95d3a304a.png" />
+<a class="reference internal image-reference" href="../../../_images/e09062b2d0475cee6020f9492c8df55a5e8b47086621a30c0405e2046ab5d61c.png"><img alt="../../../_images/e09062b2d0475cee6020f9492c8df55a5e8b47086621a30c0405e2046ab5d61c.png" src="../../../_images/e09062b2d0475cee6020f9492c8df55a5e8b47086621a30c0405e2046ab5d61c.png" style="width: 583px; height: 583px;" />
+</a>
 </div>
 </div>
 </section>
@@ -979,7 +1006,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/fe32900b2d19f86451fee368bb393c2d812715a40d6740569243daf3ffbc1abc.png" src="../../../_images/fe32900b2d19f86451fee368bb393c2d812715a40d6740569243daf3ffbc1abc.png" />
+<a class="reference internal image-reference" href="../../../_images/123966366662eb41af5f4eae1fc7d79683e5ec2d230563068edbdd9249af4bdd.png"><img alt="../../../_images/123966366662eb41af5f4eae1fc7d79683e5ec2d230563068edbdd9249af4bdd.png" src="../../../_images/123966366662eb41af5f4eae1fc7d79683e5ec2d230563068edbdd9249af4bdd.png" style="width: 1484px; height: 372px;" />
+</a>
 </div>
 </div>
 </section>
@@ -1004,7 +1032,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d1d6ef4296da5a01f5d7e46752bc67023cd25ba3ecb7aa018317534e742c960b.png" src="../../../_images/d1d6ef4296da5a01f5d7e46752bc67023cd25ba3ecb7aa018317534e742c960b.png" />
+<a class="reference internal image-reference" href="../../../_images/f4f184ad0c3ac1b3f71133821474cf17b1f29fecc5937bdd6906f795d635bd2c.png"><img alt="../../../_images/f4f184ad0c3ac1b3f71133821474cf17b1f29fecc5937bdd6906f795d635bd2c.png" src="../../../_images/f4f184ad0c3ac1b3f71133821474cf17b1f29fecc5937bdd6906f795d635bd2c.png" style="width: 1484px; height: 372px;" />
+</a>
 </div>
 </div>
 </section>
@@ -1029,7 +1058,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/b9e485bdf226a016cad521c60b0111d8dce15f3d271a7bbb11d366a2ec2ff90a.png" src="../../../_images/b9e485bdf226a016cad521c60b0111d8dce15f3d271a7bbb11d366a2ec2ff90a.png" />
+<a class="reference internal image-reference" href="../../../_images/3865d3c09eab58fd0b1301a1353db30ad73c8f91142fa9711f318aedd237d0ff.png"><img alt="../../../_images/3865d3c09eab58fd0b1301a1353db30ad73c8f91142fa9711f318aedd237d0ff.png" src="../../../_images/3865d3c09eab58fd0b1301a1353db30ad73c8f91142fa9711f318aedd237d0ff.png" style="width: 1484px; height: 372px;" />
+</a>
 </div>
 </div>
 </section>
@@ -1055,7 +1085,8 @@ smoother image, at the expense of blurring features. For a Gaussian noise of sta
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/7be2e545ed1a3dbeba88f039e6f7743f736b6ba88afb808d62ab2b991f005915.png" src="../../../_images/7be2e545ed1a3dbeba88f039e6f7743f736b6ba88afb808d62ab2b991f005915.png" />
+<a class="reference internal image-reference" href="../../../_images/b5e0ff2ee6c0f2b4ff0638bee038366c622fea6950cdf4506ef5c9c44b2fd9e9.png"><img alt="../../../_images/b5e0ff2ee6c0f2b4ff0638bee038366c622fea6950cdf4506ef5c9c44b2fd9e9.png" src="../../../_images/b5e0ff2ee6c0f2b4ff0638bee038366c622fea6950cdf4506ef5c9c44b2fd9e9.png" style="width: 1484px; height: 372px;" />
+</a>
 </div>
 </div>
 </section>

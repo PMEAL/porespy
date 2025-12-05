@@ -1,0 +1,71 @@
+Traceback (most recent call last):
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.13/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+    ~~~~~~~~~^
+        nb,
+        ^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.13/site-packages/nbclient/client.py", line 1319, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.13/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/runner/work/_temp/uv-python-dir/cpython-3.13.10-linux-x86_64-gnu/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.13/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+        cell, index, execution_count=self.code_cells_executed + 1
+    )
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.13/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.13/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+np.random.seed(10)
+im = ps.generators.blobs(shape=[50, 50])
+snow = ps.filters.snow_partitioning(im)
+regions = snow.regions
+region = regions == 10
+volume = ps.metrics.mesh_volume(region)
+print("volume is=", volume)
+fig, ax = plt.subplots(1, 1, figsize=[6, 6])
+ax.imshow(region, origin="lower", interpolation="none")
+ax.axis(False);
+------------------
+
+
+[31m---------------------------------------------------------------------------[39m
+[31mModuleNotFoundError[39m                       Traceback (most recent call last)
+[36mFile [39m[32m~/work/porespy/porespy/src/porespy/metrics/_meshtools.py:105[39m, in [36mmesh_volume[39m[34m(region, voxel_size)[39m
+[32m    104[39m [38;5;28;01mtry[39;00m:
+[32m--> [39m[32m105[39m     [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mtrimesh[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m Trimesh
+[32m    106[39m [38;5;28;01mexcept[39;00m [38;5;167;01mModuleNotFoundError[39;00m:
+
+[31mModuleNotFoundError[39m: No module named 'trimesh'
+
+During handling of the above exception, another exception occurred:
+
+[31mModuleNotFoundError[39m                       Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[2][39m[32m, line 6[39m
+[32m      4[39m regions = snow.regions
+[32m      5[39m region = regions == [32m10[39m
+[32m----> [39m[32m6[39m volume = [43mps[49m[43m.[49m[43mmetrics[49m[43m.[49m[43mmesh_volume[49m[43m([49m[43mregion[49m[43m)[49m
+[32m      7[39m [38;5;28mprint[39m([33m"[39m[33mvolume is=[39m[33m"[39m, volume)
+[32m      8[39m fig, ax = plt.subplots([32m1[39m, [32m1[39m, figsize=[[32m6[39m, [32m6[39m])
+
+[36mFile [39m[32m~/work/porespy/porespy/src/porespy/metrics/_meshtools.py:108[39m, in [36mmesh_volume[39m[34m(region, voxel_size)[39m
+[32m    106[39m [38;5;28;01mexcept[39;00m [38;5;167;01mModuleNotFoundError[39;00m:
+[32m    107[39m     msg = [33m'[39m[33mThe trimesh package can be installed with pip install trimesh[39m[33m'[39m
+[32m--> [39m[32m108[39m     [38;5;28;01mraise[39;00m [38;5;167;01mModuleNotFoundError[39;00m(msg)
+[32m    110[39m mc = mesh_region(region > [32m0[39m, voxel_size=voxel_size)
+[32m    111[39m m = Trimesh(vertices=mc.verts, faces=mc.faces, vertex_normals=mc.norm)
+
+[31mModuleNotFoundError[39m: The trimesh package can be installed with pip install trimesh
+

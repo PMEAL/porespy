@@ -1,0 +1,80 @@
+Traceback (most recent call last):
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.13/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+    ~~~~~~~~~^
+        nb,
+        ^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.13/site-packages/nbclient/client.py", line 1319, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.13/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/runner/work/_temp/uv-python-dir/cpython-3.13.10-linux-x86_64-gnu/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.13/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+        cell, index, execution_count=self.code_cells_executed + 1
+    )
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.13/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.13/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+filtered_im = ps.filters.nl_means_layered(im2, axis=2)
+fig, ax = plt.subplots(1, 3, figsize=[15, 5])
+ax[0].imshow(filtered_im[..., 15])
+ax[0].axis(False)
+ax[1].hist(filtered_im.flatten(), bins=25, edgecolor="k")
+ax[2].imshow(filtered_im[..., 15] > 0.6)
+ax[2].axis(False);
+------------------
+
+
+[31m---------------------------------------------------------------------------[39m
+[31mModuleNotFoundError[39m                       Traceback (most recent call last)
+[36mFile [39m[32m~/work/porespy/porespy/.venv/lib/python3.13/site-packages/skimage/restoration/_denoise.py:1102[39m, in [36mestimate_sigma[39m[34m(image, average_sigmas, channel_axis)[39m
+[32m   1101[39m [38;5;28;01mtry[39;00m:
+[32m-> [39m[32m1102[39m     [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mpywt[39;00m
+[32m   1103[39m [38;5;28;01mexcept[39;00m [38;5;167;01mImportError[39;00m:
+
+[31mModuleNotFoundError[39m: No module named 'pywt'
+
+During handling of the above exception, another exception occurred:
+
+[31mImportError[39m                               Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[3][39m[32m, line 1[39m
+[32m----> [39m[32m1[39m filtered_im = [43mps[49m[43m.[49m[43mfilters[49m[43m.[49m[43mnl_means_layered[49m[43m([49m[43mim2[49m[43m,[49m[43m [49m[43maxis[49m[43m=[49m[32;43m2[39;49m[43m)[49m
+[32m      2[39m fig, ax = plt.subplots([32m1[39m, [32m3[39m, figsize=[[32m15[39m, [32m5[39m])
+[32m      3[39m ax[[32m0[39m].imshow(filtered_im[..., [32m15[39m])
+
+[36mFile [39m[32m~/work/porespy/porespy/src/porespy/filters/_nlmeans.py:75[39m, in [36mnl_means_layered[39m[34m(im, cores, axis, patch_size, patch_distance, h)[39m
+[32m     73[39m temp = rescale_intensity(temp, in_range=(p2, p98))
+[32m     74[39m temp = temp / temp.max()
+[32m---> [39m[32m75[39m sigma_est = np.mean([43mestimate_sigma[49m[43m([49m[43mtemp[49m[43m[[49m[32;43m0[39;49m[43m,[49m[43m [49m[43m.[49m[43m.[49m[43m.[49m[43m][49m[43m)[49m)
+[32m     77[39m kw = {[33m'[39m[33mimage[39m[33m'[39m: temp,
+[32m     78[39m       [33m'[39m[33mpatch_size[39m[33m'[39m: patch_size,
+[32m     79[39m       [33m'[39m[33mpatch_distance[39m[33m'[39m: patch_distance,
+[32m     80[39m       [33m'[39m[33mh[39m[33m'[39m: h * sigma_est,
+[32m     81[39m       [33m'[39m[33mfast_mode[39m[33m'[39m: [38;5;28;01mTrue[39;00m}
+[32m     83[39m results = []
+
+[36mFile [39m[32m~/work/porespy/porespy/.venv/lib/python3.13/site-packages/skimage/restoration/_denoise.py:1104[39m, in [36mestimate_sigma[39m[34m(image, average_sigmas, channel_axis)[39m
+[32m   1102[39m     [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mpywt[39;00m
+[32m   1103[39m [38;5;28;01mexcept[39;00m [38;5;167;01mImportError[39;00m:
+[32m-> [39m[32m1104[39m     [38;5;28;01mraise[39;00m [38;5;167;01mImportError[39;00m(
+[32m   1105[39m         [33m'[39m[33mPyWavelets is not installed. Please ensure it is installed in [39m[33m'[39m
+[32m   1106[39m         [33m'[39m[33morder to use this function.[39m[33m'[39m
+[32m   1107[39m     )
+[32m   1109[39m [38;5;28;01mif[39;00m channel_axis [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
+[32m   1110[39m     channel_axis = channel_axis % image.ndim
+
+[31mImportError[39m: PyWavelets is not installed. Please ensure it is installed in order to use this function.
+

@@ -888,20 +888,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
-</pre></div>
-</div>
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:15:03] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
-</pre>
-</div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -922,112 +908,110 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    Analyzes an image that has been partitioned into pore regions and extracts
-    the pore and throat geometry as well as network connectivity.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Analyzes an image that has been partitioned into pore regions and extracts
+the pore and throat geometry as well as network connectivity.
 
-    Parameters
-    ----------
-    regions : ndarray
-        An image of the material partitioned into individual regions.
-        Zeros in this image are ignored.
-    phases : ndarray, optional
-        An image indicating to which phase each voxel belongs. The returned
-        network contains a &#39;pore.phase&#39; array with the corresponding value.
-        If not given a value of 1 is assigned to every pore.
-    voxel_size : scalar (default = 1)
-        The resolution of the image, expressed as the length of one side of a
-        voxel, so the volume of a voxel would be **voxel_size**-cubed.
-    accuracy : string
-        Controls how accurately certain properties are calculated. Options are:
+Parameters
+----------
+regions : ndarray
+    An image of the material partitioned into individual regions.
+    Zeros in this image are ignored.
+phases : ndarray, optional
+    An image indicating to which phase each voxel belongs. The returned
+    network contains a &#39;pore.phase&#39; array with the corresponding value.
+    If not given a value of 1 is assigned to every pore.
+voxel_size : scalar (default = 1)
+    The resolution of the image, expressed as the length of one side of a
+    voxel, so the volume of a voxel would be **voxel_size**-cubed.
+accuracy : string
+    Controls how accurately certain properties are calculated. Options are:
 
-        ========== ============================================================
-        Value      Description
-        ========== ============================================================
-        &#39;standard&#39; Computes the surface areas and perimeters by simply counting
-                   voxels. This is *much* faster but does not properly account
-                   for the rough voxelated nature of the surfaces.
-        &#39;high&#39;     Computes surface areas using the marching cube method, and
-                   perimeters using the fast marching method. These are
-                   substantially slower but better account for the voxelated
-                   nature of the images.
-        ========== ============================================================
+    ========== ============================================================
+    Value      Description
+    ========== ============================================================
+    &#39;standard&#39; Computes the surface areas and perimeters by simply counting
+               voxels. This is *much* faster but does not properly account
+               for the rough voxelated nature of the surfaces.
+    &#39;high&#39;     Computes surface areas using the marching cube method, and
+               perimeters using the fast marching method. These are
+               substantially slower but better account for the voxelated
+               nature of the images.
+    ========== ============================================================
 
-    porosity_map : None
-        This is not supported for this version of the function.
+porosity_map : None
+    This is not supported for this version of the function.
 
-    Returns
-    -------
-    net : dict
-        A dictionary containing all the pore and throat size data, as well as
-        the network topological information.  The dictionary names use the
-        OpenPNM convention (i.e. &#39;pore.coords&#39;, &#39;throat.conns&#39;).
+Returns
+-------
+net : dict
+    A dictionary containing all the pore and throat size data, as well as
+    the network topological information.  The dictionary names use the
+    OpenPNM convention (i.e. &#39;pore.coords&#39;, &#39;throat.conns&#39;).
 
-    Notes
-    -----
-    The meaning of each of the values returned in ``net`` are outlined below:
+Notes
+-----
+The meaning of each of the values returned in ``net`` are outlined below:
 
-    &#39;pore.region_label&#39;
-        The region labels corresponding to the watershed extraction. The
-        pore indices and regions labels will be offset by 1, so pore 0
-        will be region 1.
-    &#39;throat.conns&#39;
-        An *Nt-by-2* array indicating which pores are connected to each other
-    &#39;pore.region_label&#39;
-        Mapping of regions in the watershed segmentation to pores in the
-        network
-    &#39;pore.local_peak&#39;
-        The coordinates of the location of the maxima of the distance transform
-        performed on the pore region in isolation
-    &#39;pore.global_peak&#39;
-        The coordinates of the location of the maxima of the distance transform
-        performed on the full image
-    &#39;pore.geometric_centroid&#39;
-        The center of mass of the pore region as calculated by
-        ``skimage.measure.center_of_mass``
-    &#39;throat.global_peak&#39;
-        The coordinates of the location of the maxima of the distance transform
-        performed on the full image
-    &#39;pore.region_volume&#39;
-        The volume of the pore region computed by summing the voxels
-    &#39;pore.volume&#39;
-        The volume of the pore found by as volume of a mesh obtained from the
-        marching cubes algorithm
-    &#39;pore.surface_area&#39;
-        The surface area of the pore region as calculated by either counting
-        voxels or using the fast marching method to generate a tetramesh (if
-        ``accuracy`` is set to ``&#39;high&#39;``.)
-    &#39;throat.cross_sectional_area&#39;
-        The cross-sectional area of the throat found by either counting
-        voxels or using the fast marching method to generate a tetramesh (if
-        ``accuracy`` is set to ``&#39;high&#39;``.)
-    &#39;throat.perimeter&#39;
-        The perimeter of the throat found by counting voxels on the edge of
-        the region defined by the intersection of two regions.
-    &#39;pore.inscribed_diameter&#39;
-        The diameter of the largest sphere inscribed in the pore region. This
-        is found as the maximum of the distance transform on the region in
-        isolation.
-    &#39;pore.extended_diameter&#39;
-        The diamter of the largest sphere inscribed in overal image, which
-        can extend outside the pore region. This is found as the local maximum
-        of the distance transform on the full image.
-    &#39;throat.inscribed_diameter&#39;
-        The diameter of the largest sphere inscribed in the throat.  This
-        is found as the local maximum of the distance transform in the area
-        where to regions meet.
-    &#39;throat.total_length&#39;
-        The length between pore centered via the throat center
-    &#39;throat.direct_length&#39;
-        The length between two pore centers on a straight line between them
-        that does not pass through the throat centroid.
+&#39;pore.region_label&#39;
+    The region labels corresponding to the watershed extraction. The
+    pore indices and regions labels will be offset by 1, so pore 0
+    will be region 1.
+&#39;throat.conns&#39;
+    An *Nt-by-2* array indicating which pores are connected to each other
+&#39;pore.region_label&#39;
+    Mapping of regions in the watershed segmentation to pores in the
+    network
+&#39;pore.local_peak&#39;
+    The coordinates of the location of the maxima of the distance transform
+    performed on the pore region in isolation
+&#39;pore.global_peak&#39;
+    The coordinates of the location of the maxima of the distance transform
+    performed on the full image
+&#39;pore.geometric_centroid&#39;
+    The center of mass of the pore region as calculated by
+    ``skimage.measure.center_of_mass``
+&#39;throat.global_peak&#39;
+    The coordinates of the location of the maxima of the distance transform
+    performed on the full image
+&#39;pore.region_volume&#39;
+    The volume of the pore region computed by summing the voxels
+&#39;pore.volume&#39;
+    The volume of the pore found by as volume of a mesh obtained from the
+    marching cubes algorithm
+&#39;pore.surface_area&#39;
+    The surface area of the pore region as calculated by either counting
+    voxels or using the fast marching method to generate a tetramesh (if
+    ``accuracy`` is set to ``&#39;high&#39;``.)
+&#39;throat.cross_sectional_area&#39;
+    The cross-sectional area of the throat found by either counting
+    voxels or using the fast marching method to generate a tetramesh (if
+    ``accuracy`` is set to ``&#39;high&#39;``.)
+&#39;throat.perimeter&#39;
+    The perimeter of the throat found by counting voxels on the edge of
+    the region defined by the intersection of two regions.
+&#39;pore.inscribed_diameter&#39;
+    The diameter of the largest sphere inscribed in the pore region. This
+    is found as the maximum of the distance transform on the region in
+    isolation.
+&#39;pore.extended_diameter&#39;
+    The diamter of the largest sphere inscribed in overal image, which
+    can extend outside the pore region. This is found as the local maximum
+    of the distance transform on the full image.
+&#39;throat.inscribed_diameter&#39;
+    The diameter of the largest sphere inscribed in the throat.  This
+    is found as the local maximum of the distance transform in the area
+    where to regions meet.
+&#39;throat.total_length&#39;
+    The length between pore centered via the throat center
+&#39;throat.direct_length&#39;
+    The length between two pore centers on a straight line between them
+    that does not pass through the throat centroid.
 
-    Examples
-    --------
-    `Click here
-    &lt;https://porespy.org/examples/networks/reference/regions_to_network.html&gt;`__
-    to view online example.
-
-    
+Examples
+--------
+`Click here
+&lt;https://porespy.org/examples/networks/reference/regions_to_network.html&gt;`__
+to view online example.
 </pre></div>
 </div>
 </div>
@@ -1043,14 +1027,6 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:446: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
-/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:594: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  labels, N = spim.label(peaks &gt; 0, structure=cube(3))
-/home/runner/work/porespy/porespy/src/porespy/tools/_morphology.py:171: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = square(w)
-</pre></div>
-</div>
 <img alt="../../../_images/62690f10618260a3d6afc35d5d3ef3752110c4e58fc063f41b526c39abee9853.png" src="../../../_images/62690f10618260a3d6afc35d5d3ef3752110c4e58fc063f41b526c39abee9853.png" />
 </div>
 </div>

@@ -474,10 +474,10 @@
         <span class="n">data</span> <span class="o">=</span> <span class="n">_toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
 
         <span class="n">__version__</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;project&quot;</span><span class="p">][</span><span class="s2">&quot;version&quot;</span><span class="p">]</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Loaded version from pyproject.toml&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loaded version from pyproject.toml&quot;</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">__version__</span> <span class="o">=</span> <span class="n">_metadata</span><span class="o">.</span><span class="n">version</span><span class="p">(</span><span class="n">__package__</span> <span class="ow">or</span> <span class="vm">__name__</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Loaded version from importlib.metadata&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loaded version from importlib.metadata&quot;</span><span class="p">)</span>
 </pre></div>
 
                 </article>

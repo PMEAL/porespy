@@ -892,20 +892,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
-/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
-</pre></div>
-</div>
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:11:18] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
-</pre>
-</div></div>
 </div>
 <section id="regions">
 <h2><code class="docutils literal notranslate"><span class="pre">regions</span></code><a class="headerlink" href="#regions" title="Link to this heading">#</a></h2>
@@ -924,16 +910,6 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:446: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:594: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  labels, N = spim.label(peaks &gt; 0, structure=cube(3))
-/home/runner/work/porespy/porespy/src/porespy/tools/_morphology.py:174: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = cube(w)
-</pre></div>
-</div>
 <img alt="../../../_images/991f65dc059fac789cf151d0832bcf290c8c296f1522a19fb52f7a2db8363213.png" src="../../../_images/991f65dc059fac789cf151d0832bcf290c8c296f1522a19fb52f7a2db8363213.png" />
 </div>
 </div>
@@ -954,7 +930,40 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/04f20456e20a0ed1762bb89344cefe4d854bc826597680f4858172faf4555b46.png" src="../../../_images/04f20456e20a0ed1762bb89344cefe4d854bc826597680f4858172faf4555b46.png" />
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="nn">File ~/work/porespy/porespy/src/porespy/metrics/_meshtools.py:105,</span> in <span class="ni">mesh_volume</span><span class="nt">(region, voxel_size)</span>
+<span class="g g-Whitespace">    </span><span class="mi">104</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">105</span>     <span class="kn">from</span><span class="w"> </span><span class="nn">trimesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trimesh</span>
+<span class="g g-Whitespace">    </span><span class="mi">106</span> <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;trimesh&#39;
+
+<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
+
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">vols</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">region_volumes</span><span class="p">(</span><span class="n">regions</span><span class="o">=</span><span class="n">regions</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">regions_vol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">vols</span><span class="p">)):</span>
+
+<span class="nn">File ~/work/porespy/porespy/src/porespy/metrics/_meshtools.py:71,</span> in <span class="ni">region_volumes</span><span class="nt">(regions, method, voxel_size)</span>
+<span class="g g-Whitespace">     </span><span class="mi">69</span> <span class="n">region</span> <span class="o">=</span> <span class="n">regions</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">==</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">70</span> <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;marching_cubes&#39;</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">71</span>     <span class="n">vols</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">mesh_volume</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="n">voxel_size</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">72</span> <span class="k">elif</span> <span class="n">method</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;voxel&#39;</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">73</span>     <span class="n">vols</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">region</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+<span class="nn">File ~/work/porespy/porespy/src/porespy/metrics/_meshtools.py:108,</span> in <span class="ni">mesh_volume</span><span class="nt">(region, voxel_size)</span>
+<span class="g g-Whitespace">    </span><span class="mi">106</span> <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">107</span>     <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;The trimesh package can be installed with pip install trimesh&#39;</span>
+<span class="ne">--&gt; </span><span class="mi">108</span>     <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">110</span> <span class="n">mc</span> <span class="o">=</span> <span class="n">mesh_region</span><span class="p">(</span><span class="n">region</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="n">voxel_size</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">111</span> <span class="n">m</span> <span class="o">=</span> <span class="n">Trimesh</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="n">mc</span><span class="o">.</span><span class="n">verts</span><span class="p">,</span> <span class="n">faces</span><span class="o">=</span><span class="n">mc</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">vertex_normals</span><span class="o">=</span><span class="n">mc</span><span class="o">.</span><span class="n">norm</span><span class="p">)</span>
+
+<span class="ne">ModuleNotFoundError</span>: The trimesh package can be installed with pip install trimesh
+</pre></div>
+</div>
 </div>
 </div>
 </section>
@@ -977,7 +986,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/c184b14caba6bddc7a47d62872494f40a649bbb9fa6bde955b0df3fdaf023203.png" src="../../../_images/c184b14caba6bddc7a47d62872494f40a649bbb9fa6bde955b0df3fdaf023203.png" />
+<a class="reference internal image-reference" href="../../../_images/f74682009789acc4e17dbc79c149afd00bb173768658fd22aec7f5431c2add54.png"><img alt="../../../_images/f74682009789acc4e17dbc79c149afd00bb173768658fd22aec7f5431c2add54.png" src="../../../_images/f74682009789acc4e17dbc79c149afd00bb173768658fd22aec7f5431c2add54.png" style="width: 458px; height: 384px;" />
+</a>
 </div>
 </div>
 </section>
