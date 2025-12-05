@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -894,8 +894,19 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[00:39:39] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
-<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:15:07] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> PARDISO solver not installed on this platform. Simulations will be slow.       <a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+</pre>
+</div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:15:09] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
 </pre>
 </div></div>
 </div>
@@ -907,7 +918,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/9faec6d9cf70a25613af13d0889c4969a4c4423630a3d1399a0271fd6f047317.png" src="../../../_images/9faec6d9cf70a25613af13d0889c4969a4c4423630a3d1399a0271fd6f047317.png" />
+<img alt="../../../_images/deaaf31af60a35c79cf4dd43999005582c1b751bbb7c2a82e0645b37c32b992e.png" src="../../../_images/deaaf31af60a35c79cf4dd43999005582c1b751bbb7c2a82e0645b37c32b992e.png" />
 </div>
 </div>
 <section id="phases">
@@ -927,7 +938,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>False
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.False_
 </pre></div>
 </div>
 </div>
@@ -936,6 +947,26 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net1</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">snow2</span><span class="p">(</span><span class="n">phases</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">boundary_width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">net2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">snow2</span><span class="p">(</span><span class="n">phases</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">boundary_width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:446: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
+/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:594: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  labels, N = spim.label(peaks &gt; 0, structure=cube(3))
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:446: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
+/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:594: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  labels, N = spim.label(peaks &gt; 0, structure=cube(3))
+/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:446: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:594: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  labels, N = spim.label(peaks &gt; 0, structure=cube(3))
 </pre></div>
 </div>
 </div>
@@ -950,7 +981,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/df705b996f09203c360b8df52adbe822aac3d1307fbdd6883475c5340ce2554e.png" src="../../../_images/df705b996f09203c360b8df52adbe822aac3d1307fbdd6883475c5340ce2554e.png" />
+<img alt="../../../_images/93b3b465f59493ca0bb8670e4cc4caffe97a42bb86b45bf8da8fdac7632dd09a.png" src="../../../_images/93b3b465f59493ca0bb8670e4cc4caffe97a42bb86b45bf8da8fdac7632dd09a.png" />
 </div>
 </div>
 <p>On the left we can see that the spherical particles are all purple, which indicates 0, because they have not been labelled by the function.  On the right the particles each have a unique greyscale value because they have been labelled as distinct regions.</p>
@@ -973,7 +1004,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/602a85ebadb0e304b0333fb06246ec0719cfa5a5fc6e4736637c792e63b353a2.png" src="../../../_images/602a85ebadb0e304b0333fb06246ec0719cfa5a5fc6e4736637c792e63b353a2.png" />
+<img alt="../../../_images/fcbe54fa55b25be52441d24046edb621097da7cbbc6b1a4d3c3083aeffa0a8b6.png" src="../../../_images/fcbe54fa55b25be52441d24046edb621097da7cbbc6b1a4d3c3083aeffa0a8b6.png" />
 </div>
 </div>
 <p>The image needed to be rotated so that the x and y directions lined up with the OpenPNM network.  The agreement between the image and network is pretty good.  Clearly the the red pore centers lie within each labelled regions and the black throat connections follow the topology quite well.</p>
@@ -996,7 +1027,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/544aea7d197385a3232a6f9266679701d7130d464ea7c06142e81e3f733e03d2.png" src="../../../_images/544aea7d197385a3232a6f9266679701d7130d464ea7c06142e81e3f733e03d2.png" />
+<img alt="../../../_images/3ab67a4fd212037d13767c5b66b4f45b1e27a8f2e59507dcce2c93c72c7190dc.png" src="../../../_images/3ab67a4fd212037d13767c5b66b4f45b1e27a8f2e59507dcce2c93c72c7190dc.png" />
 </div>
 </div>
 <p>The above shows the additional network comprised of the solids (although they don’t actually connect in this 2D example) as well as the void-solid connections.  We can improve this plot by coloring the different types of pores and throats differently.  If we print <code class="docutils literal notranslate"><span class="pre">pn2</span></code> we can see that <code class="docutils literal notranslate"><span class="pre">snow2</span></code> has created some labels for us, by assuming phase names of “phase1” and “phase2”.</p>
@@ -1008,41 +1039,41 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Network at 0x7fdc04646850&gt;
+net : &lt;openpnm.network.Network at 0x7f88b0653570&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  throat.conns                                                    528 / 528
-  3  pore.coords                                                     187 / 187
-  4  pore.region_label                                               187 / 187
-  5  pore.phase                                                      187 / 187
-  6  throat.phases                                                   528 / 528
-  7  pore.region_volume                                              187 / 187
-  8  pore.equivalent_diameter                                        187 / 187
-  9  pore.local_peak                                                 187 / 187
- 10  pore.global_peak                                                187 / 187
- 11  pore.geometric_centroid                                         187 / 187
- 12  throat.global_peak                                              528 / 528
- 13  pore.inscribed_diameter                                         187 / 187
- 14  pore.extended_diameter                                          187 / 187
- 15  throat.inscribed_diameter                                       528 / 528
- 16  throat.total_length                                             528 / 528
- 17  throat.direct_length                                            528 / 528
- 18  throat.perimeter                                                528 / 528
- 19  pore.volume                                                     187 / 187
- 20  pore.surface_area                                               187 / 187
- 21  throat.cross_sectional_area                                     528 / 528
- 22  throat.equivalent_diameter                                      528 / 528
+  2  throat.conns                                                    529 / 529
+  3  pore.coords                                                     186 / 186
+  4  pore.region_label                                               186 / 186
+  5  pore.phase                                                      186 / 186
+  6  throat.phases                                                   529 / 529
+  7  pore.region_volume                                              186 / 186
+  8  pore.equivalent_diameter                                        186 / 186
+  9  pore.local_peak                                                 186 / 186
+ 10  pore.global_peak                                                186 / 186
+ 11  pore.geometric_centroid                                         186 / 186
+ 12  throat.global_peak                                              529 / 529
+ 13  pore.inscribed_diameter                                         186 / 186
+ 14  pore.extended_diameter                                          186 / 186
+ 15  throat.inscribed_diameter                                       529 / 529
+ 16  throat.total_length                                             529 / 529
+ 17  throat.direct_length                                            529 / 529
+ 18  throat.perimeter                                                529 / 529
+ 19  pore.volume                                                     186 / 186
+ 20  pore.surface_area                                               186 / 186
+ 21  throat.cross_sectional_area                                     529 / 529
+ 22  throat.equivalent_diameter                                      529 / 529
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.all                                                              187
-  3  throat.all                                                            528
-  4  pore.phase1                                                            78
-  5  throat.phase1_phase2                                                  342
-  6  pore.phase2                                                           109
-  7  throat.phase2_phase1                                                  342
-  8  throat.phase2_phase2                                                  186
+  2  pore.all                                                              186
+  3  throat.all                                                            529
+  4  pore.phase1                                                            81
+  5  throat.phase1_phase2                                                  345
+  6  pore.phase2                                                           105
+  7  throat.phase2_phase1                                                  345
+  8  throat.phase2_phase2                                                  184
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -1067,7 +1098,7 @@ net : &lt;openpnm.network.Network at 0x7fdc04646850&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d5257745ab3802bb0d29d5b24468948fa5d5fdb6e949e5677834409b86d3eac2.png" src="../../../_images/d5257745ab3802bb0d29d5b24468948fa5d5fdb6e949e5677834409b86d3eac2.png" />
+<img alt="../../../_images/78377b690974dfd698f70b857e6653465e5f9ce1777358c1ca79d0bcf110261c.png" src="../../../_images/78377b690974dfd698f70b857e6653465e5f9ce1777358c1ca79d0bcf110261c.png" />
 </div>
 </div>
 <p>Now can see the particles are indicated by a green marker, the void pores by a red marker, the solid-void interconnections are in grey, and the void-void throats are black.</p>
@@ -1083,6 +1114,20 @@ net : &lt;openpnm.network.Network at 0x7fdc04646850&gt;
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:446: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
+/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:594: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  labels, N = spim.label(peaks &gt; 0, structure=cube(3))
+/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:446: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:594: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  labels, N = spim.label(peaks &gt; 0, structure=cube(3))
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1093,41 +1138,41 @@ net : &lt;openpnm.network.Network at 0x7fdc04646850&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Network at 0x7fdc040f5040&gt;
+net : &lt;openpnm.network.Network at 0x7f88502393b0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  throat.conns                                                    528 / 528
-  3  pore.coords                                                     187 / 187
-  4  pore.region_label                                               187 / 187
-  5  pore.phase                                                      187 / 187
-  6  throat.phases                                                   528 / 528
-  7  pore.region_volume                                              187 / 187
-  8  pore.equivalent_diameter                                        187 / 187
-  9  pore.local_peak                                                 187 / 187
- 10  pore.global_peak                                                187 / 187
- 11  pore.geometric_centroid                                         187 / 187
- 12  throat.global_peak                                              528 / 528
- 13  pore.inscribed_diameter                                         187 / 187
- 14  pore.extended_diameter                                          187 / 187
- 15  throat.inscribed_diameter                                       528 / 528
- 16  throat.total_length                                             528 / 528
- 17  throat.direct_length                                            528 / 528
- 18  throat.perimeter                                                528 / 528
- 19  pore.volume                                                     187 / 187
- 20  pore.surface_area                                               187 / 187
- 21  throat.cross_sectional_area                                     528 / 528
- 22  throat.equivalent_diameter                                      528 / 528
+  2  throat.conns                                                    529 / 529
+  3  pore.coords                                                     186 / 186
+  4  pore.region_label                                               186 / 186
+  5  pore.phase                                                      186 / 186
+  6  throat.phases                                                   529 / 529
+  7  pore.region_volume                                              186 / 186
+  8  pore.equivalent_diameter                                        186 / 186
+  9  pore.local_peak                                                 186 / 186
+ 10  pore.global_peak                                                186 / 186
+ 11  pore.geometric_centroid                                         186 / 186
+ 12  throat.global_peak                                              529 / 529
+ 13  pore.inscribed_diameter                                         186 / 186
+ 14  pore.extended_diameter                                          186 / 186
+ 15  throat.inscribed_diameter                                       529 / 529
+ 16  throat.total_length                                             529 / 529
+ 17  throat.direct_length                                            529 / 529
+ 18  throat.perimeter                                                529 / 529
+ 19  pore.volume                                                     186 / 186
+ 20  pore.surface_area                                               186 / 186
+ 21  throat.cross_sectional_area                                     529 / 529
+ 22  throat.equivalent_diameter                                      529 / 529
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.all                                                              187
-  3  throat.all                                                            528
-  4  pore.solid                                                             78
-  5  throat.solid_void                                                     342
-  6  pore.void                                                             109
-  7  throat.void_solid                                                     342
-  8  throat.void_void                                                      186
+  2  pore.all                                                              186
+  3  throat.all                                                            529
+  4  pore.solid                                                             81
+  5  throat.solid_void                                                     345
+  6  pore.void                                                             105
+  7  throat.void_solid                                                     345
+  8  throat.void_void                                                      184
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -1158,7 +1203,13 @@ net : &lt;openpnm.network.Network at 0x7fdc040f5040&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d5fbbe0d78264d2e808b95ac34a2a59be457c86b223f62631fa37f901e373e94.png" src="../../../_images/d5fbbe0d78264d2e808b95ac34a2a59be457c86b223f62631fa37f901e373e94.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:446: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
+/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:594: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  labels, N = spim.label(peaks &gt; 0, structure=cube(3))
+</pre></div>
+</div>
+<img alt="../../../_images/8949a3027d5df3fe6aa71b5d0fdc1cc47aa8a8f4f2a2294808bda0b9d3b9c302.png" src="../../../_images/8949a3027d5df3fe6aa71b5d0fdc1cc47aa8a8f4f2a2294808bda0b9d3b9c302.png" />
 </div>
 </div>
 <p>A few things to note:</p>
@@ -1183,7 +1234,7 @@ net : &lt;openpnm.network.Network at 0x7fdc040f5040&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/c22ee3c934c3ca23c9e9316e989747f90bad1a34c76f019e1e904886a07b21d7.png" src="../../../_images/c22ee3c934c3ca23c9e9316e989747f90bad1a34c76f019e1e904886a07b21d7.png" />
+<img alt="../../../_images/3d86be5ba092597b88e4a9d4e1b28b7533819aa9dfe652db74436803f9ccbb8e.png" src="../../../_images/3d86be5ba092597b88e4a9d4e1b28b7533819aa9dfe652db74436803f9ccbb8e.png" />
 </div>
 </div>
 </section>
@@ -1222,7 +1273,7 @@ net : &lt;openpnm.network.Network at 0x7fdc040f5040&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/87c0b001aef903a3d3e2fcf084d282c7560ddce06a135ec3e658d8e06f18c20c.png" src="../../../_images/87c0b001aef903a3d3e2fcf084d282c7560ddce06a135ec3e658d8e06f18c20c.png" />
+<img alt="../../../_images/3394223afc23207b0d1c2548f95a07d99eca7017e00438770dd67954197e749e.png" src="../../../_images/3394223afc23207b0d1c2548f95a07d99eca7017e00438770dd67954197e749e.png" />
 </div>
 </div>
 </section>
@@ -1234,6 +1285,12 @@ net : &lt;openpnm.network.Network at 0x7fdc040f5040&gt;
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net1</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">snow2</span><span class="p">(</span><span class="n">phases</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">boundary_width</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">peaks</span><span class="o">=</span><span class="n">pk1</span><span class="p">)</span>
 <span class="n">net2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">snow2</span><span class="p">(</span><span class="n">phases</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">boundary_width</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">peaks</span><span class="o">=</span><span class="n">pk2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/tools/_morphology.py:171: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = square(w)
 </pre></div>
 </div>
 </div>
@@ -1249,7 +1306,7 @@ net : &lt;openpnm.network.Network at 0x7fdc040f5040&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/8ee98b3e2118dd97bfe631fcd897dc7752e017470b791d90124ce658f7e51d89.png" src="../../../_images/8ee98b3e2118dd97bfe631fcd897dc7752e017470b791d90124ce658f7e51d89.png" />
+<img alt="../../../_images/b3ff4bf895a1610eac64a97ff44fb90104db606923efce152c9bda6cb2e277c5.png" src="../../../_images/b3ff4bf895a1610eac64a97ff44fb90104db606923efce152c9bda6cb2e277c5.png" />
 </div>
 </div>
 <p>Clearly the image on the left is ‘over segmented’ while the image on the right seems to have identified the pores nearly perfectly, even without subsequent processing of the peaks that normally occur in <code class="docutils literal notranslate"><span class="pre">snow2</span></code> like <code class="docutils literal notranslate"><span class="pre">trim_saddle_points</span></code> and <code class="docutils literal notranslate"><span class="pre">trim_nearby_peaks</span></code>.</p>
@@ -1276,6 +1333,12 @@ net : &lt;openpnm.network.Network at 0x7fdc040f5040&gt;
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:15:20] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Disabling paralelization as overlap exceeds than chunk size.                      <a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_snow2.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py#214" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">214</span></a>
+</pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Disabling paralelization as overlap exceeds than chunk size.                      <a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_snow2.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py#214" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">214</span></a>
+</pre>
+</div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1290,7 +1353,7 @@ net : &lt;openpnm.network.Network at 0x7fdc040f5040&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/b7923bc94d78b750fbdf5a5615bbc157657b5d541f75fd4fe7b5db282dd1ff9c.png" src="../../../_images/b7923bc94d78b750fbdf5a5615bbc157657b5d541f75fd4fe7b5db282dd1ff9c.png" />
+<img alt="../../../_images/64390016e14ad1b75fc40e959d3844c402e1c87cf7f52048eb38eba90e7d7f79.png" src="../../../_images/64390016e14ad1b75fc40e959d3844c402e1c87cf7f52048eb38eba90e7d7f79.png" />
 </div>
 </div>
 </section>

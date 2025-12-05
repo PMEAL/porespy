@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -892,6 +892,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:18:57] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div></div>
 </div>
 <p>Start by generating a 2D image of blobs:</p>
 <div class="cell docutils container">
@@ -903,7 +917,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/70fe1e773fe5f2e8270916a227f0897138d38b3f65db4d659470c6de9c030efc.png" src="../../../_images/70fe1e773fe5f2e8270916a227f0897138d38b3f65db4d659470c6de9c030efc.png" />
+<img alt="../../../_images/e83a6a99be45fc5810cc6be1dcff34601d13afd1f72aa7b7c2ba274315132632.png" src="../../../_images/e83a6a99be45fc5810cc6be1dcff34601d13afd1f72aa7b7c2ba274315132632.png" />
 </div>
 </div>
 <p>First we’ll compute a reference capillary pressure curve with no gravity effects using the <code class="docutils literal notranslate"><span class="pre">drainage</span></code> function. This function requires us to supply an image of capillary pressure values associated with each voxel.  Typicall one would use the Washburn equation:</p>
@@ -937,7 +951,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/f3315b95051da5605e979b0cd93888bb38292932e5febb4eac054dce11fcd197.png" src="../../../_images/f3315b95051da5605e979b0cd93888bb38292932e5febb4eac054dce11fcd197.png" />
+<img alt="../../../_images/3ffd1ac87ad5004f6b75ee2c3716b4c55423d42344938f86aa1339663ed419ca.png" src="../../../_images/3ffd1ac87ad5004f6b75ee2c3716b4c55423d42344938f86aa1339663ed419ca.png" />
 </div>
 </div>
 <p>Both of the above images are colored according to the capillary pressure at which a given voxel was invaded. In the right image we have applied a base-10 logarithm to the values to improve visibility.  The format is handy since it contains the entire invasion sequence in a single image.</p>
@@ -959,7 +973,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/e9a27f400f9827a6f732b2d270b7ec5ca16bbc10438168df5fb9125645f9d888.png" src="../../../_images/e9a27f400f9827a6f732b2d270b7ec5ca16bbc10438168df5fb9125645f9d888.png" />
+<img alt="../../../_images/5b00f4728fcaf3e7757052f35bd17393bf66724028cec9bbb857fe21014ce026.png" src="../../../_images/5b00f4728fcaf3e7757052f35bd17393bf66724028cec9bbb857fe21014ce026.png" />
 </div>
 </div>
 <p>Now let’s perform the same experiment but including the gravity effects, by setting <code class="docutils literal notranslate"><span class="pre">g</span></code> to earth’s gravity:</p>
@@ -982,7 +996,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/5c3c5fc43be86b1ff46d47a70a07ab5c91aec36e5936a051df9e5574f560056c.png" src="../../../_images/5c3c5fc43be86b1ff46d47a70a07ab5c91aec36e5936a051df9e5574f560056c.png" />
+<img alt="../../../_images/30462513b07ea31b2c473636cb784021d851676cd8fdbda9faa39eef25d978c9.png" src="../../../_images/30462513b07ea31b2c473636cb784021d851676cd8fdbda9faa39eef25d978c9.png" />
 </div>
 </div>
 <p>We can see from the colormap that the invasion pattern is different.  Plotting the capillary pressure curve will make the differences more obvious:</p>
@@ -1000,7 +1014,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/e217b5568ccf3f5341569082a8020304c02d5a49fe5d0c51a84bd162468388eb.png" src="../../../_images/e217b5568ccf3f5341569082a8020304c02d5a49fe5d0c51a84bd162468388eb.png" />
+<img alt="../../../_images/00cc6fc450b047adef6829c2c91e6e0864d4a36e1dedcd26428ccab2b6259d39.png" src="../../../_images/00cc6fc450b047adef6829c2c91e6e0864d4a36e1dedcd26428ccab2b6259d39.png" />
 </div>
 </div>
 <p>Combining both plots together for a better comparison:</p>
@@ -1014,7 +1028,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/287e7cc6b8b11ee8b406580710d1bf882206b6769829e5e41b125f8dcaca59a3.png" src="../../../_images/287e7cc6b8b11ee8b406580710d1bf882206b6769829e5e41b125f8dcaca59a3.png" />
+<img alt="../../../_images/505474fbff31c1059f7c179ef858855e4e742365699567775ef9eb394d618160.png" src="../../../_images/505474fbff31c1059f7c179ef858855e4e742365699567775ef9eb394d618160.png" />
 </div>
 </div>
 <p>The red curve above is shifted to the right with a lower slope.  This is the expected result since the impact of gravity makes it more difficult for the heavy non-wetting fluid to rise up the domain and penetrate into pores. The decreased slope is also expected since pores are invaded more gradually rather than in a larger percolation event.</p>

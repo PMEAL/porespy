@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -887,6 +887,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:13:58] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div></div>
 </div>
 <section id="im">
 <h2><code class="docutils literal notranslate"><span class="pre">im</span></code><a class="headerlink" href="#im" title="Link to this heading">#</a></h2>
@@ -902,7 +916,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/7ef4626d3588bc7bae75fcf30278a03a58d13b4cb31074be23eba8db9fc42f66.png" src="../../../_images/7ef4626d3588bc7bae75fcf30278a03a58d13b4cb31074be23eba8db9fc42f66.png" />
+<img alt="../../../_images/3bf89e7902399af2acd764425b1c8818b726b72220f8f81bbc021f2241889e99.png" src="../../../_images/3bf89e7902399af2acd764425b1c8818b726b72220f8f81bbc021f2241889e99.png" />
 </div>
 </div>
 <p>Now the test image is ready to be passed to <code class="docutils literal notranslate"><span class="pre">chord_counts</span></code>. The method returns a 1D array. Each element in the array corresponds to the length of each chord. A histogram of the chord length array can be plotted:</p>
@@ -917,7 +931,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/5622a94aee1e5f44b049c9ab2c80183f18ea98f685f44a9e25818094fcf839ad.png" src="../../../_images/5622a94aee1e5f44b049c9ab2c80183f18ea98f685f44a9e25818094fcf839ad.png" />
+<img alt="../../../_images/a62740bfee77193a4c9700e67c7779e4bc38309e61ff1369f0df0c65a6229014.png" src="../../../_images/a62740bfee77193a4c9700e67c7779e4bc38309e61ff1369f0df0c65a6229014.png" />
 </div>
 </div>
 <p>An alternative to the histogram, we can use <code class="docutils literal notranslate"><span class="pre">numpy.bincount</span></code> that gives the number of chords of each length and can be plotted using <code class="docutils literal notranslate"><span class="pre">plt.plot</span></code>. The resulting plot is similar to the histogram plot with a high number of bins:</p>
@@ -931,7 +945,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/3ee1e0ded91631ff31d4b4aba57b7ae47dd6eb149b5c050cc55415fcdf03a371.png" src="../../../_images/3ee1e0ded91631ff31d4b4aba57b7ae47dd6eb149b5c050cc55415fcdf03a371.png" />
+<img alt="../../../_images/558e91e011968b7891e758fc5bba249c4ef846efc379bdb5393b83580f957293.png" src="../../../_images/558e91e011968b7891e758fc5bba249c4ef846efc379bdb5393b83580f957293.png" />
 </div>
 </div>
 <div class="cell docutils container">

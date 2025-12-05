@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -889,6 +889,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:14:01] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div></div>
 </div>
 <section id="shape">
 <h2><code class="docutils literal notranslate"><span class="pre">shape</span></code><a class="headerlink" href="#shape" title="Link to this heading">#</a></h2>
@@ -904,7 +918,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/654724abf2be84e68c9c7a4a5adccff806b4d4b20f7b7f35ec5ba8997e5da29b.png" src="../../../_images/654724abf2be84e68c9c7a4a5adccff806b4d4b20f7b7f35ec5ba8997e5da29b.png" />
+<img alt="../../../_images/0d8b39fd3f29f5ff50fa7f545886cc2933c2e0b1bf7c1636b34d09293ac6e6e4.png" src="../../../_images/0d8b39fd3f29f5ff50fa7f545886cc2933c2e0b1bf7c1636b34d09293ac6e6e4.png" />
 </div>
 </div>
 </section>
@@ -922,7 +936,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/0774ae9e1c637f013b31b04aaa99135416e3075d792c960375e7b311de121692.png" src="../../../_images/0774ae9e1c637f013b31b04aaa99135416e3075d792c960375e7b311de121692.png" />
+<img alt="../../../_images/6e8d3fdfc98226025204feaf54a162f5611cf9ccc8e4e508a84772941b25a3f7.png" src="../../../_images/6e8d3fdfc98226025204feaf54a162f5611cf9ccc8e4e508a84772941b25a3f7.png" />
 </div>
 </div>
 <p>Specifying <code class="docutils literal notranslate"><span class="pre">porosity=None</span></code> will return a greyscale image which can then be thresholded to get a boolean image.  The greyscale value are adjusted to a unifrom distribution:</p>
@@ -939,7 +953,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/5369104b292f796c53796fead93e330bd445e43952f2be90fe07b8b47b0eda7e.png" src="../../../_images/5369104b292f796c53796fead93e330bd445e43952f2be90fe07b8b47b0eda7e.png" />
+<img alt="../../../_images/f30e752e768b72b0346006182a169f7f1953bca8bc7cc79147c880347d07ada7.png" src="../../../_images/f30e752e768b72b0346006182a169f7f1953bca8bc7cc79147c880347d07ada7.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -956,7 +970,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d4fb23e2e7fd9d26b8dc69ecf8377c76f6c83a9783b8d85fd28561c9e725f2db.png" src="../../../_images/d4fb23e2e7fd9d26b8dc69ecf8377c76f6c83a9783b8d85fd28561c9e725f2db.png" />
+<img alt="../../../_images/8bc2cf665b5cb06ccbb5d182c37bdc101997c1afe14b3dc66f65f3286f2327ab.png" src="../../../_images/8bc2cf665b5cb06ccbb5d182c37bdc101997c1afe14b3dc66f65f3286f2327ab.png" />
 </div>
 </div>
 </section>
@@ -978,7 +992,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/13bad55b13c688085d7fe0c20a75e52219eba8d024352e5bb006bddcded59572.png" src="../../../_images/13bad55b13c688085d7fe0c20a75e52219eba8d024352e5bb006bddcded59572.png" />
+<img alt="../../../_images/6eeff42db88d408a6957a57e0af3c0c5239ea85c8a00523b2a22592d21c8ff92.png" src="../../../_images/6eeff42db88d408a6957a57e0af3c0c5239ea85c8a00523b2a22592d21c8ff92.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -996,7 +1010,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/3b80aad4a33d9c16a74cc2400599c46462fdb319cda7546b1a01296dd8284ad7.png" src="../../../_images/3b80aad4a33d9c16a74cc2400599c46462fdb319cda7546b1a01296dd8284ad7.png" />
+<img alt="../../../_images/0bbb4a4ff51a892c60ea7cc3bd2a3aa4a30059276ed5aa356ebbf2c542946401.png" src="../../../_images/0bbb4a4ff51a892c60ea7cc3bd2a3aa4a30059276ed5aa356ebbf2c542946401.png" />
 </div>
 </div>
 </section>
@@ -1016,7 +1030,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/63e6331631dc57f9a67793e008ce64e3ade90eadcc9f1409034755f84eebbbe0.png" src="../../../_images/63e6331631dc57f9a67793e008ce64e3ade90eadcc9f1409034755f84eebbbe0.png" />
+<img alt="../../../_images/c08645e8aec04e78e23ebd820fd34a624557965093f6bed83419e3c2dbcf0de6.png" src="../../../_images/c08645e8aec04e78e23ebd820fd34a624557965093f6bed83419e3c2dbcf0de6.png" />
 </div>
 </div>
 </section>
@@ -1037,10 +1051,10 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.5, 999.5, -0.5, 999.5)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(np.float64(-0.5), np.float64(999.5), np.float64(-0.5), np.float64(999.5))
 </pre></div>
 </div>
-<img alt="../../../_images/67bec9ee3c2b72308dce60b78724419bd73ba09d8e38c97474491242df365a21.png" src="../../../_images/67bec9ee3c2b72308dce60b78724419bd73ba09d8e38c97474491242df365a21.png" />
+<img alt="../../../_images/145f5b76ff674c67afe3f796ea0b97c4a1541a035fa64af9c664a94af521fc3c.png" src="../../../_images/145f5b76ff674c67afe3f796ea0b97c4a1541a035fa64af9c664a94af521fc3c.png" />
 </div>
 </div>
 </section>

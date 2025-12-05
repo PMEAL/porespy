@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -896,7 +896,19 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Signature (regions, pad_width=3)&gt;
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:13:42] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Signature (regions, pad_width=3)&gt;
 </pre></div>
 </div>
 </div>
@@ -923,7 +935,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/c2ca34c051f21c043dbfd82161429f1f5a6e80e1e5bb5d1e12bc666ad48ed201.png" src="../../../_images/c2ca34c051f21c043dbfd82161429f1f5a6e80e1e5bb5d1e12bc666ad48ed201.png" />
+<img alt="../../../_images/2296eaa109c4514eb8d30b65fcd222ce8b5a322e0f96848633a9d136c2ed8000.png" src="../../../_images/2296eaa109c4514eb8d30b65fcd222ce8b5a322e0f96848633a9d136c2ed8000.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -938,7 +950,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d170361ef391be84fbc1bff144c94812621107aecc2dac35e10600f4ab65918a.png" src="../../../_images/d170361ef391be84fbc1bff144c94812621107aecc2dac35e10600f4ab65918a.png" />
+<img alt="../../../_images/08dd3a987b33864aba45ea02d982b010985b104e30dbdb636e9319dd65a294c6.png" src="../../../_images/08dd3a987b33864aba45ea02d982b010985b104e30dbdb636e9319dd65a294c6.png" />
 </div>
 </div>
 <p>The above image contains the original regions, plus new regions around the borders.  These regions have their own region number so they will be recognized as pores by the network extraction tool.  They are also bounded by <code class="docutils literal notranslate"><span class="pre">False</span></code> pixels on each side so that they do not get connected to each other during the network extraction.</p>
@@ -960,7 +972,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/8fb0214dd7e3054e9b1fc259e5153fe70bd315977405b86bf4740fcb14e9150c.png" src="../../../_images/8fb0214dd7e3054e9b1fc259e5153fe70bd315977405b86bf4740fcb14e9150c.png" />
+<img alt="../../../_images/95d4db933d0f17a885ceb4dde5456ae4a2e4ae7a174e00302a627cc927920cd1.png" src="../../../_images/95d4db933d0f17a885ceb4dde5456ae4a2e4ae7a174e00302a627cc927920cd1.png" />
 </div>
 </div>
 <p>Adding padding to the beginning of each axis:</p>
@@ -977,7 +989,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/7116d0ef9a4ce1164ade92fdec980cf93ff9f3be4ea99d0ac0c1c69401b0452f.png" src="../../../_images/7116d0ef9a4ce1164ade92fdec980cf93ff9f3be4ea99d0ac0c1c69401b0452f.png" />
+<img alt="../../../_images/f407020ccc579c3aac92afd259f24f8b509c3cc3f8460fefbcc8ecf8e456ad70.png" src="../../../_images/f407020ccc579c3aac92afd259f24f8b509c3cc3f8460fefbcc8ecf8e456ad70.png" />
 </div>
 </div>
 <p>Adding padding to the beginning and end of a single axis:</p>
@@ -994,7 +1006,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/00854ae0229cb430b725ba3b1987f46e68709d1cfee5481da7741c259d1772c9.png" src="../../../_images/00854ae0229cb430b725ba3b1987f46e68709d1cfee5481da7741c259d1772c9.png" />
+<img alt="../../../_images/dbb8ff27393e43e304486c4d7a96a0b892e84a5a09825e1a0e448990a0f7b7f0.png" src="../../../_images/dbb8ff27393e43e304486c4d7a96a0b892e84a5a09825e1a0e448990a0f7b7f0.png" />
 </div>
 </div>
 </section>

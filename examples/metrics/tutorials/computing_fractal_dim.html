@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -921,6 +921,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:12:54] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div></div>
 </div>
 <p>Generate a sierpinski carpet and visualize.</p>
 <div class="cell docutils container">
@@ -931,7 +945,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/08545f14246d16c3fbc2dcb462850dca7dfea9668de975acf97bde68268889e1.png" src="../../../_images/08545f14246d16c3fbc2dcb462850dca7dfea9668de975acf97bde68268889e1.png" />
+<img alt="../../../_images/a77a5a648186f7ca627c1f0f3ece3699eb46b1334b0115c102694bfb4f556d72.png" src="../../../_images/a77a5a648186f7ca627c1f0f3ece3699eb46b1334b0115c102694bfb4f556d72.png" />
 </div>
 </div>
 <p>Finally, apply the box count function and visualize.</p>
@@ -958,7 +972,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/6827aaccd9c8ded16d5cd6f5c80121eaea2cee76d5d94a7cff87f5df7afb66b3.png" src="../../../_images/6827aaccd9c8ded16d5cd6f5c80121eaea2cee76d5d94a7cff87f5df7afb66b3.png" />
+<img alt="../../../_images/88b9dc1f24858dce2ba174a80d21fbc29b5f134ff722770da1d379f0249c59ed.png" src="../../../_images/88b9dc1f24858dce2ba174a80d21fbc29b5f134ff722770da1d379f0249c59ed.png" />
 </div>
 </div>
 <p>The horizontal portion of the <code class="docutils literal notranslate"><span class="pre">slope</span> <span class="pre">vs</span> <span class="pre">box</span> <span class="pre">edge</span> <span class="pre">length</span></code> curve, between <span class="math notranslate nohighlight">\(10^1\)</span> and <span class="math notranslate nohighlight">\(10^2\)</span> is a flat line with a value of approximately 1.9.  Beyond a box edge length of <span class="math notranslate nohighlight">\(10^2\)</span> the analysis becomes impacted by the finite image size so the result begins to diverge.</p>

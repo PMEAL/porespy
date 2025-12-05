@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -893,8 +893,19 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[00:40:03] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
-<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:15:29] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> PARDISO solver not installed on this platform. Simulations will be slow.       <a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+</pre>
+</div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:15:32] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
 </pre>
 </div></div>
 </div>
@@ -909,7 +920,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/8126842c81e67eda431c82dcfca097c6225daaea37b63ca08a299e2982591708.png" src="../../../_images/8126842c81e67eda431c82dcfca097c6225daaea37b63ca08a299e2982591708.png" />
+<img alt="../../../_images/eaf8d7d224a30ff39e3f03a212ddd4d6cc3e15bb12e5609bf54ce376a54c262d.png" src="../../../_images/eaf8d7d224a30ff39e3f03a212ddd4d6cc3e15bb12e5609bf54ce376a54c262d.png" />
 </div>
 </div>
 <p>MAGNET uses a series of filters to extract a pore network but porespy has one function that does all this work for you!</p>
@@ -920,8 +931,12 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/networks/_magnet.py:247: FutureWarning: `skeletonize_3d` is deprecated since version 0.23 and will be removed in version 0.25. Use `skimage.morphology.skeletonize` instead.
-  sk = skeletonize(im).astype(&#39;bool&#39;)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/networks/_magnet.py:340: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  a = square(3)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/tools/_morphology.py:171: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = square(w)
 </pre></div>
 </div>
 </div>
@@ -943,22 +958,22 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Network at 0x7fb127fb2710&gt;
+net : &lt;openpnm.network.Network at 0x7f3cbb456da0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  throat.conns                                                    243 / 243
-  3  pore.coords                                                     217 / 217
-  4  throat.actual_length                                            243 / 243
-  5  throat.area                                                     243 / 243
-  6  throat.max_diameter                                             243 / 243
-  7  throat.min_diameter                                             243 / 243
-  8  throat.avg_diameter                                             243 / 243
-  9  throat.inscribed_diameter                                       243 / 243
- 10  throat.integrated_diameter                                      243 / 243
- 11  pore.inscribed_diameter                                         217 / 217
- 12  pore.equivalent_diameter                                        217 / 217
- 13  pore.index                                                      217 / 217
+  2  throat.conns                                                    327 / 327
+  3  pore.coords                                                     301 / 301
+  4  throat.actual_length                                            327 / 327
+  5  throat.area                                                     327 / 327
+  6  throat.max_diameter                                             327 / 327
+  7  throat.min_diameter                                             327 / 327
+  8  throat.avg_diameter                                             327 / 327
+  9  throat.inscribed_diameter                                       327 / 327
+ 10  throat.integrated_diameter                                      327 / 327
+ 11  pore.inscribed_diameter                                         301 / 301
+ 12  pore.equivalent_diameter                                        301 / 301
+ 13  pore.index                                                      301 / 301
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -985,7 +1000,7 @@ net : &lt;openpnm.network.Network at 0x7fb127fb2710&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/f7fe297d74287440e6d512344160073ac4b84c6896590d02e7b910b3a7e7801e.png" src="../../../_images/f7fe297d74287440e6d512344160073ac4b84c6896590d02e7b910b3a7e7801e.png" />
+<img alt="../../../_images/e9a634ebcf5be3ddda4f19e4b68140edb8a68590a9ffca3ed94dc0fd12f1b3ea.png" src="../../../_images/e9a634ebcf5be3ddda4f19e4b68140edb8a68590a9ffca3ed94dc0fd12f1b3ea.png" />
 </div>
 </div>
 </section>

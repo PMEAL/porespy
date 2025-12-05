@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -923,6 +923,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:12:53] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div></div>
 </div>
 <p>Consider the image below, where grey indicates the void phase and black is the solid phase. We can see by eye that there are many isolated clusters of grey pixels which are completely surrounded by solid. These are “closed” pores.</p>
 <div class="cell docutils container">
@@ -935,7 +949,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/2fe141034c407c507713ac020a5fc847d6db0a299c613b752cb462053d852503.png" src="../../../_images/2fe141034c407c507713ac020a5fc847d6db0a299c613b752cb462053d852503.png" />
+<img alt="../../../_images/7b50cf3ec390c73dbc4d4ebfdc29bd92a7d340c18a1a75008d99035afc2492e1.png" src="../../../_images/7b50cf3ec390c73dbc4d4ebfdc29bd92a7d340c18a1a75008d99035afc2492e1.png" />
 </div>
 </div>
 <p>We can identify these closed pores using <code class="docutils literal notranslate"><span class="pre">find_closed_pores</span></code> or we can just go ahead and fill them:</p>
@@ -958,7 +972,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/6e2dbf00b0e5c7568d12d1d41ba877bc233228a79861ba2507c7519abcf7871e.png" src="../../../_images/6e2dbf00b0e5c7568d12d1d41ba877bc233228a79861ba2507c7519abcf7871e.png" />
+<img alt="../../../_images/fe81a2554f1ed45f5212023b0c5750976ab72d5e8cb09c93142402b0fbc02391.png" src="../../../_images/fe81a2554f1ed45f5212023b0c5750976ab72d5e8cb09c93142402b0fbc02391.png" />
 </div>
 </div>
 </section>
@@ -987,7 +1001,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d214d8a8c55b063db868fe73015d56a4e25a223271777439350618d6d1abf10e.png" src="../../../_images/d214d8a8c55b063db868fe73015d56a4e25a223271777439350618d6d1abf10e.png" />
+<img alt="../../../_images/70b98a5b5f2a455fe5bd11959de7b478eb9b9dce994ba681dc51c2c1f72af605.png" src="../../../_images/70b98a5b5f2a455fe5bd11959de7b478eb9b9dce994ba681dc51c2c1f72af605.png" />
 </div>
 </div>
 <p>PoreSpy offers functions to find or fill both closed and surface pores called <code class="docutils literal notranslate"><span class="pre">find_invalid_pores</span></code> and <code class="docutils literal notranslate"><span class="pre">fill_invalid_pores</span></code>. The <code class="docutils literal notranslate"><span class="pre">find_invalid_pores</span></code> function returns an image with <code class="docutils literal notranslate"><span class="pre">1</span></code> indicating closed pores and <code class="docutils literal notranslate"><span class="pre">2</span></code> indicating surface pores.</p>
@@ -1012,7 +1026,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/493f1633bf5a6c5b3b883ef03ce22ad1b128c2f35242c6ee2f1864b0b7f73ebc.png" src="../../../_images/493f1633bf5a6c5b3b883ef03ce22ad1b128c2f35242c6ee2f1864b0b7f73ebc.png" />
+<img alt="../../../_images/bbd2b743ccf0ea3d4fe9910e618f61fec3389165a11f2c3a83c40ea9a49f5527.png" src="../../../_images/bbd2b743ccf0ea3d4fe9910e618f61fec3389165a11f2c3a83c40ea9a49f5527.png" />
 </div>
 </div>
 </section>
@@ -1041,7 +1055,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/0caee48a0a423e35425194dd49de555c78a7fca15e1118a1fa2143c8ff39b8fe.png" src="../../../_images/0caee48a0a423e35425194dd49de555c78a7fca15e1118a1fa2143c8ff39b8fe.png" />
+<img alt="../../../_images/11517df6dfd58068fd198e90d2701b2fa4ff238caa759e1c2f964707d5cf4ca6.png" src="../../../_images/11517df6dfd58068fd198e90d2701b2fa4ff238caa759e1c2f964707d5cf4ca6.png" />
 </div>
 </div>
 </section>
@@ -1070,7 +1084,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/5fb4a228c3ee9361c9959ebf833781fa241373dc14c63c6b8baa5ad84ac1bc40.png" src="../../../_images/5fb4a228c3ee9361c9959ebf833781fa241373dc14c63c6b8baa5ad84ac1bc40.png" />
+<img alt="../../../_images/0ac9b90a03a19a64f677a05ce949590cbcdf284b6821fd902bca1467be3f8405.png" src="../../../_images/0ac9b90a03a19a64f677a05ce949590cbcdf284b6821fd902bca1467be3f8405.png" />
 </div>
 </div>
 </section>
@@ -1099,7 +1113,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/6c29eac9217128ffa40e5cf8e9139adb200cbfd24428b6b201d462306c0ae233.png" src="../../../_images/6c29eac9217128ffa40e5cf8e9139adb200cbfd24428b6b201d462306c0ae233.png" />
+<img alt="../../../_images/0db228a0c8f241dd40fa7394f4d2e8be73a6902a6334baacc3ec69a6713aef71.png" src="../../../_images/0db228a0c8f241dd40fa7394f4d2e8be73a6902a6334baacc3ec69a6713aef71.png" />
 </div>
 </div>
 </section>

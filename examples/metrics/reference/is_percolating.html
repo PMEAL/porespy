@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -889,6 +889,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:14:24] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div></div>
 </div>
 <section id="im">
 <h2><code class="docutils literal notranslate"><span class="pre">im</span></code><a class="headerlink" href="#im" title="Link to this heading">#</a></h2>
@@ -905,7 +919,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/6cbe9561913e7135b26b23212367f7b8b515552f1a604f3e9271e711539e0a2c.png" src="../../../_images/6cbe9561913e7135b26b23212367f7b8b515552f1a604f3e9271e711539e0a2c.png" />
+<img alt="../../../_images/a018ac89937f48f934aa423af4cc9d8cb01b18c0bd2409778f293499f36b78ea.png" src="../../../_images/a018ac89937f48f934aa423af4cc9d8cb01b18c0bd2409778f293499f36b78ea.png" />
 </div>
 </div>
 <p>The function returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the image has a percolating path and <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
@@ -937,7 +951,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/ce0ae6d24c99e61090b44b6d54fa452a7cb68db3e6d9fce049567d85075776a5.png" src="../../../_images/ce0ae6d24c99e61090b44b6d54fa452a7cb68db3e6d9fce049567d85075776a5.png" />
+<img alt="../../../_images/5ee846045473dc9f7bcc66a118e67c84e8aae10e7ed4b8a9cb89f9bc9975410f.png" src="../../../_images/5ee846045473dc9f7bcc66a118e67c84e8aae10e7ed4b8a9cb89f9bc9975410f.png" />
 </div>
 </div>
 <p>The default behavior is to return a boolean for each axis:</p>
@@ -948,7 +962,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[False, True]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.False_, np.True_]
 </pre></div>
 </div>
 </div>
@@ -985,7 +999,7 @@ True
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/9ec851da4856d698992cca6d3f1b0b74b77c21f36f5b3a83af482d6225fb61b0.png" src="../../../_images/9ec851da4856d698992cca6d3f1b0b74b77c21f36f5b3a83af482d6225fb61b0.png" />
+<img alt="../../../_images/bbce19bdade4f28326f99b986eec2885e2d547502ef4bf0c8060addd408ee4d0.png" src="../../../_images/bbce19bdade4f28326f99b986eec2885e2d547502ef4bf0c8060addd408ee4d0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1016,7 +1030,7 @@ True
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/433980df5beb71af94de99eb46db6cd18a460a75651b37440fd626c4a88a5946.png" src="../../../_images/433980df5beb71af94de99eb46db6cd18a460a75651b37440fd626c4a88a5946.png" />
+<img alt="../../../_images/d899d5f2e1d8da2b808563a5d7a93ddc562d75bda7459290e792e2ecd915ae1a.png" src="../../../_images/d899d5f2e1d8da2b808563a5d7a93ddc562d75bda7459290e792e2ecd915ae1a.png" />
 </div>
 </div>
 <p>In the image above there are clusters which would be considered connected using maximal connectivity, but not otherwise:</p>

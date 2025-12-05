@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=78389542" />
@@ -887,6 +887,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:13:46] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div></div>
 </div>
 <section id="generating-artificial-images">
 <h2>Generating Artificial Images<a class="headerlink" href="#generating-artificial-images" title="Link to this heading">#</a></h2>
@@ -901,7 +915,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f46a2caf9648f78257757440f3cc179c9b34beb71850a4adc42ae48ee0c157e0.png" src="../../_images/f46a2caf9648f78257757440f3cc179c9b34beb71850a4adc42ae48ee0c157e0.png" />
+<img alt="../../_images/d6136c9a598814427844dd1f479ee5493d6cdeb49888a00b1d9de9c1e83bf6e1.png" src="../../_images/d6136c9a598814427844dd1f479ee5493d6cdeb49888a00b1d9de9c1e83bf6e1.png" />
 </div>
 </div>
 <p>A full list of generator functions and how to use them can be found <a class="reference external" href="https://porespy.org/_examples/generators/index.html">here</a>.</p>
@@ -919,7 +933,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5e94b1ef140e618fd04a03b93dc8bcf1c45e35369b5c29a61222ccf680f1daae.png" src="../../_images/5e94b1ef140e618fd04a03b93dc8bcf1c45e35369b5c29a61222ccf680f1daae.png" />
+<img alt="../../_images/f631818ac398cb237e89b4007866819631484d35e16da1175783c6cb9762e6e1.png" src="../../_images/f631818ac398cb237e89b4007866819631484d35e16da1175783c6cb9762e6e1.png" />
 </div>
 </div>
 <p>A less common filter is the application of chords that span the pore space in a given direction. It is possible to gain information about anisotropy of the material by looking at the distributions of chords lengths in each principle direction.</p>
@@ -935,7 +949,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/116f1ffc881a2e3cb6b10d8952a2acfd57658c0ee5a213697052d3dfeaa803da.png" src="../../_images/116f1ffc881a2e3cb6b10d8952a2acfd57658c0ee5a213697052d3dfeaa803da.png" />
+<img alt="../../_images/8504367c59e110971b11b849febab020276d515461052687d609cf1afa880c4d.png" src="../../_images/8504367c59e110971b11b849febab020276d515461052687d609cf1afa880c4d.png" />
 </div>
 </div>
 </section>
@@ -957,7 +971,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/22925dd9cea387fbcffac16cd1c71219f48bca956d5ce18df141fdde536954e2.png" src="../../_images/22925dd9cea387fbcffac16cd1c71219f48bca956d5ce18df141fdde536954e2.png" />
+<img alt="../../_images/2ab0a4927696e1b05032d0a9f2f5f3c88e2dd104748b89150e523589d70163ae.png" src="../../_images/2ab0a4927696e1b05032d0a9f2f5f3c88e2dd104748b89150e523589d70163ae.png" />
 </div>
 </div>
 </section>
@@ -979,7 +993,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ec7c5c2288b5e0f0224c90326863db4a3367d5d8cb7ed790e0fb55f9d2dec91c.png" src="../../_images/ec7c5c2288b5e0f0224c90326863db4a3367d5d8cb7ed790e0fb55f9d2dec91c.png" />
+<img alt="../../_images/cd6e60a2b0b9d0fad57b67531ccd11d410b8dc8c3ce23ede4b58a413a38aba00.png" src="../../_images/cd6e60a2b0b9d0fad57b67531ccd11d410b8dc8c3ce23ede4b58a413a38aba00.png" />
 </div>
 </div>
 </section>

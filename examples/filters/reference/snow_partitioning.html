@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -893,6 +893,22 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:19:05] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div></div>
 </div>
 <section id="im">
 <h2><code class="docutils literal notranslate"><span class="pre">im</span></code><a class="headerlink" href="#im" title="Link to this heading">#</a></h2>
@@ -901,6 +917,16 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="n">porosity</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">blobiness</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span>
 <span class="n">snow</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">snow_partitioning</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:446: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
+/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:594: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  labels, N = spim.label(peaks &gt; 0, structure=cube(3))
+/home/runner/work/porespy/porespy/src/porespy/tools/_morphology.py:171: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = square(w)
 </pre></div>
 </div>
 </div>
@@ -914,7 +940,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-Results of snow_partitioning generated at Sat Nov 29 00:43:08 2025
+Results of snow_partitioning generated at Fri Dec  5 08:19:06 2025
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 im                        Array of size (200, 200)
 dt                        Array of size (200, 200)
@@ -936,7 +962,7 @@ regions                   Array of size (200, 200)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/1ab7c5021faed38e0454da1c374d3227cf023a45e926e53a024fbac008ce8723.png" src="../../../_images/1ab7c5021faed38e0454da1c374d3227cf023a45e926e53a024fbac008ce8723.png" />
+<img alt="../../../_images/0e19d915d1973623fe4be87cd5f1814f6e9e67149e457d699b76b456d8bd1798.png" src="../../../_images/0e19d915d1973623fe4be87cd5f1814f6e9e67149e457d699b76b456d8bd1798.png" />
 </div>
 </div>
 </section>
@@ -962,7 +988,7 @@ regions                   Array of size (200, 200)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/27f43b69e9b233c8acf932f8fc74ae6f23cd8e9ba203342a1144435566db26a8.png" src="../../../_images/27f43b69e9b233c8acf932f8fc74ae6f23cd8e9ba203342a1144435566db26a8.png" />
+<img alt="../../../_images/aca22acd74e697d33f194dbc021b118d9d17dedae6b4e75efd9baa4d26ac2eea.png" src="../../../_images/aca22acd74e697d33f194dbc021b118d9d17dedae6b4e75efd9baa4d26ac2eea.png" />
 </div>
 </div>
 <p>As can be seen above, a higher value of <code class="docutils literal notranslate"><span class="pre">sigma</span></code> results in several peaks being missed or skipped.  This may or may not be desireable.</p>
@@ -989,7 +1015,7 @@ regions                   Array of size (200, 200)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/986b30562d8a252da6ff12834a4fd44ca92201df7e696ea71545ccc437cf2c1e.png" src="../../../_images/986b30562d8a252da6ff12834a4fd44ca92201df7e696ea71545ccc437cf2c1e.png" />
+<img alt="../../../_images/2c81f0f7d520e2392a267041638ec578c98b3caf165a78608e0b5d4a160708c4.png" src="../../../_images/2c81f0f7d520e2392a267041638ec578c98b3caf165a78608e0b5d4a160708c4.png" />
 </div>
 </div>
 </section>

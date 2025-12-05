@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -888,6 +888,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:15:03] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -898,7 +912,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/afbd463c56306664786a2c85bfaf30156088cdce2aafff39f618e1d0b88f6670.png" src="../../../_images/afbd463c56306664786a2c85bfaf30156088cdce2aafff39f618e1d0b88f6670.png" />
+<img alt="../../../_images/aac7e9f9e1c5bcaca79708c95ad03cb23beaa0d2aba3221e2476c3989aadb54b.png" src="../../../_images/aac7e9f9e1c5bcaca79708c95ad03cb23beaa0d2aba3221e2476c3989aadb54b.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1029,7 +1043,15 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/2dea74d6dc226394513599dbd449162d18f792311c80f7d2652664df5665510d.png" src="../../../_images/2dea74d6dc226394513599dbd449162d18f792311c80f7d2652664df5665510d.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:446: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
+/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:594: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  labels, N = spim.label(peaks &gt; 0, structure=cube(3))
+/home/runner/work/porespy/porespy/src/porespy/tools/_morphology.py:171: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = square(w)
+</pre></div>
+</div>
+<img alt="../../../_images/62690f10618260a3d6afc35d5d3ef3752110c4e58fc063f41b526c39abee9853.png" src="../../../_images/62690f10618260a3d6afc35d5d3ef3752110c4e58fc063f41b526c39abee9853.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1087,7 +1109,7 @@ throat.equivalent_diameter
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/62d22882bf85e4b379d1dbba515bf4a654d9c3f2d94d30b6b1b205032687c64b.png" src="../../../_images/62d22882bf85e4b379d1dbba515bf4a654d9c3f2d94d30b6b1b205032687c64b.png" />
+<img alt="../../../_images/27f0c1b44e6bcd2ec81f518da23305773cd71c029d25506e0ce206d2e6f16599.png" src="../../../_images/27f0c1b44e6bcd2ec81f518da23305773cd71c029d25506e0ce206d2e6f16599.png" />
 </div>
 </div>
 <p>We can manually combine these two watersheds:</p>
@@ -1099,7 +1121,7 @@ throat.equivalent_diameter
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/1a4c8461da5782a94876bc2d8d2d388fe71f848380692d0f6bda1fbc0661e320.png" src="../../../_images/1a4c8461da5782a94876bc2d8d2d388fe71f848380692d0f6bda1fbc0661e320.png" />
+<img alt="../../../_images/12afd9b40a9cfee0763466f0ec522b6f1eade14780523a7805c80f495b9c0273.png" src="../../../_images/12afd9b40a9cfee0763466f0ec522b6f1eade14780523a7805c80f495b9c0273.png" />
 </div>
 </div>
 <p>Now we can send this combined watershed image, along with an image with each phase labelled as 1 and 2 to <code class="docutils literal notranslate"><span class="pre">regions_to_network</span></code>:</p>

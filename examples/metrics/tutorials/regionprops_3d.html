@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -894,6 +894,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:13:31] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div></div>
 </div>
 <section id="generating-a-test-image">
 <h2>Generating a test image<a class="headerlink" href="#generating-a-test-image" title="Link to this heading">#</a></h2>
@@ -907,7 +921,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/468740987f4300d89c69a5e63fe4afb423f8a0304a6ae11c403d4049ebff679f.png" src="../../../_images/468740987f4300d89c69a5e63fe4afb423f8a0304a6ae11c403d4049ebff679f.png" />
+<img alt="../../../_images/2b69bbe156337c62478f40a37adf5882d77b1795c1ee2c622e7f922638bfa6c1.png" src="../../../_images/2b69bbe156337c62478f40a37adf5882d77b1795c1ee2c622e7f922638bfa6c1.png" />
 </div>
 </div>
 </section>
@@ -921,6 +935,16 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:446: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
+/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:594: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  labels, N = spim.label(peaks &gt; 0, structure=cube(3))
+/home/runner/work/porespy/porespy/src/porespy/tools/_morphology.py:171: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = square(w)
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -930,7 +954,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/1e992c05f1daef46575345bc80e217a048556a7104a743b7032f8968442425af.png" src="../../../_images/1e992c05f1daef46575345bc80e217a048556a7104a743b7032f8968442425af.png" />
+<img alt="../../../_images/59092ddd310f482b04587d99d0454b6a895b6dff396416bbcd939ad506099ebf.png" src="../../../_images/59092ddd310f482b04587d99d0454b6a895b6dff396416bbcd939ad506099ebf.png" />
 </div>
 </div>
 </section>
@@ -980,7 +1004,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d0ecc64be4cc6cf05ac62d696413c1fb97b56d9f6737e7f58797f4a0f7cb74d7.png" src="../../../_images/d0ecc64be4cc6cf05ac62d696413c1fb97b56d9f6737e7f58797f4a0f7cb74d7.png" />
+<img alt="../../../_images/2eaa217e8da4e501cc37e5f8ea17abcb1923573b1f46bf89d40eedd77dc35f48.png" src="../../../_images/2eaa217e8da4e501cc37e5f8ea17abcb1923573b1f46bf89d40eedd77dc35f48.png" />
 </div>
 </div>
 <p>View image of region’s border and largest incribed sphere together.</p>
@@ -992,7 +1016,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/df042a5edb2800021752f676d4829952b34cba0e2e6f0abf1ea7b47ddcb108fd.png" src="../../../_images/df042a5edb2800021752f676d4829952b34cba0e2e6f0abf1ea7b47ddcb108fd.png" />
+<img alt="../../../_images/fed4d25eb8051a3a21aa814a965d01a30487a2398a942787dbdeaf9b5dec5704.png" src="../../../_images/fed4d25eb8051a3a21aa814a965d01a30487a2398a942787dbdeaf9b5dec5704.png" />
 </div>
 </div>
 <p>One of the more interesting properties is the convex image, which is an image of the region with all the depressions in the boundary filled in.  This is useful because one can compare it to the actual region and learn about the shape of the region.  One such metric is the <em>solidity</em> which is defined as the ratio of pixels in the region to pixels of the convex hull image.</p>
@@ -1004,7 +1028,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/781e13c955b274b7538939d49c5079e96c9a9786045a877674e5ded712c778ed.png" src="../../../_images/781e13c955b274b7538939d49c5079e96c9a9786045a877674e5ded712c778ed.png" />
+<img alt="../../../_images/5ba953bebc21d0b34a9a0584fda31aef3a66001bef094baec3f6d04dfb39e18b.png" src="../../../_images/5ba953bebc21d0b34a9a0584fda31aef3a66001bef094baec3f6d04dfb39e18b.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1045,7 +1069,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/2f7082e30ce370f5a846f95391f8a7a8b224e6ff132d081062d11ff78ca08abc.png" src="../../../_images/2f7082e30ce370f5a846f95391f8a7a8b224e6ff132d081062d11ff78ca08abc.png" />
+<img alt="../../../_images/43d2c5303798b4a4ffbf75e4e296895dedad283fab6eff710ee57091c4be32d9.png" src="../../../_images/43d2c5303798b4a4ffbf75e4e296895dedad283fab6eff710ee57091c4be32d9.png" />
 </div>
 </div>
 <p>Another useful feature of the Pandas DataFrame is the ability to look at all metrics for a given pore at once, which is done by looking at a single row in all columns:</p>
@@ -1097,7 +1121,7 @@ Name: 0, dtype: float64
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/1e6c7b0f94a6775dd71fb565ea78dc08ccd4cff6ec33e06bef48f2631740066c.png" src="../../../_images/1e6c7b0f94a6775dd71fb565ea78dc08ccd4cff6ec33e06bef48f2631740066c.png" />
+<img alt="../../../_images/ee2ef29d182bad9c2f022f869ffc36184d7af54a6981b4976ccc376e9fbd898c.png" src="../../../_images/ee2ef29d182bad9c2f022f869ffc36184d7af54a6981b4976ccc376e9fbd898c.png" />
 </div>
 </div>
 </section>
@@ -1114,7 +1138,7 @@ Name: 0, dtype: float64
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d046dc74cc5ee9082e5d52aeb7571432c76f92b0bb1bfeedece3caee1cc634d0.png" src="../../../_images/d046dc74cc5ee9082e5d52aeb7571432c76f92b0bb1bfeedece3caee1cc634d0.png" />
+<img alt="../../../_images/2d3ba3c50b7fa5a8d7bdca34592416ae01d66b5dee2bb8479d4425c7ad010462.png" src="../../../_images/2d3ba3c50b7fa5a8d7bdca34592416ae01d66b5dee2bb8479d4425c7ad010462.png" />
 </div>
 </div>
 <p>An interesting result can be seen where the regions at the edges are darker signifying more <em>solidity</em>. This is because the straight edges conform exactly to their convex hulls.</p>

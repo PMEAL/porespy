@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -892,6 +892,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:15:13] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div></div>
 </div>
 <section id="im">
 <h2><code class="docutils literal notranslate"><span class="pre">im</span></code><a class="headerlink" href="#im" title="Link to this heading">#</a></h2>
@@ -908,7 +922,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/56dee846cfdabb9d2b726a184d15a933849e292fc2c1669bde36e011c9e8d25a.png" src="../../../_images/56dee846cfdabb9d2b726a184d15a933849e292fc2c1669bde36e011c9e8d25a.png" />
+<img alt="../../../_images/740a5de395d993fc401be468534b02c407a78165679ea55cfebbbe49ae032e16.png" src="../../../_images/740a5de395d993fc401be468534b02c407a78165679ea55cfebbbe49ae032e16.png" />
 </div>
 </div>
 <p>Now we can calculate the size distributions in the test image. <code class="docutils literal notranslate"><span class="pre">pore_size_distribution</span></code> returns a custom object with information of the distribution of the pore sizes. The x axis in the following images is the Log(pore radius).The histogram of logarithm (base-10) of pore sizes is useful to plot wide size distributions or to better visualize the data in the small size region.</p>
@@ -926,7 +940,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/5b6dfe00d6562143787425343cfe0a4e32ae1557c377bbf03fa8e71249c5df76.png" src="../../../_images/5b6dfe00d6562143787425343cfe0a4e32ae1557c377bbf03fa8e71249c5df76.png" />
+<img alt="../../../_images/a26a59f750fb93e8d3ce76233a5ec1f457a706ec0f2e088f7ac97bcf9c1171e9.png" src="../../../_images/a26a59f750fb93e8d3ce76233a5ec1f457a706ec0f2e088f7ac97bcf9c1171e9.png" />
 </div>
 </div>
 </section>
@@ -947,7 +961,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/30894002b575d87fee489f97b3fe4b752a8fa1e67eefd9192b0e0088a7c3784d.png" src="../../../_images/30894002b575d87fee489f97b3fe4b752a8fa1e67eefd9192b0e0088a7c3784d.png" />
+<img alt="../../../_images/6cef40c3e487ef9e61a51a6f479397095bbef827fd8fa4a290c34d264e682b46.png" src="../../../_images/6cef40c3e487ef9e61a51a6f479397095bbef827fd8fa4a290c34d264e682b46.png" />
 </div>
 </div>
 <p>Plot results:</p>
@@ -970,7 +984,7 @@ Note that for calculating the pore sizes base on diameter, <code class="docutils
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/15cf531551d7f1846a1e3cc9e7bd5fc30c33c9984944138c0c0df70c6e273baa.png" src="../../../_images/15cf531551d7f1846a1e3cc9e7bd5fc30c33c9984944138c0c0df70c6e273baa.png" />
+<img alt="../../../_images/0a450edc7315f2bf9ad6fd0246f47f2701fa1e8fb13a2dbd0ad4142f0d9720cf.png" src="../../../_images/0a450edc7315f2bf9ad6fd0246f47f2701fa1e8fb13a2dbd0ad4142f0d9720cf.png" />
 </div>
 </div>
 </section>
@@ -991,7 +1005,7 @@ Note that for calculating the pore sizes base on diameter, <code class="docutils
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/79eeda6070d9ce46f2afc977de0645d21431d5d50d741189a5480436b4e58d11.png" src="../../../_images/79eeda6070d9ce46f2afc977de0645d21431d5d50d741189a5480436b4e58d11.png" />
+<img alt="../../../_images/d9c1d57198a3cbc7ffabc0d999d1aa7319122cc368f8682509f4521ee71e58ce.png" src="../../../_images/d9c1d57198a3cbc7ffabc0d999d1aa7319122cc368f8682509f4521ee71e58ce.png" />
 </div>
 </div>
 </section>

@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -893,6 +893,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:18:25] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div></div>
 </div>
 <p>The arguments and their defaults are:</p>
 <div class="cell docutils container">
@@ -904,7 +918,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Signature (im: numpy.ndarray[typing.Any, numpy.dtype[+_ScalarType_co]], dt: numpy.ndarray[typing.Any, numpy.dtype[+_ScalarType_co]] = None, inlets: numpy.ndarray[typing.Any, numpy.dtype[+_ScalarType_co]] = None, sizes: int = None, method: Literal[&#39;dsi&#39;, &#39;fft&#39;, &#39;dt&#39;] = &#39;dt&#39;, smooth: bool = True)&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Signature (im: numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[~_ScalarT]], dt: numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[~_ScalarT]] = None, inlets: numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[~_ScalarT]] = None, sizes: int = None, method: Literal[&#39;dsi&#39;, &#39;fft&#39;, &#39;dt&#39;] = &#39;dt&#39;, smooth: bool = True)&gt;
 </pre></div>
 </div>
 </div>
@@ -923,7 +937,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d1b0897ca21197c9b8866865fffe0f96d2e87640e9a9a4aa3623b85d99d4b47e.png" src="../../../_images/d1b0897ca21197c9b8866865fffe0f96d2e87640e9a9a4aa3623b85d99d4b47e.png" />
+<img alt="../../../_images/310dd8dff67f01c2c53549fae2e116a7c4fc3fab1d49ab6444eba1336b586789.png" src="../../../_images/310dd8dff67f01c2c53549fae2e116a7c4fc3fab1d49ab6444eba1336b586789.png" />
 </div>
 </div>
 <p>A cumulative histogram of the voxel values is analogous to a porosimetry experiment:</p>
@@ -937,7 +951,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/a63a8ceb9c0910ef0a91f47e86b56ec68bc87b724b5d9873fd35979bd91187f9.png" src="../../../_images/a63a8ceb9c0910ef0a91f47e86b56ec68bc87b724b5d9873fd35979bd91187f9.png" />
+<img alt="../../../_images/d78b4ddd130e719967ee9ab974eb5d2942661b8af94ce2ec0f32d7f944d91c75.png" src="../../../_images/d78b4ddd130e719967ee9ab974eb5d2942661b8af94ce2ec0f32d7f944d91c75.png" />
 </div>
 </div>
 </section>
@@ -957,7 +971,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/7b1cbb5cba4b969fcd67c34f855eed37d3a2d66e836a475c96c56411a379b31d.png" src="../../../_images/7b1cbb5cba4b969fcd67c34f855eed37d3a2d66e836a475c96c56411a379b31d.png" />
+<img alt="../../../_images/bba5e6048295f26ccf7710e181ccee9d8a3b586d0d6806ded8104752bab58f60.png" src="../../../_images/bba5e6048295f26ccf7710e181ccee9d8a3b586d0d6806ded8104752bab58f60.png" />
 </div>
 </div>
 </section>
@@ -979,7 +993,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/6542bf812680df22f2f8231cfc0889319999f2dfe68837891a2b7df44a0ef183.png" src="../../../_images/6542bf812680df22f2f8231cfc0889319999f2dfe68837891a2b7df44a0ef183.png" />
+<img alt="../../../_images/37cfe4992b1860ea0ccfd2f3f9fe75650292364eb77109271b1b468c82f39bb8.png" src="../../../_images/37cfe4992b1860ea0ccfd2f3f9fe75650292364eb77109271b1b468c82f39bb8.png" />
 </div>
 </div>
 </section>
@@ -1005,7 +1019,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/9d3e01b22c9b9edfd91b42e854ff6c14505cba7ac42af820bb427f98c1039a2f.png" src="../../../_images/9d3e01b22c9b9edfd91b42e854ff6c14505cba7ac42af820bb427f98c1039a2f.png" />
+<img alt="../../../_images/4b99146a6d0e64708c675bebdd01cbe5b1db76a7ab329c5ece21b7ca1e0ab38b.png" src="../../../_images/4b99146a6d0e64708c675bebdd01cbe5b1db76a7ab329c5ece21b7ca1e0ab38b.png" />
 </div>
 </div>
 </section>

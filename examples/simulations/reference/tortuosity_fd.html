@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -903,8 +903,24 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-Results of tortuosity_fd generated at Sat Nov 29 00:42:31 2025
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:18:39] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> PARDISO solver not installed on this platform. Simulations will be slow.       <a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+</pre>
+</div><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+Results of tortuosity_fd generated at Fri Dec  5 08:18:39 2025
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 im                        Array of size (100, 100)
 tortuosity                0.9999984178777743
@@ -912,7 +928,7 @@ formation_factor          0.9999984178777743
 original_porosity         1.0
 effective_porosity        1.0
 im_conc                   Array of size (100, 100)
-time                      0.124302368
+time                      0.121674272
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -927,7 +943,7 @@ time                      0.124302368
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/e63b8d0fb47c2ecc6d3db1d7320a4d70ea60cfb27898f863616865a876db9c09.png" src="../../../_images/e63b8d0fb47c2ecc6d3db1d7320a4d70ea60cfb27898f863616865a876db9c09.png" />
+<img alt="../../../_images/2c967646a2ad81dc61ae8205cb087c7e5b71a47ba45f4a84fdfeaf36b6da313a.png" src="../../../_images/2c967646a2ad81dc61ae8205cb087c7e5b71a47ba45f4a84fdfeaf36b6da313a.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -944,7 +960,9 @@ time                      0.124302368
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/560a217ad25f244cfebf6cb1ac070ce918976cebb0891d7cc05d54d526e285c2.png" src="../../../_images/560a217ad25f244cfebf6cb1ac070ce918976cebb0891d7cc05d54d526e285c2.png" />
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Found non-percolating regions, were filled to percolate                              <a href="file:///home/runner/work/porespy/porespy/src/porespy/simulations/_dns.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_dns.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/simulations/_dns.py#73" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">73</span></a>
+</pre>
+</div><img alt="../../../_images/7a290df84c784f927f1a9198db67c67580a9f30e1d163742cd275df98d796a4d.png" src="../../../_images/7a290df84c784f927f1a9198db67c67580a9f30e1d163742cd275df98d796a4d.png" />
 </div>
 </div>
 </section>
@@ -965,7 +983,11 @@ time                      0.124302368
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/abec393ee9e4c7ed938359ac7cc88790c5f4a0ba09694c4c89687866dc93a32b.png" src="../../../_images/abec393ee9e4c7ed938359ac7cc88790c5f4a0ba09694c4c89687866dc93a32b.png" />
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Found non-percolating regions, were filled to percolate                              <a href="file:///home/runner/work/porespy/porespy/src/porespy/simulations/_dns.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_dns.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/simulations/_dns.py#73" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">73</span></a>
+</pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:18:40] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Found non-percolating regions, were filled to percolate                              <a href="file:///home/runner/work/porespy/porespy/src/porespy/simulations/_dns.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_dns.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/simulations/_dns.py#73" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">73</span></a>
+</pre>
+</div><img alt="../../../_images/34d1d884181b43d1bf7370877cd3c0794d520f232c2684b7a9047dcfdafdcfa2.png" src="../../../_images/34d1d884181b43d1bf7370877cd3c0794d520f232c2684b7a9047dcfdafdcfa2.png" />
 </div>
 </div>
 </section>

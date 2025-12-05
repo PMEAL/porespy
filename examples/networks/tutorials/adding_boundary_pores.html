@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -900,8 +900,19 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[00:39:56] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
-<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:15:23] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> PARDISO solver not installed on this platform. Simulations will be slow.       <a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+</pre>
+</div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:15:25] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
 </pre>
 </div></div>
 </div>
@@ -916,7 +927,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/af9ad914909001050002fc04d8daa665503571008fe24fc23205a4e1eff57d8b.png" src="../../../_images/af9ad914909001050002fc04d8daa665503571008fe24fc23205a4e1eff57d8b.png" />
+<img alt="../../../_images/df35117264a5c20e87d8880119609f37cc0549c4af905a2f032949886cc9d461.png" src="../../../_images/df35117264a5c20e87d8880119609f37cc0549c4af905a2f032949886cc9d461.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -930,7 +941,15 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/36346a561e90ba7ea1c40a9fd7b3fb05b64f9f63dd29fbad7e3fa849f6fbd262.png" src="../../../_images/36346a561e90ba7ea1c40a9fd7b3fb05b64f9f63dd29fbad7e3fa849f6fbd262.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:446: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
+/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:594: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  labels, N = spim.label(peaks &gt; 0, structure=cube(3))
+/home/runner/work/porespy/porespy/src/porespy/tools/_morphology.py:171: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = square(w)
+</pre></div>
+</div>
+<img alt="../../../_images/ef9a4f1ffc8798a17ff207aabc25d09df8f9c5e43db892e17a1abb86ec062804.png" src="../../../_images/ef9a4f1ffc8798a17ff207aabc25d09df8f9c5e43db892e17a1abb86ec062804.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -943,7 +962,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/3e08ccf1684638be2b61f0618441d221431f520b2f35f9d65e356f084c5f093e.png" src="../../../_images/3e08ccf1684638be2b61f0618441d221431f520b2f35f9d65e356f084c5f093e.png" />
+<img alt="../../../_images/b23fdaa4b7ad2cd2e8837c3c3ffacfca6b99d68963a4ea7cfa63bbcf1ae3ff2b.png" src="../../../_images/b23fdaa4b7ad2cd2e8837c3c3ffacfca6b99d68963a4ea7cfa63bbcf1ae3ff2b.png" />
 </div>
 </div>
 <p>The image above shows how boundary regions appear.  They are 3-voxel thick slices that are padded onto each face and given a unique label to differentiate them from the internal pores to which they connect. There are a few key things to note:</p>
@@ -973,7 +992,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/007350a486dce0ee1809a8f0d71ed5a04b296802fdf6e87704c88c35aae29d33.png" src="../../../_images/007350a486dce0ee1809a8f0d71ed5a04b296802fdf6e87704c88c35aae29d33.png" />
+<img alt="../../../_images/17df4e6ac5ef374ac9c1c833408e3a1c5f80e51f58bd9b1b6ed54373b27a6b8d.png" src="../../../_images/17df4e6ac5ef374ac9c1c833408e3a1c5f80e51f58bd9b1b6ed54373b27a6b8d.png" />
 </div>
 </div>
 <p>The approach outlined above is missing one important feature.  The boundary pores are not labelled.  When the process is performed internally by the <code class="docutils literal notranslate"><span class="pre">regions_to_network</span></code> function this is taken care of.</p>

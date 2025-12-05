@@ -1,17 +1,10 @@
 Traceback (most recent call last):
-  File "/home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 154, in wrapped
-    asyncio.get_running_loop()
-RuntimeError: no running event loop
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
   File "/home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
     executenb(
   File "/home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/nbclient/client.py", line 1319, in execute
     return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 158, in wrapped
+  File "/home/runner/work/porespy/porespy/.venv/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
     return loop.run_until_complete(inner)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
@@ -55,21 +48,21 @@ ax[2].imshow(im[0, ...].T > 0.6);
 [32m    117[39m [38;5;66;03m# fast-path based on plugin[39;00m
 [32m    118[39m [38;5;66;03m# (except in legacy mode)[39;00m
 
-[36mFile [39m[32m~/work/porespy/porespy/.venv/lib/python3.12/site-packages/imageio/core/request.py:249[39m, in [36mRequest.__init__[39m[34m(self, uri, mode, extension, format_hint, **kwargs)[39m
-[32m    246[39m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([33mf[39m[33m"[39m[33mInvalid Request.Mode: [39m[38;5;132;01m{[39;00mmode[38;5;132;01m}[39;00m[33m"[39m)
-[32m    248[39m [38;5;66;03m# Parse what was given[39;00m
-[32m--> [39m[32m249[39m [38;5;28;43mself[39;49m[43m.[49m[43m_parse_uri[49m[43m([49m[43muri[49m[43m)[49m
-[32m    251[39m [38;5;66;03m# Set extension[39;00m
-[32m    252[39m [38;5;28;01mif[39;00m extension [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
+[36mFile [39m[32m~/work/porespy/porespy/.venv/lib/python3.12/site-packages/imageio/core/request.py:250[39m, in [36mRequest.__init__[39m[34m(self, uri, mode, extension, format_hint, **kwargs)[39m
+[32m    247[39m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([33mf[39m[33m"[39m[33mInvalid Request.Mode: [39m[38;5;132;01m{[39;00mmode[38;5;132;01m}[39;00m[33m"[39m)
+[32m    249[39m [38;5;66;03m# Parse what was given[39;00m
+[32m--> [39m[32m250[39m [38;5;28;43mself[39;49m[43m.[49m[43m_parse_uri[49m[43m([49m[43muri[49m[43m)[49m
+[32m    252[39m [38;5;66;03m# Set extension[39;00m
+[32m    253[39m [38;5;28;01mif[39;00m extension [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
 
-[36mFile [39m[32m~/work/porespy/porespy/.venv/lib/python3.12/site-packages/imageio/core/request.py:409[39m, in [36mRequest._parse_uri[39m[34m(self, uri)[39m
-[32m    406[39m [38;5;28;01mif[39;00m is_read_request:
-[32m    407[39m     [38;5;66;03m# Reading: check that the file exists (but is allowed a dir)[39;00m
-[32m    408[39m     [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m os.path.exists(fn):
-[32m--> [39m[32m409[39m         [38;5;28;01mraise[39;00m [38;5;167;01mFileNotFoundError[39;00m([33m"[39m[33mNo such file: [39m[33m'[39m[38;5;132;01m%s[39;00m[33m'[39m[33m"[39m % fn)
-[32m    410[39m [38;5;28;01melse[39;00m:
-[32m    411[39m     [38;5;66;03m# Writing: check that the directory to write to does exist[39;00m
-[32m    412[39m     dn = os.path.dirname(fn)
+[36mFile [39m[32m~/work/porespy/porespy/.venv/lib/python3.12/site-packages/imageio/core/request.py:410[39m, in [36mRequest._parse_uri[39m[34m(self, uri)[39m
+[32m    407[39m [38;5;28;01mif[39;00m is_read_request:
+[32m    408[39m     [38;5;66;03m# Reading: check that the file exists (but is allowed a dir)[39;00m
+[32m    409[39m     [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m os.path.exists(fn):
+[32m--> [39m[32m410[39m         [38;5;28;01mraise[39;00m [38;5;167;01mFileNotFoundError[39;00m([33m"[39m[33mNo such file: [39m[33m'[39m[38;5;132;01m%s[39;00m[33m'[39m[33m"[39m % fn)
+[32m    411[39m [38;5;28;01melse[39;00m:
+[32m    412[39m     [38;5;66;03m# Writing: check that the directory to write to does exist[39;00m
+[32m    413[39m     dn = os.path.dirname(fn)
 
 [31mFileNotFoundError[39m: No such file: '/home/runner/work/porespy/porespy/docs/docs/_static/images/Sample 1.tif'
 

@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -904,6 +904,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:15:37] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div></div>
 </div>
 <p>Ensure the existence of model path, and create one if non-existant:</p>
 <div class="cell docutils container">
@@ -930,83 +944,79 @@ remote: Compressing objects:  60% (3/5)
 remote: Compressing objects:  80% (4/5)
 remote: Compressing objects: 100% (5/5)
 remote: Compressing objects: 100% (5/5), done.
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:   2% (1/36)
+Receiving objects:   2% (1/36)
 Receiving objects:   5% (2/36)
 Receiving objects:   8% (3/36)
 Receiving objects:  11% (4/36)
 Receiving objects:  13% (5/36)
+Receiving objects:  16% (6/36)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36), 37.02 MiB | 37.01 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36), 26.27 MiB | 26.08 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36), 78.74 MiB | 39.10 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  16% (6/36), 62.36 MiB | 31.07 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 78.74 MiB | 39.10 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 76.23 MiB | 30.41 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 119.74 MiB | 39.63 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 94.14 MiB | 31.30 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 155.46 MiB | 38.66 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  19% (7/36), 134.83 MiB | 33.57 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  22% (8/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  25% (9/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  27% (10/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  30% (11/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  33% (12/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  36% (13/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  38% (14/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  41% (15/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  44% (16/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  47% (17/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  50% (18/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  52% (19/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  55% (20/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  58% (21/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  61% (22/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  63% (23/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  66% (24/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  69% (25/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  72% (26/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  75% (27/36), 155.46 MiB | 38.66 MiB/s
+Receiving objects:  77% (28/36), 155.46 MiB | 38.66 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  22% (8/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  25% (9/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  27% (10/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  30% (11/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  33% (12/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  36% (13/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  38% (14/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  41% (15/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  44% (16/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  47% (17/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  50% (18/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  52% (19/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  55% (20/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  58% (21/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  61% (22/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  63% (23/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  66% (24/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  69% (25/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  72% (26/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  75% (27/36), 155.14 MiB | 34.35 MiB/s
-Receiving objects:  77% (28/36), 155.14 MiB | 34.35 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 190.19 MiB | 38.45 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 174.11 MiB | 36.38 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 225.57 MiB | 36.69 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 209.54 MiB | 36.60 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 245.25 MiB | 36.89 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  77% (28/36), 247.56 MiB | 37.97 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 265.74 MiB | 36.76 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 247.56 MiB | 37.97 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 301.20 MiB | 35.86 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 274.00 MiB | 34.70 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 306.27 MiB | 33.20 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  80% (29/36), 331.18 MiB | 34.86 MiB/s
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>remote: Total 36 (delta 0), reused 2 (delta 0), pack-reused 31 (from 1)
-Receiving objects:  83% (30/36), 324.03 MiB | 32.95 MiB/s
-Receiving objects:  86% (31/36), 324.03 MiB | 32.95 MiB/s
-Receiving objects:  88% (32/36), 324.03 MiB | 32.95 MiB/s
-Receiving objects:  91% (33/36), 324.03 MiB | 32.95 MiB/s
-Receiving objects:  94% (34/36), 324.03 MiB | 32.95 MiB/s
-Receiving objects:  97% (35/36), 324.03 MiB | 32.95 MiB/s
-Receiving objects: 100% (36/36), 324.03 MiB | 32.95 MiB/s
-Receiving objects: 100% (36/36), 334.57 MiB | 33.95 MiB/s, done.
+Receiving objects:  83% (30/36), 331.18 MiB | 34.86 MiB/s
+Receiving objects:  86% (31/36), 331.18 MiB | 34.86 MiB/s
+Receiving objects:  88% (32/36), 331.18 MiB | 34.86 MiB/s
+Receiving objects:  91% (33/36), 331.18 MiB | 34.86 MiB/s
+Receiving objects:  94% (34/36), 331.18 MiB | 34.86 MiB/s
+Receiving objects:  97% (35/36), 331.18 MiB | 34.86 MiB/s
+Receiving objects: 100% (36/36), 331.18 MiB | 34.86 MiB/s
+Receiving objects: 100% (36/36), 334.57 MiB | 36.40 MiB/s, done.
 Resolving deltas:   0% (0/8)
 Resolving deltas:  12% (1/8)
 Resolving deltas:  25% (2/8)
@@ -1072,14 +1082,14 @@ the training data the wieghts. The training data is used in the backend of the <
 <span class="ne">----&gt; </span><span class="mi">2</span> <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;../../../test/fixtures/image_Leopard_slice100.npy&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.12/site-packages/IPython/core/interactiveshell.py:343,</span> in <span class="ni">_modified_open</span><span class="nt">(file, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">336</span> <span class="k">if</span> <span class="n">file</span> <span class="ow">in</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">}:</span>
-<span class="g g-Whitespace">    </span><span class="mi">337</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">338</span>         <span class="sa">f</span><span class="s2">&quot;IPython won&#39;t let you open fd=</span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2"> by default &quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">339</span>         <span class="s2">&quot;as it is likely to crash IPython. If you know what you are doing, &quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">340</span>         <span class="s2">&quot;you can use builtins&#39; open.&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">341</span>     <span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">343</span> <span class="k">return</span> <span class="n">io_open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.12/site-packages/IPython/core/interactiveshell.py:344,</span> in <span class="ni">_modified_open</span><span class="nt">(file, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">337</span> <span class="k">if</span> <span class="n">file</span> <span class="ow">in</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">}:</span>
+<span class="g g-Whitespace">    </span><span class="mi">338</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">339</span>         <span class="sa">f</span><span class="s2">&quot;IPython won&#39;t let you open fd=</span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2"> by default &quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">340</span>         <span class="s2">&quot;as it is likely to crash IPython. If you know what you are doing, &quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">341</span>         <span class="s2">&quot;you can use builtins&#39; open.&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">342</span>     <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">344</span> <span class="k">return</span> <span class="n">io_open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;../../../test/fixtures/image_Leopard_slice100.npy&#39;
 </pre></div>

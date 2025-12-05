@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -892,6 +892,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:11:18] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div></div>
 </div>
 <section id="regions">
 <h2><code class="docutils literal notranslate"><span class="pre">regions</span></code><a class="headerlink" href="#regions" title="Link to this heading">#</a></h2>
@@ -910,7 +924,17 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/ad68a9941d7b4b7b15f340f97b74bc3d18cab9cc2d3e3a8f18c83e92c77c8df4.png" src="../../../_images/ad68a9941d7b4b7b15f340f97b74bc3d18cab9cc2d3e3a8f18c83e92c77c8df4.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:446: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_snows.py:594: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  labels, N = spim.label(peaks &gt; 0, structure=cube(3))
+/home/runner/work/porespy/porespy/src/porespy/tools/_morphology.py:174: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = cube(w)
+</pre></div>
+</div>
+<img alt="../../../_images/991f65dc059fac789cf151d0832bcf290c8c296f1522a19fb52f7a2db8363213.png" src="../../../_images/991f65dc059fac789cf151d0832bcf290c8c296f1522a19fb52f7a2db8363213.png" />
 </div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">region_volumes</span></code> returns an array containing the volume of each region, offset by 1, such that the volume of region 1 is stored in element 0 of the array. We can visualize each region’s volume by assigning the returned values to each region:</p>
@@ -930,7 +954,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/6c549f42f1be0b133f289121165e39e58c20ec49b8caa7d2f1dfbffda432e934.png" src="../../../_images/6c549f42f1be0b133f289121165e39e58c20ec49b8caa7d2f1dfbffda432e934.png" />
+<img alt="../../../_images/04f20456e20a0ed1762bb89344cefe4d854bc826597680f4858172faf4555b46.png" src="../../../_images/04f20456e20a0ed1762bb89344cefe4d854bc826597680f4858172faf4555b46.png" />
 </div>
 </div>
 </section>
@@ -953,7 +977,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/0ad98e73cfcd05551ecb0085dc1e23d716cb25fcbd8262a704be45b0c0d50eca.png" src="../../../_images/0ad98e73cfcd05551ecb0085dc1e23d716cb25fcbd8262a704be45b0c0d50eca.png" />
+<img alt="../../../_images/c184b14caba6bddc7a47d62872494f40a649bbb9fa6bde955b0df3fdaf023203.png" src="../../../_images/c184b14caba6bddc7a47d62872494f40a649bbb9fa6bde955b0df3fdaf023203.png" />
 </div>
 </div>
 </section>

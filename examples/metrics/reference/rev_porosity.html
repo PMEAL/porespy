@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -892,6 +892,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:11:38] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div></div>
 </div>
 <section id="im">
 <h2><code class="docutils literal notranslate"><span class="pre">im</span></code><a class="headerlink" href="#im" title="Link to this heading">#</a></h2>
@@ -908,7 +922,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/3c545334448be1d1d5799d6ff7df52a00c1ecff59a1a70b4bdb6b127376208cc.png" src="../../../_images/3c545334448be1d1d5799d6ff7df52a00c1ecff59a1a70b4bdb6b127376208cc.png" />
+<img alt="../../../_images/408499e3f1a90c0be3bb72c4c63390433768ff20dbfd461647fe53edfe3fc08b.png" src="../../../_images/408499e3f1a90c0be3bb72c4c63390433768ff20dbfd461647fe53edfe3fc08b.png" />
 </div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">rev_porosity</span></code> returns a custom object containing the <code class="docutils literal notranslate"><span class="pre">volume</span></code> and <code class="docutils literal notranslate"><span class="pre">porosity</span></code> data. We can then plot the data to find the representative elementary volume (REV) of the porous material. REV can be found as the volume of a subdomain where any larger subdomain will have almost similar porosity values. In other words, in the following plot the point where the variation of porosity vs volume becomes a plateau.</p>
@@ -924,7 +938,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/9043b5b17a7497cf15a0ffe9052d46f71df91533acbf31ddfeaa96ad06f743b6.png" src="../../../_images/9043b5b17a7497cf15a0ffe9052d46f71df91533acbf31ddfeaa96ad06f743b6.png" />
+<img alt="../../../_images/3a2180845c74caab672c8d9cfcfbe8cb22a0ffd45dd75127987135705baaa0e9.png" src="../../../_images/3a2180845c74caab672c8d9cfcfbe8cb22a0ffd45dd75127987135705baaa0e9.png" />
 </div>
 </div>
 </section>
@@ -943,7 +957,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/1f1ff0cedfde988bba8e73123a3e759867acb66c9a6420ffbd73a9a24065b219.png" src="../../../_images/1f1ff0cedfde988bba8e73123a3e759867acb66c9a6420ffbd73a9a24065b219.png" />
+<img alt="../../../_images/5b674b5308571c7a59ce976a4d0160f996beb6074b68bca0807b2f8da658277a.png" src="../../../_images/5b674b5308571c7a59ce976a4d0160f996beb6074b68bca0807b2f8da658277a.png" />
 </div>
 </div>
 </section>
@@ -966,7 +980,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/10d8215f069db97ae9b945f166ee39e74ced2b6b021e8e36a4f27032e280f42e.png" src="../../../_images/10d8215f069db97ae9b945f166ee39e74ced2b6b021e8e36a4f27032e280f42e.png" />
+<img alt="../../../_images/bd227a7ae5895794843a0cc1d65dc8b896c974e86ec4f61bd91d0e14464e092c.png" src="../../../_images/bd227a7ae5895794843a0cc1d65dc8b896c974e86ec4f61bd91d0e14464e092c.png" />
 </div>
 </div>
 </section>

@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -889,6 +889,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:14:30] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div></div>
 </div>
 <p>Let’s first create a test image by obtaining lineal path for every starting point in the binary image:</p>
 <div class="cell docutils container">
@@ -907,7 +921,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/6436c08e029ceb45023c7cc977a8c010b588b000c2be593cda53ac73e1b111dd.png" src="../../../_images/6436c08e029ceb45023c7cc977a8c010b588b000c2be593cda53ac73e1b111dd.png" />
+<img alt="../../../_images/87b62e8d017492b5da6907136119fd4fcadae139848cf4c6cea3a510129b84f7.png" src="../../../_images/87b62e8d017492b5da6907136119fd4fcadae139848cf4c6cea3a510129b84f7.png" />
 </div>
 </div>
 <p>Now the test image is ready to be passed to <code class="docutils literal notranslate"><span class="pre">lineal_path_distribution</span></code>. The method returns a custom object with information of the distribution of the lineal path lengths.</p>
@@ -925,7 +939,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/099cb92a7c60e172a3cb747d112b1f6c42283a14b5591ec71874de39d0e0ccb4.png" src="../../../_images/099cb92a7c60e172a3cb747d112b1f6c42283a14b5591ec71874de39d0e0ccb4.png" />
+<img alt="../../../_images/e3e3cb805fd7b7de1f2217800db1823128b33612a8423f8977752d684f103d47.png" src="../../../_images/e3e3cb805fd7b7de1f2217800db1823128b33612a8423f8977752d684f103d47.png" />
 </div>
 </div>
 <section id="bins">
@@ -945,7 +959,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/2090b914d2b73c39f45107d15e61ec2a1fbad0ca8729b925fedff44a16827306.png" src="../../../_images/2090b914d2b73c39f45107d15e61ec2a1fbad0ca8729b925fedff44a16827306.png" />
+<img alt="../../../_images/e69b669acf2d6eb6dab3f2403041e40681216e3191dec7251ea461003c170bbd.png" src="../../../_images/e69b669acf2d6eb6dab3f2403041e40681216e3191dec7251ea461003c170bbd.png" />
 </div>
 </div>
 </section>
@@ -967,7 +981,7 @@ distributions or to better visualize the data in the small size region. The resu
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/1765f6171e37226c4c1c1fdbec75288efb1a59eb8f2ff4c9399c14efc1340d64.png" src="../../../_images/1765f6171e37226c4c1c1fdbec75288efb1a59eb8f2ff4c9399c14efc1340d64.png" />
+<img alt="../../../_images/6009140425a34e4a24b1c104014c075184f93823671ee67531e65b5fc8cd99eb.png" src="../../../_images/6009140425a34e4a24b1c104014c075184f93823671ee67531e65b5fc8cd99eb.png" />
 </div>
 </div>
 </section>
@@ -988,7 +1002,7 @@ distributions or to better visualize the data in the small size region. The resu
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/5a08757cb82e15e94a86980e9a8cc56223df739b0709ffb6439c33dc5e04365d.png" src="../../../_images/5a08757cb82e15e94a86980e9a8cc56223df739b0709ffb6439c33dc5e04365d.png" />
+<img alt="../../../_images/b76fe537e631885d6809c6ba43f72e7bd22102a6399b815038240ce24825b779.png" src="../../../_images/b76fe537e631885d6809c6ba43f72e7bd22102a6399b815038240ce24825b779.png" />
 </div>
 </div>
 </section>

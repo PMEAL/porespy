@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=78389542" />
@@ -891,6 +891,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&#39;min&#39;: disk(1), &#39;max&#39;: square(3)}, 3: {&#39;min&#39;: ball(1), &#39;max&#39;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = {2: {&quot;min&quot;: disk(1), &quot;max&quot;: square(3)}, 3: {&quot;min&quot;: ball(1), &quot;max&quot;: cube(3)}}
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[08:12:40] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> Loaded version from pyproject.toml                                               <a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">__init__.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/__init__.py#54" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">54</span></a>
+</pre>
+</div></div>
 </div>
 <section id="demonstration-on-2d-image">
 <h2>Demonstration on 2D Image<a class="headerlink" href="#demonstration-on-2d-image" title="Link to this heading">#</a></h2>
@@ -912,7 +926,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/89028482c550f88fc68a2093296473e6fe00212db76c1549e27e0264d6870a7b.png" src="../../../_images/89028482c550f88fc68a2093296473e6fe00212db76c1549e27e0264d6870a7b.png" />
+<img alt="../../../_images/33fdaf2c3c7253b0eeb78970639232aed52116c69669dc09e8b9b2c634b05fd8.png" src="../../../_images/33fdaf2c3c7253b0eeb78970639232aed52116c69669dc09e8b9b2c634b05fd8.png" />
 </div>
 </div>
 <p>Determining chord-length distributions requires first adding chords to the image, which is done using the <code class="docutils literal notranslate"><span class="pre">apply_chords</span></code> function.  The following code applies chords to the image in the x-direction (along <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>), then applies them in the y-direction (<code class="docutils literal notranslate"><span class="pre">axis=1</span></code>).  The two images are then plotted using <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>.</p>
@@ -929,7 +943,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/4acc4fb463da64c85678110e36d18bffe244617550ad37db159c1679d19db26e.png" src="../../../_images/4acc4fb463da64c85678110e36d18bffe244617550ad37db159c1679d19db26e.png" />
+<img alt="../../../_images/a68657a5840a1054cc9eb14f4986b6756ea2c3157705af0d1c6071fe226d6632.png" src="../../../_images/a68657a5840a1054cc9eb14f4986b6756ea2c3157705af0d1c6071fe226d6632.png" />
 </div>
 </div>
 <p>Note that none of the chords touch the edge of the image.  These chords are trimmed by default since they are artificially shorter than they should be and would skew the results.  This behavior is optional and these chords can be kept by setting <code class="docutils literal notranslate"><span class="pre">trim_edges=False</span></code>.</p>
@@ -947,7 +961,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/e172dfd335d0d5091d7dc5e23af049055aa07df37700776e7aa97cd0447bc318.png" src="../../../_images/e172dfd335d0d5091d7dc5e23af049055aa07df37700776e7aa97cd0447bc318.png" />
+<img alt="../../../_images/58d681cc886a058e6a9703de9d83ea2c88279d2a3dd824e47b0cdb81737f723b.png" src="../../../_images/58d681cc886a058e6a9703de9d83ea2c88279d2a3dd824e47b0cdb81737f723b.png" />
 </div>
 </div>
 <p>Although the above images are useful for quick visualization, they are not quantitative.  To get quantitative chord length distributions, pass the chord image(s) to the <code class="docutils literal notranslate"><span class="pre">chord_length_distribution</span></code> functions in the <code class="docutils literal notranslate"><span class="pre">metrics</span></code> submodule:</p>
@@ -968,7 +982,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-Results of chord_length_distribution generated at Sat Nov 29 00:36:26 2025
+Results of chord_length_distribution generated at Fri Dec  5 08:12:40 2025
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 L                         Array of size (25,)
 pdf                       Array of size (25,)
@@ -998,7 +1012,7 @@ bin_widths                Array of size (25,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/1a28f0b12ec3a678b2a486171277bca1358fb74c723af44f089e8f291924a02f.png" src="../../../_images/1a28f0b12ec3a678b2a486171277bca1358fb74c723af44f089e8f291924a02f.png" />
+<img alt="../../../_images/a6a5452f839c77f7f0e3939e273bd61aa1733e8b163e00a2ed24dcf8e1d888f0.png" src="../../../_images/a6a5452f839c77f7f0e3939e273bd61aa1733e8b163e00a2ed24dcf8e1d888f0.png" />
 </div>
 </div>
 <p>The key point to see here is that the blue bars are for the y-direction, which was the elongated direction, and as expected they show a tendency toward longer chords.</p>
@@ -1015,7 +1029,7 @@ bin_widths                Array of size (25,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/e96ed227e13e61432ee54387a806c4133ecdb14cf4d1cbfeebadb105da29c869.png" src="../../../_images/e96ed227e13e61432ee54387a806c4133ecdb14cf4d1cbfeebadb105da29c869.png" />
+<img alt="../../../_images/6687d071adc5cdbe35497278d84a8a1ec0b6ae4e37f691d5eeaa4ada4ee418fa.png" src="../../../_images/6687d071adc5cdbe35497278d84a8a1ec0b6ae4e37f691d5eeaa4ada4ee418fa.png" />
 </div>
 </div>
 <p>As above, we must apply chords to the image then pass the chord image to the <code class="docutils literal notranslate"><span class="pre">chord_length_distribution</span></code> function:</p>
@@ -1029,7 +1043,7 @@ bin_widths                Array of size (25,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/dd43aa9047d3e7216bebb7353c89dd42c3b1354865e3463ed08fba32971fab92.png" src="../../../_images/dd43aa9047d3e7216bebb7353c89dd42c3b1354865e3463ed08fba32971fab92.png" />
+<img alt="../../../_images/830a4d703e239e8e3df24608007878c7f385554c999abd9b0ac168cfb7de2a1a.png" src="../../../_images/830a4d703e239e8e3df24608007878c7f385554c999abd9b0ac168cfb7de2a1a.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1043,7 +1057,7 @@ bin_widths                Array of size (25,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/709753f18a6692d6f3c7e17646ab22ab36cfcfa4cf454c588df2daf9386bb0fb.png" src="../../../_images/709753f18a6692d6f3c7e17646ab22ab36cfcfa4cf454c588df2daf9386bb0fb.png" />
+<img alt="../../../_images/e0e27241c6abdfee1b1cb3bf5b1d3f43d184655b336bba784cb39f0ad6cd617e.png" src="../../../_images/e0e27241c6abdfee1b1cb3bf5b1d3f43d184655b336bba784cb39f0ad6cd617e.png" />
 </div>
 </div>
 </section>
