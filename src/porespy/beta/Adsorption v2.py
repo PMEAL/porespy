@@ -4,6 +4,7 @@ Created on Mon Nov  3 13:27:52 2025
 
 @author: sebva
 """
+
 import porespy as ps
 import matplotlib.pyplot as plt
 import numpy as np
@@ -19,7 +20,7 @@ R=8.314
 gam=8.85*10**-3
 vm=28.5*10**-6
 
-Original_Image=ps.generators.blobs(shape=[500,500],porosity=0.5,blobiness=3) #create image of porous medium
+Original_Image=ps.generators.blobs(shape=[500,500],porosity=0.6,blobiness=3) #create image of porous medium
 Original_Image=ps.filters.fill_invalid_pores(Original_Image)
 film_thickness=np.linspace(0.05,7,100) #Increasing film thickness
 relative_pressure=10**((0.034-13.99/(100*film_thickness**2))/0.4343) #rearanged Harkins-Jura Equation for relative pressure
@@ -34,14 +35,15 @@ for i in range(np.size(film_thickness)):
     capiliary_radius=film_thickness[i]+r(relative_pressure[i],film_thickness[i]) #radius of our structuring element for the capilary condensation
 
     film_adsoprtion=(dt<=film_thickness[i])*Original_Image #isolating the film around the pores
-    
+
     #Closing opreation using structuring element of radius rn
     Closing_erosion=(edt(Original_Image*~film_adsoprtion)>capiliary_radius)
     Closing_dilation=(edt(~Closing_erosion))<=capiliary_radius
-    
+
     adsorbed_volume.append(np.sum(Original_Image)-np.sum(Closing_dilation))
     epsilon.append(Closing_dilation.sum()/Closing_dilation.size)
     im.append(Closing_dilation)
+
 fig,ax=plt.subplots(2,2)
 ax[0,0].plot(relative_pressure,film_thickness)
 ax[0,0].set_xlabel("Relative Pressure (p/po)")
