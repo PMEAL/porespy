@@ -1,6 +1,8 @@
 import numpy as np
+from porespy.generators import borders
 from porespy.filters import (
     fill_closed_pores,
+    trim_disconnected_voxels,
 )
 from porespy.tools import (
     Results,
@@ -14,67 +16,71 @@ edt = get_edt()
 
 def physisorption(im):
     # Physical properties of liquid nitrogen
-    T = 77  # K
+    T = 77.0  # K
     R = 8.314  # J/(mol.K)
-    film_thickness = np.linspace(0.05, 7, 100)  # Why 7, and what units?
-    # Rearranged Harkins-Jura Equation for relative pressure
-    Pr = 10**((0.034-13.99/(100*film_thickness**2))/0.4343)  # Exceeds 1.0
 
-    # Kelvin Cohan equation to determine radius for capilary condensation
     def kelvin_cohan(p, th):
+        # Kelvin Cohan equation to determine radius for capilary condensation
         gam = 8.85*10**-3
         vm = 28.5*10**-6  # Units?
         return -gam*vm/(R*T*np.log(p)) + th
 
+    def relative_pressure(thickness):
+        # Rearranged Harkins-Jura Equation for relative pressure
+        A = 13.99
+        B = 0.034
+        C = 0.4343
+        D = 10*thickness
+        PPo = np.exp((B*D**2 - A)/(C*D**2))
+        return PPo
+
     adsorbed_volume = []
+    Vpore = np.sum(im)
     dt = edt(im)  # Euclidian distance transform on initial image
     im_ads = np.zeros_like(im, dtype=int)
 
-    for i in tqdm(range(np.size(film_thickness))):
+    sizes1 = np.unique(dt[im].astype(int))
+    for thickness in tqdm(sizes1):
         # Find radius of structuring element for the capillary condensation
-        p = Pr[i]
-        th = film_thickness[i]
-        r = kelvin_cohan(p, th)
-        capillary_radius = film_thickness[i] + r
+        p = relative_pressure(thickness)
+        r = kelvin_cohan(p, thickness)
+        capillary_radius = thickness + r
 
         # Isolate the film on pore walls
-        film_adsorption = (dt <= th) * im
+        film = (dt < thickness) * im
 
         # Close film using structuring element of radius rn
-        im_closed = edt(im * ~film_adsorption) > capillary_radius
-        im_closed_dil = edt(~im_closed) <= capillary_radius
+        im_closed = edt(im * ~film) >= capillary_radius
+        im_closed_dil = edt(~im_closed) < capillary_radius
 
-        adsorbed_volume.append(np.sum(im) - np.sum(im_closed_dil))
+        adsorbed_volume.append(Vpore - np.sum(im_closed_dil * im))
         mask = (im_ads == 0)*(im_closed_dil == 0)
-        im_ads[mask] = i
+        im_ads[mask] = thickness
 
-    im_final = im_closed_dil
     desorbed_volume = []
     im_des = np.zeros_like(im, dtype=int)
-
-    for i in tqdm(range(np.size(film_thickness), 0, -1)):
-        p = Pr[i-1]
-        th = film_thickness[i-1]
-        r = kelvin_cohan(p, th)
-        capillary_radius = film_thickness[i-1] + r
+    boundary = borders(im.shape, mode='faces')
+    sizes2 = np.unique(dt.astype(int))[-1::-1]
+    for i, thickness in enumerate(tqdm(sizes2)):
+        p = relative_pressure(thickness)
+        r = kelvin_cohan(p, thickness)
+        capillary_radius = thickness + r
 
         # Opening using structuring element of radius rn
-        im_open = edt(im) > capillary_radius
-        im_open_dil = edt(~im_open) <= capillary_radius
+        im_open = im_ads > thickness
+        film = trim_disconnected_voxels(im_open, inlets=boundary)
 
-        film = edt(im_open_dil) > film_thickness[i-1]
-        film = fill_closed_pores(film)
-        desorbed_volume.append(np.sum(im) - np.sum(film))
-        mask = (im_des == 0)*(im_open_dil == 0)*im
-        im_des[mask] = i-1
+        desorbed_volume.append(Vpore - np.sum(film * im))
+        mask = (im_des == 0) * film * im
+        im_des[mask] = i
 
     result = Results()
     result.im_ads = im_ads
     result.V_ads = adsorbed_volume
-    result.p_ads = Pr
+    result.p_ads = relative_pressure(sizes1)
     result.im_des = im_des
     result.V_des = desorbed_volume
-    result.p_des = Pr[-1::-1]
+    result.p_des = relative_pressure(sizes2)
     return result
 
 
@@ -91,7 +97,7 @@ if __name__ == "__main__":
     cm.set_bad('white')
     cm.set_over('grey')
 
-    im = ps.generators.blobs(shape=[200, 200], porosity=0.6, blobiness=1, seed=0)
+    im = ps.generators.blobs(shape=[1200, 1200], porosity=0.6, blobiness=2.5, seed=0)
     im = ps.filters.fill_invalid_pores(im)
 
     bet = physisorption(im)
@@ -102,13 +108,15 @@ if __name__ == "__main__":
 
     # Generate animation
     if im.ndim == 2:
-        im_ani = bet.im_des.copy()
-        N = np.unique(im_ani)
+        # im_ani = bet.im_ads.copy()
+        im_ani = bet.im_ads.copy()
+        N = np.unique(im_ani[im])
         stk = np.zeros([len(N)]+list(im.shape))
         # Create stack of images to show
         for i, s in enumerate(N):
-            mask = im * (im_ani < i) * i
-            mask[mask == 0] = max(N)
+            mask = im * (im_ani < s) * i
+            mask = mask.astype(float)
+            mask[mask == 0] = max(N) + 1
             mask[~im] = -1
             stk[i, ...] = mask
 
@@ -131,7 +139,7 @@ if __name__ == "__main__":
             fig=fig2,
             func=update,
             frames=len(stk),
-            interval=60,
+            interval=250,
             blit=True,
         )
         rcParams["animation.ffmpeg_path"] = imageio_ffmpeg.get_ffmpeg_exe()
