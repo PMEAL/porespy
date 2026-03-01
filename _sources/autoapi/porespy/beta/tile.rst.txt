@@ -1,0 +1,37 @@
+porespy.beta.tile
+=================
+
+.. py:function:: porespy.beta.tile(im, n, mode='periodic')
+
+   Tile a TPMS image to create a larger domain.
+
+   :param im: The 3-D boolean image to tile, typically produced by `gyroid`.
+   :type im: ndarray
+   :param n: Number of repetitions along each axis. A single integer tiles equally
+             in all directions; a sequence (e.g. ``(3, 3, 1)``) tiles each axis
+             independently.
+   :type n: int or sequence of int
+   :param mode: Tiling strategy. Options are:
+
+                ============  =========================================================
+                Value         Behaviour
+                ============  =========================================================
+                ``'periodic'`` Repeat the image using simple copy (default).
+                ``'reflect'``  Mirror the image at each boundary so that features meet
+                               smoothly across tile edges.
+                ============  =========================================================
+   :type mode: str, optional
+
+   :returns: **im2** -- Tiled boolean array. Its shape along each axis is
+             ``im.shape[i] * n[i]``.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   Generate one gyroid unit cell and tile it 3x3 in-plane:
+
+   >>> im = gyroid(shape=100)
+   >>> im2 = tile(im, n=(3, 3, 1), mode='periodic')
+   >>> im2.shape
+   (300, 300, 100)
+

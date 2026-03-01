@@ -1,0 +1,42 @@
+porespy.beta.vor_to_im
+======================
+
+.. py:function:: porespy.beta.vor_to_im(vor, im, centroids=True)
+
+   Render a 2-D Voronoi tessellation onto a boolean image.
+
+   Traces each finite Voronoi ridge as a line of ``True`` voxels. Ridges
+   that extend to infinity (vertex index ``-1``) are skipped. Optionally
+   the original seed points are also marked.
+
+   :param vor: A Voronoi tessellation object, typically created with
+               ``scipy.spatial.Voronoi``.
+   :type vor: scipy.spatial.Voronoi
+   :param im: A 2-D array used only to determine the output shape and dtype. Its
+              values are ignored; the returned image is zero-initialised.
+   :type im: ndarray
+   :param centroids: If ``True`` (default), the seed points (``vor.points``) are marked
+                     as ``True`` in the output image in addition to the ridge lines.
+   :type centroids: bool, optional
+
+   :returns: **im** -- A 2-D boolean array with the same shape as the input ``im``. Pixels
+             on Voronoi ridges (and seed points, if ``centroids=True``) are
+             ``True``; all other pixels are ``False``.
+   :rtype: ndarray of bool
+
+   .. rubric:: Notes
+
+   Infinite ridges (those with a vertex index of ``-1`` in
+   ``vor.ridge_vertices``) are silently skipped. Ridge vertices that fall
+   outside the image bounds are clipped at the boundary during line
+   rasterisation.
+
+   .. rubric:: Examples
+
+   >>> import numpy as np
+   >>> import scipy.spatial as sptl
+   >>> pts = np.random.rand(50, 2) * 200
+   >>> vor = sptl.Voronoi(pts)
+   >>> im = np.zeros([200, 200], dtype=bool)
+   >>> result = vor_to_im(vor, im)
+

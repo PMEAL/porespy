@@ -370,11 +370,15 @@
 <li class="toctree-l2"><a class="reference internal" href="fibers_2D.html">porespy.beta.fibers_2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="flux.html">porespy.beta.flux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="get_block_sizes.html">porespy.beta.get_block_sizes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gyroid.html">porespy.beta.gyroid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="local_diff.html">porespy.beta.local_diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="polydisperse_cylinders.html">porespy.beta.polydisperse_cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pts_to_voronoi.html">porespy.beta.pts_to_voronoi</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rev_tortuosity.html">porespy.beta.rev_tortuosity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tau_from_cmap.html">porespy.beta.tau_from_cmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tile.html">porespy.beta.tile</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tortuosity_bt.html">porespy.beta.tortuosity_bt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vor_to_im.html">porespy.beta.vor_to_im</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../filters/index.html">porespy.filters</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -721,11 +725,17 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="get_block_sizes.html#porespy.beta.get_block_sizes" title="porespy.beta.get_block_sizes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_block_sizes</span></code></a>(im[, block_size_range])</p></td>
 <td><p>Finds all viable block sizes between lower and upper limits</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="local_diff.html#porespy.beta.local_diff" title="porespy.beta.local_diff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">local_diff</span></code></a>(vals, im[, strel])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gyroid.html#porespy.beta.gyroid" title="porespy.beta.gyroid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gyroid</span></code></a>(shape[, method, skew, phi])</p></td>
+<td><p>Generate a boolean image of a triply periodic minimal surface (TPMS).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="local_diff.html#porespy.beta.local_diff" title="porespy.beta.local_diff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">local_diff</span></code></a>(vals, im[, strel])</p></td>
 <td><p>Computes the difference pixel and the average of it's neighbors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="polydisperse_cylinders.html#porespy.beta.polydisperse_cylinders" title="porespy.beta.polydisperse_cylinders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">polydisperse_cylinders</span></code></a>(shape, porosity, dist[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="polydisperse_cylinders.html#porespy.beta.polydisperse_cylinders" title="porespy.beta.polydisperse_cylinders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">polydisperse_cylinders</span></code></a>(shape, porosity, dist[, ...])</p></td>
 <td><p>Generates overlapping cylinders with radii from the given size distribution</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pts_to_voronoi.html#porespy.beta.pts_to_voronoi" title="porespy.beta.pts_to_voronoi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pts_to_voronoi</span></code></a>(im[, r, centroids, borders])</p></td>
+<td><p>Compute a Voronoi tessellation from seed points via watershed.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="rev_tortuosity.html#porespy.beta.rev_tortuosity" title="porespy.beta.rev_tortuosity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rev_tortuosity</span></code></a>(im[, block_sizes, use_dask])</p></td>
 <td><p>Generates the data for creating an REV plot based on tortuosity.</p></td>
@@ -733,8 +743,14 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="tau_from_cmap.html#porespy.beta.tau_from_cmap" title="porespy.beta.tau_from_cmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tau_from_cmap</span></code></a>(c, im, axis)</p></td>
 <td><p>Computes the tortuosity factor from a concentration field.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="tortuosity_bt.html#porespy.beta.tortuosity_bt" title="porespy.beta.tortuosity_bt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tortuosity_bt</span></code></a>(im[, block_size, method, use_dask])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="tile.html#porespy.beta.tile" title="porespy.beta.tile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tile</span></code></a>(im, n[, mode])</p></td>
+<td><p>Tile a TPMS image to create a larger domain.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tortuosity_bt.html#porespy.beta.tortuosity_bt" title="porespy.beta.tortuosity_bt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tortuosity_bt</span></code></a>(im[, block_size, method, use_dask])</p></td>
 <td><p>Computes the tortuosity of an image in all directions</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="vor_to_im.html#porespy.beta.vor_to_im" title="porespy.beta.vor_to_im"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vor_to_im</span></code></a>(vor, im[, centroids])</p></td>
+<td><p>Render a 2-D Voronoi tessellation onto a boolean image.</p></td>
 </tr>
 </tbody>
 </table>

@@ -1,0 +1,50 @@
+porespy.beta.pts_to_voronoi
+===========================
+
+.. py:function:: porespy.beta.pts_to_voronoi(im, r=0, centroids=True, borders=True)
+
+   Compute a Voronoi tessellation from seed points via watershed.
+
+   Each ``True`` pixel in ``im`` is treated as a seed. An EDT-based watershed
+   grows regions from those seeds to fill the domain. Optionally the seeds
+   are iteratively relaxed to region centroids (Lloyd's algorithm) before the
+   final tessellation is returned.
+
+   :param im: A 2-D boolean image where ``True`` pixels mark the Voronoi seed
+              points.
+   :type im: ndarray of bool
+   :param r: Number of Lloyd relaxation iterations. At each step the seeds are
+             replaced by the centroids of the current Voronoi regions and the
+             tessellation is recomputed. ``r=0`` (default) uses the original seeds
+             without relaxation.
+   :type r: int, optional
+   :param centroids: If ``True`` (default), the centroid of each final Voronoi region is
+                     marked with the value ``-1`` in the returned label image.
+   :type centroids: bool, optional
+   :param borders: If ``True`` (default), watershed lines (the Voronoi boundaries) are
+                   included in the output as pixels with value ``0``. If ``False``,
+                   every pixel is assigned to its nearest region and no boundary pixels
+                   exist.
+   :type borders: bool, optional
+
+   :returns: **ws** -- A 2-D integer label array the same shape as ``im``. Each Voronoi
+             region carries a unique positive integer label. Boundary pixels are
+             ``0`` (when ``borders=True``), and centroid pixels are ``-1`` (when
+             ``centroids=True``).
+   :rtype: ndarray of int
+
+   .. rubric:: Notes
+
+   The watershed is seeded from the labelled connected components of ``im``
+   and grows into the distance-transform of ``~im``. Each relaxation
+   iteration replaces the current seeds with the centre-of-mass of every
+   labelled region, then calls ``pts_to_voronoi`` recursively with ``r=0``.
+
+   .. rubric:: Examples
+
+   >>> import numpy as np
+   >>> im = np.zeros([200, 200], dtype=bool)
+   >>> pts = (np.random.rand(50, 2) * 200).astype(int)
+   >>> im[pts[:, 0], pts[:, 1]] = True
+   >>> ws = pts_to_voronoi(im, r=2)
+
