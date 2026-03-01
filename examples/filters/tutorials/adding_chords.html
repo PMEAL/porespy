@@ -912,7 +912,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/0f23da9ef480f7b64c0c6b1cbd6d05f5fb5cd1260422d5e814dec1f4e4b1e0bc.png" src="../../../_images/0f23da9ef480f7b64c0c6b1cbd6d05f5fb5cd1260422d5e814dec1f4e4b1e0bc.png" />
+<img alt="../../../_images/119db85abf938fcd726ec4ad8c38a43a6bd6c2071f1120eacaac19cd2cd28513.png" src="../../../_images/119db85abf938fcd726ec4ad8c38a43a6bd6c2071f1120eacaac19cd2cd28513.png" />
 </div>
 </div>
 <p>Determining chord-length distributions requires first adding chords to the image, which is done using the <code class="docutils literal notranslate"><span class="pre">apply_chords</span></code> function.  The following code applies chords to the image in the x-direction (along <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>), then applies them in the y-direction (<code class="docutils literal notranslate"><span class="pre">axis=1</span></code>).  The two images are then plotted using <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>.</p>
@@ -929,7 +929,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/b461ce96f66f1ebf16a9b8d30f9116183ce2df36776bcfb83c55de393beb1f0c.png" src="../../../_images/b461ce96f66f1ebf16a9b8d30f9116183ce2df36776bcfb83c55de393beb1f0c.png" />
+<img alt="../../../_images/4ba56cf09f1e8040c5ae27881d13bccf92c3f5fa8ca2c6be72df267d9b183a93.png" src="../../../_images/4ba56cf09f1e8040c5ae27881d13bccf92c3f5fa8ca2c6be72df267d9b183a93.png" />
 </div>
 </div>
 <p>Note that none of the chords touch the edge of the image.  These chords are trimmed by default since they are artificially shorter than they should be and would skew the results.  This behavior is optional and these chords can be kept by setting <code class="docutils literal notranslate"><span class="pre">trim_edges=False</span></code>.</p>
@@ -947,7 +947,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/9d465374536e59cc5a8fc18e51aa2c1d93197435a5347e859ddb4583174509dd.png" src="../../../_images/9d465374536e59cc5a8fc18e51aa2c1d93197435a5347e859ddb4583174509dd.png" />
+<img alt="../../../_images/2b5626e8a599baa6334bee34b4b4b21392e2f7265d2754cf2d97624d56cb51c5.png" src="../../../_images/2b5626e8a599baa6334bee34b4b4b21392e2f7265d2754cf2d97624d56cb51c5.png" />
 </div>
 </div>
 <p>Although the above images are useful for quick visualization, they are not quantitative.  To get quantitative chord length distributions, pass the chord image(s) to the <code class="docutils literal notranslate"><span class="pre">chord_length_distribution</span></code> functions in the <code class="docutils literal notranslate"><span class="pre">metrics</span></code> submodule:</p>
@@ -968,7 +968,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-Results of chord_length_distribution generated at Sun Mar  1 03:39:26 2026
+Results of chord_length_distribution generated at Sun Mar  1 03:57:04 2026
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 L                         Array of size (25,)
 pdf                       Array of size (25,)
@@ -998,7 +998,7 @@ bin_widths                Array of size (25,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/0a327da4960f38ba57a7807f6b4fdec9e0a74cd5adefa30836034c1b5bdfb32e.png" src="../../../_images/0a327da4960f38ba57a7807f6b4fdec9e0a74cd5adefa30836034c1b5bdfb32e.png" />
+<img alt="../../../_images/20c7c3e5b48406a971cacde80ae0b48a0784954130f053cdd383621edaaf0004.png" src="../../../_images/20c7c3e5b48406a971cacde80ae0b48a0784954130f053cdd383621edaaf0004.png" />
 </div>
 </div>
 <p>The key point to see here is that the blue bars are for the y-direction, which was the elongated direction, and as expected they show a tendency toward longer chords.</p>
@@ -1015,7 +1015,7 @@ bin_widths                Array of size (25,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/78d1cb0ca96eccf453ef3ca6c7007e964910c44ae988c5b380115cb08403c440.png" src="../../../_images/78d1cb0ca96eccf453ef3ca6c7007e964910c44ae988c5b380115cb08403c440.png" />
+<img alt="../../../_images/1c91d85a361aca12b456cf205d27dba2bf1892c437a9d85155f33705c1f408a7.png" src="../../../_images/1c91d85a361aca12b456cf205d27dba2bf1892c437a9d85155f33705c1f408a7.png" />
 </div>
 </div>
 <p>As above, we must apply chords to the image then pass the chord image to the <code class="docutils literal notranslate"><span class="pre">chord_length_distribution</span></code> function:</p>
@@ -1029,7 +1029,7 @@ bin_widths                Array of size (25,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/920d23e5a994bb78270d8c2ea114307d5331a8ddcb081d694d5f2c85350d26d6.png" src="../../../_images/920d23e5a994bb78270d8c2ea114307d5331a8ddcb081d694d5f2c85350d26d6.png" />
+<img alt="../../../_images/8c149479912ee0212b0c0f599f245e02ebe250c6425437c248877189b932f8bc.png" src="../../../_images/8c149479912ee0212b0c0f599f245e02ebe250c6425437c248877189b932f8bc.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1043,7 +1043,7 @@ bin_widths                Array of size (25,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/2e1fac6f2c0bfe4d8993d9e4efff42f83ea85d7dec92f0ff3cc6a1c728178b74.png" src="../../../_images/2e1fac6f2c0bfe4d8993d9e4efff42f83ea85d7dec92f0ff3cc6a1c728178b74.png" />
+<img alt="../../../_images/9d2dbaa526b108abd9daed10e5f05ebb082c8064c72d39233a7f97551686c5b8.png" src="../../../_images/9d2dbaa526b108abd9daed10e5f05ebb082c8064c72d39233a7f97551686c5b8.png" />
 </div>
 </div>
 </section>
