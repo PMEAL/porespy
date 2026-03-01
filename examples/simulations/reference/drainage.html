@@ -1009,49 +1009,14 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/numba/core/serialize.py:30,</span> in <span class="ni">_numba_unpickle</span><span class="nt">(address, bytedata, hashed)</span>
-<span class="g g-Whitespace">     </span><span class="mi">27</span> <span class="n">_unpickled_memo</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="ne">---&gt; </span><span class="mi">30</span> <span class="k">def</span><span class="w"> </span><span class="nf">_numba_unpickle</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">bytedata</span><span class="p">,</span> <span class="n">hashed</span><span class="p">):</span>
-<span class="g g-Whitespace">     </span><span class="mi">31</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Used by `numba_unpickle` from _helperlib.c</span>
-<span class="g g-Whitespace">     </span><span class="mi">32</span><span class="sd"> </span>
-<span class="g g-Whitespace">     </span><span class="mi">33</span><span class="sd">     Parameters</span>
-<span class="sd">   (...)     42         unpickled object</span>
-<span class="g g-Whitespace">     </span><span class="mi">43</span><span class="sd">     &quot;&quot;&quot;</span>
-
-<span class="ne">KeyboardInterrupt</span>: 
-
-<span class="n">The</span> <span class="n">above</span> <span class="n">exception</span> <span class="n">was</span> <span class="n">the</span> <span class="n">direct</span> <span class="n">cause</span> <span class="n">of</span> <span class="n">the</span> <span class="n">following</span> <span class="n">exception</span><span class="p">:</span>
-
-<span class="ne">SystemError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">line</span> <span class="mi">3</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">outlets</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">faces</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">outlet</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">drn</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">simulations</span><span class="o">.</span><span class="n">drainage</span><span class="p">(</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span>     <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span>     <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span>     <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span>     <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span> <span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="n">plot_results</span><span class="p">(</span><span class="n">drn</span><span class="p">)</span>
-
-<span class="nn">File ~/work/porespy/porespy/src/porespy/simulations/_drainage.py:621,</span> in <span class="ni">drainage</span><span class="nt">(im, pc, dt, inlets, outlets, residual, steps, conn, min_size, smooth)</span>
-<span class="g g-Whitespace">    </span><span class="mi">619</span> <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>  <span class="c1"># Find (i, j, k) coordinates of edges</span>
-<span class="g g-Whitespace">    </span><span class="mi">620</span> <span class="n">radii</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">coords</span><span class="p">]</span>  <span class="c1"># Extract sphere sizes to insert at each new location</span>
-<span class="ne">--&gt; </span><span class="mi">621</span> <span class="n">nwp_mask</span> <span class="o">=</span> <span class="n">_insert_disks_at_points_parallel</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">622</span>     <span class="n">im</span><span class="o">=</span><span class="n">nwp_mask</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">623</span>     <span class="n">coords</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">coords</span><span class="p">),</span>
-<span class="g g-Whitespace">    </span><span class="mi">624</span>     <span class="n">radii</span><span class="o">=</span><span class="n">radii</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
-<span class="g g-Whitespace">    </span><span class="mi">625</span>     <span class="n">v</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">626</span>     <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">627</span>     <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">628</span> <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">629</span> <span class="n">nwp_mask</span><span class="p">[</span><span class="n">seeds</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Fill in center in case spheres did not reach</span>
-<span class="g g-Whitespace">    </span><span class="mi">630</span> <span class="c1"># Connect residual to invasion front</span>
-
-<span class="ne">SystemError</span>: CPUDispatcher(&lt;function _insert_disks_at_points_parallel at 0x7fc180ad7d80&gt;) returned a result with an exception set
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored on calling ctypes callback function &lt;function ExecutionEngine._raw_object_cache_notify at 0x7f7982d46980&gt;:
+Traceback (most recent call last):
+  File &quot;/home/runner/work/porespy/porespy/.venv/lib/python3.13/site-packages/llvmlite/binding/executionengine.py&quot;, line 178, in _raw_object_cache_notify
+    def _raw_object_cache_notify(self, data):
+KeyboardInterrupt: 
 </pre></div>
 </div>
+<img alt="../../../_images/b4fee5b553c828de1dd2b457022807cac6dcf26f2fd003fb34f04b5212258e62.png" src="../../../_images/b4fee5b553c828de1dd2b457022807cac6dcf26f2fd003fb34f04b5212258e62.png" />
 </div>
 </div>
 </section>
@@ -1201,7 +1166,7 @@ volumetric images of porous media.
 
   <p class="copyright">
     
-      © Copyright 2025, PMEAL.
+      © Copyright 2026, PMEAL.
       <br/>
     
   </p>

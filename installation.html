@@ -421,30 +421,40 @@
                   
   <section id="installation">
 <span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h1>
-<p>The recommended way to install Python and desired packages (like PoreSpy) is using <a class="reference external" href="https://docs.astral.sh/uv">uv</a>. <cite>uv</cite> has rapidly become the most popular package manager for Python. You’ll be able to find lots of blog articles extolling the virtues of <cite>uv</cite>, but its main feature is speed.</p>
+<section id="uv">
+<h2><code class="docutils literal notranslate"><span class="pre">uv</span></code><a class="headerlink" href="#uv" title="Link to this heading">#</a></h2>
+<p>The recommended way to install Python and desired packages (like PoreSpy) is using <a class="reference external" href="https://docs.astral.sh/uv">uv</a>. <code class="docutils literal notranslate"><span class="pre">uv</span></code> has rapidly become the most popular package manager for Python. You’ll be able to find lots of blog articles extolling the virtues of <code class="docutils literal notranslate"><span class="pre">uv</span></code>, but its main feature is speed.</p>
 <ol class="arabic simple">
-<li><p>First you need to install <cite>uv</cite>. The official installation instructions are provided on the <a class="reference external" href="https://docs.astral.sh/uv/getting-started/installation">astral website</a>. This will install <cite>uv</cite> on your system so it will be available from the terminal or command line.</p></li>
+<li><p>First you need to install <code class="docutils literal notranslate"><span class="pre">uv</span></code>. The official installation instructions are provided on the <a class="reference external" href="https://docs.astral.sh/uv/getting-started/installation">astral website</a>. This will install <code class="docutils literal notranslate"><span class="pre">uv</span></code> on your system so it will be available from the terminal or command line.</p></li>
 <li><p>Next you navigate to the folder where the project files and data will be or already are stored, like scripts and tomograms.</p></li>
-<li><p>Then you create a virtual environment in that directory using <cite>uv venv –python 3.12</cite>. This adds a <cite>.venv</cite> folder, where <cite>uv</cite> will store all its information. Note that PoreSpy only supports python version 3.10, 3.11 and 3.12.  This is largely because of dependencies which have firm version requirements.</p></li>
-<li><p>Finally, you run <cite>uv pip install porespy</cite>.  The first time you do this <cite>uv</cite> will download and compile a few things, which may take some time, but it will store all of this so subsequent usage will be much faster.</p></li>
+<li><p>Then you create a virtual environment in that directory using <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">venv</span> <span class="pre">--python</span> <span class="pre">3.12</span></code>. This adds a <code class="docutils literal notranslate"><span class="pre">.venv</span></code> folder, where <code class="docutils literal notranslate"><span class="pre">uv</span></code> will store all its information. Note that PoreSpy only supports python version 3.11, 3.12 and 3.13. This is largely because of dependencies which have firm version requirements.</p></li>
+<li><p>Finally, you run <cite>uv pip install porespy</cite>. The first time you do this <code class="docutils literal notranslate"><span class="pre">uv</span></code> will download and compile a few things, which may take some time, but it will store all of this so subsequent usage will be much faster.</p></li>
 </ol>
-<p>When using <cite>uv</cite> we recommend <a class="reference external" href="https://code.visualstudio.com/">VSCode</a> as the IDE to write and edit scripts. VSCode will automatically find the <cite>venv</cite> inside the current folder, which is very handy. Spyder is a good IDE for scientific programming, but it does not (yet) have automatic support for finding <cite>venvs</cite> so is cumbersome to use when switching between projects.</p>
+<p>When using <code class="docutils literal notranslate"><span class="pre">uv</span></code> we recommend <a class="reference external" href="https://code.visualstudio.com/">VSCode</a> as the IDE to write and edit scripts. VSCode will automatically find the <code class="docutils literal notranslate"><span class="pre">venv</span></code> inside the current folder, which is very handy. Spyder is a good IDE for scientific programming, but it does not (yet) have automatic support for finding <code class="docutils literal notranslate"><span class="pre">venvs</span></code> so is cumbersome to use when switching between projects.</p>
+</section>
+<section id="conda">
+<h2><code class="docutils literal notranslate"><span class="pre">conda</span></code><a class="headerlink" href="#conda" title="Link to this heading">#</a></h2>
+<p>PoreSpy is also available via the <a class="reference external" href="https://docs.conda.io/en/latest/">conda</a> package manager. If you prefer to use <code class="docutils literal notranslate"><span class="pre">conda</span></code>, you can install PoreSpy by running the following command in your terminal or command prompt:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>conda-forge::porespy
+</pre></div>
+</div>
+</section>
 </section>
 <section id="installing-the-dev-version">
-<h1>Installing the <cite>dev</cite> version<a class="headerlink" href="#installing-the-dev-version" title="Link to this heading">#</a></h1>
+<h1>Installing the <code class="docutils literal notranslate"><span class="pre">dev</span></code> version<a class="headerlink" href="#installing-the-dev-version" title="Link to this heading">#</a></h1>
 <p>If you are a PoreSpy contributor or want to get the newest updates as they roll in, you need to clone the PoreSpy repository from Github and install it locally. It’s not as difficult as it sounds, just follow these steps:</p>
 <p>Open up the terminal/cmd and use <code class="docutils literal notranslate"><span class="pre">cd</span></code> to navigate to the directory where you want to store the PoreSpy code. Clone the repo to your disk using:</p>
-<blockquote>
-<div><p>$ git clone <a class="github reference external" href="https://github.com/PMEAL/porespy">PMEAL/porespy</a></p>
-</div></blockquote>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/PMEAL/porespy
+</pre></div>
+</div>
 <p>Since your terminal is currently in the PoreSpy directory, you can now install PoreSpy and all its dependencies with:</p>
-<blockquote>
-<div><p>$ uv pip install -e .</p>
-</div></blockquote>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
 <p>Voila! You can now use the latest features available on the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch. To keep your “local” PoreSpy installation up to date, you should regularly pull the latest changes:</p>
-<blockquote>
-<div><p>$ git pull</p>
-</div></blockquote>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>pull
+</pre></div>
+</div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>For the development version of PoreSpy to work, you need to first remove
@@ -475,8 +485,12 @@ any versions that you may have previously installed using <code class="docutils 
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Installation</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-the-dev-version">Installing the <cite>dev</cite> version</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Installation</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#uv"><code class="docutils literal notranslate"><span class="pre">uv</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conda"><code class="docutils literal notranslate"><span class="pre">conda</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-the-dev-version">Installing the <code class="docutils literal notranslate"><span class="pre">dev</span></code> version</a></li>
 </ul>
 
   </nav></div>
@@ -506,7 +520,7 @@ any versions that you may have previously installed using <code class="docutils 
 
   <p class="copyright">
     
-      © Copyright 2025, PMEAL.
+      © Copyright 2026, PMEAL.
       <br/>
     
   </p>
