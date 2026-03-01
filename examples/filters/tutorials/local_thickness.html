@@ -913,7 +913,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/6cb6c0857efd88de4eb6c77ec5be378d0aeb235145a415d5654a380d2a42874e.png" src="../../../_images/6cb6c0857efd88de4eb6c77ec5be378d0aeb235145a415d5654a380d2a42874e.png" />
+<img alt="../../../_images/de1f7e3f900ee1069b9e50f3274a8d83b0e75a1e04004accad0932e977411176.png" src="../../../_images/de1f7e3f900ee1069b9e50f3274a8d83b0e75a1e04004accad0932e977411176.png" />
 </div>
 </div>
 </section>
@@ -930,7 +930,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/f45b33c7a205dc5e71ad8ded5689d5a9f23b613601aae5534b60fedb186395f8.png" src="../../../_images/f45b33c7a205dc5e71ad8ded5689d5a9f23b613601aae5534b60fedb186395f8.png" />
+<img alt="../../../_images/30f4db22c7333092132eabac6c3bcd4ab30d5abae3d1ecde0a9be09a773ccf30.png" src="../../../_images/30f4db22c7333092132eabac6c3bcd4ab30d5abae3d1ecde0a9be09a773ccf30.png" />
 </div>
 </div>
 </section>
@@ -953,7 +953,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-Results of pore_size_distribution generated at Sun Mar  1 03:57:25 2026
+Results of pore_size_distribution generated at Sun Mar  1 04:01:19 2026
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 LogR                      Array of size (10,)
 pdf                       Array of size (10,)
@@ -978,7 +978,7 @@ bin_widths                Array of size (10,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/fc384e5f98b16418f7a6bb94d56ddd22a55272655bf5cece7e35ed6363f0ee8d.png" src="../../../_images/fc384e5f98b16418f7a6bb94d56ddd22a55272655bf5cece7e35ed6363f0ee8d.png" />
+<img alt="../../../_images/265243b4b356042b4e07c59b632f486f550481267fc4b5eac6a8fad60e924348.png" src="../../../_images/265243b4b356042b4e07c59b632f486f550481267fc4b5eac6a8fad60e924348.png" />
 </div>
 </div>
 </section>
@@ -996,7 +996,7 @@ bin_widths                Array of size (10,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/48cdf841fe059448a9717dcc4a36f76af6e83e728ee728c9dbeecbcb9a7b7f9f.png" src="../../../_images/48cdf841fe059448a9717dcc4a36f76af6e83e728ee728c9dbeecbcb9a7b7f9f.png" />
+<img alt="../../../_images/3fe47f76749f73522f2ff2440eb8d20870a6a80ad28c20a74e5ce57a4f674100.png" src="../../../_images/3fe47f76749f73522f2ff2440eb8d20870a6a80ad28c20a74e5ce57a4f674100.png" />
 </div>
 </div>
 <p>The key is to make a <em>master</em> array containing the numerical value of the largest sphere that covers each voxel.  We’ll initialize a new array with the current locations where <code class="docutils literal notranslate"><span class="pre">R=20</span></code> fits:</p>
@@ -1034,7 +1034,7 @@ bin_widths                Array of size (10,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/f0bb83195458b1725e810f2431bff4e18ef573ae6b6917eb3e3088fc52455c48.png" src="../../../_images/f0bb83195458b1725e810f2431bff4e18ef573ae6b6917eb3e3088fc52455c48.png" />
+<img alt="../../../_images/3e69a16cb5bac6b0052dc04d05b991b782bc20212e6e720374f741ca278f9b69.png" src="../../../_images/3e69a16cb5bac6b0052dc04d05b991b782bc20212e6e720374f741ca278f9b69.png" />
 </div>
 </div>
 <p>The procedure is then repeated for smaller structuring elements down to <code class="docutils literal notranslate"><span class="pre">R=1</span></code>.  It’s possible to specify which sizes are used, but by default all integers between <span class="math notranslate nohighlight">\(R_{max}\)</span> and 1.  This yields the image showed above:</p>
@@ -1046,7 +1046,7 @@ bin_widths                Array of size (10,)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/084b2593698a5935b35a37bd6fba9655ba1d93ce61651a0484b3a24e9c4439e5.png" src="../../../_images/084b2593698a5935b35a37bd6fba9655ba1d93ce61651a0484b3a24e9c4439e5.png" />
+<img alt="../../../_images/ed22a34cf106cc35e2f327038aa090b54f8771aae7dc101078a3137201d39aaf.png" src="../../../_images/ed22a34cf106cc35e2f327038aa090b54f8771aae7dc101078a3137201d39aaf.png" />
 </div>
 </div>
 <p>PoreSpy also attempts to reproduce the method used by the ImageJ plug “BoneJ”. This can be accessed by specifying <code class="docutils literal notranslate"><span class="pre">method='imj'</span></code>.  This method is similar to the brute-force approach (<code class="docutils literal notranslate"><span class="pre">method='bf'</span></code>) which draws a sphere at each voxel, but attempts to reduce the number of voxels that need to be processed to speed things up. Both the <code class="docutils literal notranslate"><span class="pre">'imj'</span></code> and <code class="docutils literal notranslate"><span class="pre">'bf'</span></code> method produce identical results and can be treated as the ground truth.  The <code class="docutils literal notranslate"><span class="pre">'imj'</span></code> method has an option to reduce accuracy for increased speed, in which case it is not perfectly accurate, but still useful.</p>
