@@ -42,6 +42,15 @@ tqdm = get_tqdm()
 strel = get_strel()
 
 
+def _index_dtype(n):
+    """Smallest unsigned int dtype that holds values `0..n` inclusive."""
+    if n <= np.iinfo(np.uint8).max:
+        return np.uint8
+    if n <= np.iinfo(np.uint16).max:
+        return np.uint16
+    return np.uint32
+
+
 def drainage_bf(
     im,
     inlets=None,
@@ -350,6 +359,7 @@ def drainage_dt(
     dt=None,
     steps=None,
     smooth=False,
+    return_indices=False,
 ):
     r"""
     Performs a distance transform based drainage simulation using distance transform
@@ -377,6 +387,12 @@ def drainage_dt(
         between 1 and the maximum size are used. A `tuple` is treated as the start
         and stop of the integer values. A `list` or `ndarray` is used directly. If
         `None` (default) then each unique value in the distance transform is used.
+    return_indices : bool, optional
+        If `True`, store the step index in `im_seq` using a small unsigned-int
+        dtype and skip allocating the float `im_size` array. The returned
+        `results.bins` array can be used to recover sizes via `bins[im_seq]`.
+        Saves ~16x memory on large images. Not compatible with `outlets` (the
+        trapping post-processing relies on `im_size`). Default is `False`.
 
     Returns
     -------
@@ -390,12 +406,18 @@ def drainage_dt(
                     it was first invaded. -1 indicates uninvaded, either due to
                     the applied `steps` not spanning the full range of sizes in the
                     image, or due to trapping, while 0 indicates residual invading
-                    phase.
+                    phase. With `return_indices=True`, uninvaded voxels are 0
+                    instead of -1 and the dtype is the smallest unsigned int
+                    that fits the step count.
         `im_size`   A numpy array with each voxel containing the radius of the
                     sphere, in voxels, that first overlapped it. `inf` indicates
                     uninvaded, either due to the applied `steps` not spanning the
                     full range of sizes in the image, or due to trapping, while 0
-                    indicates residual invading phase.
+                    indicates residual invading phase. Not set when
+                    `return_indices=True`.
+        `bins`      A 1D float array of the applied step sizes, prefixed with `0`
+                    so that `bins[im_seq]` recovers a per-voxel size map. Only
+                    set when `return_indices=True`.
         =========== ================================================================
 
     Notes
@@ -403,13 +425,22 @@ def drainage_dt(
     The distance transforms will be executed in parallel if
     `porespy.settings.ncores > 1`
     """
+    if return_indices and outlets is not None:
+        raise NotImplementedError(
+            "`return_indices=True` is not compatible with `outlets` (trapping "
+            "uses the float `im_size` which isn't allocated in this mode)"
+        )
     im = np.array(im, dtype=bool)
     if dt is None:
         dt = edt(im)
     dt = dt.astype(int)
     bins = parse_steps(steps=steps, vals=dt[im], descending=True)
-    im_seq = -np.ones_like(im, dtype=int)
-    im_size = np.zeros_like(im, dtype=float)
+    if return_indices:
+        # 0 marks "uninvaded"; step index `i+1` is stored in a compact dtype.
+        im_seq = np.zeros_like(im, dtype=_index_dtype(len(bins)))
+    else:
+        im_seq = -np.ones_like(im, dtype=int)
+        im_size = np.zeros_like(im, dtype=float)
     desc = inspect.currentframe().f_code.co_name  # Get current func name
     for i, r in enumerate(tqdm(bins, desc=desc, **settings.tqdm)):
         seeds = dt >= r
@@ -419,9 +450,13 @@ def drainage_dt(
             continue
         tmp = edt(~seeds)
         nwp = tmp < r if smooth else tmp <= r
-        mask = nwp * (im_seq == -1)
-        im_size[mask] = max(r, 1)
-        im_seq[mask] = i + 1
+        if return_indices:
+            mask = nwp * (im_seq == 0)
+            im_seq[mask] = i + 1
+        else:
+            mask = nwp * (im_seq == -1)
+            im_size[mask] = max(r, 1)
+            im_seq[mask] = i + 1
 
     # Apply trapping as a post-processing step if outlets given
     if outlets is not None:
@@ -437,7 +472,10 @@ def drainage_dt(
         im_size[trapped] = -1
     results = Results()
     results.im_seq = im_seq * im
-    results.im_size = im_size * im
+    if return_indices:
+        results.bins = np.concatenate(([0.0], bins))
+    else:
+        results.im_size = im_size * im
     return results
 
 

@@ -33,6 +33,15 @@ __all__ = [
 ]
 
 
+def _index_dtype(n):
+    """Smallest unsigned int dtype that holds values `0..n` inclusive."""
+    if n <= np.iinfo(np.uint8).max:
+        return np.uint8
+    if n <= np.iinfo(np.uint16).max:
+        return np.uint16
+    return np.uint32
+
+
 def porosimetry(
     im: npt.NDArray,
     dt: npt.NDArray = None,
@@ -40,6 +49,7 @@ def porosimetry(
     sizes: int = None,
     method: Literal['dsi', 'fft', 'dt'] = 'dt',
     smooth: bool = True,
+    return_indices: bool = False,
 ):
     r"""
     Each location is assigned the radius of the largest sphere that can reach it
@@ -80,12 +90,19 @@ def porosimetry(
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
+    return_indices : bool, optional
+        If `True`, return `(sizes, indices)` instead of a float image. `sizes` is
+        a 1D array of applied radii with a leading `0` for unfilled voxels, and
+        `indices` is an unsigned-int image such that `sizes[indices]` reproduces
+        the float result. Avoids allocating a full float64 image, which matters
+        for large tomograms. Only supported for `method='dt'`. Default is `False`.
 
     Returns
     -------
     sizes : ndarray
         In image with each voxel value indicating the largest overlapping sphere
-        which can reach it from the given inlets.
+        which can reach it from the given inlets. If `return_indices` is `True`,
+        returns `(sizes, indices)` instead.
 
     See Also
     --------
@@ -99,6 +116,10 @@ def porosimetry(
     to view online example.
 
     """
+    if return_indices and method != 'dt':
+        raise NotImplementedError(
+            f"`return_indices=True` is only supported with `method='dt'`, got {method!r}"
+        )
     if inlets is None:
         from porespy.generators import borders
         inlets = borders(im.shape, mode='faces')
@@ -108,13 +129,16 @@ def porosimetry(
         sizes = np.unique(dt[im])
     if method == 'dt':
         from porespy.simulations import drainage_dt
-        drn = drainage_dt(im=im, inlets=inlets, steps=sizes, smooth=smooth)
+        drn = drainage_dt(im=im, inlets=inlets, steps=sizes, smooth=smooth,
+                          return_indices=return_indices)
     elif method in ['dsi', 'bf']:
         from porespy.simulations import drainage_bf
         drn = drainage_bf(im=im, inlets=inlets, steps=sizes, smooth=smooth)
     if method in ['fft', 'conv']:
         from porespy.simulations import drainage_conv
         drn = drainage_conv(im=im, inlets=inlets, steps=sizes, smooth=smooth)
+    if return_indices:
+        return drn.bins, drn.im_seq
     return drn.im_size
 
 
@@ -126,6 +150,7 @@ def local_thickness(
     mask: npt.NDArray = None,
     approx: bool = False,
     sizes: int = 25,
+    return_indices: bool = False,
 ):
     r"""
     Insert a maximally inscribed sphere at every pixel labelled by sphere radius
@@ -173,12 +198,19 @@ def local_thickness(
         aggressive at skipping voxels to process, which speeds things up, but this
         sacrifices accuracy in terms of a voxel-by-voxel match with the reference
         implementation. The default is `False`, meaning full accuracy is the default.
+    return_indices : bool, optional
+        If `True`, return `(sizes, indices)` instead of a float image. `sizes` is
+        a 1D array of applied radii with a leading `0` for unfilled voxels, and
+        `indices` is an unsigned-int image such that `sizes[indices]` reproduces
+        the float result. Avoids allocating a full float64 image, which matters
+        for large tomograms. Only supported for `method='dt'`. Default is `False`.
 
     Returns
     -------
     lt : ndarray
         The local thickness of the image with each voxel labelled according to the
-        radius of the largest sphere which overlaps it.
+        radius of the largest sphere which overlaps it. If `return_indices` is
+        `True`, returns `(sizes, indices)` instead.
 
     Examples
     --------
@@ -187,8 +219,15 @@ def local_thickness(
     to view online example.
     """
 
+    if return_indices and method != 'dt':
+        raise NotImplementedError(
+            f"`return_indices=True` is only supported with `method='dt'`, got {method!r}"
+        )
+
     if method == 'dt':
-        lt = local_thickness_dt(im=im, dt=dt, sizes=sizes, smooth=smooth)
+        lt = local_thickness_dt(
+            im=im, dt=dt, sizes=sizes, smooth=smooth, return_indices=return_indices
+        )
     elif method == 'imj':
         lt = local_thickness_imj(im=im, dt=dt, smooth=smooth)[0]
     elif method == 'bf':
@@ -511,6 +550,7 @@ def local_thickness_dt(
     dt: npt.NDArray = None,
     sizes: int = 25,
     smooth: bool = True,
+    return_indices: bool = False,
 ):
     r"""
     Calculates the radius of the largest sphere that overlaps each voxel while
@@ -534,11 +574,18 @@ def local_thickness_dt(
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
+    return_indices : bool, optional
+        If `True`, return `(sizes, indices)` where `sizes` is the 1D array of
+        applied sizes (with a leading `0` for unfilled voxels) and `indices` is
+        a small unsigned-int image such that `sizes[indices]` reproduces the
+        usual float result. This avoids allocating a full float64 image, which
+        matters for large tomograms. Default is `False`.
 
     Returns
     -------
     image : ndarray
-        A copy of `im` with the pore size values in each voxel
+        A copy of `im` with the pore size values in each voxel. If
+        `return_indices` is `True`, returns `(sizes, indices)` instead.
 
     """
     im = np.squeeze(im)
@@ -554,16 +601,23 @@ def local_thickness_dt(
     else:
         sizes = np.unique(sizes)[-1::-1]
 
-    im_results = np.zeros(np.shape(im))
+    if return_indices:
+        # Store i+1 in a compact unsigned-int image; 0 marks unfilled voxels.
+        im_results = np.zeros(np.shape(im), dtype=_index_dtype(len(sizes)))
+    else:
+        im_results = np.zeros(np.shape(im))
     desc = inspect.currentframe().f_code.co_name  # Get current func name
-    for r in tqdm(sizes, desc=desc, **settings.tqdm):
+    for i, r in enumerate(tqdm(sizes, desc=desc, **settings.tqdm)):
         im_temp = dt >= r  # Perform erosion
         if np.any(im_temp):
             # Perform dilation
             im_temp = edt(~im_temp) < r if smooth else edt(~im_temp) <= r
             # Add values to im_results
-            im_results[(im_results == 0) * im_temp] = r
+            im_results[(im_results == 0) * im_temp] = (i + 1) if return_indices else r
 
+    if return_indices:
+        # Prepend 0 so that `sizes[indices]` recovers the float result.
+        return np.concatenate(([0.0], sizes)), im_results
     return im_results
 
 
