@@ -112,6 +112,20 @@ class MagnetTest:
         except Exception:
             pass
 
+    def test_metadata_in_extracted_network(self):
+        magnet = ps.networks.magnet(self.blobs3D, voxel_size=2e-6)
+        assert magnet.network["param.voxel_size"] == 2e-6
+        assert magnet.network["param.ndim"] == 3
+
+    def test_rescale_network_matches_fresh_extraction(self):
+        net1 = ps.networks.magnet(self.blobs3D, voxel_size=1).network
+        net1_scaled = ps.networks.rescale_network(net1, voxel_size=4.0)
+        net2 = ps.networks.magnet(self.blobs3D, voxel_size=4.0).network
+        for key in net2:
+            if key.startswith("param."):
+                continue
+            assert np.allclose(net1_scaled[key], net2[key]), f"mismatch on {key}"
+
     def test_throat_area(self):
         im = self.blobs3D
         magnet = ps.networks.magnet(im, throat_area=True)

@@ -277,5 +277,7 @@ def regions_to_network(
         A = np.array(t_area)*(voxel_size**2)
         net['throat.cross_sectional_area'] = A
         net['throat.equivalent_diameter'] = (4*A/np.pi)**(1/2)
+    net['param.voxel_size'] = voxel_size
+    net['param.ndim'] = ND
 
     return net

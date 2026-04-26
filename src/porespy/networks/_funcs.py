@@ -15,6 +15,7 @@ __all__ = [
     "label_phases",
     "label_boundaries",
     "map_to_regions",
+    "rescale_network",
 ]
 
 
@@ -367,3 +368,89 @@ def label_boundaries(
                 network['pore.boundary'] += hits
                 network['pore.' + labels[i][j]] = hits
     return network
+
+
+_LENGTH_NAMES = {
+    'coords', 'local_peak', 'global_peak', 'geometric_centroid', 'perimeter',
+}
+_LENGTH_SUFFIXES = ('_diameter', '_length', '_radius', '_perimeter')
+_AREA_NAMES = {'area'}
+_AREA_SUFFIXES = ('_area',)
+_VOLUME_NAMES = {'volume'}
+_VOLUME_SUFFIXES = ('_volume',)
+_SIZE_FACTOR_SUFFIXES = ('size_factor', 'size_factors')
+
+
+def _scale_exponent(key, ndim):
+    if '.' not in key:
+        return 0
+    name = key.rsplit('.', 1)[1]
+    if name in _LENGTH_NAMES or name.endswith(_LENGTH_SUFFIXES):
+        return 1
+    if name in _AREA_NAMES or name.endswith(_AREA_SUFFIXES):
+        return 2
+    if name in _VOLUME_NAMES or name.endswith(_VOLUME_SUFFIXES):
+        return ndim
+    if name.endswith(_SIZE_FACTOR_SUFFIXES):
+        return 1
+    return 0
+
+
+def rescale_network(network, voxel_size):
+    r"""
+    Rescale a network's geometric properties to a new voxel size.
+
+    Networks extracted by porespy carry their original ``voxel_size`` in
+    ``param.voxel_size``. This function uses that value to compute a scale
+    factor and rescales every length/area/volume field accordingly, so the
+    output is identical to what a fresh extraction at the new voxel size
+    would have produced (modulo float precision).
+
+    Parameters
+    ----------
+    network : dict
+        A network produced by ``snow2``, ``regions_to_network``, or
+        ``magnet``. Must contain ``param.voxel_size`` and ``param.ndim``.
+    voxel_size : scalar
+        The new voxel size, in the same units as the original.
+
+    Returns
+    -------
+    rescaled : dict
+        A new network dict with all dimensional fields rescaled and
+        ``param.voxel_size`` updated to the new value. The input is not
+        mutated.
+
+    Notes
+    -----
+    Anisotropic voxel sizes (i.e., a tuple stored in ``param.voxel_size``)
+    are not supported; if all axes share the same value, that scalar is
+    used, otherwise an exception is raised.
+
+    """
+    if 'param.voxel_size' not in network or 'param.ndim' not in network:
+        msg = (
+            "Network is missing 'param.voxel_size' and/or 'param.ndim'. "
+            "Networks extracted before this metadata was added cannot be "
+            "rescaled automatically; set both keys manually before calling "
+            "this function."
+        )
+        raise KeyError(msg)
+
+    vs_old = network['param.voxel_size']
+    if hasattr(vs_old, '__len__'):
+        if not np.allclose(vs_old, vs_old[0]):
+            raise NotImplementedError(
+                "Anisotropic voxel sizes are not supported by rescale_network"
+            )
+        vs_old = float(vs_old[0])
+    factor = float(voxel_size) / float(vs_old)
+    ndim = int(network['param.ndim'])
+
+    rescaled = dict(network)
+    for key, value in network.items():
+        p = _scale_exponent(key, ndim)
+        if p:
+            rescaled[key] = np.asarray(value) * factor**p
+    rescaled['param.voxel_size'] = float(voxel_size)
+    return rescaled
