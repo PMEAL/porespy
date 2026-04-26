@@ -1,5 +1,3 @@
-import pytest
-
 import numpy as np
 import openpnm as op
 from scipy import stats as spst
