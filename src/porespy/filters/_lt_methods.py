@@ -190,7 +190,7 @@ def local_thickness(
     if method == 'dt':
         lt = local_thickness_dt(im=im, dt=dt, sizes=sizes, smooth=smooth)
     elif method == 'imj':
-        lt = local_thickness_imj(im=im, dt=dt, smooth=smooth)[0]
+        lt = local_thickness_imj(im=im, dt=dt, smooth=smooth)
     elif method == 'bf':
         lt = local_thickness_bf(im=im, dt=dt, smooth=smooth)
     elif method == 'conv':
@@ -323,11 +323,12 @@ def local_thickness_imj(im, dt=None, smooth=False, approx=False):
     args = np.argsort(dt.flatten())[-1::-1]
     ijk = np.vstack(np.unravel_index(args, dt.shape)).T
 
-    # Call jitted function to draw spheres
+    # Call jitted function to draw spheres. The internal helpers also report
+    # `count` and `used` for diagnostics, but the public API returns just `lt`.
     if im.ndim == 2:
-        lt = _run2D(im, dt, ijk, smooth, approx)
+        lt, _, _ = _run2D(im, dt, ijk, smooth, approx)
     elif im.ndim == 3:
-        lt = _run3D(im, dt, ijk, smooth, approx)
+        lt, _, _ = _run3D(im, dt, ijk, smooth, approx)
 
     return lt
 
@@ -600,11 +601,14 @@ if __name__ == "__main__":
 
     im = ~ps.generators.random_spheres([150, 150, 150], r=10, clearance=10, seed=0)
     dt = edt(im)
+    # Call _run3D directly so we can inspect `count` for diagnostics
+    args = np.argsort(dt.flatten())[-1::-1]
+    ijk = np.vstack(np.unravel_index(args, dt.shape)).T
     ps.tools.tic()
-    lt1, count, used = local_thickness_imj(im, dt=dt, smooth=True, approx=True)
+    lt1, count, used = _run3D(im, dt, ijk, True, True)
     t1 = ps.tools.toc(quiet=True)
     ps.tools.tic()
-    lt2, count, used = local_thickness_imj(im, dt=dt, smooth=True, approx=False)
+    lt2, count, used = _run3D(im, dt, ijk, True, False)
     t2 = ps.tools.toc(quiet=True)
     ps.tools.tic()
     lt3 = local_thickness_dt(im, dt=dt, sizes=np.unique(dt[im].astype(int)))
