@@ -230,6 +230,12 @@ def local_thickness_bf(im, dt=None, mask=None, smooth=True):
     of insertion sites. This provides a reference implementation for comparing
     accuracy of other methods.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/local_thickness_bf.html>`__
+    to view online example.
+
     """
     if dt is None:
         dt = edt(im)
@@ -303,6 +309,12 @@ def local_thickness_imj(im, dt=None, smooth=False, approx=False):
     -----
     This version uses some logic to only insert spheres at locations which
     are not fully overlapped by larger spheres to reduce the number of insertions
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/local_thickness_imj.html>`__
+    to view online example.
     """
     if dt is None:
         dt = edt(im)
@@ -479,6 +491,12 @@ def local_thickness_conv(
     traditional method (i.e. used in ImageJ
     `<https://imagej.net/Local_Thickness>`_).
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/local_thickness_conv.html>`__
+    to view online example.
+
     """
     from porespy.filters import fftmorphology
 
@@ -539,6 +557,12 @@ def local_thickness_dt(
     -------
     image : ndarray
         A copy of `im` with the pore size values in each voxel
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/local_thickness_dt.html>`__
+    to view online example.
 
     """
     im = np.squeeze(im)
