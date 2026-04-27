@@ -1442,6 +1442,11 @@ def overlay(im1, im2, c):
     Overlays ``im2`` onto ``im1``, given voxel coords of center of ``im2``
     in ``im1``.
 
+    .. deprecated::
+        Use ``porespy.tools.insert_shape_at_points`` instead, which works in
+        2D and 3D and supports ``'add'``, ``'preserve'``, and ``'overwrite'``
+        modes.
+
     Parameters
     ----------
     im1 : ndarray
@@ -1464,17 +1469,17 @@ def overlay(im1, im2, c):
     to view online example.
 
     """
-    shape = im2.shape
-    for ni in shape:
-        if ni % 2 == 0:
-            raise Exception("Structuring element must be odd-voxeled...")
+    import warnings
 
-    nx, ny, nz = [(ni - 1) // 2 for ni in shape]
-    cx, cy, cz = c
+    from ._sphere_insertions import insert_shape_at_points
 
-    im1[cx - nx:cx + nx + 1, cy - ny:cy + ny + 1, cz - nz:cz + nz + 1] += im2
-
-    return im1
+    warnings.warn(
+        "porespy.tools.overlay is deprecated and will be removed in a future "
+        "release; use porespy.tools.insert_shape_at_points instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return insert_shape_at_points(im1, coords=c, element=im2, mode='add')
 
 
 def insert_sphere(im, c, r, v=True, overwrite=True):

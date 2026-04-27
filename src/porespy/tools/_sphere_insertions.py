@@ -12,8 +12,26 @@ __all__ = [
     '_insert_disks_at_points',
     '_insert_disks_at_points_serial',
     '_insert_disks_at_points_parallel',
+    '_insert_shape_at_point',
+    '_insert_shape_at_points',
+    '_insert_shape_at_points_parallel',
+    'insert_shape_at_points',
     'points_to_spheres',
 ]
+
+
+# Mode codes for the `_insert_shape_at_point*` primitives. Kept as ints so
+# numba can dispatch in the inner loop without string handling.
+_MODE_PRESERVE = 0
+_MODE_OVERWRITE = 1
+_MODE_ADD = 2
+
+_MODE_LOOKUP = {
+    'preserve': _MODE_PRESERVE,
+    'overwrite': _MODE_OVERWRITE,
+    'add': _MODE_ADD,
+    'overlay': _MODE_ADD,
+}
 
 
 def points_to_spheres(im):
@@ -159,173 +177,295 @@ def _insert_disks_at_points_serial(im, coords, radii, v, smooth=True,
 
 
 @njit(parallel=False)
-def _insert_disk_at_point(im, coords, r, v,
-                           smooth=True, overwrite=False):  # pragma: no cover
+def _insert_shape_at_point(im, coords, element, v, mode):  # pragma: no cover
     r"""
-    Insert spheres (or disks) into the given ND-image at given locations
+    Stamp ``element`` into ``im`` centered at a single coordinate.
 
-    This function uses numba to accelerate the process, and does not
-    overwrite any existing values (i.e. only writes to locations containing
-    zeros).
+    Only writes at locations where ``element`` is non-zero, so the stamp acts
+    as its own mask. ``element`` must have odd-length sides; the centre is at
+    ``element.shape[d] // 2`` along each axis.
 
     Parameters
     ----------
     im : ND-array
-        The image into which the spheres/disks should be inserted. This is an
-        'in-place' operation.
-    coords : ND-array
-        The center point of the sphere/disk
-    r : int
-        The radius of all the spheres/disks to add. It is assumed that they
-        are all the same radius.
+        The image to stamp into. Modified in place.
+    coords : array_like
+        The centre coordinate of length ``ndim``.
+    element : ND-array
+        The sub-image to stamp. Must match the dimensionality of ``im``.
     v : scalar
-        The value to insert
-    smooth : boolean
-        If ``True`` (default) then the spheres/disks will not have the litte
-        nibs on the surfaces.
-
+        The value written at active pixels (multiplied by ``element[a, b, ...]``
+        to keep weighted stamps working).
+    mode : int
+        One of ``_MODE_PRESERVE`` (only writes where ``im`` is 0),
+        ``_MODE_OVERWRITE`` (replaces), or ``_MODE_ADD`` (in-place add).
     """
     if im.ndim == 2:
         xlim, ylim = im.shape
-        s = _make_disk(r, smooth)
-        pt = coords
-        for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
-            if (x >= 0) and (x < xlim):
-                for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
-                    if (y >= 0) and (y < ylim):
-                        if s[a, b] == 1:
-                            if overwrite or (im[x, y] == 0):
-                                im[x, y] = v
+        rx = element.shape[0] // 2
+        ry = element.shape[1] // 2
+        for a in range(element.shape[0]):
+            x = coords[0] - rx + a
+            if (x < 0) or (x >= xlim):
+                continue
+            for b in range(element.shape[1]):
+                y = coords[1] - ry + b
+                if (y < 0) or (y >= ylim):
+                    continue
+                e = element[a, b]
+                if e == 0:
+                    continue
+                if mode == 0:
+                    if im[x, y] == 0:
+                        im[x, y] = e * v
+                elif mode == 1:
+                    im[x, y] = e * v
+                else:
+                    im[x, y] += e * v
     elif im.ndim == 3:
         xlim, ylim, zlim = im.shape
-        s = _make_ball(r, smooth)
-        pt = coords
-        for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
-            if (x >= 0) and (x < xlim):
-                for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
-                    if (y >= 0) and (y < ylim):
-                        for c, z in enumerate(range(pt[2]-r, pt[2]+r+1)):
-                            if (z >= 0) and (z < zlim):
-                                if (s[a, b, c] == 1):
-                                    if overwrite or (im[x, y, z] == 0):
-                                        im[x, y, z] = v
+        rx = element.shape[0] // 2
+        ry = element.shape[1] // 2
+        rz = element.shape[2] // 2
+        for a in range(element.shape[0]):
+            x = coords[0] - rx + a
+            if (x < 0) or (x >= xlim):
+                continue
+            for b in range(element.shape[1]):
+                y = coords[1] - ry + b
+                if (y < 0) or (y >= ylim):
+                    continue
+                for c in range(element.shape[2]):
+                    z = coords[2] - rz + c
+                    if (z < 0) or (z >= zlim):
+                        continue
+                    e = element[a, b, c]
+                    if e == 0:
+                        continue
+                    if mode == 0:
+                        if im[x, y, z] == 0:
+                            im[x, y, z] = e * v
+                    elif mode == 1:
+                        im[x, y, z] = e * v
+                    else:
+                        im[x, y, z] += e * v
     return im
+
+
+@njit(parallel=False)
+def _insert_shape_at_points(im, coords, element, v, mode):  # pragma: no cover
+    r"""
+    Stamp ``element`` into ``im`` at every column of ``coords``.
+
+    See ``_insert_shape_at_point`` for the per-pixel semantics. ``coords``
+    is shaped ``(ndim, npts)``.
+    """
+    npts = len(coords[0])
+    if im.ndim == 2:
+        xlim, ylim = im.shape
+        rx = element.shape[0] // 2
+        ry = element.shape[1] // 2
+        for i in range(npts):
+            for a in range(element.shape[0]):
+                x = coords[0, i] - rx + a
+                if (x < 0) or (x >= xlim):
+                    continue
+                for b in range(element.shape[1]):
+                    y = coords[1, i] - ry + b
+                    if (y < 0) or (y >= ylim):
+                        continue
+                    e = element[a, b]
+                    if e == 0:
+                        continue
+                    if mode == 0:
+                        if im[x, y] == 0:
+                            im[x, y] = e * v
+                    elif mode == 1:
+                        im[x, y] = e * v
+                    else:
+                        im[x, y] += e * v
+    elif im.ndim == 3:
+        xlim, ylim, zlim = im.shape
+        rx = element.shape[0] // 2
+        ry = element.shape[1] // 2
+        rz = element.shape[2] // 2
+        for i in range(npts):
+            for a in range(element.shape[0]):
+                x = coords[0, i] - rx + a
+                if (x < 0) or (x >= xlim):
+                    continue
+                for b in range(element.shape[1]):
+                    y = coords[1, i] - ry + b
+                    if (y < 0) or (y >= ylim):
+                        continue
+                    for c in range(element.shape[2]):
+                        z = coords[2, i] - rz + c
+                        if (z < 0) or (z >= zlim):
+                            continue
+                        e = element[a, b, c]
+                        if e == 0:
+                            continue
+                        if mode == 0:
+                            if im[x, y, z] == 0:
+                                im[x, y, z] = e * v
+                        elif mode == 1:
+                            im[x, y, z] = e * v
+                        else:
+                            im[x, y, z] += e * v
+    return im
+
+
+@njit(parallel=True)
+def _insert_shape_at_points_parallel(im, coords, element, v,
+                                     mode):  # pragma: no cover
+    r"""
+    Parallel variant of ``_insert_shape_at_points`` (``prange`` over points).
+    """
+    npts = len(coords[0])
+    if im.ndim == 2:
+        xlim, ylim = im.shape
+        rx = element.shape[0] // 2
+        ry = element.shape[1] // 2
+        for i in prange(npts):
+            for a in range(element.shape[0]):
+                x = coords[0, i] - rx + a
+                if (x < 0) or (x >= xlim):
+                    continue
+                for b in range(element.shape[1]):
+                    y = coords[1, i] - ry + b
+                    if (y < 0) or (y >= ylim):
+                        continue
+                    e = element[a, b]
+                    if e == 0:
+                        continue
+                    if mode == 0:
+                        if im[x, y] == 0:
+                            im[x, y] = e * v
+                    elif mode == 1:
+                        im[x, y] = e * v
+                    else:
+                        im[x, y] += e * v
+    elif im.ndim == 3:
+        xlim, ylim, zlim = im.shape
+        rx = element.shape[0] // 2
+        ry = element.shape[1] // 2
+        rz = element.shape[2] // 2
+        for i in prange(npts):
+            for a in range(element.shape[0]):
+                x = coords[0, i] - rx + a
+                if (x < 0) or (x >= xlim):
+                    continue
+                for b in range(element.shape[1]):
+                    y = coords[1, i] - ry + b
+                    if (y < 0) or (y >= ylim):
+                        continue
+                    for c in range(element.shape[2]):
+                        z = coords[2, i] - rz + c
+                        if (z < 0) or (z >= zlim):
+                            continue
+                        e = element[a, b, c]
+                        if e == 0:
+                            continue
+                        if mode == 0:
+                            if im[x, y, z] == 0:
+                                im[x, y, z] = e * v
+                        elif mode == 1:
+                            im[x, y, z] = e * v
+                        else:
+                            im[x, y, z] += e * v
+    return im
+
+
+def insert_shape_at_points(im, coords, element, value=1, mode='preserve'):
+    r"""
+    Insert a sub-image (``element``) at one or more coordinates.
+
+    A generic version of ``_insert_disk_at_points``: the radius is replaced
+    by an arbitrary stamp. Active pixels are those where ``element`` is
+    non-zero, so the stamp doubles as its own mask.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image into which ``element`` is stamped. Modified in place.
+    coords : array_like
+        Coordinates at which to stamp ``element``. Either a 1-D array of
+        length ``ndim`` (single point) or a 2-D array of shape
+        ``(ndim, npts)``.
+    element : ND-array
+        The sub-image to stamp. Each side must be odd so the centre is well
+        defined.
+    value : scalar, optional
+        Value written at active pixels (multiplied by ``element``). Default
+        is 1.
+    mode : str, optional
+        One of ``'preserve'`` (only writes where ``im`` is currently 0),
+        ``'overwrite'`` (replaces), or ``'add'`` / ``'overlay'`` (in-place
+        add). Default is ``'preserve'``.
+
+    Returns
+    -------
+    im : ND-array
+        The same array passed in, modified in place.
+    """
+    if mode not in _MODE_LOOKUP:
+        raise ValueError(
+            f"Invalid mode {mode!r}; must be one of {sorted(set(_MODE_LOOKUP))}"
+        )
+    coords = np.asarray(coords)
+    if coords.ndim == 1:
+        return _insert_shape_at_point(im, coords, element, value,
+                                      _MODE_LOOKUP[mode])
+    return _insert_shape_at_points(im, coords, element, value,
+                                   _MODE_LOOKUP[mode])
+
+
+@njit(parallel=False)
+def _insert_disk_at_point(im, coords, r, v,
+                          smooth=True, overwrite=False):  # pragma: no cover
+    r"""
+    Insert a disk/ball of radius ``r`` at a single coordinate.
+
+    Thin wrapper around ``_insert_shape_at_point`` that builds the disk/ball
+    stencil. See that function for the per-pixel semantics.
+    """
+    if im.ndim == 2:
+        s = _make_disk(r, smooth)
+    else:
+        s = _make_ball(r, smooth)
+    mode = 1 if overwrite else 0
+    return _insert_shape_at_point(im, coords, s, v, mode)
 
 
 @njit(parallel=False)
 def _insert_disk_at_points(im, coords, r, v,
                            smooth=True, overwrite=False):  # pragma: no cover
     r"""
-    Insert spheres (or disks) into the given ND-image at given locations
+    Insert disks/balls of radius ``r`` at every column of ``coords``.
 
-    This function uses numba to accelerate the process, and does not
-    overwrite any existing values (i.e. only writes to locations containing
-    zeros).
-
-    Parameters
-    ----------
-    im : ND-array
-        The image into which the spheres/disks should be inserted. This is an
-        'in-place' operation.
-    coords : ND-array
-        The center point of each sphere/disk in an array of shape
-        ``ndim by npts``
-    r : int
-        The radius of all the spheres/disks to add. It is assumed that they
-        are all the same radius.
-    v : scalar
-        The value to insert
-    smooth : boolean
-        If ``True`` (default) then the spheres/disks will not have the litte
-        nibs on the surfaces.
-
+    Thin wrapper around ``_insert_shape_at_points``.
     """
-    npts = len(coords[0])
     if im.ndim == 2:
-        xlim, ylim = im.shape
         s = _make_disk(r, smooth)
-        for i in range(npts):
-            pt = coords[:, i]
-            for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            if s[a, b] == 1:
-                                if overwrite or (im[x, y] == 0):
-                                    im[x, y] = v
-    elif im.ndim == 3:
-        xlim, ylim, zlim = im.shape
+    else:
         s = _make_ball(r, smooth)
-        for i in range(npts):
-            pt = coords[:, i]
-            for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            for c, z in enumerate(range(pt[2]-r, pt[2]+r+1)):
-                                if (z >= 0) and (z < zlim):
-                                    if (s[a, b, c] == 1):
-                                        if overwrite or (im[x, y, z] == 0):
-                                            im[x, y, z] = v
-    return im
+    mode = 1 if overwrite else 0
+    return _insert_shape_at_points(im, coords, s, v, mode)
 
 
-@njit(parallel=True)
+@njit(parallel=False)
 def _insert_disk_at_points_parallel(im, coords, r, v, smooth=True,
                                     overwrite=False):  # pragma: no cover
     r"""
-    Insert spheres (or disks) into the given ND-image at given locations
-
-    This function uses numba to accelerate the process, and does not
-    overwrite any existing values (i.e. only writes to locations containing
-    zeros).
-
-    Parameters
-    ----------
-    im : ND-array
-        The image into which the spheres/disks should be inserted. This is an
-        'in-place' operation.
-    coords : ND-array
-        The center point of each sphere/disk in an array of shape
-        ``ndim by npts``
-    r : int
-        The radius of all the spheres/disks to add. It is assumed that they
-        are all the same radius.
-    v : scalar
-        The value to insert
-    smooth : boolean
-        If ``True`` (default) then the spheres/disks will not have the litte
-        nibs on the surfaces.
-
+    Parallel variant of ``_insert_disk_at_points``. The wrapper itself
+    is serial; the per-point parallelism lives inside the inner call.
     """
-    npts = len(coords[0])
     if im.ndim == 2:
-        xlim, ylim = im.shape
         s = _make_disk(r, smooth)
-        for i in prange(npts):
-            pt = coords[:, i]
-            for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            if s[a, b] == 1:
-                                if overwrite or (im[x, y] == 0):
-                                    im[x, y] = v
-    elif im.ndim == 3:
-        xlim, ylim, zlim = im.shape
+    else:
         s = _make_ball(r, smooth)
-        for i in prange(npts):
-            pt = coords[:, i]
-            for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            for c, z in enumerate(range(pt[2]-r, pt[2]+r+1)):
-                                if (z >= 0) and (z < zlim):
-                                    if (s[a, b, c] == 1):
-                                        if overwrite or (im[x, y, z] == 0):
-                                            im[x, y, z] = v
-    return im
+    mode = 1 if overwrite else 0
+    return _insert_shape_at_points_parallel(im, coords, s, v, mode)
 
 
 @njit(parallel=False)
