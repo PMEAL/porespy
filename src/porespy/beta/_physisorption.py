@@ -128,11 +128,15 @@ def physisorption(
         ``im_ads``   ndarray of floats. For each voxel, the film thickness
                      (in nm) at which it joined the condensed phase during
                      adsorption. Solid voxels are 0.
+        ``t_ads``    ndarray of floats. Film thicknesses (in nm) used in
+                     the adsorption sweep.
         ``V_ads``    ndarray. Total condensed volume (voxel count) at
                      each adsorption step.
         ``p_ads``    ndarray. Relative pressures matching ``V_ads``.
         ``im_des``   ndarray. For each voxel, the desorption-step index
                      at which it drained.
+        ``t_des``    ndarray of floats. Film thicknesses (in nm) used in
+                     the desorption sweep.
         ``V_des``    ndarray. Total condensed volume remaining at each
                      desorption step.
         ``p_des``    ndarray. Relative pressures matching ``V_des``.
@@ -196,9 +200,11 @@ def physisorption(
 
     result = Results()
     result.im_ads = im_ads
+    result.t_ads = t_ads
     result.V_ads = V_ads
     result.p_ads = p_of_t(t_ads)
     result.im_des = im_des
+    result.t_des = t_des
     result.V_des = V_des
     result.p_des = p_of_t(t_des)
     return result

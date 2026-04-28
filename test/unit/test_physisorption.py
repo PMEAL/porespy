@@ -30,7 +30,10 @@ def im_3d():
 
 def test_returns_expected_attributes(im_2d):
     bet = physisorption(im_2d, voxel_size=0.5)
-    for attr in ("im_ads", "V_ads", "p_ads", "im_des", "V_des", "p_des"):
+    for attr in (
+        "im_ads", "t_ads", "V_ads", "p_ads",
+        "im_des", "t_des", "V_des", "p_des",
+    ):
         assert hasattr(bet, attr)
 
 
@@ -42,8 +45,8 @@ def test_image_shape_preserved(im_2d):
 
 def test_isotherm_arrays_aligned(im_2d):
     bet = physisorption(im_2d, voxel_size=0.5)
-    assert bet.V_ads.shape == bet.p_ads.shape
-    assert bet.V_des.shape == bet.p_des.shape
+    assert bet.V_ads.shape == bet.p_ads.shape == bet.t_ads.shape
+    assert bet.V_des.shape == bet.p_des.shape == bet.t_des.shape
 
 
 def test_pressures_in_open_unit_interval(im_2d):
