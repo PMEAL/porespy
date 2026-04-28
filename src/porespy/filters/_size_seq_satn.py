@@ -9,6 +9,7 @@ __all__ = [
     'pc_to_satn',
     'pc_to_seq',
     'satn_to_seq',
+    'satn_to_time',
     'size_to_pc',
 ]
 
@@ -447,14 +448,72 @@ def size_to_pc(im, size, f=None, **kwargs):
     return pc
 
 
-# Seems to color in wrong order for imbibition
-# def satn_to_time(im, satn, flow_rate, voxel_size, mode='imbibition'):
-#     f = 1 if mode == 'imbibition' else 0
-#     bins = np.digitize(satn.flatten()-f, bins=np.unique(satn-f), right=True)
-#     counts = np.cumsum(np.bincount(bins))
-#     time = counts*(voxel_size**im.ndim)/flow_rate
-#     time_map = np.reshape(time[bins], im.shape)
-#     plt.imshow(time_map/im)
+def satn_to_time(satn, im, flow_rate, voxel_size=1.0, mode='drainage'):
+    r"""
+    Converts a saturation map to a time-of-invasion map for a constant flow-rate
+    injection.
+
+    Parameters
+    ----------
+    satn : ndarray
+        The saturation map produced by an invasion simulation. Each void voxel
+        holds the global saturation at the moment it was invaded (in the
+        convention used by `seq_to_satn` and `pc_to_satn`: invading-phase
+        saturation for `drainage`, defending-phase saturation for `imbibition`).
+        Solid voxels should be `0` and trapped (never-invaded) voxels `-1`.
+    im : ndarray
+        A boolean image of the porous medium, with `True` indicating the
+        void space and `False` indicating the solid phase.
+    flow_rate : scalar
+        The volumetric injection rate of the displacing fluid, in units of
+        `[length]^ndim / [time]` consistent with `voxel_size`.
+    voxel_size : scalar
+        The physical size of a voxel side, in `[length]` units consistent with
+        `flow_rate`. Default is `1.0`, in which case the returned times are in
+        units of voxels^ndim / `flow_rate`.
+    mode : str
+        Controls how the saturation is interpreted. Options are:
+
+        ============= ==============================================================
+        `mode`        Description
+        ============= ==============================================================
+        'drainage'    `satn` is the invading-phase saturation; it increases over
+                      time. `t = satn * V_void / flow_rate`.
+        'imbibition'  `satn` is the defending-phase saturation; it decreases over
+                      time. `t = (1 - satn) * V_void / flow_rate`.
+        ============= ==============================================================
+
+    Returns
+    -------
+    time : ndarray
+        An ndarray the same shape as `satn`. Each void voxel holds the time at
+        which it was invaded. Solid voxels are `0` and trapped voxels are `-1`.
+
+    Notes
+    -----
+    `V_void = im.sum() * voxel_size**im.ndim` is the total void volume. The
+    underlying assumption is constant volumetric flow rate, so injected volume
+    grows linearly with time and saturation maps directly to time. Residual
+    voxels (already-invaded at $t=0$) end up at a small positive time equal to
+    the time it would take to inject the residual volume.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/satn_to_time.html>`__
+    to view online example.
+
+    """
+    if not (mode.startswith('dr') or mode.startswith('im')):
+        raise Exception(f"Unrecognized mode {mode!r}")
+    V_void = im.sum() * voxel_size ** im.ndim
+    if mode.startswith('dr'):
+        time = satn * V_void / flow_rate
+    else:
+        time = (1.0 - satn) * V_void / flow_rate
+    time[~im] = 0.0
+    time[satn == -1] = -1.0
+    return time
 
 
 if __name__ == "__main__":
