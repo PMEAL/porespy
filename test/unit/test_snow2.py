@@ -1,9 +1,14 @@
+import importlib
+
 import numpy as np
 import openpnm as op
+import pytest
 import scipy.ndimage as spim
 from scipy import stats as spst
 
 import porespy as ps
+
+pyedt_missing = importlib.util.find_spec("pyedt") is None
 
 edt = ps.tools.get_edt()
 ws = op.Workspace()
@@ -387,6 +392,27 @@ class Snow2Test:
             im=snow_n.regions, shape=np.array(snow_n.regions.shape) - 10
         )
         assert temp.max() == 163
+
+    def test_parallel_extraction_kw_2d_raises(self):
+        im = ps.generators.blobs(
+            shape=[100, 100], seed=0, porosity=0.5, periodic=False,
+        )
+        with pytest.raises(Exception, match="3D"):
+            ps.networks.snow2(im, parallel_kw=None, parallel_extraction_kw={})
+
+    @pytest.mark.skipif(pyedt_missing, reason="pyedt not installed")
+    def test_parallel_extraction_kw_matches_serial(self):
+        im = ps.generators.blobs(
+            shape=[60, 60, 60], seed=0, porosity=0.6, periodic=False,
+        )
+        serial = ps.networks.snow2(im, parallel_kw=None)
+        parallel = ps.networks.snow2(
+            im, parallel_kw=None, parallel_extraction_kw={"threads": 2},
+        )
+        assert serial.network["pore.coords"].shape \
+            == parallel.network["pore.coords"].shape
+        assert serial.network["throat.conns"].shape \
+            == parallel.network["throat.conns"].shape
 
 
 if __name__ == "__main__":

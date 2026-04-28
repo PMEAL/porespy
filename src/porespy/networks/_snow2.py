@@ -7,6 +7,7 @@ from porespy.tools import Results, get_edt
 
 from ._funcs import add_boundary_regions, label_boundaries, label_phases
 from ._getnet_orig import regions_to_network
+from ._getnet_para import regions_to_network_parallel
 
 __all__ = ["snow2", "_parse_pad_width"]
 
@@ -46,6 +47,7 @@ def snow2(
     peaks=None,
     porosity_map=None,
     parallel_kw={},
+    parallel_extraction_kw=None,
 ):
     r"""
     Applies the SNOW algorithm to each phase indicated in ``phases``.
@@ -150,6 +152,22 @@ def snow2(
                    serial to minimize memory usage.
         ========== ============================================================
 
+    parallel_extraction_kw : dict, optional
+        Controls whether the network extraction step uses
+        ``regions_to_network_parallel`` (a numba-threaded implementation) instead
+        of the default ``regions_to_network``. If ``None`` (default), the
+        standard serial extractor is used. If a ``dict`` is given, the parallel
+        extractor is used with the supplied options. Note that the parallel
+        extractor only supports 3D images and requires the optional ``pyedt``
+        package. The recognized keys are:
+
+        ========== ============================================================
+        Key        Description
+        ========== ============================================================
+        'threads'  Number of numba threads to use. If not provided, defaults to
+                   roughly half of the available cores.
+        ========== ============================================================
+
     Returns
     -------
     network : Results object
@@ -242,13 +260,28 @@ def snow2(
         if porosity_map is not None:
             porosity_map = np.pad(porosity_map, pad_width=boundary_width, mode='edge')
     # Perform actual extractcion on all regions
-    net = regions_to_network(
-        regions,
-        phases=phases,
-        accuracy=accuracy,
-        voxel_size=voxel_size,
-        porosity_map=porosity_map,
-    )
+    if parallel_extraction_kw is None:
+        net = regions_to_network(
+            regions,
+            phases=phases,
+            accuracy=accuracy,
+            voxel_size=voxel_size,
+            porosity_map=porosity_map,
+        )
+    else:
+        if regions.ndim != 3:
+            raise Exception("parallel_extraction_kw is only supported for 3D images")
+        vs = voxel_size
+        if np.isscalar(vs):
+            vs = (float(vs),) * regions.ndim
+        net = regions_to_network_parallel(
+            regions,
+            phases=phases,
+            accuracy=accuracy,
+            voxel_size=vs,
+            porosity_map=porosity_map,
+            **parallel_extraction_kw,
+        )
     # If image is multiphase, label pores/throats accordingly
     if phases.max() > 1:
         phase_alias = _parse_phase_alias(phase_alias, phases)
