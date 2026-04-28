@@ -205,62 +205,18 @@ def physisorption(
 
 
 if __name__ == "__main__":
-    import porespy as ps
     import matplotlib.pyplot as plt
-    from copy import copy
-    import matplotlib.animation as animation
-    import imageio_ffmpeg
-    from matplotlib import rcParams
 
-    cm = copy(plt.cm.plasma)
-    cm.set_under('black')
-    cm.set_bad('white')
-    cm.set_over('grey')
+    import porespy as ps
 
-    im = ps.generators.blobs(shape=[1200, 1200], porosity=0.6, blobiness=2.5, seed=0)
+    im = ps.generators.blobs(shape=[300, 300], porosity=0.6, blobiness=2.0, seed=0)
     im = ps.filters.fill_invalid_pores(im)
 
-    bet = physisorption(im)
+    bet = physisorption(im, voxel_size=0.5)
     fig, ax = plt.subplots()
-    ax.plot(bet.p_ads, bet.V_ads, label='Adsorb')
-    ax.plot(bet.p_des, bet.V_des, label='Desorb')
+    ax.plot(bet.p_ads, bet.V_ads, "o-", label="adsorption")
+    ax.plot(bet.p_des, bet.V_des, "s-", label="desorption")
+    ax.set_xlabel("Relative pressure $p/p_0$")
+    ax.set_ylabel("Adsorbed volume (voxels)")
     ax.legend()
-
-    # Generate animation
-    if im.ndim == 2:
-        # im_ani = bet.im_ads.copy()
-        im_ani = bet.im_ads.copy()
-        N = np.unique(im_ani[im])
-        stk = np.zeros([len(N)]+list(im.shape))
-        # Create stack of images to show
-        for i, s in enumerate(N):
-            mask = im * (im_ani < s) * i
-            mask = mask.astype(float)
-            mask[mask == 0] = max(N) + 1
-            mask[~im] = -1
-            stk[i, ...] = mask
-
-        fig2, ax2 = plt.subplots()
-        animated_image = ax2.imshow(
-            stk[0, ...],
-            origin='lower',
-            cmap=cm,
-            vmin=0,
-            vmax=max(N),
-            interpolation='none',
-        )
-        ax2.axis(False)
-
-        def update(i):
-            animated_image.set_data(stk[i, :])
-            return (animated_image,)
-
-        ani = animation.FuncAnimation(
-            fig=fig2,
-            func=update,
-            frames=len(stk),
-            interval=250,
-            blit=True,
-        )
-        rcParams["animation.ffmpeg_path"] = imageio_ffmpeg.get_ffmpeg_exe()
-        ani.save("Adsoprtion.mp4", writer='ffmpeg')
+    plt.show()
