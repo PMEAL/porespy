@@ -437,20 +437,22 @@ def rescale_network(network, voxel_size):
         )
         raise KeyError(msg)
 
-    vs_old = network['param.voxel_size']
-    if hasattr(vs_old, '__len__'):
-        if not np.allclose(vs_old, vs_old[0]):
+    vs_old = np.asarray(network['param.voxel_size'])
+    if vs_old.ndim > 0:
+        if not np.allclose(vs_old, vs_old.flat[0]):
             raise NotImplementedError(
                 "Anisotropic voxel sizes are not supported by rescale_network"
             )
-        vs_old = float(vs_old[0])
-    factor = float(voxel_size) / float(vs_old)
-    ndim = int(network['param.ndim'])
+        vs_old = float(vs_old.flat[0])
+    else:
+        vs_old = float(vs_old)
+    factor = float(voxel_size) / vs_old
+    ndim = int(np.asarray(network['param.ndim']).flat[0])
 
     rescaled = dict(network)
     for key, value in network.items():
         p = _scale_exponent(key, ndim)
         if p:
             rescaled[key] = np.asarray(value) * factor**p
-    rescaled['param.voxel_size'] = float(voxel_size)
+    rescaled['param.voxel_size'] = np.asarray(voxel_size)
     return rescaled
