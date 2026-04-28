@@ -194,6 +194,58 @@ class ToolsTest():
         im = ps.tools.insert_cylinder(im, [20, 20, 20], [80, 80, 80], r=30)
         assert im.sum() == 356924
 
+    def test_insert_shape_at_points_single_point_2d(self):
+        im = np.zeros([20, 20], dtype=int)
+        elem = np.ones([3, 3], dtype=int)
+        im = ps.tools.insert_shape_at_points(
+            im, coords=np.array([10, 10]), element=elem, value=5)
+        assert (im[9:12, 9:12] == 5).all()
+        assert im.sum() == 9 * 5
+
+    def test_insert_shape_at_points_multi_point_3d(self):
+        im = np.zeros([20, 20, 20], dtype=int)
+        elem = np.ones([3, 3, 3], dtype=int)
+        coords = np.array([[5, 15], [5, 15], [5, 15]])
+        im = ps.tools.insert_shape_at_points(im, coords=coords, element=elem)
+        assert im[5, 5, 5] == 1
+        assert im[15, 15, 15] == 1
+        assert im.sum() == 2 * 27
+
+    def test_insert_shape_at_points_modes(self):
+        # 'preserve' keeps existing nonzero values; 'overwrite' replaces them;
+        # 'add' accumulates.
+        elem = np.ones([3, 3], dtype=int)
+        for mode, expected in [('preserve', 7), ('overwrite', 1), ('add', 8)]:
+            im = np.zeros([10, 10], dtype=int)
+            im[5, 5] = 7
+            im = ps.tools.insert_shape_at_points(
+                im, coords=np.array([5, 5]), element=elem, mode=mode)
+            assert im[5, 5] == expected, f"{mode} -> {im[5, 5]} != {expected}"
+
+    def test_insert_shape_at_points_invalid_mode(self):
+        im = np.zeros([10, 10], dtype=int)
+        elem = np.ones([3, 3], dtype=int)
+        with pytest.raises(ValueError, match="Invalid mode"):
+            ps.tools.insert_shape_at_points(
+                im, coords=np.array([5, 5]), element=elem, mode='nope')
+
+    def test_insert_shape_at_points_clips_out_of_bounds(self):
+        # An element centered near a corner should be clipped, not raise.
+        im = np.zeros([5, 5], dtype=int)
+        elem = np.ones([3, 3], dtype=int)
+        im = ps.tools.insert_shape_at_points(
+            im, coords=np.array([0, 0]), element=elem, mode='overwrite')
+        # Only the in-bounds quadrant of the 3x3 element is written
+        assert im.sum() == 4
+
+    def test_overlay_emits_deprecation_warning(self):
+        im1 = np.zeros([10, 10, 10], dtype=int)
+        im2 = np.ones([3, 3, 3], dtype=int)
+        with pytest.warns(DeprecationWarning, match="insert_shape_at_points"):
+            out = ps.tools.overlay(im1, im2, c=[5, 5, 5])
+        assert out[5, 5, 5] == 1
+        assert out.sum() == 27
+
     def test_insert_cylinder_outside_image(self):
         im = np.zeros([50, 50, 50], dtype=bool)
         with pytest.raises(Exception):
