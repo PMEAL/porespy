@@ -962,17 +962,17 @@ def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
 
 
     """
+    # Use floor-division so that even and odd shapes both put the zero-lag
+    # voxel exactly on a grid point — `np.round(N/2)` would land at index
+    # `N//2 + 1` for odd `N`, leaving the lag-0 peak at distance √2 from
+    # the assumed centre.
     if len(autocorr.shape) == 2:
-        adj = np.reshape(autocorr.shape, [2, 1, 1])
-        # use np.round otherwise with odd image sizes, the mask generated can
-        # be zero, resulting in Div/0 error
-        inds = np.indices(autocorr.shape) - np.round(adj / 2)
+        centre = np.array(autocorr.shape).reshape([2, 1, 1]) // 2
+        inds = np.indices(autocorr.shape) - centre
         dt = np.sqrt(inds[0] ** 2 + inds[1] ** 2)
     elif len(autocorr.shape) == 3:
-        adj = np.reshape(autocorr.shape, [3, 1, 1, 1])
-        # use np.round otherwise with odd image sizes, the mask generated can
-        # be zero, resulting in Div/0 error
-        inds = np.indices(autocorr.shape) - np.round(adj / 2)
+        centre = np.array(autocorr.shape).reshape([3, 1, 1, 1]) // 2
+        inds = np.indices(autocorr.shape) - centre
         dt = np.sqrt(inds[0] ** 2 + inds[1] ** 2 + inds[2] ** 2)
     else:
         raise Exception("Image dimensions must be 2 or 3")
@@ -986,8 +986,11 @@ def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
 
     bin_size = bins[1:] - bins[:-1]
     radial_sum = _get_radial_sum(dt, bins, bin_size, autocorr)
-    # Return normalized bin and radially summed autoc
-    norm_autoc_radial = radial_sum / np.max(autocorr)
+    # `autocorr` is an unbiased S2 estimate, so its zero-lag value equals the
+    # phase fraction `pf` and that is what scales the result to S2(r)/pf. The
+    # unbiased estimator can spike above `pf` at large lags where the overlap
+    # count is tiny, so we deliberately do not use `np.max(autocorr)`.
+    norm_autoc_radial = radial_sum / pf
     h = [norm_autoc_radial, bins]
     h = _parse_histogram(h, voxel_size=1)
     tpcf = Results()
@@ -1004,12 +1007,17 @@ def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
 
 @njit(parallel=False)  # pragma: no cover
 def _get_radial_sum(dt, bins, bin_size, autocorr):
+    # Bin i covers `[bins[i], bins[i+1])`, matching the bin-centre labelling
+    # used by `_parse_histogram`. The first bin includes the zero-lag voxel,
+    # so the result at distance ≈ 0 reports S2(0).
     radial_sum = np.zeros_like(bins[:-1], dtype=np.float64)
-    for i, r in enumerate(bins[:-1]):
-        mask = (dt <= r) * (dt > (r - bin_size[i]))
-        radial_sum[i] = np.sum(np.ravel(autocorr)[np.ravel(mask)], dtype=np.int64) / np.sum(
-            mask, dtype=np.int64
-        )
+    flat_dt = np.ravel(dt)
+    flat_autocorr = np.ravel(autocorr).astype(np.float64)
+    for i in range(len(bins) - 1):
+        mask = (flat_dt >= bins[i]) & (flat_dt < bins[i + 1])
+        n = np.sum(mask)
+        if n > 0:
+            radial_sum[i] = np.sum(flat_autocorr[mask]) / n
     return radial_sum
 
 
@@ -1065,6 +1073,13 @@ def two_point_correlation(im, voxel_size=1, bins=100):
     explanation `see this thesis
     <https://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf>`_.
 
+    The image is zero-padded to twice its size along each axis before the
+    forward transform so that the resulting autocorrelation is the proper
+    non-periodic correlation rather than the periodic one. Each lag is then
+    normalized by the number of voxel pairs that contributed to it, which
+    yields an unbiased estimate of $S_2(r)$ that averages over all radial
+    directions.
+
     Examples
     --------
     `Click here
@@ -1072,26 +1087,32 @@ def two_point_correlation(im, voxel_size=1, bins=100):
     to view online example.
 
     """
-    # Get the number of CPUs available to parallel process Fourier transforms
     cpus = settings.ncores
-    # Get the phase fraction of the image
     pf = porosity(im)
+    shape = np.array(im.shape)
     if isinstance(bins, int):
-        # Calculate half lengths of the image
-        r_max = (np.ceil(np.min(np.shape(im))) / 2).astype(int)
-        # Get the bin-size - ensures it will be at least 1
-        bin_size = int(np.ceil(r_max / bins))
-        # Calculate the bin divisions, equivalent to bin_edges
+        r_max = int(np.min(shape) // 2)
+        bin_size = max(1, int(np.ceil(r_max / bins)))
         bins = np.arange(0, r_max + bin_size, bin_size)
-    # set the number of parallel processors to use:
+    # Zero-pad to twice the size along each axis so the periodic FFT
+    # correlation matches the non-periodic correlation on the original image.
+    padded_shape = tuple(2 * s for s in shape)
+    im_float = np.asarray(im, dtype=np.float64)
     with sp_ft.set_workers(cpus):
-        # Fourier Transform and shift image
-        F = sp_ft.ifftshift(sp_ft.rfftn(sp_ft.fftshift(im)))
-        # Compute Power Spectrum
-        P = np.absolute(F**2)
-        # Auto-correlation is inverse of Power Spectrum
-        autoc = np.absolute(sp_ft.ifftshift(sp_ft.irfftn(sp_ft.fftshift(P))))
-    tpcf = _radial_profile(autoc, bins, pf=pf, voxel_size=voxel_size)
+        F = sp_ft.rfftn(im_float, s=padded_shape)
+        autoc = sp_ft.irfftn(np.abs(F) ** 2, s=padded_shape)
+        # Number of overlapping voxel pairs at each lag, for unbiased S2(r)
+        ones = np.ones_like(im_float)
+        G = sp_ft.rfftn(ones, s=padded_shape)
+        overlap = sp_ft.irfftn(np.abs(G) ** 2, s=padded_shape)
+    s2 = autoc / np.maximum(overlap, 1)
+    # Restrict to lags |r_i| < N_i so we drop the noisy edge of the unbiased
+    # estimator (where overlap → 0) and centre the array on the zero-lag peak.
+    s2 = sp_ft.fftshift(s2)
+    centre = tuple(s // 2 for s in padded_shape)
+    valid = tuple(slice(c - (n - 1), c + n) for c, n in zip(centre, shape))
+    s2 = s2[valid]
+    tpcf = _radial_profile(s2, bins, pf=pf, voxel_size=voxel_size)
     return tpcf
 
 
