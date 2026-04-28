@@ -673,20 +673,31 @@ def marching_map(path, start):
 
 def align_image_with_openpnm(im):
     r"""
-    Rotates an image to agree with the coordinates used in OpenPNM.
+    Permute image axes so they align with OpenPNM ``pore.coords`` when the
+    image is loaded into ParaView (or any tool whose TIFF reader treats
+    numpy axis 0 as the z-stack).
 
-    This is necessary for overlaying the image and the network in Paraview.
+    OpenPNM treats ``pore.coords`` as ``(x, y, z)``, but the centroids that
+    PoreSpy hands to OpenPNM are in numpy index order ``(axis0, axis1, axis2)``.
+    A TIFF-style reader interprets axis 0 as z, axis 1 as y, axis 2 as x, so
+    swapping axes 0 and 2 (or 0 and 1 in 2D) makes the image's voxel order
+    match OpenPNM's coordinate order.
+
+    Note that this function is **not** needed when writing the image with
+    ``porespy.io.to_vtk`` — pyevtk preserves numpy axis order, so ParaView
+    already lines the network up with the image.
 
     Parameters
     ----------
     im : ndarray
-        The image to be rotated.  Can be the Boolean image of the pore space
-        or any other image of interest.
+        The 2D or 3D image to be aligned. Can be the Boolean image of the
+        pore space or any other image of interest.
 
     Returns
     -------
     image : ndarray
-        Returns a copy of ``im`` rotated accordingly.
+        A copy of ``im`` with axes swapped so it overlays correctly with
+        the OpenPNM network in ParaView when saved via TIFF.
 
     Examples
     --------
@@ -696,14 +707,11 @@ def align_image_with_openpnm(im):
 
     """
     _check_for_singleton_axes(im)
-    im = np.copy(im)
     if im.ndim == 2:
-        im = (np.swapaxes(im, 1, 0))
-        im = im[-1::-1, :]
-    elif im.ndim == 3:
-        im = (np.swapaxes(im, 2, 0))
-        im = im[:, -1::-1, :]
-    return im
+        return np.swapaxes(im, 0, 1).copy()
+    if im.ndim == 3:
+        return np.swapaxes(im, 0, 2).copy()
+    return np.copy(im)
 
 
 def recombine(ims, slices, overlap):

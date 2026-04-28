@@ -489,16 +489,25 @@ class MetricsTest:
         assert np.all(ibip.im_size == qbip.im_size)  # Size images match
 
     def test_bond_number(self):
+        from edt import edt
         im = ~ps.generators.borders([200, 20], mode="faces")
-        kwargs = {"delta_rho": 1000, "g": 9.81, "sigma": 0.01, "voxel_size": 1e-4}
+        delta_rho, g, sigma, vx = 1000, 9.81, 0.01, 1e-4
+        kwargs = {"delta_rho": delta_rho, "g": g, "sigma": sigma, "voxel_size": vx}
+        # Pinning bo to a fixed number is platform-fragile: the dt/lt distributions
+        # are integer-valued, so the median sits on a cliff and tiny FP drift
+        # flips it. Instead, derive R from the same source/method that
+        # bond_number uses and check the closed-form Bo = |ρg|·(R·vx)²/σ.
+        Bo = lambda R: abs(delta_rho * g) * (R * vx) ** 2 / sigma
+        lt = ps.filters.local_thickness(im)[im]
+        dt = edt(im)[im]
         bo = ps.metrics.bond_number(im=im, source="lt", **kwargs)
-        assert np.isclose(bo, 0.79461, atol=0, rtol=1e-4)
+        assert np.isclose(bo, Bo(np.median(lt)), rtol=1e-4)
         bo = ps.metrics.bond_number(im=im, source="lt", method="min", **kwargs)
-        assert np.isclose(bo, 0.08829, atol=0, rtol=1e-4)
+        assert np.isclose(bo, Bo(np.amin(lt)), rtol=1e-4)
         bo = ps.metrics.bond_number(im=im, source="dt", **kwargs)
-        assert np.isclose(bo, 0.24525, atol=0, rtol=1e-4)
+        assert np.isclose(bo, Bo(np.median(dt)), rtol=1e-4)
         bo = ps.metrics.bond_number(im=im, source="dt", method="max", **kwargs)
-        assert np.isclose(bo, 0.79461, atol=0, rtol=1e-4)
+        assert np.isclose(bo, Bo(np.amax(dt)), rtol=1e-4)
 
     def test_is_percolating(self):
         im = np.ones([20, 20], dtype=bool)

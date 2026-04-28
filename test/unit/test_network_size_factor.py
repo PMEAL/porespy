@@ -1,6 +1,7 @@
 import pytest
 
 import numpy as np
+import openpnm as op
 
 import porespy as ps
 
@@ -15,6 +16,16 @@ class NetworkSizeFactorTest():
         self.im = im[:15, :15, :15]
         self.snow = ps.networks.snow2(self.im, boundary_width=0,
                                       parallel_kw=None)
+
+    def test_diffusive_size_factor_DNS_does_not_leak_projects(self):
+        # Regression test for #835: each call used to register an OpenPNM
+        # project on the global Workspace and never close it.
+        regions = self.snow.regions
+        conns = self.snow.network['throat.conns'][:3]
+        ws = op.Workspace()
+        n_before = len(ws)
+        ps.networks.diffusive_size_factor_DNS(regions, throat_conns=conns)
+        assert len(ws) == n_before
 
     @pytest.mark.skip(reason="Skip until we figure out what's wrong")
     def test_diffusive_size_factor_DNS(self):

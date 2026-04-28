@@ -119,6 +119,24 @@ class ToolsTest():
         im = ps.tools.align_image_with_openpnm(np.ones([40, 50, 60]))
         assert im.shape == (60, 50, 40)
 
+    def test_align_image_w_openpnm_is_a_pure_swap_no_flip(self):
+        # Regression test for #872: the function used to swap *and* flip,
+        # producing a mirror. A marker placed at numpy index (i, j, k) must
+        # land at (k, j, i) after alignment — no axis is reversed.
+        im2d = np.zeros((10, 20), dtype=np.uint8)
+        im2d[3, 7] = 1
+        out2d = ps.tools.align_image_with_openpnm(im2d)
+        assert out2d.shape == (20, 10)
+        assert out2d[7, 3] == 1
+        assert out2d.sum() == 1
+
+        im3d = np.zeros((10, 20, 30), dtype=np.uint8)
+        im3d[3, 7, 25] = 1
+        out3d = ps.tools.align_image_with_openpnm(im3d)
+        assert out3d.shape == (30, 20, 10)
+        assert out3d[25, 7, 3] == 1
+        assert out3d.sum() == 1
+
     def test_inhull(self):
         X = np.random.rand(25, 2)
         hull = sptl.ConvexHull(X)
