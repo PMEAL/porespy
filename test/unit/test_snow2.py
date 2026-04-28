@@ -400,6 +400,15 @@ class Snow2Test:
         with pytest.raises(Exception, match="3D"):
             ps.networks.snow2(im, parallel_kw=None, parallel_extraction_kw={})
 
+    def test_normalize_voxel_size_scalar(self):
+        from porespy.networks._snow2 import _normalize_voxel_size
+        assert _normalize_voxel_size(2, 3) == (2.0, 2.0, 2.0)
+        assert _normalize_voxel_size(1.5, 2) == (1.5, 1.5)
+
+    def test_normalize_voxel_size_tuple(self):
+        from porespy.networks._snow2 import _normalize_voxel_size
+        assert _normalize_voxel_size((1, 2, 3), 3) == (1.0, 2.0, 3.0)
+
     @pytest.mark.skipif(pyedt_missing, reason="pyedt not installed")
     def test_parallel_extraction_kw_matches_serial(self):
         im = ps.generators.blobs(

@@ -271,9 +271,7 @@ def snow2(
     else:
         if regions.ndim != 3:
             raise Exception("parallel_extraction_kw is only supported for 3D images")
-        vs = voxel_size
-        if np.isscalar(vs):
-            vs = (float(vs),) * regions.ndim
+        vs = _normalize_voxel_size(voxel_size, regions.ndim)
         net = regions_to_network_parallel(
             regions,
             phases=phases,
@@ -298,6 +296,13 @@ def snow2(
     result.regions = regions
     result.phases = phases
     return result
+
+
+def _normalize_voxel_size(voxel_size, ndim):
+    r"""Widen ``voxel_size`` to an ``ndim``-tuple of floats."""
+    if np.isscalar(voxel_size):
+        return (float(voxel_size),) * ndim
+    return tuple(float(v) for v in voxel_size)
 
 
 def _parse_phase_alias(alias, phases):
