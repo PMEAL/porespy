@@ -436,6 +436,12 @@ def size_to_pc(im, size, f=None, **kwargs):
             pc = ...  # Some equation for capillary pressure using r, a and b
             return pc
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/size_to_pc.html>`__
+    to view online example.
+
     """
     if f is None:
         def f(r, sigma, theta, voxel_size):
