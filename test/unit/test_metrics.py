@@ -123,6 +123,13 @@ class MetricsTest:
         with pytest.raises(Exception):
             ps.metrics.porosity_profile(self.im2D, axis=2)
 
+    def test_porosity_profile_voxel_size(self):
+        im = ps.generators.lattice_spheres(shape=[200, 200], r=15, spacing=38)
+        p_vox = ps.metrics.porosity_profile(im, axis=0)
+        p_phys = ps.metrics.porosity_profile(im, axis=0, voxel_size=2.5e-6)
+        assert_allclose(p_phys.position, p_vox.position * 2.5e-6)
+        assert_allclose(p_phys.porosity, p_vox.porosity)
+
     def test_linear_density(self):
         im = ps.filters.distance_transform_lin(self.im2D, axis=0, mode="both")
         ps.metrics.lineal_path_distribution(im)
@@ -311,6 +318,16 @@ class MetricsTest:
         # assert len(prof1.saturation) == 80
         assert prof1.saturation[31] == 1 / 30
         assert prof1.saturation[48] == 0.6
+
+    def test_satn_profile_voxel_size(self):
+        satn = np.tile(np.atleast_2d(np.linspace(1, 0.01, 100)), (100, 1))
+        satn[:25, :] = 0
+        satn[-25:, :] = -1
+        p_vox = ps.metrics.satn_profile(satn=satn, s=0.5, axis=1, span=1)
+        p_phys = ps.metrics.satn_profile(
+            satn=satn, s=0.5, axis=1, span=1, voxel_size=2.5e-6)
+        assert_allclose(p_phys.position, p_vox.position * 2.5e-6)
+        assert_allclose(p_phys.saturation, p_vox.saturation)
 
     def test_satn_profile_threshold(self):
         satn = np.tile(np.atleast_2d(np.linspace(1, 0.01, 100)), (100, 1))
