@@ -60,6 +60,12 @@ def capillary_transform(
     All physical properties should be in self-consistent units, and it is strongly
     recommended to use SI for everything.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/capillary_transform.html>`__
+    to view online example.
+
     """
     from porespy.generators import ramp
 

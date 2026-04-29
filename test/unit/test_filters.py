@@ -294,6 +294,12 @@ class FilterTest():
         lt = ps.filters.local_thickness(self.im, method='conv')
         np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
 
+    def test_local_thickness_imj_2d(self):
+        im = self.im[:, :, 50]
+        lt = ps.filters.local_thickness_imj(im)
+        assert lt.shape == im.shape
+        assert lt.max() > 0
+
     def test_local_thickness_known_sizes(self):
         im = np.zeros(shape=[300, 300])
         im = ps.generators.random_spheres(im=im, r=20)
