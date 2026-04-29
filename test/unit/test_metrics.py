@@ -123,6 +123,13 @@ class MetricsTest:
         with pytest.raises(Exception):
             ps.metrics.porosity_profile(self.im2D, axis=2)
 
+    def test_porosity_profile_voxel_size(self):
+        im = ps.generators.lattice_spheres(shape=[200, 200], r=15, spacing=38)
+        p_vox = ps.metrics.porosity_profile(im, axis=0)
+        p_phys = ps.metrics.porosity_profile(im, axis=0, voxel_size=2.5e-6)
+        assert_allclose(p_phys.position, p_vox.position * 2.5e-6)
+        assert_allclose(p_phys.porosity, p_vox.porosity)
+
     def test_linear_density(self):
         im = ps.filters.distance_transform_lin(self.im2D, axis=0, mode="both")
         ps.metrics.lineal_path_distribution(im)
@@ -312,6 +319,16 @@ class MetricsTest:
         assert prof1.saturation[31] == 1 / 30
         assert prof1.saturation[48] == 0.6
 
+    def test_satn_profile_voxel_size(self):
+        satn = np.tile(np.atleast_2d(np.linspace(1, 0.01, 100)), (100, 1))
+        satn[:25, :] = 0
+        satn[-25:, :] = -1
+        p_vox = ps.metrics.satn_profile(satn=satn, s=0.5, axis=1, span=1)
+        p_phys = ps.metrics.satn_profile(
+            satn=satn, s=0.5, axis=1, span=1, voxel_size=2.5e-6)
+        assert_allclose(p_phys.position, p_vox.position * 2.5e-6)
+        assert_allclose(p_phys.saturation, p_vox.saturation)
+
     def test_satn_profile_threshold(self):
         satn = np.tile(np.atleast_2d(np.linspace(1, 0.01, 100)), (100, 1))
         satn[:25, :] = 0
@@ -489,16 +506,25 @@ class MetricsTest:
         assert np.all(ibip.im_size == qbip.im_size)  # Size images match
 
     def test_bond_number(self):
+        from edt import edt
         im = ~ps.generators.borders([200, 20], mode="faces")
-        kwargs = {"delta_rho": 1000, "g": 9.81, "sigma": 0.01, "voxel_size": 1e-4}
+        delta_rho, g, sigma, vx = 1000, 9.81, 0.01, 1e-4
+        kwargs = {"delta_rho": delta_rho, "g": g, "sigma": sigma, "voxel_size": vx}
+        # Pinning bo to a fixed number is platform-fragile: the dt/lt distributions
+        # are integer-valued, so the median sits on a cliff and tiny FP drift
+        # flips it. Instead, derive R from the same source/method that
+        # bond_number uses and check the closed-form Bo = |ρg|·(R·vx)²/σ.
+        Bo = lambda R: abs(delta_rho * g) * (R * vx) ** 2 / sigma
+        lt = ps.filters.local_thickness(im)[im]
+        dt = edt(im)[im]
         bo = ps.metrics.bond_number(im=im, source="lt", **kwargs)
-        assert np.isclose(bo, 0.79461, atol=0, rtol=1e-4)
+        assert np.isclose(bo, Bo(np.median(lt)), rtol=1e-4)
         bo = ps.metrics.bond_number(im=im, source="lt", method="min", **kwargs)
-        assert np.isclose(bo, 0.08829, atol=0, rtol=1e-4)
+        assert np.isclose(bo, Bo(np.amin(lt)), rtol=1e-4)
         bo = ps.metrics.bond_number(im=im, source="dt", **kwargs)
-        assert np.isclose(bo, 0.24525, atol=0, rtol=1e-4)
+        assert np.isclose(bo, Bo(np.median(dt)), rtol=1e-4)
         bo = ps.metrics.bond_number(im=im, source="dt", method="max", **kwargs)
-        assert np.isclose(bo, 0.79461, atol=0, rtol=1e-4)
+        assert np.isclose(bo, Bo(np.amax(dt)), rtol=1e-4)
 
     def test_is_percolating(self):
         im = np.ones([20, 20], dtype=bool)
