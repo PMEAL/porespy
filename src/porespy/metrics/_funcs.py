@@ -447,7 +447,7 @@ def porosity(im, mask=None, fill_closed=False, fill_surface=False):
     return e
 
 
-def porosity_profile(im, axis=0, span=1, mode="tile"):
+def porosity_profile(im, axis=0, span=1, mode="tile", voxel_size=None):
     r"""
     Computes the porosity profile along the specified axis
 
@@ -473,6 +473,10 @@ def porosity_profile(im, axis=0, span=1, mode="tile"):
                  provides more data points but is slower.
         ======== ==============================================================
 
+    voxel_size : scalar, optional
+        If given, the returned ``position`` values are scaled by this factor.
+        If ``None`` (default), positions are returned in voxel units.
+
     Returns
     -------
     results : dataclass
@@ -484,7 +488,7 @@ def porosity_profile(im, axis=0, span=1, mode="tile"):
         position      The position along the given axis at which porosity
                       values are computed, corresponding to the middle of each
                       slice, whether the mode was `'tile'` or `'slide'`.
-                      The units are in voxels.
+                      The units are in voxels unless ``voxel_size`` is given.
         porosity      The local porosity value at each position.
         ============= =========================================================
 
@@ -510,6 +514,8 @@ def porosity_profile(im, axis=0, span=1, mode="tile"):
         denom = ((im[s] == 1) + (im[s] == 0)).sum(dtype=np.float64)
         eps[i] = num / denom
         z[i] = (s[axis].start + s[axis].stop) / 2
+    if voxel_size is not None:
+        z = z * voxel_size
     results = Results()
     results.position = z
     results.porosity = eps
@@ -1394,7 +1400,8 @@ def pc_map_to_pc_curve(
     return results
 
 
-def satn_profile(satn, s=None, im=None, axis=0, span=10, mode="tile"):
+def satn_profile(satn, s=None, im=None, axis=0, span=10, mode="tile",
+                 voxel_size=None):
     r"""
     Computes a saturation profile from an image of fluid invasion
 
@@ -1430,6 +1437,10 @@ def satn_profile(satn, s=None, im=None, axis=0, span=10, mode="tile"):
                  provides more data points but is slower.
         ======== ==============================================================
 
+    voxel_size : scalar, optional
+        If given, the returned ``position`` values are scaled by this factor.
+        If ``None`` (default), positions are returned in voxel units.
+
     Returns
     -------
     results : dataclass
@@ -1439,7 +1450,8 @@ def satn_profile(satn, s=None, im=None, axis=0, span=10, mode="tile"):
         Attribute     Description
         ============= =========================================================
         position      The position along the given axis at which saturation
-                      values are computed.  The units are in voxels.
+                      values are computed.  The units are in voxels unless
+                      ``voxel_size`` is given.
         saturation    The local saturation value at each position.
         ============= =========================================================
 
@@ -1472,6 +1484,8 @@ def satn_profile(satn, s=None, im=None, axis=0, span=10, mode="tile"):
         y[i] = nwp.sum(dtype=np.int64) / void.sum(dtype=np.int64)
         z[i] = (slab[axis].start + slab[axis].stop) / 2
 
+    if voxel_size is not None:
+        z = z * voxel_size
     results = Results()
     results.position = z
     results.saturation = y
