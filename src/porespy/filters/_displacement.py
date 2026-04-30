@@ -273,6 +273,12 @@ def find_trapped_clusters(
     <https://porespy.org/examples/filters/reference/find_trapped_clusters.html>`__
     to view online example.
     """
+    if not np.any(np.asarray(seq)[np.asarray(outlets, dtype=bool)] > 0):
+        logger.warning(
+            "Invasion did not reach outlets, all invaded voxels will be "
+            "marked as trapped"
+        )
+
     if method == "queue":
         seq = np.copy(seq)  # Need a copy since the queue method updates 'in-place'
         seq_temp = _find_trapped_clusters_queue(
