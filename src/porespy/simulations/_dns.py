@@ -71,7 +71,7 @@ def tortuosity_fd(im, axis, solver=None, tol=None, ftol=1e-3):
     import openpnm as op
     import pyamg
 
-    from porespy.beta import flux
+    from ._dns_tools import flux
 
     ws = op.Workspace()
 
