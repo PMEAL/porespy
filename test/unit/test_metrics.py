@@ -71,12 +71,35 @@ class MetricsTest:
         assert np.sqrt((np.mean(tpcf_fft.probability[-5:]) - phi1) ** 2) < t
 
     def test_tpcf_fft_3d_scaled(self):
-        tpcf = ps.metrics.two_point_correlation(im=self.im3D)
-        phi1 = ps.metrics.porosity(im=self.im3D)
+        # Lattice images have an oscillatory TPC that doesn't actually decay to
+        # phi**2 at finite r, so use a non-periodic blob image to check the
+        # asymptote.
+        im = ps.generators.blobs(shape=[80, 80, 80], porosity=0.5, seed=0)
+        tpcf = ps.metrics.two_point_correlation(im=im)
+        phi1 = ps.metrics.porosity(im=im)
         # The first value at r = 0 should be equal to porosity
         assert np.abs(tpcf.probability_scaled[0] - phi1) < 0.01
         # The function should decay to phi**2
         assert np.abs(np.mean(tpcf.probability_scaled[-5:] - phi1**2)) < 0.01
+
+    def test_tpcf_fft_averages_over_all_orthants(self):
+        # Regression test for #966. The FFT TPC must average S2(r, theta) over
+        # all radial directions. If it summed only one orthant, the result on
+        # an anisotropic image would change under axis flips. The radial
+        # average is invariant under flips, so the curve must too.
+        im = ps.generators.blobs(
+            shape=[200, 200], porosity=0.5, blobiness=[4, 1], seed=0)
+        tpcf_orig = ps.metrics.two_point_correlation(im, bins=30)
+        tpcf_flip0 = ps.metrics.two_point_correlation(im[::-1], bins=30)
+        tpcf_flip1 = ps.metrics.two_point_correlation(im[:, ::-1], bins=30)
+        np.testing.assert_allclose(
+            tpcf_orig.probability, tpcf_flip0.probability, atol=1e-10)
+        np.testing.assert_allclose(
+            tpcf_orig.probability, tpcf_flip1.probability, atol=1e-10)
+        # And the asymptote must hit phi (so probability_scaled hits phi**2),
+        # which the pre-fix periodic-FFT version missed on this image.
+        phi = im.mean()
+        assert abs(tpcf_orig.probability[-5:].mean() - phi) < 0.02
 
     def test_pore_size_distribution(self):
         mip = ps.filters.porosimetry(self.im3D)
@@ -122,6 +145,13 @@ class MetricsTest:
         ps.metrics.porosity_profile(self.im2D, axis=1)
         with pytest.raises(Exception):
             ps.metrics.porosity_profile(self.im2D, axis=2)
+
+    def test_porosity_profile_voxel_size(self):
+        im = ps.generators.lattice_spheres(shape=[200, 200], r=15, spacing=38)
+        p_vox = ps.metrics.porosity_profile(im, axis=0)
+        p_phys = ps.metrics.porosity_profile(im, axis=0, voxel_size=2.5e-6)
+        assert_allclose(p_phys.position, p_vox.position * 2.5e-6)
+        assert_allclose(p_phys.porosity, p_vox.porosity)
 
     def test_linear_density(self):
         im = ps.filters.distance_transform_lin(self.im2D, axis=0, mode="both")
@@ -311,6 +341,16 @@ class MetricsTest:
         # assert len(prof1.saturation) == 80
         assert prof1.saturation[31] == 1 / 30
         assert prof1.saturation[48] == 0.6
+
+    def test_satn_profile_voxel_size(self):
+        satn = np.tile(np.atleast_2d(np.linspace(1, 0.01, 100)), (100, 1))
+        satn[:25, :] = 0
+        satn[-25:, :] = -1
+        p_vox = ps.metrics.satn_profile(satn=satn, s=0.5, axis=1, span=1)
+        p_phys = ps.metrics.satn_profile(
+            satn=satn, s=0.5, axis=1, span=1, voxel_size=2.5e-6)
+        assert_allclose(p_phys.position, p_vox.position * 2.5e-6)
+        assert_allclose(p_phys.saturation, p_vox.saturation)
 
     def test_satn_profile_threshold(self):
         satn = np.tile(np.atleast_2d(np.linspace(1, 0.01, 100)), (100, 1))
