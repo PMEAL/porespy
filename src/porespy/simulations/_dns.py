@@ -58,7 +58,7 @@ def tortuosity_fd(im, axis, solver=None, tol=None, ftol=1e-3):
         converged           Whether the achieved inlet/outlet flux mismatch
                             falls under ``ftol``. Users who need a finer
                             picture (e.g. layer-by-layer flux constancy) can
-                            run ``porespy.beta.flux`` on ``im_conc``.
+                            run ``porespy.simulations.flux`` on ``im_conc``.
         =================== ===================================================
 
     Examples

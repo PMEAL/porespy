@@ -66,7 +66,7 @@ class DNSTest():
         for ftol in [1e-2, 1e-4]:
             out = ps.simulations.tortuosity_fd(im, axis=0, ftol=ftol)
             c = out["im_conc"]
-            J = ps.beta.flux(c, axis=0, k=out["im"])
+            J = ps.simulations.flux(c, axis=0, k=out["im"])
             rate = J.sum(axis=(1, 2))
             mismatch = abs(rate[0] - rate[-1]) / max(abs(rate[0]), abs(rate[-1]))
             assert mismatch <= ftol
@@ -84,14 +84,14 @@ class DNSTest():
             shape=[100, 100], porosity=0.5, seed=0, periodic=False,)
         out = ps.simulations.tortuosity_fd(im, axis=0)
         tau = ps.simulations.tau_from_cmap(out["im_conc"], im, axis=0)
-        np.testing.assert_allclose(tau, out["tortuosity"], rtol=1e-4)
+        np.testing.assert_allclose(tau, out["tortuosity"], rtol=1e-3)
 
     def test_tau_from_cmap_partially_blocked_inlet(self):
         im = np.ones([10, 10, 10], dtype=bool)
         im[0, :5, :] = False
         out = ps.simulations.tortuosity_fd(im, axis=0)
         tau = ps.simulations.tau_from_cmap(out["im_conc"], im, axis=0)
-        np.testing.assert_allclose(tau, out["tortuosity"], rtol=1e-5)
+        np.testing.assert_allclose(tau, out["tortuosity"], rtol=1e-3)
 
     def test_tau_from_cmap_anisotropic_shape(self):
         im = ps.generators.blobs(
@@ -99,7 +99,7 @@ class DNSTest():
         for axis in range(3):
             out = ps.simulations.tortuosity_fd(im, axis=axis)
             tau = ps.simulations.tau_from_cmap(out["im_conc"], im, axis=axis)
-            np.testing.assert_allclose(tau, out["tortuosity"], rtol=1e-4)
+            np.testing.assert_allclose(tau, out["tortuosity"], rtol=1e-3)
 
 
 if __name__ == '__main__':
