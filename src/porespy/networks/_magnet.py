@@ -715,6 +715,8 @@ def junctions_to_network(sk, juncs, throats, dt, throat_area, voxel_size=1):
     net["pore.inscribed_diameter"] = p_diameter * voxel_size
     net["pore.equivalent_diameter"] = p_diameter_equivalent * voxel_size
     net["pore.index"] = np.arange(0, Np)
+    net["param.voxel_size"] = np.asarray(voxel_size)
+    net["param.ndim"] = np.asarray(sk.ndim)
     return net
 
 

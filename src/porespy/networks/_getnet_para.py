@@ -259,6 +259,9 @@ def regions_to_network_parallel(
         for single_key in (f"{multi_root}_{i}" for i in range(n)):
             del net[single_key]
 
+    net['param.voxel_size'] = np.asarray(voxel_size)
+    net['param.ndim'] = np.asarray(im.ndim)
+
     return net
 
 
