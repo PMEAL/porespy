@@ -162,48 +162,53 @@ def _calc_g_val(im):
     mask = ~(mask1 + mask2)
     n = im.shape
     meds = op.network.Cubic(shape=[n[0], n[1], n[2]], spacing=1)
-    meds["pore.region1"] = mask1.copy()
-    meds["pore.region2"] = mask2.copy()
-    # Trim nodes that are located in solid phase/not ROI
-    op.topotools.trim(meds, pores=mask)
-    meds.add_model(propname="pore.cluster_number", model=op.models.network.cluster_number)
-    meds.add_model(propname="pore.cluster_size", model=op.models.network.cluster_size)
-    cluster_size = np.max(meds["pore.cluster_size"])
-    trim_pores = meds["pore.cluster_size"] < cluster_size
-    op.topotools.trim(network=meds, pores=trim_pores)
-    phss = op.phase.Phase(network=meds)
-    # A diffusive conductance of 1 ensures a finite difference approach
-    #   where each node is located at the corner of each voxel
-    phss["throat.diffusive_conductance"] = 1
-    algs = op.algorithms.FickianDiffusion(network=meds, phase=phss)
-    # Find centroid of each pore region in the finite difference nodes
-    pr1 = closest_node(centroids[0], meds["pore.coords"])
-    pr2 = closest_node(centroids[1], meds["pore.coords"])
-    algs.set_value_BC(pores=pr1, values=c1)
-    algs.set_value_BC(pores=pr2, values=c2)
-    algs.run()
-    # Calculate average concentrations within inscribed spheres
-    r1 = p_dia_local[0] / 2
-    r2 = p_dia_local[1] / 2
-    if np.round(r1) == 0:
-        # This prevent error in find_nearby_pores for narrow regions
-        # If the region is narrow, use the entire region for average concentration
-        c1_avr = algs["pore.concentration"][meds["pore.region1"]].mean()
-    else:
-        # use the inscribed sphere within the region for average concentration
-        pores1 = meds.find_nearby_pores(pr1, r=np.round(r1), flatten=True, include_input=True)
-        pores1 = np.append(pores1, pr1)
-        pores1 = np.unique(pores1)
-        c1_avr = algs["pore.concentration"][pores1].mean()
-    if np.round(r2) == 0:
-        c2_avr = algs["pore.concentration"][meds["pore.region2"]].mean()
-    else:
-        pores2 = meds.find_nearby_pores(pr2, r=np.round(r2), flatten=True, include_input=True)
-        pores2 = np.append(pores2, pr2)
-        pores2 = np.unique(pores2)
-        c2_avr = algs["pore.concentration"][pores2].mean()
-    g = abs(algs.rate(pores=pr1)[0] / (c1_avr - c2_avr))
-    return g
+    # Each OpenPNM object created below registers a project on the global
+    # Workspace; close it at the end so repeated calls don't accumulate.
+    try:
+        meds["pore.region1"] = mask1.copy()
+        meds["pore.region2"] = mask2.copy()
+        # Trim nodes that are located in solid phase/not ROI
+        op.topotools.trim(meds, pores=mask)
+        meds.add_model(propname="pore.cluster_number", model=op.models.network.cluster_number)
+        meds.add_model(propname="pore.cluster_size", model=op.models.network.cluster_size)
+        cluster_size = np.max(meds["pore.cluster_size"])
+        trim_pores = meds["pore.cluster_size"] < cluster_size
+        op.topotools.trim(network=meds, pores=trim_pores)
+        phss = op.phase.Phase(network=meds)
+        # A diffusive conductance of 1 ensures a finite difference approach
+        #   where each node is located at the corner of each voxel
+        phss["throat.diffusive_conductance"] = 1
+        algs = op.algorithms.FickianDiffusion(network=meds, phase=phss)
+        # Find centroid of each pore region in the finite difference nodes
+        pr1 = closest_node(centroids[0], meds["pore.coords"])
+        pr2 = closest_node(centroids[1], meds["pore.coords"])
+        algs.set_value_BC(pores=pr1, values=c1)
+        algs.set_value_BC(pores=pr2, values=c2)
+        algs.run()
+        # Calculate average concentrations within inscribed spheres
+        r1 = p_dia_local[0] / 2
+        r2 = p_dia_local[1] / 2
+        if np.round(r1) == 0:
+            # This prevent error in find_nearby_pores for narrow regions
+            # If the region is narrow, use the entire region for average concentration
+            c1_avr = algs["pore.concentration"][meds["pore.region1"]].mean()
+        else:
+            # use the inscribed sphere within the region for average concentration
+            pores1 = meds.find_nearby_pores(pr1, r=np.round(r1), flatten=True, include_input=True)
+            pores1 = np.append(pores1, pr1)
+            pores1 = np.unique(pores1)
+            c1_avr = algs["pore.concentration"][pores1].mean()
+        if np.round(r2) == 0:
+            c2_avr = algs["pore.concentration"][meds["pore.region2"]].mean()
+        else:
+            pores2 = meds.find_nearby_pores(pr2, r=np.round(r2), flatten=True, include_input=True)
+            pores2 = np.append(pores2, pr2)
+            pores2 = np.unique(pores2)
+            c2_avr = algs["pore.concentration"][pores2].mean()
+        g = abs(algs.rate(pores=pr1)[0] / (c1_avr - c2_avr))
+        return g
+    finally:
+        op.Workspace().close_project(meds.project)
 
 
 def closest_node(extracted_nodes, fd_nodes):
