@@ -315,6 +315,72 @@ class ToolsTest():
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[10, 20, 25])
         assert np.all(im == im2)
 
+    def test_remove_overlaps_2d_scalar_overlap(self):
+        im = np.random.rand(160, 160)
+        overlap = 10
+        s = ps.tools.get_slices_grid(im, divs=2, overlap=overlap)
+        ims = [im[si] for si in s]
+        full_s, sub_s = ps.tools.remove_overlaps(s, overlap=overlap, shape=im.shape)
+        im2 = np.zeros_like(im)
+        for i in range(len(s)):
+            im2[full_s[i]] = ims[i][sub_s[i]]
+        assert np.all(im == im2)
+
+    def test_remove_overlaps_2d_vector_overlap(self):
+        im = np.random.rand(160, 160)
+        overlap = [10, 20]
+        s = ps.tools.get_slices_grid(im, divs=2, overlap=overlap)
+        ims = [im[si] for si in s]
+        full_s, sub_s = ps.tools.remove_overlaps(s, overlap=overlap, shape=im.shape)
+        im2 = np.zeros_like(im)
+        for i in range(len(s)):
+            im2[full_s[i]] = ims[i][sub_s[i]]
+        assert np.all(im == im2)
+
+    def test_remove_overlaps_2d_odd_shape(self):
+        im = np.random.rand(143, 177)
+        overlap = 15
+        s = ps.tools.get_slices_grid(im, divs=3, overlap=overlap)
+        ims = [im[si] for si in s]
+        full_s, sub_s = ps.tools.remove_overlaps(s, overlap=overlap, shape=im.shape)
+        im2 = np.zeros_like(im)
+        for i in range(len(s)):
+            im2[full_s[i]] = ims[i][sub_s[i]]
+        assert np.all(im == im2)
+
+    def test_remove_overlaps_3d_scalar_overlap(self):
+        im = np.random.rand(60, 60, 60)
+        overlap = 5
+        s = ps.tools.get_slices_grid(im, divs=2, overlap=overlap)
+        ims = [im[si] for si in s]
+        full_s, sub_s = ps.tools.remove_overlaps(s, overlap=overlap, shape=im.shape)
+        im2 = np.zeros_like(im)
+        for i in range(len(s)):
+            im2[full_s[i]] = ims[i][sub_s[i]]
+        assert np.all(im == im2)
+
+    def test_remove_overlaps_3d_vector_overlap(self):
+        im = np.random.rand(60, 80, 70)
+        overlap = [5, 10, 8]
+        s = ps.tools.get_slices_grid(im, divs=2, overlap=overlap)
+        ims = [im[si] for si in s]
+        full_s, sub_s = ps.tools.remove_overlaps(s, overlap=overlap, shape=im.shape)
+        im2 = np.zeros_like(im)
+        for i in range(len(s)):
+            im2[full_s[i]] = ims[i][sub_s[i]]
+        assert np.all(im == im2)
+
+    def test_remove_overlaps_slabs_2d(self):
+        im = np.random.rand(100, 100)
+        overlap = 10
+        s = ps.tools.get_slices_grid(im, divs=4, overlap=overlap)
+        ims = [im[si] for si in s]
+        full_s, sub_s = ps.tools.remove_overlaps(s, overlap=overlap, shape=im.shape)
+        im2 = np.zeros_like(im)
+        for i in range(len(s)):
+            im2[full_s[i]] = ims[i][sub_s[i]]
+        assert np.all(im == im2)
+
     def test_get_slices_grid_with_mode_offset(self):
         im = im = np.random.rand(143, 177, 111)
         s = ps.tools.get_slices_grid(im, block_size=10, mode='offset')
