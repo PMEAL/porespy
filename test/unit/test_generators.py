@@ -694,6 +694,68 @@ class GeneratorTest():
         assert dtl[-1, ...].max() == 9
         assert im[-1, :, :].sum() < im[0, :, :].sum()
 
+    def test_tpms_unit_cell_output_shape_and_dtype(self):
+        im = ps.generators.tpms_unit_cell(shape=30)
+        assert im.shape == (30, 30, 30)
+        assert im.dtype == bool
+
+    def test_tpms_unit_cell_all_methods(self):
+        methods = [
+            'schoen', 'primitive', 'diamond', 'diagonal', 'diamond2',
+            'lidinoid', 'split-p', 'neovius', 'FKS', 'FRD', 'pw-hybrid', 'iWP',
+        ]
+        for method in methods:
+            im = ps.generators.tpms_unit_cell(shape=20, method=method)
+            assert im.shape == (20, 20, 20), f"Wrong shape for method={method}"
+            assert im.dtype == bool, f"Wrong dtype for method={method}"
+            # Each method should produce at least some True and some False voxels
+            assert im.any(), f"All False for method={method}"
+            assert not im.all(), f"All True for method={method}"
+
+    def test_tpms_unit_cell_phi_controls_solid_fraction(self):
+        # Larger phi → wider band → more True (solid) voxels
+        im_narrow = ps.generators.tpms_unit_cell(shape=30, phi=0.1)
+        im_wide = ps.generators.tpms_unit_cell(shape=30, phi=0.8)
+        assert im_narrow.sum() < im_wide.sum()
+
+    def test_tpms_unit_cell_phi_zero_gives_empty(self):
+        # phi=0 means the band has zero width → no voxels selected
+        im = ps.generators.tpms_unit_cell(shape=20, phi=0.0)
+        assert not im.any()
+
+    def test_tpms_unit_cell_skew_shifts_selection(self):
+        # Different skew values produce different images
+        im1 = ps.generators.tpms_unit_cell(shape=30, skew=0.0, phi=0.3)
+        im2 = ps.generators.tpms_unit_cell(shape=30, skew=1.0, phi=0.3)
+        assert not np.array_equal(im1, im2)
+
+    def test_tile_tpms_periodic_scalar_n(self):
+        im = ps.generators.tpms_unit_cell(shape=20)
+        im2 = ps.generators.tile_tpms(im, n=3, mode='periodic')
+        assert im2.shape == (60, 60, 60)
+        assert im2.dtype == bool
+
+    def test_tile_tpms_periodic_vector_n(self):
+        im = ps.generators.tpms_unit_cell(shape=20)
+        im2 = ps.generators.tile_tpms(im, n=(2, 3, 1), mode='periodic')
+        assert im2.shape == (40, 60, 20)
+
+    def test_tile_tpms_reflect_scalar_n(self):
+        im = ps.generators.tpms_unit_cell(shape=20)
+        im2 = ps.generators.tile_tpms(im, n=3, mode='reflect')
+        assert im2.shape == (60, 60, 60)
+        assert im2.dtype == bool
+
+    def test_tile_tpms_reflect_vector_n(self):
+        im = ps.generators.tpms_unit_cell(shape=20)
+        im2 = ps.generators.tile_tpms(im, n=(2, 3, 1), mode='reflect')
+        assert im2.shape == (40, 60, 20)
+
+    def test_tile_tpms_n1_returns_original(self):
+        im = ps.generators.tpms_unit_cell(shape=20)
+        im2 = ps.generators.tile_tpms(im, n=1, mode='periodic')
+        assert np.array_equal(im, im2)
+
 
 if __name__ == '__main__':
     t = GeneratorTest()
