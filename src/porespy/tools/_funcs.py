@@ -152,22 +152,26 @@ def remove_overlaps(slices, overlap, shape):
     shape : list of ints
         The shape of the original image to which the slices apply
     """
+    ndim = len(shape)
+    if np.isscalar(overlap):
+        overlap = [overlap] * ndim
     full_slices = []
     sub_slices = []
     for s in slices:
         new_s_full = []
         new_s_sub = []
-        for i in range(len(shape)):
+        for i in range(ndim):
+            ov = overlap[i]
             new_s_full.append(
                 slice(
-                    s[i].start + overlap if s[i].start > 0 else s[i].start,
-                    s[i].stop - overlap if s[i].stop < shape[i] else s[i].stop,
+                    s[i].start + ov if s[i].start > 0 else s[i].start,
+                    s[i].stop - ov if s[i].stop < shape[i] else s[i].stop,
                 ),
             )
             new_s_sub.append(
                 slice(
-                    overlap if s[i].start > 0 else 0,
-                    -overlap if s[i].stop < shape[i] else s[i].stop - s[i].start,
+                    ov if s[i].start > 0 else 0,
+                    -ov if s[i].stop < shape[i] else s[i].stop - s[i].start,
                 ),
             )
         full_slices.append(tuple(new_s_full))
