@@ -2,12 +2,12 @@ import numpy as np
 
 
 __all__ = [
-    'gyroid',
-    'tile',
+    'tpms_unit_cell',
+    'tile_tpms',
 ]
 
 
-def gyroid(shape, method='schoen', skew=0.5, phi=0.5):
+def tpms_unit_cell(shape, method='schoen', skew=0.5, phi=0.5):
     r"""
     Generate a boolean image of a triply periodic minimal surface (TPMS).
 
@@ -24,22 +24,22 @@ def gyroid(shape, method='schoen', skew=0.5, phi=0.5):
     method : str, optional
         The TPMS geometry to generate. Options are:
 
-        ============  ==========================================================
-        Value         Surface
-        ============  ==========================================================
-        ``'schoen'``  Schoen Gyroid (default)
+        ==============  ==========================================================
+        Value           Surface
+        ==============  ==========================================================
+        ``'schoen'``    Schoen Gyroid (default)
         ``'primitive'`` Schwartz Primitive (P surface)
-        ``'diamond'`` Schwartz Diamond (D surface)
-        ``'diagonal'`` Diagonal surface
-        ``'diamond2'`` Diamond variant (second form)
-        ``'lidinoid'`` Lidinoid
-        ``'split-p'`` Split-P
-        ``'neovius'`` Neovius
-        ``'FKS'``     Fischer–Koch S surface
-        ``'FRD'``     F-RD surface
+        ``'diamond'``   Schwartz Diamond (D surface)
+        ``'diagonal'``  Diagonal surface
+        ``'diamond2'``  Diamond variant (second form)
+        ``'lidinoid'``  Lidinoid
+        ``'split-p'``   Split-P
+        ``'neovius'``   Neovius
+        ``'FKS'``       Fischer–Koch S surface
+        ``'FRD'``       F-RD surface
         ``'pw-hybrid'`` PW-Hybrid
-        ``'iWP'``     Schoen I-WP
-        ============  ==========================================================
+        ``'iWP'``       Schoen I-WP
+        ==============  ==========================================================
 
     skew : float, optional
         Centre of the isovalue band used for thresholding the TPMS field.
@@ -122,7 +122,7 @@ def gyroid(shape, method='schoen', skew=0.5, phi=0.5):
     return im
 
 
-def tile(im, n, mode='periodic'):
+def tile_tpms(im, n, mode='periodic'):
     r"""
     Tile a TPMS image to create a larger domain.
 
@@ -161,6 +161,8 @@ def tile(im, n, mode='periodic'):
     (300, 300, 100)
 
     """
+    if np.isscalar(n):
+        n = (n,) * im.ndim
     if mode == 'periodic':
         im2 = np.tile(im, n)
     elif mode == 'reflect':
@@ -175,8 +177,8 @@ if __name__ == "__main__":
     import porespy as ps
     ps.visualization.set_mpl_style()
 
-    im = gyroid(shape=300, phi=0.5, skew=0.5, method='schoen')
-    im2 = tile(im, n=(3, 3, 1), mode='periodic')
+    im = tpms_unit_cell(shape=300, phi=0.5, skew=0.5, method='schoen')
+    im2 = tile_tpms(im, n=(3, 3, 1), mode='periodic')
     print(im2.shape)
     fig, ax = plt.subplots(2, 2)
     ax[0][0].imshow(ps.visualization.sem(im2, axis=0), cmap=plt.cm.bone, vmax=1.5)
