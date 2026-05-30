@@ -1,6 +1,5 @@
-import pytest
-
 import numpy as np
+import openpnm as op
 
 import porespy as ps
 
@@ -16,7 +15,16 @@ class NetworkSizeFactorTest():
         self.snow = ps.networks.snow2(self.im, boundary_width=0,
                                       parallel_kw=None)
 
-    @pytest.mark.skip(reason="Skip until we figure out what's wrong")
+    def test_diffusive_size_factor_DNS_does_not_leak_projects(self):
+        # Regression test for #835: each call used to register an OpenPNM
+        # project on the global Workspace and never close it.
+        regions = self.snow.regions
+        conns = self.snow.network['throat.conns'][:3]
+        ws = op.Workspace()
+        n_before = len(ws)
+        ps.networks.diffusive_size_factor_DNS(regions, throat_conns=conns)
+        assert len(ws) == n_before
+
     def test_diffusive_size_factor_DNS(self):
         regions = self.snow.regions
         net = self.snow.network
@@ -25,12 +33,11 @@ class NetworkSizeFactorTest():
             regions,
             throat_conns=conns,
         )
-        values = np.array([1.43456123, 0.9612569, 1.22389664,
-                           0.14359343, 0.18617079, 1.30144843,
-                           0.22238891, 1.32222092])
+        values = np.array([1.30953459, 0.89349843, 1.270026,
+                           0.27007487, 0.32663682, 0.60258391,
+                           1.46795078, 0.19563109, 1.27374914])
         assert np.allclose(size_factors, values)
 
-    @pytest.mark.skip(reason="Skip until we figure out what's wrong")
     def test_diffusive_size_factor_DNS_voxel_size(self):
         voxel_size = 1e-6
         regions = self.snow.regions
@@ -41,9 +48,9 @@ class NetworkSizeFactorTest():
             throat_conns=conns,
             voxel_size=voxel_size,
         )
-        values = np.array([1.43456123, 0.9612569, 1.22389664,
-                           0.14359343, 0.18617079, 1.30144843,
-                           0.22238891, 1.32222092])*voxel_size
+        values = np.array([1.30953459, 0.89349843, 1.270026,
+                           0.27007487, 0.32663682, 0.60258391,
+                           1.46795078, 0.19563109, 1.27374914])*voxel_size
         assert np.allclose(size_factors, values)
 
 

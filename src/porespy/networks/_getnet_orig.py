@@ -221,6 +221,9 @@ def regions_to_network(
     if im.ndim == 2:  # If 2D, add 0's in 3rd dimension
         p_coords = np.vstack((p_coords_cm.T, np.zeros((Np, )))).T
         t_coords = np.vstack((np.array(t_coords).T, np.zeros((Nt, )))).T
+    if Nt == 0:  # No throats: ensure consistent (Nt, 3) and (Nt, 2) shapes
+        t_coords = np.empty(shape=(0, 3))
+        t_conns = np.empty(shape=(0, 2), dtype=int)
 
     net = {}
     ND = im.ndim
@@ -274,5 +277,7 @@ def regions_to_network(
         A = np.array(t_area)*(voxel_size**2)
         net['throat.cross_sectional_area'] = A
         net['throat.equivalent_diameter'] = (4*A/np.pi)**(1/2)
+    net['param.voxel_size'] = np.asarray(voxel_size)
+    net['param.ndim'] = np.asarray(ND)
 
     return net

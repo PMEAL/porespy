@@ -579,7 +579,10 @@ def imbibition(
         dt = edt(im)
 
     if pc is None:
-        pc = 2/dt
+        # Cast `dt` to float64 to avoid precision loss in `2.0/dt`. With float32
+        # `dt`, voxels at integer `dt` boundaries miss the `pc <= P` threshold
+        # by ~1e-8, putting them out of sync with integer-`dt` step sequences.
+        pc = 2.0/dt.astype(np.float64)
     pc[~im] = 0  # Remove any infs or nans from pc computation
 
     if isinstance(steps, int):

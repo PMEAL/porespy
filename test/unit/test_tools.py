@@ -119,6 +119,24 @@ class ToolsTest():
         im = ps.tools.align_image_with_openpnm(np.ones([40, 50, 60]))
         assert im.shape == (60, 50, 40)
 
+    def test_align_image_w_openpnm_is_a_pure_swap_no_flip(self):
+        # Regression test for #872: the function used to swap *and* flip,
+        # producing a mirror. A marker placed at numpy index (i, j, k) must
+        # land at (k, j, i) after alignment — no axis is reversed.
+        im2d = np.zeros((10, 20), dtype=np.uint8)
+        im2d[3, 7] = 1
+        out2d = ps.tools.align_image_with_openpnm(im2d)
+        assert out2d.shape == (20, 10)
+        assert out2d[7, 3] == 1
+        assert out2d.sum() == 1
+
+        im3d = np.zeros((10, 20, 30), dtype=np.uint8)
+        im3d[3, 7, 25] = 1
+        out3d = ps.tools.align_image_with_openpnm(im3d)
+        assert out3d.shape == (30, 20, 10)
+        assert out3d[25, 7, 3] == 1
+        assert out3d.sum() == 1
+
     def test_inhull(self):
         X = np.random.rand(25, 2)
         hull = sptl.ConvexHull(X)
@@ -295,6 +313,72 @@ class ToolsTest():
         for i, _ in enumerate(s):
             ims.append(im[s[i]])
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[10, 20, 25])
+        assert np.all(im == im2)
+
+    def test_remove_overlaps_2d_scalar_overlap(self):
+        im = np.random.rand(160, 160)
+        overlap = 10
+        s = ps.tools.get_slices_grid(im, divs=2, overlap=overlap)
+        ims = [im[si] for si in s]
+        full_s, sub_s = ps.tools.remove_overlaps(s, overlap=overlap, shape=im.shape)
+        im2 = np.zeros_like(im)
+        for i in range(len(s)):
+            im2[full_s[i]] = ims[i][sub_s[i]]
+        assert np.all(im == im2)
+
+    def test_remove_overlaps_2d_vector_overlap(self):
+        im = np.random.rand(160, 160)
+        overlap = [10, 20]
+        s = ps.tools.get_slices_grid(im, divs=2, overlap=overlap)
+        ims = [im[si] for si in s]
+        full_s, sub_s = ps.tools.remove_overlaps(s, overlap=overlap, shape=im.shape)
+        im2 = np.zeros_like(im)
+        for i in range(len(s)):
+            im2[full_s[i]] = ims[i][sub_s[i]]
+        assert np.all(im == im2)
+
+    def test_remove_overlaps_2d_odd_shape(self):
+        im = np.random.rand(143, 177)
+        overlap = 15
+        s = ps.tools.get_slices_grid(im, divs=3, overlap=overlap)
+        ims = [im[si] for si in s]
+        full_s, sub_s = ps.tools.remove_overlaps(s, overlap=overlap, shape=im.shape)
+        im2 = np.zeros_like(im)
+        for i in range(len(s)):
+            im2[full_s[i]] = ims[i][sub_s[i]]
+        assert np.all(im == im2)
+
+    def test_remove_overlaps_3d_scalar_overlap(self):
+        im = np.random.rand(60, 60, 60)
+        overlap = 5
+        s = ps.tools.get_slices_grid(im, divs=2, overlap=overlap)
+        ims = [im[si] for si in s]
+        full_s, sub_s = ps.tools.remove_overlaps(s, overlap=overlap, shape=im.shape)
+        im2 = np.zeros_like(im)
+        for i in range(len(s)):
+            im2[full_s[i]] = ims[i][sub_s[i]]
+        assert np.all(im == im2)
+
+    def test_remove_overlaps_3d_vector_overlap(self):
+        im = np.random.rand(60, 80, 70)
+        overlap = [5, 10, 8]
+        s = ps.tools.get_slices_grid(im, divs=2, overlap=overlap)
+        ims = [im[si] for si in s]
+        full_s, sub_s = ps.tools.remove_overlaps(s, overlap=overlap, shape=im.shape)
+        im2 = np.zeros_like(im)
+        for i in range(len(s)):
+            im2[full_s[i]] = ims[i][sub_s[i]]
+        assert np.all(im == im2)
+
+    def test_remove_overlaps_slabs_2d(self):
+        im = np.random.rand(100, 100)
+        overlap = 10
+        s = ps.tools.get_slices_grid(im, divs=4, overlap=overlap)
+        ims = [im[si] for si in s]
+        full_s, sub_s = ps.tools.remove_overlaps(s, overlap=overlap, shape=im.shape)
+        im2 = np.zeros_like(im)
+        for i in range(len(s)):
+            im2[full_s[i]] = ims[i][sub_s[i]]
         assert np.all(im == im2)
 
     def test_get_slices_grid_with_mode_offset(self):
