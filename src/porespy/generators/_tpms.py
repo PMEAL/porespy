@@ -66,12 +66,9 @@ def tpms_unit_cell(shape, method='schoen', skew=0.5, phi=0.5):
 
     Examples
     --------
-    Generate a 100-voxel gyroid image:
-
-    >>> import porespy as ps
-    >>> im = gyroid(shape=100, method='schoen', phi=0.5)
-    >>> im.shape
-    (100, 100, 100)
+    `Click here
+    <https://porespy.org/examples/generators/reference/tpms_unit_cell.html>`__
+    to view online example.
 
     """
     step = np.linspace(0, 2*np.pi, shape)
@@ -153,12 +150,9 @@ def tile_tpms(im, n, mode='periodic'):
 
     Examples
     --------
-    Generate one gyroid unit cell and tile it 3x3 in-plane:
-
-    >>> im = gyroid(shape=100)
-    >>> im2 = tile(im, n=(3, 3, 1), mode='periodic')
-    >>> im2.shape
-    (300, 300, 100)
+    `Click here
+    <https://porespy.org/examples/generators/reference/tile_tpms.html>`__
+    to view online example.
 
     """
     if np.isscalar(n):
