@@ -1,6 +1,3 @@
-import os
-import subprocess
-
 import numpy as np
 import scipy.ndimage as nd
 import skimage.measure as ms
@@ -9,7 +6,13 @@ from porespy.tools import get_edt, sanitize_filename
 
 edt = get_edt()
 
-__all__ = ["to_vtk", "dict_to_vtk", "to_palabos", "to_stl", "to_paraview", "open_paraview"]
+
+__all__ = [
+    "to_vtk",
+    "dict_to_vtk",
+    "to_palabos",
+    "to_stl",
+]
 
 
 def dict_to_vtk(data, filename, voxel_size=1, origin=(0, 0, 0)):
@@ -69,7 +72,7 @@ def to_vtk(im, filename, divide=False, downsample=False, voxel_size=1, vox=False
         files, divided at z = half. This allows for large data sets to be
         imaged without loss of information
     downsample : bool
-        very large images acan be downsampled to half the size in each
+        Very large images can be downsampled to half the size in each
         dimension, this doubles the effective voxel size
     voxel_size : int
         The side length of the voxels (voxels  are cubic)
@@ -259,195 +262,3 @@ def _save_stl(im, vs, filename):
         for j in range(3):
             export.vectors[i][j] = vertices[f[j], :]
     export.save(f"{filename}.stl")
-
-
-def to_paraview(im, filename, phase=2):
-    r"""
-    Converts an array to a paraview state file.
-
-    Parameters
-    ----------
-    im : ndarray
-        The image of the porous material.
-    filename : str
-        Path to output file.
-    phase : str
-        The desired phase of output image where phase = 0 represent the
-        pore phase, phase = 1 represents the solid phase, and phase= 2 is
-        the whole domain. The default value is 2.
-
-    Notes
-    -----
-    Outputs an pvsm file that can opened in Paraview.
-
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/io/reference/to_paraview.html>`__
-    to view online example.
-
-    """
-    try:
-        import imageio
-    except ModuleNotFoundError:
-        msg = "The imageio package can be installed with pip install imageio"
-        raise ModuleNotFoundError(msg)
-    try:
-        import paraview.simple
-    except ModuleNotFoundError:
-        msg = (
-            "The paraview python bindings must be installed using conda"
-            " install -c conda-forge paraview, however this may require"
-            " using a virtualenv since conflicts with other packages are"
-            " common. This is why it is not explicitly included as a"
-            " dependency in porespy."
-        )
-        raise ModuleNotFoundError(msg)
-    data = im.astype("uint8")
-    file = os.path.splitext(filename)[0]
-    path = file + ".tiff"
-    if len(im.shape) == 2:
-        imageio.imwrite(path, np.array(data))
-        view = "Slice"
-        zshape = 0
-        xshape = im.shape[1]
-        yshape = im.shape[0]
-    elif len(im.shape) == 3:
-        imageio.volsave(path, np.array(data))
-        view = "Volume"
-        zshape = im.shape[0]
-        xshape = im.shape[2]
-        yshape = im.shape[1]
-    maxshape = max(xshape, yshape)
-    paraview.simple._DisableFirstRenderCameraReset()
-    # Create a new 'TIFF Series Reader'
-    dtiff = paraview.simple.TIFFSeriesReader(FileNames=[path])
-    # Get active view
-    renderView1 = paraview.simple.GetActiveViewOrCreate("RenderView")
-    # Uncomment following to set a specific view size
-    # renderView1.ViewSize = [1612, 552]
-    # Get layout
-    _ = paraview.simple.GetLayout()
-
-    # Show data in view
-    dtiffDisplay = paraview.simple.Show(dtiff, renderView1, "UniformGridRepresentation")
-
-    # Get color transfer function/color map for 'TiffScalars'
-    tiffScalarsLUT = paraview.simple.GetColorTransferFunction("TiffScalars")
-
-    # Get opacity transfer function/opacity map for 'TiffScalars'
-    tiffScalarsPWF = paraview.simple.GetOpacityTransferFunction("TiffScalars")
-
-    # Trace defaults for the display properties.
-    dtiffDisplay.Representation = view
-    dtiffDisplay.ColorArrayName = ["POINTS", "Tiff Scalars"]
-    dtiffDisplay.LookupTable = tiffScalarsLUT
-    dtiffDisplay.OSPRayScaleArray = "Tiff Scalars"
-    dtiffDisplay.OSPRayScaleFunction = "PiecewiseFunction"
-    dtiffDisplay.SelectOrientationVectors = "None"
-    dtiffDisplay.ScaleFactor = maxshape / 10 - 0.1
-    dtiffDisplay.SelectScaleArray = "Tiff Scalars"
-    dtiffDisplay.GlyphType = "Arrow"
-    dtiffDisplay.GlyphTableIndexArray = "Tiff Scalars"
-    dtiffDisplay.GaussianRadius = maxshape / 200 - 0.005
-    dtiffDisplay.SetScaleArray = ["POINTS", "Tiff Scalars"]
-    dtiffDisplay.ScaleTransferFunction = "PiecewiseFunction"
-    dtiffDisplay.OpacityArray = ["POINTS", "Tiff Scalars"]
-    dtiffDisplay.OpacityTransferFunction = "PiecewiseFunction"
-    dtiffDisplay.DataAxesGrid = "GridAxesRepresentation"
-    dtiffDisplay.PolarAxes = "PolarAxesRepresentation"
-    dtiffDisplay.ScalarOpacityUnitDistance = 8.256564094912507
-    dtiffDisplay.ScalarOpacityFunction = tiffScalarsPWF
-    dtiffDisplay.IsosurfaceValues = [0.5]
-    dtiffDisplay.SliceFunction = "Plane"
-
-    shape = np.array([xshape, yshape, zshape])
-
-    # Init the 'Plane' selected for 'SliceFunction'
-    dtiffDisplay.SliceFunction.Origin = [xi / 2 - 0.5 for xi in shape]
-
-    # Reset view to fit data
-    renderView1.ResetCamera()
-
-    # Changing interaction mode based on data extents
-    # renderView1.InteractionMode = mode
-    renderView1.CameraPosition = [
-        xshape / 2 - 0.5,
-        yshape / 2 - 0.5,
-        4.6 * np.sqrt(np.sum(shape / 2 - 0.5) ** 2),
-    ]
-    renderView1.CameraFocalPoint = [xi / 2 - 0.5 for xi in shape]
-
-    # Get the material library
-    _ = paraview.simple.GetMaterialLibrary()
-
-    # Show color bar/color legend
-    dtiffDisplay.SetScalarBarVisibility(renderView1, True)
-
-    # Update the view to ensure updated data information
-    renderView1.Update()
-
-    # Saving camera placements for all active views
-    # Current camera placement for renderView1
-    # renderView1.InteractionMode = mode
-    renderView1.CameraPosition = [
-        xshape / 2 - 0.5,
-        yshape / 2 - 0.5,
-        4.6 * np.sqrt(np.sum(shape / 2 - 0.5) ** 2),
-    ]
-    renderView1.CameraFocalPoint = [xi / 2 - 0.5 for xi in shape]
-    renderView1.CameraParallelScale = np.sqrt(np.sum(shape / 2 - 0.5) ** 2)
-
-    # Uncomment the following to render all views
-    # RenderAllViews()
-    # Alternatively, if you want to write images, you can use SaveScreenshot(...).
-    threshold1 = paraview.simple.Threshold(Input=dtiff)
-    threshold1.Scalars = ["POINTS", "Tiff Scalars"]
-    if phase == 0:
-        threshold_range = [0.5, 1]
-    elif phase == 1:
-        threshold_range = [0, 0.5]
-    else:
-        threshold_range = [0, 1]
-    threshold1.ThresholdRange = threshold_range
-
-    # Show data in view
-    _ = paraview.simple.Show(threshold1, renderView1, "UnstructuredGridRepresentation")
-
-    # Hide data in view
-    paraview.simple.Hide(dtiff, renderView1)
-
-    paraview.simple.SaveState(file + ".pvsm")
-
-
-def open_paraview(filename=None, im=None, **kwargs):
-    r"""
-    Open a paraview state file or image directly in paraview.
-
-    Parameters
-    ----------
-    filename : str
-        Path to input state file.
-    im : ndarray
-        An image to open directly.  If no filename given, then this image is
-        sent to ``to_paraview`` and a state file is created with a random name.
-        Any additional keyword arguments are sent to ``to_paraview``.
-
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/io/reference/open_paraview.html>`__
-    to view online example.
-
-    """
-    if filename is None:
-        from datetime import datetime
-
-        now = datetime.now()
-        filename = now.strftime("%d-%m-%Y_%H-%M-%S")
-        to_paraview(im=im, filename=filename, **kwargs)
-    file = os.path.splitext(filename)[0]
-    statefile = file + ".pvsm"
-    # paraview_path = "paraview.exe"
-    paraview_path = "paraview"
-    subprocess.Popen([paraview_path, statefile])

@@ -1,5 +1,3 @@
-import pytest
-
 import numpy as np
 from GenericTest import GenericTest
 
@@ -128,7 +126,6 @@ class IBOPTest(GenericTest):
             assert np.all(seq1 == seq3)
             assert np.all(seq1 == seq4)
 
-    @pytest.mark.skip(reason="FIXME: skipped until fixed")
     def test_drainage_equals_drainage_dt_smooth(self):
         edt = ps.tools.get_edt()
         im = ps.generators.blobs(
@@ -140,7 +137,10 @@ class IBOPTest(GenericTest):
         im = ps.filters.fill_invalid_pores(im)
 
         dt = edt(im)
-        pc = 2/dt
+        # `dt` from `edt` is float32; computing `pc = 2/dt` in float32 puts
+        # voxels at integer-`dt` boundaries ~1e-8 above the threshold, which
+        # breaks equivalence with the integer-`dt` branch. Cast to float64.
+        pc = 2.0/dt.astype(np.float64)
         pc[~im] = 0
         steps = ps.tools.parse_steps(steps=12, vals=dt.astype(int), mask=im)
         smooth = True
@@ -154,7 +154,6 @@ class IBOPTest(GenericTest):
         assert np.sum(drn_dt.im_size[im] != 2/drn_pc.im_pc[im]) == 0
         assert np.sum(drn_dt.im_seq != drn_pc.im_seq) == 0
 
-    @pytest.mark.skip(reason="FIXME: skipped until fixed")
     def test_drainage_equals_drainage_dt_not_smooth(self):
         edt = ps.tools.get_edt()
         im = ps.generators.blobs(
@@ -166,7 +165,7 @@ class IBOPTest(GenericTest):
         im = ps.filters.fill_invalid_pores(im)
 
         dt = edt(im)
-        pc = 2/dt
+        pc = 2.0/dt.astype(np.float64)
         pc[~im] = 0
         steps = ps.tools.parse_steps(steps=12, vals=dt.astype(int), mask=im)
         smooth = False
@@ -177,10 +176,8 @@ class IBOPTest(GenericTest):
             im=im, dt=dt, inlets=faces, steps=steps, smooth=smooth)
         drn_pc = ps.simulations.drainage(
             im=im, dt=dt, pc=pc, inlets=faces, steps=(2/steps), smooth=smooth)
-        # The following 2 tests should be == 0, but I cannot for the life of me
-        # figure out why there is 3 stray pixels which don't agree.  I think 3
-        # out of 10,000 is pretty good so I'm going to chalk it up to numerical
-        # precision and move on
+        # 3 stray pixels disagree under `smooth=False`; chalking up to the
+        # voxelated-disk vs `edt`-dilation discretization difference.
         assert np.sum(drn_dt.im_size[im] != 2/drn_pc.im_pc[im]) < 5
         assert np.sum(drn_dt.im_seq != drn_pc.im_seq) < 5
 
@@ -274,7 +271,6 @@ class IBOPTest(GenericTest):
             assert np.all(seq2 == seq4)
             assert np.all(seq3 == seq4)
 
-    @pytest.mark.skip(reason="FIXME: skipped until fixed")
     def test_imbibition_equals_imbibition_dt_smooth(self):
         edt = ps.tools.get_edt()
         im = ps.generators.blobs(
@@ -301,7 +297,6 @@ class IBOPTest(GenericTest):
         assert np.sum(imb_dt.im_size[im] != 2/imb_pc.im_pc[im]) == 0
         assert np.sum(imb_dt.im_seq != imb_pc.im_seq) == 0
 
-    @pytest.mark.skip(reason="FIXME: skipped until fixed")
     def test_imbibition_equals_imbibition_dt_not_smooth(self):
         edt = ps.tools.get_edt()
         im = ps.generators.blobs(

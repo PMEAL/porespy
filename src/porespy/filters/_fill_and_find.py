@@ -379,8 +379,7 @@ def fill_invalid_pores(
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/reference/fill_invalid_pores.html>`_
-    <https://porespy.org/examples/filters/reference/fill_closed_pores.html>`__
+    <https://porespy.org/examples/filters/reference/fill_invalid_pores.html>`__
     to view online example.
     """
     im = im.copy()

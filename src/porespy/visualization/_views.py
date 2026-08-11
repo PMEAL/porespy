@@ -1,13 +1,113 @@
 import numpy as np
 import scipy.ndimage as spim
 from numba import njit, prange
+import pyvista as pv
 
 __all__ = [
     "show_3D",
     "show_planes",
     "sem",
     "xray",
+    "render_volume",
+    "render_network",
 ]
+
+
+def render_network(
+    network,
+    size_by,
+    plotter=None,
+    plotterkws=dict(
+    ),
+    linekws=dict(
+        line_width=3,
+        color='k',
+        show_scalar_bar=False,
+    ),
+    glyphkws=dict(
+        ambient=0.2,
+        diffuse=0.5,
+        specular=0.5,
+        specular_power=90,
+        smooth_shading=True,
+        cmap='turbo',
+        show_scalar_bar=False,
+    ),
+):
+    # Read the VTP file
+    mesh = pv.read(network)
+    size_by = 'network | properties | pore | inscribed_diameter'
+    glyphs = mesh.glyph(scale=size_by, factor=1.0, geom=pv.Sphere())
+    if plotter is None:
+        plotter = pv.Plotter(**plotterkws)
+    plotter.add_mesh(mesh, **linekws)
+    plotter.add_mesh(glyphs, **glyphkws)
+    return plotter
+
+
+def render_volume(
+    im,
+    phase=0,
+    voxel_size=1.0,
+    voxelkws=dict(
+        opacity=1.0,
+        show_edges=False,
+        cmap='bone',
+        clim=[0, 2],
+        line_width=0.1,
+        ambient=0.2,
+        diffuse=0.5,
+        specular=0.5,
+        specular_power=90,
+        show_scalar_bar=False,
+    ),
+    plotterkws=dict(
+    ),
+    plotter=None,
+):
+    r"""
+    Renders voxels in an interactive 3D view
+
+    Parameters
+    ----------
+    im : ndarray
+        The image to be rendered
+    phase : int
+        The phase to show.  The default is 0 which is typically the solid.
+    voxel_size : float (default = 1.0)
+        The side length of the voxels.
+    plotter : pyVista.Plotter object, optional
+        If a plotter object already exists and you with to add more items,
+        you can provide it.  If not provided a new plotter will be created.
+    plotterkws : dict
+        A dictionary of keyword arguments that is passed to the plotter
+        when adding the voxel mesh.
+
+    Returns
+    -------
+    plotter : pyVista.plotter object
+        The plotter object can be visualized with `plotter.show()`. Note
+        that once it has been 'shown' no further adjustments can be made
+        to it.
+
+    Notes
+    -----
+    This function uses pyVista, which seems to work pretty well. For more
+    powerful visualization it is recommended to expore the image to a
+    VTK file using `porespy.io.to_vtk` then using Paraview.
+
+    """
+    grid = pv.ImageData()
+    grid.dimensions = np.array(im.shape) + 1
+    vx = voxel_size
+    grid.spacing = (vx, vx, vx)
+    grid.cell_data["values"] = im.flatten(order="F")
+    threshold = grid.threshold([phase-0.01, phase+0.01])
+    if plotter is None:
+        plotter = pv.Plotter(**plotterkws)
+    plotter.add_mesh(threshold, **voxelkws)
+    plotter.set_background('white')
+    return plotter
 
 
 def show_3D(im):  # pragma: no cover
@@ -132,19 +232,17 @@ def sem(im, axis=0):  # pragma: no cover
 
     """
     im = np.array(~im, dtype=int)
-    if axis == 1:
-        im = np.transpose(im, axes=[1, 0, 2])
-    if axis == 2:
-        im = np.transpose(im, axes=[2, 1, 0])
-    return _sem_parallel(im)
+    im = np.swapaxes(im, 0, axis)
+    view = _sem_parallel(im)
+    im = np.swapaxes(im, 0, axis)
+    return view
 
 
 @njit(parallel=True)
 def _sem_parallel(im):  # pragma: no cover
     r"""
-    This function is called `sem` to compute the height of the first
-    voxel in each x, y column. It uses numba for speed, and is
-    parallelized.
+    This function is called by `sem` to compute the height of the first
+    voxel in each x, y column. It uses numba for speed, and is parallelized.
     """
     shape = im.shape
     depth = np.zeros(shape[:2])

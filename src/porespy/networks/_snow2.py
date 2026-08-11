@@ -1,4 +1,5 @@
 import logging
+import warnings
 
 import numpy as np
 
@@ -7,6 +8,7 @@ from porespy.tools import Results, get_edt
 
 from ._funcs import add_boundary_regions, label_boundaries, label_phases
 from ._getnet_orig import regions_to_network
+from ._getnet_para import regions_to_network_parallel
 
 __all__ = ["snow2", "_parse_pad_width"]
 
@@ -35,6 +37,40 @@ def estimate_overlap_and_chunk(im):
     return overlap, chunk_shape
 
 
+def _parse_parallel_kw(parallel_kw, parallel_extraction_kw=None):
+    r"""
+    Parse ``parallel_kw`` into ``(watershed_kw, extraction_kw)``.
+
+    Supports the legacy flat style (``{'divs': 2, ...}``) for backward
+    compatibility, and the new nested style
+    (``{'watershed': {...}, 'extraction': {...}}``).
+    """
+    _NESTED_KEYS = {'watershed', 'extraction'}
+
+    if parallel_kw is None:
+        watershed_kw = None
+        extraction_kw = None
+    elif _NESTED_KEYS & parallel_kw.keys():
+        # New nested style: 'watershed' and/or 'extraction' sub-dicts
+        watershed_kw = parallel_kw.get('watershed', None)
+        extraction_kw = parallel_kw.get('extraction', None)
+    else:
+        # Legacy flat style: entire dict is forwarded to the watershed step
+        watershed_kw = parallel_kw
+        extraction_kw = None
+
+    if parallel_extraction_kw is not None:
+        warnings.warn(
+            "parallel_extraction_kw is deprecated; pass extraction settings via "
+            "parallel_kw={'extraction': {...}} instead.",
+            DeprecationWarning,
+            stacklevel=3,
+        )
+        extraction_kw = parallel_extraction_kw
+
+    return watershed_kw, extraction_kw
+
+
 def snow2(
     phases,
     phase_alias=None,
@@ -46,6 +82,7 @@ def snow2(
     peaks=None,
     porosity_map=None,
     parallel_kw={},
+    parallel_extraction_kw=None,
 ):
     r"""
     Applies the SNOW algorithm to each phase indicated in ``phases``.
@@ -125,30 +162,49 @@ def snow2(
         array should contain peaks for all phases, and they are masked by
         the ``phases`` argument. If ``peaks`` are provided the parallelization
         is disabled.
-    parallel_kw : dict
-        Dictionary containing the settings for parallelization by chunking. The
-        optional settings include `divs` (scalar or list of scalars,
-        default = [2, 2, 2]), `overlap` (scalar or list of scalars, optional),
-        and `cores` (scalar, default is all available cores).
+    parallel_kw : dict or None
+        Controls parallelization for both the watershed and network extraction
+        steps. Pass ``None`` to run everything serially.
+
+        **Nested style** (recommended): use ``'watershed'`` and/or
+        ``'extraction'`` sub-dicts to configure each step independently::
+
+            parallel_kw = {
+                'watershed':  {'divs': 4, 'overlap': None, 'cores': None},
+                'extraction': {'threads': 4},
+            }
+
+        Omitting a sub-key disables that step's parallelism. An empty sub-dict
+        (``{}``) uses defaults for that step.
+
+        **Legacy flat style** (backward compatible): a dict containing only
+        watershed keys (``'divs'``, ``'overlap'``, ``'cores'``) is forwarded
+        directly to the watershed step and leaves extraction serial::
+
+            parallel_kw = {'divs': 4}  # equivalent to {'watershed': {'divs': 4}}
+
+        Watershed sub-dict keys:
 
         ========== ============================================================
         Key        Description
         ========== ============================================================
-        'divs'     The number of divisions to make along each axis of the image.
-                   If a scalar is provided, it is applied to all axes.
-                   If a list is provided, each axis will be divided by its
-                   corresponding number in the list.
-        'overlap'  The amount of overlap to include when dividing up the image.
-                   This value will almost always be the size (i.e. radius) of
-                   the structuring element. If not specified then the amount
-                   of overlap is inferred from the size of the structuring
-                   element, in which case the `strel_arg` must be specified.
-        'cores'    The number of cores that will be used to parallel process all
-                   domains. If ``None`` then all cores will be used but user can
-                   specify any integer values to control the memory usage.
-                   Setting value to 1 will effectively process the chunks in
-                   serial to minimize memory usage.
+        'divs'     Number of divisions per axis (scalar or list).
+        'overlap'  Overlap between chunks; inferred automatically if omitted.
+        'cores'    Number of worker processes (``None`` = all available).
         ========== ============================================================
+
+        Extraction sub-dict keys (3D only, requires ``pyedt``):
+
+        ========== ============================================================
+        Key        Description
+        ========== ============================================================
+        'threads'  Number of numba threads (defaults to ~half available cores).
+        ========== ============================================================
+
+    parallel_extraction_kw : dict or None, optional
+        *Deprecated.* Use ``parallel_kw={'extraction': {...}}`` instead.
+        Kept for backward compatibility; a ``DeprecationWarning`` is raised
+        when this parameter is used.
 
     Returns
     -------
@@ -195,13 +251,14 @@ def snow2(
     # Parallel snow does not accept peaks, so if they are provided,
     # disable parallelization
     phases = phases.astype(int)
+    watershed_kw, extraction_kw = _parse_parallel_kw(parallel_kw, parallel_extraction_kw)
     if phase_alias is not None:
         vals = phase_alias.keys()
     else:
         vals = np.unique(phases)
         vals = vals[vals > 0]
     if peaks is not None:
-        parallel_kw = None
+        watershed_kw = None
     regions = None
     for i in vals:
         logger.info(f"Processing phase {i}...")
@@ -210,14 +267,14 @@ def snow2(
         overlap, chunk = estimate_overlap_and_chunk(phase)
         # TODO: this may not be the overlap the user provides!
         if (overlap > (chunk//2 - 1)).any():
-            parallel_kw = None
+            watershed_kw = None
             logger.warning("Disabling paralelization as overlap exceeds than chunk size.")
-        if parallel_kw is not None:
+        if watershed_kw is not None:
             snow = snow_partitioning_parallel(
                 im=phase,
                 sigma=sigma,
                 r_max=r_max,
-                parallel_kw=parallel_kw,
+                parallel_kw=watershed_kw,
             )
         else:
             snow = snow_partitioning(im=phase, sigma=sigma, r_max=r_max,
@@ -242,13 +299,26 @@ def snow2(
         if porosity_map is not None:
             porosity_map = np.pad(porosity_map, pad_width=boundary_width, mode='edge')
     # Perform actual extractcion on all regions
-    net = regions_to_network(
-        regions,
-        phases=phases,
-        accuracy=accuracy,
-        voxel_size=voxel_size,
-        porosity_map=porosity_map,
-    )
+    if extraction_kw is None:
+        net = regions_to_network(
+            regions,
+            phases=phases,
+            accuracy=accuracy,
+            voxel_size=voxel_size,
+            porosity_map=porosity_map,
+        )
+    else:
+        if regions.ndim != 3:
+            raise Exception("Parallel network extraction is only supported for 3D images")
+        vs = _normalize_voxel_size(voxel_size, regions.ndim)
+        net = regions_to_network_parallel(
+            regions,
+            phases=phases,
+            accuracy=accuracy,
+            voxel_size=vs,
+            porosity_map=porosity_map,
+            **extraction_kw,
+        )
     # If image is multiphase, label pores/throats accordingly
     if phases.max() > 1:
         phase_alias = _parse_phase_alias(phase_alias, phases)
@@ -265,6 +335,13 @@ def snow2(
     result.regions = regions
     result.phases = phases
     return result
+
+
+def _normalize_voxel_size(voxel_size, ndim):
+    r"""Widen ``voxel_size`` to an ``ndim``-tuple of floats."""
+    if np.isscalar(voxel_size):
+        return (float(voxel_size),) * ndim
+    return tuple(float(v) for v in voxel_size)
 
 
 def _parse_phase_alias(alias, phases):

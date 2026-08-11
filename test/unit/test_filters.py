@@ -294,6 +294,12 @@ class FilterTest():
         lt = ps.filters.local_thickness(self.im, method='conv')
         np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
 
+    def test_local_thickness_imj_2d(self):
+        im = self.im[:, :, 50]
+        lt = ps.filters.local_thickness_imj(im)
+        assert lt.shape == im.shape
+        assert lt.max() > 0
+
     def test_local_thickness_known_sizes(self):
         im = np.zeros(shape=[300, 300])
         im = ps.generators.random_spheres(im=im, r=20)
@@ -770,6 +776,37 @@ class FilterTest():
         mask = ps.filters.find_trapped_clusters(
             im=im, seq=imb.im_seq, outlets=faces, method='queue')
         assert np.sum(mask[faces]) == 0
+
+    def test_find_trapped_clusters_warns_when_invasion_misses_outlets(
+        self, caplog
+    ):
+        import logging
+        im = ps.generators.blobs(
+            shape=[100, 100], porosity=0.6, seed=3, periodic=False)
+        im = ps.filters.fill_closed_pores(im)
+        inlets = ps.generators.faces(im.shape, inlet=0)
+        outlets = ps.generators.faces(im.shape, outlet=0)
+        # Use few steps so invasion stops before reaching the far face
+        pc = ps.filters.capillary_transform(
+            im=im, sigma=0.072, theta=180, voxel_size=1e-5)
+        steps = np.arange(pc[im].min(), pc[im].max()/5, 25)
+        inv = ps.simulations.drainage(im=im, pc=pc, inlets=inlets, steps=steps)
+        msg = "Invasion did not reach outlets"
+        for method in ("labels", "queue"):
+            caplog.clear()
+            with caplog.at_level(logging.WARNING, logger="porespy.filters"):
+                _ = ps.filters.find_trapped_clusters(
+                    im=im, seq=inv.im_seq, outlets=outlets, method=method)
+            assert any(msg in rec.message for rec in caplog.records)
+        # Sanity check: no warning when invasion does reach outlets
+        steps_full = np.arange(pc[im].min(), pc[im].max()*2, 25)
+        inv = ps.simulations.drainage(
+            im=im, pc=pc, inlets=inlets, steps=steps_full)
+        caplog.clear()
+        with caplog.at_level(logging.WARNING, logger="porespy.filters"):
+            _ = ps.filters.find_trapped_clusters(
+                im=im, seq=inv.im_seq, outlets=outlets, method="labels")
+        assert not any(msg in rec.message for rec in caplog.records)
 
 
 if __name__ == '__main__':

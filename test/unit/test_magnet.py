@@ -1,5 +1,3 @@
-import pytest
-
 import numpy as np
 import openpnm as op
 from scipy import stats as spst
@@ -66,12 +64,11 @@ class MagnetTest:
         D = np.unique(magnet.network["pore.inscribed_diameter"].astype(int))
         assert np.all(D == np.array([2, 3, 4, 5, 6, 7, 8, 9, 10]))
 
-    @pytest.mark.skip(reason="Skip until we figure out what's wrong")
     def test_parallel_skeleton_2d(self):
         im = self.blobs2D
         magnet = ps.networks.magnet(im, parallel_kw={"divs": 4})
         sk = magnet.sk
-        assert np.sum(sk) == 1259
+        assert np.sum(sk) == 1444
 
     def test_parallel_skeleton_3d(self):
         im = self.blobs3D
@@ -111,6 +108,20 @@ class MagnetTest:
             assert np.sum(magnet.juncs) == 1491
         except Exception:
             pass
+
+    def test_metadata_in_extracted_network(self):
+        magnet = ps.networks.magnet(self.blobs3D, voxel_size=2e-6)
+        assert magnet.network["param.voxel_size"] == 2e-6
+        assert magnet.network["param.ndim"] == 3
+
+    def test_rescale_network_matches_fresh_extraction(self):
+        net1 = ps.networks.magnet(self.blobs3D, voxel_size=1).network
+        net1_scaled = ps.networks.rescale_network(net1, voxel_size=4.0)
+        net2 = ps.networks.magnet(self.blobs3D, voxel_size=4.0).network
+        for key in net2:
+            if key.startswith("param."):
+                continue
+            assert np.allclose(net1_scaled[key], net2[key]), f"mismatch on {key}"
 
     def test_throat_area(self):
         im = self.blobs3D

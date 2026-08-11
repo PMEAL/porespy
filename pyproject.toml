@@ -1,6 +1,6 @@
 [project]
 name = "porespy"
-version = "3.0.4"
+version = "3.0.4-dev19"
 description = "A set of tools for analyzing 3D images of porous materials"
 authors = [{ name = "PoreSpy Team", email = "jgostick@gmail.com" }]
 maintainers = [
@@ -38,6 +38,8 @@ dependencies = [
     "setuptools",
     "matplotlib-inline>=0.1.7",
     "tomli>=2.2.1",
+    "pyevtk>=1.6.0",
+    "pyvista>=0.46.4",
 ]
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
@@ -240,7 +242,7 @@ path = "src/porespy/__version__.py"
 packages = ["src/porespy"]
 
 [tool.bumpversion]
-current_version = "3.0.4"
+current_version = "3.0.4-dev19"
 parse = """(?x)
     (?P<major>0|[1-9]\\d*)\\.
     (?P<minor>0|[1-9]\\d*)\\.

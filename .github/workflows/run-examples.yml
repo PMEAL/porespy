@@ -44,9 +44,20 @@ jobs:
       - name: Setup FFmpeg
         uses: AnimMouse/setup-ffmpeg@v1
 
+      - name: Ensure Xvfb is available
+        run: |
+          if ! command -v xvfb-run >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y xvfb
+          fi
+
       - name: Run examples
         # Make sure to pass max-parallel to --splits
         run: |
+          PYVISTA_OFF_SCREEN=true \
+          PYVISTA_JUPYTER_BACKEND=static \
+          MPLBACKEND=Agg \
+          xvfb-run -a -s "-screen 0 1024x768x24" \
           uv run pytest \
             -p no:python \
             --nbval-lax \

@@ -28,9 +28,20 @@ jobs:
         run: |
           uv sync --group docs --group interactive
 
+      - name: Ensure Xvfb is available
+        run: |
+          if ! command -v xvfb-run >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y xvfb
+          fi
+
       - name: Build the documentation
         run: |
           cd docs
+          PYVISTA_OFF_SCREEN=true \
+          PYVISTA_JUPYTER_BACKEND=static \
+          MPLBACKEND=Agg \
+          xvfb-run -a -s "-screen 0 1024x768x24" \
           uv run make html
 
       - name: Publish the documentation to GitHub Pages

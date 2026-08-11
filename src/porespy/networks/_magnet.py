@@ -402,7 +402,7 @@ def find_throat_junctions(im, sk, juncs, throats, dt=None, l_max=7, mode="fast m
     """
     # Parse input args
     if dt is None:
-        dt = edt(im, parallel=16)
+        dt = edt(im)
     strel = ps_rect(3, ndim=juncs.ndim)
     if juncs.dtype == bool:
         juncs = spim.label(juncs > 0, structure=strel)[0]
@@ -610,6 +610,11 @@ def junctions_to_network(sk, juncs, throats, dt, throat_area, voxel_size=1):
     # initialize throat conns and radius
     Nt = len(slices)
     t_conns = np.zeros((Nt, 2), dtype=int)
+    # `valid` flags throats with exactly two adjacent junctions. Parallel
+    # skeletonization can leave isolated single-voxel fragments behind (no
+    # junctions in their neighborhood); these aren't real throats and would
+    # otherwise crash the `t_conns[throat, :] = Pn_l` assignment.
+    valid = np.ones(Nt, dtype=bool)
     # initialize diameters
     t_length = np.zeros((Nt), dtype=float)
     t_max_diameter = np.zeros((Nt), dtype=float)
@@ -636,6 +641,9 @@ def junctions_to_network(sk, juncs, throats, dt, throat_area, voxel_size=1):
         # throat conns
         throat_im_dilated = throat_im_dilated * sub_juncs
         Pn_l = np.unique(throat_im_dilated)[1:] - 1
+        if len(Pn_l) != 2:
+            valid[throat] = False
+            continue
         t_conns[throat, :] = Pn_l
         # throat diameter
         throat_dt = throat_im * sub_dt
@@ -657,6 +665,22 @@ def junctions_to_network(sk, juncs, throats, dt, throat_area, voxel_size=1):
             t_equ_diameter[throat] = 2 * np.sqrt(A / np.pi)  # assume circle
         # throat length
         t_length[throat] = len(throat_dt[throat_dt != 0])
+    # Drop throats without exactly two adjacent junctions (isolated fragments)
+    if not valid.all():
+        n_dropped = int((~valid).sum())
+        logger.warning(
+            f"Dropped {n_dropped} skeleton fragment(s) without two adjacent junctions"
+        )
+        t_conns = t_conns[valid]
+        t_length = t_length[valid]
+        t_max_diameter = t_max_diameter[valid]
+        t_min_diameter = t_min_diameter[valid]
+        t_avg_diameter = t_avg_diameter[valid]
+        t_int_diameter = t_int_diameter[valid]
+        t_ins_diameter = t_ins_diameter[valid]
+        t_area = t_area[valid]
+        if throat_area is not None:
+            t_equ_diameter = t_equ_diameter[valid]
     # find pore coords
     Np = juncs.max()
     ct = juncs_to_pore_centers(juncs, dt)  # pore centres!
@@ -691,6 +715,8 @@ def junctions_to_network(sk, juncs, throats, dt, throat_area, voxel_size=1):
     net["pore.inscribed_diameter"] = p_diameter * voxel_size
     net["pore.equivalent_diameter"] = p_diameter_equivalent * voxel_size
     net["pore.index"] = np.arange(0, Np)
+    net["param.voxel_size"] = np.asarray(voxel_size)
+    net["param.ndim"] = np.asarray(sk.ndim)
     return net
 
 
