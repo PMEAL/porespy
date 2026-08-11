@@ -763,9 +763,8 @@ if __name__ == '__main__':
 
     import matplotlib.pyplot as plt
     import numpy as np
-    from edt import edt
-
     import porespy as ps
+    edt = ps.tools.get_edt()
     ps.visualization.set_mpl_style()
 
     cm = copy(plt.cm.plasma)
