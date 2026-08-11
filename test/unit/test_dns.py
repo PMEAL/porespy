@@ -3,7 +3,6 @@ import openpnm as op
 import pytest
 
 import porespy as ps
-import porespy.beta
 
 ps.settings.tqdm['disable'] = True
 ps.settings.loglevel = 40
@@ -38,7 +37,7 @@ class DNSTest():
         for axis in range(3):
             out = ps.simulations.tortuosity_fd(im, axis=axis, ftol=1e-6)
             c = out["im_conc"]
-            J = ps.beta.flux(c, axis=axis, k=im)
+            J = ps.simulations.flux(c, axis=axis, k=im)
             normal_axes = tuple(i for i in range(im.ndim) if i != axis)
             rate = J.sum(axis=normal_axes)
             # Flux should be constant along the axis for different layers
@@ -51,7 +50,7 @@ class DNSTest():
             out = ps.simulations.tortuosity_fd(im, axis=axis, ftol=1e-6)
             c = out["im_conc"]
             tau_fd = out["tortuosity"]
-            tau = ps.beta.tau_from_cmap(c, im, axis=axis)
+            tau = ps.simulations.tau_from_cmap(c, im, axis=axis)
             np.testing.assert_allclose(tau, tau_fd, rtol=1e-5)
 
     def test_converged_flag_default(self):
@@ -67,7 +66,7 @@ class DNSTest():
         for ftol in [1e-2, 1e-4]:
             out = ps.simulations.tortuosity_fd(im, axis=0, ftol=ftol)
             c = out["im_conc"]
-            J = ps.beta.flux(c, axis=0, k=out["im"])
+            J = ps.simulations.flux(c, axis=0, k=out["im"])
             rate = J.sum(axis=(1, 2))
             mismatch = abs(rate[0] - rate[-1]) / max(abs(rate[0]), abs(rate[-1]))
             assert mismatch <= ftol
@@ -79,6 +78,28 @@ class DNSTest():
                                  blobiness=1.5, seed=0, periodic=False)
         out = ps.simulations.tortuosity_fd(im, axis=0, tol=1e-7)
         assert out.converged is True
+
+    def test_tau_from_cmap_low_porosity_2d(self):
+        im = ps.generators.blobs(
+            shape=[100, 100], porosity=0.5, seed=0, periodic=False,)
+        out = ps.simulations.tortuosity_fd(im, axis=0)
+        tau = ps.simulations.tau_from_cmap(out["im_conc"], im, axis=0)
+        np.testing.assert_allclose(tau, out["tortuosity"], rtol=1e-3)
+
+    def test_tau_from_cmap_partially_blocked_inlet(self):
+        im = np.ones([10, 10, 10], dtype=bool)
+        im[0, :5, :] = False
+        out = ps.simulations.tortuosity_fd(im, axis=0)
+        tau = ps.simulations.tau_from_cmap(out["im_conc"], im, axis=0)
+        np.testing.assert_allclose(tau, out["tortuosity"], rtol=1e-3)
+
+    def test_tau_from_cmap_anisotropic_shape(self):
+        im = ps.generators.blobs(
+            shape=[40, 10, 30], porosity=0.7, seed=0, periodic=False,)
+        for axis in range(3):
+            out = ps.simulations.tortuosity_fd(im, axis=axis)
+            tau = ps.simulations.tau_from_cmap(out["im_conc"], im, axis=axis)
+            np.testing.assert_allclose(tau, out["tortuosity"], rtol=1e-3)
 
 
 if __name__ == '__main__':
