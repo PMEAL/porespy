@@ -1041,20 +1041,6 @@
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/numba/core/serialize.py:30,</span> in <span class="ni">_numba_unpickle</span><span class="nt">(address, bytedata, hashed)</span>
-<span class="g g-Whitespace">     </span><span class="mi">27</span> <span class="n">_unpickled_memo</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="ne">---&gt; </span><span class="mi">30</span> <span class="k">def</span><span class="w"> </span><span class="nf">_numba_unpickle</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">bytedata</span><span class="p">,</span> <span class="n">hashed</span><span class="p">):</span>
-<span class="g g-Whitespace">     </span><span class="mi">31</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Used by `numba_unpickle` from _helperlib.c</span>
-<span class="g g-Whitespace">     </span><span class="mi">32</span><span class="sd"> </span>
-<span class="g g-Whitespace">     </span><span class="mi">33</span><span class="sd">     Parameters</span>
-<span class="sd">   (...)     42         unpickled object</span>
-<span class="g g-Whitespace">     </span><span class="mi">43</span><span class="sd">     &quot;&quot;&quot;</span>
-
-<span class="ne">KeyboardInterrupt</span>: 
-
-<span class="n">The</span> <span class="n">above</span> <span class="n">exception</span> <span class="n">was</span> <span class="n">the</span> <span class="n">direct</span> <span class="n">cause</span> <span class="n">of</span> <span class="n">the</span> <span class="n">following</span> <span class="n">exception</span><span class="p">:</span>
-
-<span class="ne">SystemError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">line</span> <span class="mi">9</span>
 <span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="k">for</span> <span class="n">eps</span> <span class="ow">in</span> <span class="n">porosity_target</span><span class="p">:</span>
 <span class="g g-Whitespace">      </span><span class="mi">8</span>     <span class="n">temp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -1071,15 +1057,33 @@
 <span class="g g-Whitespace">   </span><span class="mi">1498</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">*</span> <span class="n">tmp</span>
 <span class="g g-Whitespace">   </span><span class="mi">1499</span> <span class="n">n_fibers_added</span> <span class="o">+=</span> <span class="n">n_fibers</span>
 
-<span class="nn">File ~/work/porespy/porespy/src/porespy/generators/_imgen.py:1345,</span> in <span class="ni">_cylinders</span><span class="nt">(shape, r, ncylinders, phi_max, theta_max, length, verbose, seed)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1343</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">valid</span><span class="p">):</span>
-<span class="g g-Whitespace">   </span><span class="mi">1344</span>     <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">crds</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">valid</span><span class="p">]</span> <span class="o">-</span> <span class="n">L</span>
-<span class="ne">-&gt; </span><span class="mi">1345</span>     <span class="n">_insert_disk_at_points_parallel</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1346</span>                                     <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1347</span>     <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
-<span class="g g-Whitespace">   </span><span class="mi">1348</span>     <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="nn">File ~/work/porespy/porespy/src/porespy/generators/_imgen.py:1340,</span> in <span class="ni">_cylinders</span><span class="nt">(shape, r, ncylinders, phi_max, theta_max, length, verbose, seed)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1338</span> <span class="p">[</span><span class="n">X0</span><span class="p">,</span> <span class="n">X1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="n">X0</span><span class="p">,</span> <span class="n">x</span> <span class="o">-</span> <span class="n">X0</span><span class="p">]</span>
+<span class="g g-Whitespace">   </span><span class="mi">1339</span> <span class="n">crds</span> <span class="o">=</span> <span class="n">line_segment</span><span class="p">(</span><span class="n">X0</span><span class="p">,</span> <span class="n">X1</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">1340</span> <span class="n">lower</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">crds</span><span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="o">&lt;</span> <span class="p">[</span><span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1341</span> <span class="n">upper</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">crds</span><span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="o">&gt;=</span> <span class="n">shape</span> <span class="o">+</span> <span class="n">L</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1342</span> <span class="n">valid</span> <span class="o">=</span> <span class="n">upper</span> <span class="o">*</span> <span class="n">lower</span>
 
-<span class="ne">SystemError</span>: CPUDispatcher(&lt;function _insert_disk_at_points_parallel at 0x7f1c84438540&gt;) returned a result with an exception set
+<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/numpy/_core/shape_base.py:289,</span> in <span class="ni">vstack</span><span class="nt">(tup, dtype, casting)</span>
+<span class="g g-Whitespace">    </span><span class="mi">220</span> <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_vhstack_dispatcher</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">221</span> <span class="k">def</span><span class="w"> </span><span class="nf">vstack</span><span class="p">(</span><span class="n">tup</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">222</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">223</span><span class="sd">     Stack arrays in sequence vertically (row wise).</span>
+<span class="g g-Whitespace">    </span><span class="mi">224</span><span class="sd"> </span>
+<span class="sd">   (...)    287 </span>
+<span class="g g-Whitespace">    </span><span class="mi">288</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">289</span>     <span class="n">arrs</span> <span class="o">=</span> <span class="n">atleast_2d</span><span class="p">(</span><span class="o">*</span><span class="n">tup</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">290</span>     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">291</span>         <span class="n">arrs</span> <span class="o">=</span> <span class="p">(</span><span class="n">arrs</span><span class="p">,)</span>
+
+<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/numpy/_core/shape_base.py:128,</span> in <span class="ni">atleast_2d</span><span class="nt">(*arys)</span>
+<span class="g g-Whitespace">    </span><span class="mi">126</span>     <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">127</span>         <span class="n">result</span> <span class="o">=</span> <span class="n">ary</span>
+<span class="ne">--&gt; </span><span class="mi">128</span>     <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">129</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">130</span>     <span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="ne">KeyboardInterrupt</span>: 
 </pre></div>
 </div>
 </div>
