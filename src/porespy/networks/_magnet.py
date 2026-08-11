@@ -402,7 +402,7 @@ def find_throat_junctions(im, sk, juncs, throats, dt=None, l_max=7, mode="fast m
     """
     # Parse input args
     if dt is None:
-        dt = edt(im, parallel=16)
+        dt = edt(im)
     strel = ps_rect(3, ndim=juncs.ndim)
     if juncs.dtype == bool:
         juncs = spim.label(juncs > 0, structure=strel)[0]

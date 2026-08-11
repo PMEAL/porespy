@@ -1,12 +1,15 @@
 import numpy as np
 import porespy as ps
-from edt import edt
+from porespy.tools import get_edt
 
 
 __all__ = [
     "fibers_2D",
     "fibers_1D",
 ]
+
+
+edt = get_edt()
 
 
 def fibers_1D(shape, r, n, overlap=None):

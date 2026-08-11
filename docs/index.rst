@@ -50,6 +50,7 @@ PoreSpy consists of the following modules:
    :maxdepth: 0
 
    installation
+   settings
    _examples/index
 
 

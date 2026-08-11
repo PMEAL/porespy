@@ -1,11 +1,12 @@
 import importlib
 import inspect
 import logging
+import math
 import sys
 import time
 import warnings
 from dataclasses import dataclass
-from functools import partial
+from functools import wraps
 from pathlib import Path
 
 import numpy as np
@@ -67,14 +68,75 @@ def get_skel():
 
 
 def get_edt():
+    r"""
+    Return PoreSpy's preferred Euclidean distance transform callable.
+
+    ``pyedt.edt`` is preferred when it is installed.  Otherwise, the callable
+    wraps ``edt.edt`` and reads :attr:`porespy.settings.ncores` each time it is
+    called.  Consequently, changing ``settings.ncores`` affects existing
+    callables returned by this function.  An explicit ``parallel`` keyword at
+    the call site takes precedence over the setting.
+
+    Notes
+    -----
+    The ``pyedt`` API does not accept the ``parallel`` keyword, so PoreSpy does
+    not pass ``settings.ncores`` to that backend.  Parallel network extraction
+    using ``pyedt`` has its own ``threads`` option.
+    """
     try:
         package = importlib.import_module("pyedt")
         return package.edt
     except ModuleNotFoundError:
         package = importlib.import_module("edt")
-        edt = package.edt
-        edt = partial(edt, parallel=Settings().ncores)
+        backend = package.edt
+
+        @wraps(backend)
+        def edt(*args, **kwargs):
+            kwargs.setdefault("parallel", Settings().ncores)
+            return backend(*args, **kwargs)
+
         return edt
+
+
+def _get_cgroup_cpu_limit():
+    """Return the Linux cgroup CPU quota as a thread count, if available."""
+    paths = [
+        (Path("/sys/fs/cgroup/cpu.max"),),
+        (
+            Path("/sys/fs/cgroup/cpu/cpu.cfs_quota_us"),
+            Path("/sys/fs/cgroup/cpu/cpu.cfs_period_us"),
+        ),
+    ]
+    for group in paths:
+        try:
+            if len(group) == 1:
+                quota_text, period_text = group[0].read_text().split()[:2]
+                if quota_text == "max":
+                    continue
+                quota, period = int(quota_text), int(period_text)
+            else:
+                quota = int(group[0].read_text())
+                period = int(group[1].read_text())
+        except (FileNotFoundError, IndexError, OSError, ValueError):
+            continue
+        if quota > 0 and period > 0:
+            return max(1, math.ceil(quota / period))
+    return None
+
+
+def _get_available_cpu_count():
+    """Return the logical CPUs available to this process, always at least one."""
+    try:
+        count = len(psutil.Process().cpu_affinity())
+    except (AttributeError, NotImplementedError, TypeError, psutil.Error):
+        count = None
+    if not count:
+        count = psutil.cpu_count(logical=True)
+    count = max(1, count or 1)
+    quota = _get_cgroup_cpu_limit()
+    if quota is not None:
+        count = min(count, quota)
+    return max(1, int(count))
 
 
 def _format_time(timespan, precision=3):
@@ -194,6 +256,15 @@ class Settings:  # pragma: no cover
         Determines what messages to get printed in console. Options are:
         ``'TRACE'`` (5), ``'DEBUG'`` (10), ``'INFO'`` (20), ``'SUCCESS'`` (25),
         ``'WARNING'`` (30), ``'ERROR'`` (40), ``'CRITICAL'`` (50)
+    ncores : int
+        Number of threads used by the fallback ``edt`` distance-transform
+        backend and the default worker count for selected PoreSpy routines.
+        The initial value is the number of logical CPUs available to this
+        process, constrained by CPU affinity and Linux cgroup quota where
+        available.  Assign a positive integer to override it.  Changes affect
+        subsequent EDT calls, including calls through previously obtained
+        :func:`get_edt` callables.  This setting is distinct from chunk layout
+        (``divs`` and ``overlap``), Dask scheduling, and Numba thread settings.
 
     """
 
@@ -212,9 +283,12 @@ class Settings:  # pragma: no cover
     overlap = None
 
     def __init__(self, *args, **kwargs):
+        if getattr(self, "_initialized", False):
+            return
         super().__init__(*args, **kwargs)
         self._notebook = None
-        self._ncores = psutil.cpu_count(logical=False)
+        self._ncores = _get_available_cpu_count()
+        self._initialized = True
 
     @property
     def loglevel(self):
@@ -259,17 +333,17 @@ class Settings:  # pragma: no cover
 
     def _get_ncores(self):
         if self._ncores is None:
-            self._ncores = psutil.cpu_count(logical=False)
+            self._ncores = _get_available_cpu_count()
         return self._ncores
 
     def _set_ncores(self, val):
-        cpu_count = psutil.cpu_count(logical=False)
         if val is None:
-            val = cpu_count
-        elif val > cpu_count:
-            logger.error("Value is more than the available number of cores")
-            val = cpu_count
-        self._ncores = val
+            val = _get_available_cpu_count()
+        if isinstance(val, bool) or not isinstance(val, (int, np.integer)):
+            raise TypeError("ncores must be a positive integer or None")
+        if val < 1:
+            raise ValueError("ncores must be at least 1")
+        self._ncores = int(val)
 
     ncores = property(fget=_get_ncores, fset=_set_ncores)
 

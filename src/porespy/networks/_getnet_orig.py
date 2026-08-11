@@ -3,7 +3,6 @@ import logging
 
 import numpy as np
 import scipy.ndimage as spim
-from edt import edt
 from skimage.morphology import ball, disk
 
 from porespy.metrics import (
@@ -11,7 +10,13 @@ from porespy.metrics import (
     region_surface_areas,
     region_volumes,
 )
-from porespy.tools import extend_slice, get_tqdm, make_contiguous, settings
+from porespy.tools import (
+    extend_slice,
+    get_edt,
+    get_tqdm,
+    make_contiguous,
+    settings,
+)
 
 __all__ = [
     "regions_to_network",
@@ -19,6 +24,7 @@ __all__ = [
 
 
 tqdm = get_tqdm()
+edt = get_edt()
 logger = logging.getLogger(__name__)
 
 
