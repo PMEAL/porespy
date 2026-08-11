@@ -123,7 +123,7 @@ def test_cpu_count_honors_cgroup_quota(monkeypatch):
 
 def test_cgroup_v2_fractional_quota_rounds_up(monkeypatch):
     def read_text(path):
-        if str(path) == "/sys/fs/cgroup/cpu.max":
+        if path.name == "cpu.max":
             return "150000 100000\n"
         raise FileNotFoundError
 
