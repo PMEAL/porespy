@@ -26,6 +26,15 @@ porespy.tools.Settings
                     ``'TRACE'`` (5), ``'DEBUG'`` (10), ``'INFO'`` (20), ``'SUCCESS'`` (25),
                     ``'WARNING'`` (30), ``'ERROR'`` (40), ``'CRITICAL'`` (50)
    :type loglevel: str, or int
+   :param ncores: Number of threads used by the fallback ``edt`` distance-transform
+                  backend and the default worker count for selected PoreSpy routines.
+                  The initial value is the number of logical CPUs available to this
+                  process, constrained by CPU affinity and Linux cgroup quota where
+                  available.  Assign a positive integer to override it.  Changes affect
+                  subsequent EDT calls, including calls through previously obtained
+                  :func:`get_edt` callables.  This setting is distinct from chunk layout
+                  (``divs`` and ``overlap``), Dask scheduling, and Numba thread settings.
+   :type ncores: int
 
 
    .. py:attribute:: divs

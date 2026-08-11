@@ -1,7 +1,7 @@
 porespy.simulations.tortuosity_fd
 =================================
 
-.. py:function:: porespy.simulations.tortuosity_fd(im, axis, solver=None)
+.. py:function:: porespy.simulations.tortuosity_fd(im, axis, solver=None, tol=None, ftol=0.001)
 
    Calculates the tortuosity of image in the specified direction.
 
@@ -9,6 +9,19 @@ porespy.simulations.tortuosity_fd
    :type im: ndarray
    :param axis: The axis along which to apply boundary conditions
    :type axis: int
+   :param solver: A pre-built OpenPNM solver. When given, a single solve is performed
+                  and ``ftol`` is used only as a post-hoc convergence check.
+   :type solver: openpnm Solver, optional
+   :param tol: Residual relative tolerance passed to the default PyAMG solver. If
+               given, a single solve at this tolerance is performed (no iterative
+               tightening) and ``ftol`` is used only as a post-hoc check. Ignored
+               when ``solver`` is given.
+   :type tol: float, optional
+   :param ftol: Target relative inlet/outlet flux mismatch. When neither ``solver``
+                nor ``tol`` is given, the residual tolerance is tightened iteratively
+                until the achieved flux balance falls under ``ftol``. Default is
+                ``1e-3``.
+   :type ftol: float, optional
 
    :returns: **results** -- The following values are computed and returned as attributes:
 
@@ -25,6 +38,10 @@ porespy.simulations.tortuosity_fd
              formation_factor    found as :math:`D_{AB}/D_{eff}`.
              im_conc             An image containing the concentration values from
                                  the simulation.
+             converged           Whether the achieved inlet/outlet flux mismatch
+                                 falls under ``ftol``. Users who need a finer
+                                 picture (e.g. layer-by-layer flux constancy) can
+                                 run ``porespy.beta.flux`` on ``im_conc``.
              =================== ===================================================
    :rtype: Results object
 

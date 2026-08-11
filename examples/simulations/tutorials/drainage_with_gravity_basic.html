@@ -151,6 +151,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../settings.html">
+    PoreSpy settings and parallel execution
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../../../_examples/index.html">
     Examples
@@ -171,13 +178,23 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/PMEAL/porespy/discussions">
     Get Help
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -278,6 +295,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../installation.html">
     Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../settings.html">
+    PoreSpy settings and parallel execution
   </a>
 </li>
 
@@ -407,6 +431,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/rectangular_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">rectangular_pillars_array</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/sierpinski_foam.html"><code class="docutils literal notranslate"><span class="pre">sierpinski_foam</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/spheres_from_coords.html"><code class="docutils literal notranslate"><span class="pre">spheres_from_coords</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/tile_tqms.html"><code class="docutils literal notranslate"><span class="pre">tile_tqms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/tpms_unit_cell.html"><code class="docutils literal notranslate"><span class="pre">tpms_unit_cell</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/voronoi_edges.html"><code class="docutils literal notranslate"><span class="pre">voronoi_edges</span></code></a></li>
 </ul>
 </details></li>
@@ -425,19 +451,32 @@
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/apply_chords.html"><code class="docutils literal notranslate"><span class="pre">apply_chords</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/apply_chords_3D.html"><code class="docutils literal notranslate"><span class="pre">apply_chords_3D</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/apply_padded.html"><code class="docutils literal notranslate"><span class="pre">apply_padded</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../filters/reference/capillary_transform.html"><code class="docutils literal notranslate"><span class="pre">capillary_transform</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/chunked_func.html"><code class="docutils literal notranslate"><span class="pre">chunked_func</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../filters/reference/dilate.html"><code class="docutils literal notranslate"><span class="pre">dilate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/distance_transform_lin.html"><code class="docutils literal notranslate"><span class="pre">distance_transform_lin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../filters/reference/erode.html"><code class="docutils literal notranslate"><span class="pre">erode</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/fftmorphology.html"><code class="docutils literal notranslate"><span class="pre">fftmorphology</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/fill_closed_pores.html"><code class="docutils literal notranslate"><span class="pre">fill_closed_pores</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../filters/reference/fill_invalid_pores.html"><code class="docutils literal notranslate"><span class="pre">fill_invalid_pores</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../filters/reference/fill_surface_pores.html"><code class="docutils literal notranslate"><span class="pre">fill_surface_pores</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../filters/reference/find_closed_pores.html"><code class="docutils literal notranslate"><span class="pre">find_closed_pores</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/find_disconnected_voxels.html"><code class="docutils literal notranslate"><span class="pre">find_disconnected_voxels</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/find_dt_artifacts.html"><code class="docutils literal notranslate"><span class="pre">find_dt_artifacts</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../filters/reference/find_floating_solid.html"><code class="docutils literal notranslate"><span class="pre">find_floating_solid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../filters/reference/find_invalid_pores.html"><code class="docutils literal notranslate"><span class="pre">find_invalid_pores</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/find_peaks.html"><code class="docutils literal notranslate"><span class="pre">find_peaks</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/find_small_clusters.html"><code class="docutils literal notranslate"><span class="pre">find_small_clusters</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../filters/reference/find_surface_pores.html"><code class="docutils literal notranslate"><span class="pre">find_surface_pores</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/find_trapped_clusters.html"><code class="docutils literal notranslate"><span class="pre">find_trapped_clusters</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/flood.html"><code class="docutils literal notranslate"><span class="pre">flood</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/flood_func.html"><code class="docutils literal notranslate"><span class="pre">flood_func</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/hold_peaks.html"><code class="docutils literal notranslate"><span class="pre">hold_peaks</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/local_thickness.html"><code class="docutils literal notranslate"><span class="pre">local_thickness</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../filters/reference/local_thickness_bf.html"><code class="docutils literal notranslate"><span class="pre">local_thickness_bf</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../filters/reference/local_thickness_conv.html"><code class="docutils literal notranslate"><span class="pre">local_thickness_conv</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../filters/reference/local_thickness_dt.html"><code class="docutils literal notranslate"><span class="pre">local_thickness_dt</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../filters/reference/local_thickness_imj.html"><code class="docutils literal notranslate"><span class="pre">local_thickness_imj</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/nl_means_layered.html"><code class="docutils literal notranslate"><span class="pre">nl_means_layered</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/nphase_border.html"><code class="docutils literal notranslate"><span class="pre">nphase_border</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/pc_to_satn.html"><code class="docutils literal notranslate"><span class="pre">pc_to_satn</span></code></a></li>
@@ -460,6 +499,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/trim_nearby_peaks.html"><code class="docutils literal notranslate"><span class="pre">trim_nearby_peaks</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/trim_nonpercolating_paths.html"><code class="docutils literal notranslate"><span class="pre">trim_nonpercolating_paths</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/trim_saddle_points.html"><code class="docutils literal notranslate"><span class="pre">trim_saddle_points</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../filters/reference/trim_saddle_points_legacy.html"><code class="docutils literal notranslate"><span class="pre">trim_saddle_points_legacy</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../filters/reference/trim_small_clusters.html"><code class="docutils literal notranslate"><span class="pre">trim_small_clusters</span></code></a></li>
 </ul>
 </details></li>
@@ -582,6 +622,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../tools/reference/overlay.html"><code class="docutils literal notranslate"><span class="pre">overlay</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools/reference/randomize_colors.html"><code class="docutils literal notranslate"><span class="pre">randomize_colors</span></code> [WIP]</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools/reference/recombine.html"><code class="docutils literal notranslate"><span class="pre">recombine</span></code> [WIP]</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tools/reference/remove_overlaps.html"><code class="docutils literal notranslate"><span class="pre">remove_overlaps</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools/reference/unpad.html"><code class="docutils literal notranslate"><span class="pre">unpad</span></code></a></li>
 </ul>
 </details></li>
@@ -649,6 +690,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/rectangular_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">rectangular_pillars_array</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/sierpinski_foam.html"><code class="docutils literal notranslate"><span class="pre">sierpinski_foam</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/spheres_from_coords.html"><code class="docutils literal notranslate"><span class="pre">spheres_from_coords</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/tile_tqms.html"><code class="docutils literal notranslate"><span class="pre">tile_tqms</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/tpms_unit_cell.html"><code class="docutils literal notranslate"><span class="pre">tpms_unit_cell</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/voronoi_edges.html"><code class="docutils literal notranslate"><span class="pre">voronoi_edges</span></code></a></li>
 </ul>
 <ul class="nav bd-sidenav">
@@ -662,19 +705,32 @@
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/apply_chords.html"><code class="docutils literal notranslate"><span class="pre">apply_chords</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/apply_chords_3D.html"><code class="docutils literal notranslate"><span class="pre">apply_chords_3D</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/apply_padded.html"><code class="docutils literal notranslate"><span class="pre">apply_padded</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../filters/reference/capillary_transform.html"><code class="docutils literal notranslate"><span class="pre">capillary_transform</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/chunked_func.html"><code class="docutils literal notranslate"><span class="pre">chunked_func</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../filters/reference/dilate.html"><code class="docutils literal notranslate"><span class="pre">dilate</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/distance_transform_lin.html"><code class="docutils literal notranslate"><span class="pre">distance_transform_lin</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../filters/reference/erode.html"><code class="docutils literal notranslate"><span class="pre">erode</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/fftmorphology.html"><code class="docutils literal notranslate"><span class="pre">fftmorphology</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/fill_closed_pores.html"><code class="docutils literal notranslate"><span class="pre">fill_closed_pores</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../filters/reference/fill_invalid_pores.html"><code class="docutils literal notranslate"><span class="pre">fill_invalid_pores</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../filters/reference/fill_surface_pores.html"><code class="docutils literal notranslate"><span class="pre">fill_surface_pores</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../filters/reference/find_closed_pores.html"><code class="docutils literal notranslate"><span class="pre">find_closed_pores</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/find_disconnected_voxels.html"><code class="docutils literal notranslate"><span class="pre">find_disconnected_voxels</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/find_dt_artifacts.html"><code class="docutils literal notranslate"><span class="pre">find_dt_artifacts</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../filters/reference/find_floating_solid.html"><code class="docutils literal notranslate"><span class="pre">find_floating_solid</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../filters/reference/find_invalid_pores.html"><code class="docutils literal notranslate"><span class="pre">find_invalid_pores</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/find_peaks.html"><code class="docutils literal notranslate"><span class="pre">find_peaks</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/find_small_clusters.html"><code class="docutils literal notranslate"><span class="pre">find_small_clusters</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../filters/reference/find_surface_pores.html"><code class="docutils literal notranslate"><span class="pre">find_surface_pores</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/find_trapped_clusters.html"><code class="docutils literal notranslate"><span class="pre">find_trapped_clusters</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/flood.html"><code class="docutils literal notranslate"><span class="pre">flood</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/flood_func.html"><code class="docutils literal notranslate"><span class="pre">flood_func</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/hold_peaks.html"><code class="docutils literal notranslate"><span class="pre">hold_peaks</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/local_thickness.html"><code class="docutils literal notranslate"><span class="pre">local_thickness</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../filters/reference/local_thickness_bf.html"><code class="docutils literal notranslate"><span class="pre">local_thickness_bf</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../filters/reference/local_thickness_conv.html"><code class="docutils literal notranslate"><span class="pre">local_thickness_conv</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../filters/reference/local_thickness_dt.html"><code class="docutils literal notranslate"><span class="pre">local_thickness_dt</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../filters/reference/local_thickness_imj.html"><code class="docutils literal notranslate"><span class="pre">local_thickness_imj</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/nl_means_layered.html"><code class="docutils literal notranslate"><span class="pre">nl_means_layered</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/nphase_border.html"><code class="docutils literal notranslate"><span class="pre">nphase_border</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/pc_to_satn.html"><code class="docutils literal notranslate"><span class="pre">pc_to_satn</span></code></a></li>
@@ -697,6 +753,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/trim_nearby_peaks.html"><code class="docutils literal notranslate"><span class="pre">trim_nearby_peaks</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/trim_nonpercolating_paths.html"><code class="docutils literal notranslate"><span class="pre">trim_nonpercolating_paths</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/trim_saddle_points.html"><code class="docutils literal notranslate"><span class="pre">trim_saddle_points</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../filters/reference/trim_saddle_points_legacy.html"><code class="docutils literal notranslate"><span class="pre">trim_saddle_points_legacy</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../filters/reference/trim_small_clusters.html"><code class="docutils literal notranslate"><span class="pre">trim_small_clusters</span></code></a></li>
 </ul>
 <ul class="nav bd-sidenav">
@@ -793,6 +850,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../tools/reference/overlay.html"><code class="docutils literal notranslate"><span class="pre">overlay</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tools/reference/randomize_colors.html"><code class="docutils literal notranslate"><span class="pre">randomize_colors</span></code> [WIP]</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tools/reference/recombine.html"><code class="docutils literal notranslate"><span class="pre">recombine</span></code> [WIP]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools/reference/remove_overlaps.html"><code class="docutils literal notranslate"><span class="pre">remove_overlaps</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tools/reference/unpad.html"><code class="docutils literal notranslate"><span class="pre">unpad</span></code></a></li>
 </ul>
 <ul class="nav bd-sidenav">
@@ -902,9 +960,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../../_images/e83a6a99be45fc5810cc6be1dcff34601d13afd1f72aa7b7c2ba274315132632.png" src="../../../_images/e83a6a99be45fc5810cc6be1dcff34601d13afd1f72aa7b7c2ba274315132632.png" />
-</div>
 </div>
 <p>First we’ll compute a reference capillary pressure curve with no gravity effects using the <code class="docutils literal notranslate"><span class="pre">drainage</span></code> function. This function requires us to supply an image of capillary pressure values associated with each voxel.  Typicall one would use the Washburn equation:</p>
 <div class="math notranslate nohighlight">
@@ -936,9 +991,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../../_images/3ffd1ac87ad5004f6b75ee2c3716b4c55423d42344938f86aa1339663ed419ca.png" src="../../../_images/3ffd1ac87ad5004f6b75ee2c3716b4c55423d42344938f86aa1339663ed419ca.png" />
-</div>
 </div>
 <p>Both of the above images are colored according to the capillary pressure at which a given voxel was invaded. In the right image we have applied a base-10 logarithm to the values to improve visibility.  The format is handy since it contains the entire invasion sequence in a single image.</p>
 <blockquote>
@@ -957,9 +1009,6 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Non-wetting Phase Saturation&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../../../_images/5b00f4728fcaf3e7757052f35bd17393bf66724028cec9bbb857fe21014ce026.png" src="../../../_images/5b00f4728fcaf3e7757052f35bd17393bf66724028cec9bbb857fe21014ce026.png" />
 </div>
 </div>
 <p>Now let’s perform the same experiment but including the gravity effects, by setting <code class="docutils literal notranslate"><span class="pre">g</span></code> to earth’s gravity:</p>
@@ -981,9 +1030,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../../_images/30462513b07ea31b2c473636cb784021d851676cd8fdbda9faa39eef25d978c9.png" src="../../../_images/30462513b07ea31b2c473636cb784021d851676cd8fdbda9faa39eef25d978c9.png" />
-</div>
 </div>
 <p>We can see from the colormap that the invasion pattern is different.  Plotting the capillary pressure curve will make the differences more obvious:</p>
 <div class="cell docutils container">
@@ -999,9 +1045,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../../_images/00cc6fc450b047adef6829c2c91e6e0864d4a36e1dedcd26428ccab2b6259d39.png" src="../../../_images/00cc6fc450b047adef6829c2c91e6e0864d4a36e1dedcd26428ccab2b6259d39.png" />
-</div>
 </div>
 <p>Combining both plots together for a better comparison:</p>
 <div class="cell docutils container">
@@ -1012,9 +1055,6 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Non-wetting Phase Saturation&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../../../_images/505474fbff31c1059f7c179ef858855e4e742365699567775ef9eb394d618160.png" src="../../../_images/505474fbff31c1059f7c179ef858855e4e742365699567775ef9eb394d618160.png" />
 </div>
 </div>
 <p>The red curve above is shifted to the right with a lower slope.  This is the expected result since the impact of gravity makes it more difficult for the heavy non-wetting fluid to rise up the domain and penetrate into pores. The decreased slope is also expected since pores are invaded more gradually rather than in a larger percolation event.</p>

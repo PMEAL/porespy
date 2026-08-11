@@ -53,7 +53,7 @@
     <script src="../../../_static/js/custom.js?v=8f029c3b"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="porespy.visualization.satn_to_movie" href="satn_to_movie.html" />
+    <link rel="next" title="porespy.visualization.render_network" href="render_network.html" />
     <link rel="prev" title="porespy.visualization.imshow" href="imshow.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -147,6 +147,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../settings.html">
+    PoreSpy settings and parallel execution
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../_examples/index.html">
     Examples
   </a>
@@ -166,13 +173,23 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/PMEAL/porespy/discussions">
     Get Help
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -282,6 +299,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../settings.html">
+    PoreSpy settings and parallel execution
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../_examples/index.html">
     Examples
   </a>
@@ -370,13 +394,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../beta/fibers_2D.html">porespy.beta.fibers_2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/flux.html">porespy.beta.flux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/get_block_sizes.html">porespy.beta.get_block_sizes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../beta/gyroid.html">porespy.beta.gyroid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/local_diff.html">porespy.beta.local_diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/polydisperse_cylinders.html">porespy.beta.polydisperse_cylinders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/pts_to_voronoi.html">porespy.beta.pts_to_voronoi</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/rev_tortuosity.html">porespy.beta.rev_tortuosity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/tau_from_cmap.html">porespy.beta.tau_from_cmap</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../beta/tile.html">porespy.beta.tile</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/tortuosity_bt.html">porespy.beta.tortuosity_bt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/vor_to_im.html">porespy.beta.vor_to_im</a></li>
 </ul>
@@ -420,6 +442,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../filters/reduce_peaks.html">porespy.filters.reduce_peaks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/region_size.html">porespy.filters.region_size</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/satn_to_seq.html">porespy.filters.satn_to_seq</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../filters/satn_to_time.html">porespy.filters.satn_to_time</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/seq_to_satn.html">porespy.filters.seq_to_satn</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/size_to_pc.html">porespy.filters.size_to_pc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/size_to_satn.html">porespy.filters.size_to_satn</a></li>
@@ -461,15 +484,17 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/rectangular_pillars_array.html">porespy.generators.rectangular_pillars_array</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/sierpinski_foam.html">porespy.generators.sierpinski_foam</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/spheres_from_coords.html">porespy.generators.spheres_from_coords</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/tile_tpms.html">porespy.generators.tile_tpms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/tpms_unit_cell.html">porespy.generators.tpms_unit_cell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/voronoi_edges.html">porespy.generators.voronoi_edges</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../io/index.html">porespy.io</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../io/dict_to_vtk.html">porespy.io.dict_to_vtk</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../io/folder_to_stack.html">porespy.io.folder_to_stack</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../io/open_paraview.html">porespy.io.open_paraview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../io/from_stl.html">porespy.io.from_stl</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../io/to_palabos.html">porespy.io.to_palabos</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../io/to_paraview.html">porespy.io.to_paraview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../io/to_stl.html">porespy.io.to_stl</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../io/to_stl.html">porespy.io.to_stl</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../io/to_vtk.html">porespy.io.to_vtk</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../io/zip_to_stack.html">porespy.io.zip_to_stack</a></li>
@@ -535,6 +560,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../networks/partition_skeleton.html">porespy.networks.partition_skeleton</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../networks/regions_to_network.html">porespy.networks.regions_to_network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../networks/regions_to_network_parallel.html">porespy.networks.regions_to_network_parallel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/rescale_network.html">porespy.networks.rescale_network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../networks/skeleton.html">porespy.networks.skeleton</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../networks/skeleton_parallel.html">porespy.networks.skeleton_parallel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../networks/snow2.html">porespy.networks.snow2</a></li>
@@ -546,6 +572,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_conv.html">porespy.simulations.drainage_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt.html">porespy.simulations.drainage_dt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt_conv.html">porespy.simulations.drainage_dt_conv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/hg_porosimetry.html">porespy.simulations.hg_porosimetry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/ibip.html">porespy.simulations.ibip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition.html">porespy.simulations.imbibition</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_bf.html">porespy.simulations.imbibition_bf</a></li>
@@ -612,6 +639,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../tools/ps_round.html">porespy.tools.ps_round</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tools/randomize_colors.html">porespy.tools.randomize_colors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tools/recombine.html">porespy.tools.recombine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools/remove_overlaps.html">porespy.tools.remove_overlaps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tools/results_to_df.html">porespy.tools.results_to_df</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tools/sanitize_filename.html">porespy.tools.sanitize_filename</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tools/show_docstring.html">porespy.tools.show_docstring</a></li>
@@ -625,6 +653,8 @@
 <li class="toctree-l2"><a class="reference internal" href="bar.html">porespy.visualization.bar</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imshow.html">porespy.visualization.imshow</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">porespy.visualization.prep_for_imshow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="render_network.html">porespy.visualization.render_network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="render_volume.html">porespy.visualization.render_volume</a></li>
 <li class="toctree-l2"><a class="reference internal" href="satn_to_movie.html">porespy.visualization.satn_to_movie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="satn_to_panels.html">porespy.visualization.satn_to_panels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sem.html">porespy.visualization.sem</a></li>

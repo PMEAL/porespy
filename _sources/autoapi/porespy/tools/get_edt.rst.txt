@@ -2,3 +2,18 @@ porespy.tools.get_edt
 =====================
 
 .. py:function:: porespy.tools.get_edt()
+
+   Return PoreSpy's preferred Euclidean distance transform callable.
+
+   ``pyedt.edt`` is preferred when it is installed.  Otherwise, the callable
+   wraps ``edt.edt`` and reads :attr:`porespy.settings.ncores` each time it is
+   called.  Consequently, changing ``settings.ncores`` affects existing
+   callables returned by this function.  An explicit ``parallel`` keyword at
+   the call site takes precedence over the setting.
+
+   .. rubric:: Notes
+
+   The ``pyedt`` API does not accept the ``parallel`` keyword, so PoreSpy does
+   not pass ``settings.ncores`` to that backend.  Parallel network extraction
+   using ``pyedt`` has its own ``threads`` option.
+

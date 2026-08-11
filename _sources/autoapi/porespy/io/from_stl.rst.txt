@@ -1,0 +1,35 @@
+porespy.io.from_stl
+===================
+
+.. py:function:: porespy.io.from_stl(stl_path, method='shell', density=100, fill_holes=False)
+
+   Converts an STL file to a boolean array
+
+   :param stl_path: The location and name of the STL file
+   :type stl_path: str or path object
+   :param method: The voxelization method to use.  Options are:
+
+                  ============ ===========================================================
+                  method       Description
+                  ============ ===========================================================
+                  ``'shell'``  Uses Open3D to voxelize the surface shell, then fills the
+                               interior. This is the default and generally the fastest.
+                  ``'voxelize'`` Uses PyVista's ``voxelize_volume`` to create a volumetric
+                               representation of the mesh.
+                  ``'enclosed'`` Uses PyVista's ``select_enclosed_points`` to test every
+                               grid point against the surface. Can be slow and
+                               memory-intensive for large meshes.
+                  ============ ===========================================================
+   :type method: str
+   :param density: The number of voxels along the longest axis of the bounding box.
+                   Higher values give higher resolution but use more memory. The default
+                   is 100 for all methods.
+   :type density: int
+   :param fill_holes: If `True` then steps are taken to ensure the mesh has no holes before
+                      voxelization. Only used when ``method='shell'``. The default is
+                      `False`.
+   :type fill_holes: bool
+
+   :returns: **im** -- A boolean array with `True` values indicating the solid phase.
+   :rtype: ndarray
+

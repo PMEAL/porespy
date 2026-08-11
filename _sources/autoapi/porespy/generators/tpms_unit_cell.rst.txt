@@ -1,0 +1,61 @@
+porespy.generators.tpms_unit_cell
+=================================
+
+.. py:function:: porespy.generators.tpms_unit_cell(shape, method='schoen', skew=0.5, phi=0.5)
+
+   Generate a boolean image of a triply periodic minimal surface (TPMS).
+
+   One full period of the selected surface is mapped onto a cubic domain of
+   ``shape`` voxels per side. The surface field is thresholded to produce a
+   solid phase, with the band centre and half-width controlled by ``skew``
+   and ``phi`` respectively.
+
+   :param shape: Number of voxels along each side of the cubic output array. The output
+                 shape is ``(shape, shape, shape)``.
+   :type shape: int
+   :param method: The TPMS geometry to generate. Options are:
+
+                  ==============  ==========================================================
+                  Value           Surface
+                  ==============  ==========================================================
+                  ``'schoen'``    Schoen Gyroid (default)
+                  ``'primitive'`` Schwartz Primitive (P surface)
+                  ``'diamond'``   Schwartz Diamond (D surface)
+                  ``'diagonal'``  Diagonal surface
+                  ``'diamond2'``  Diamond variant (second form)
+                  ``'lidinoid'``  Lidinoid
+                  ``'split-p'``   Split-P
+                  ``'neovius'``   Neovius
+                  ``'FKS'``       Fischer–Koch S surface
+                  ``'FRD'``       F-RD surface
+                  ``'pw-hybrid'`` PW-Hybrid
+                  ``'iWP'``       Schoen I-WP
+                  ==============  ==========================================================
+   :type method: str, optional
+   :param skew: Centre of the isovalue band used for thresholding the TPMS field.
+                Shifting this value moves the solid phase toward higher or lower field
+                values, effectively skewing which region of the surface is selected.
+                Default is 0.5.
+   :type skew: float, optional
+   :param phi: Half-width of the isovalue band. Voxels are set to ``True`` where
+               ``skew - phi < v < skew + phi``. Larger values produce a thicker solid
+               phase and lower porosity. Default is 0.5.
+   :type phi: float, optional
+
+   :returns: **im** -- A 3-D boolean array of shape ``(shape, shape, shape)`` where ``True``
+             indicates the solid phase defined by the TPMS level set.
+   :rtype: ndarray of bool
+
+   .. rubric:: Notes
+
+   The TPMS field ``v`` is evaluated on a regular grid spanning
+   :math:`[0, 2\pi]` in each direction (one full unit cell). The solid phase
+   is the set of voxels satisfying :math:`\text{skew} - \phi < v <
+   \text{skew} + \phi`.
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/tpms_unit_cell.html>`__
+   to view online example.
+

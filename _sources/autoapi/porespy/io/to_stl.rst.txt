@@ -1,35 +1,50 @@
 porespy.io.to_stl
 =================
 
-.. py:function:: porespy.io.to_stl(im, filename, divide=False, downsample=False, voxel_size=1, vox=False)
+.. py:function:: porespy.io.to_stl(im, filename=None, voxel_size=1, method='direct', fmt='openstl', remove_duplicates=False, tol=None)
 
-   Converts an array to an STL file.
+   Converts an voxel image to an STL mesh in a variety of formats
 
    :param im: The image of the porous material
    :type im: 3D image
-   :param path: Path to output file
-   :type path: string
-   :param divide: vtk files can get very large, this option allows you for two output
-                  files, divided at z = half. This allows for large data sets to be
-                  imaged without loss of information
-   :type divide: bool
-   :param downsample: very large images acan be downsampled to half the size in each
-                      dimension, this doubles the effective voxel size
-   :type downsample: bool
    :param voxel_size: The side length of the voxels (voxels  are cubic)
    :type voxel_size: int
-   :param vox: For an image that is binary (1's and 0's) this reduces the file size by
-               using int8 format (can also be used to reduce file size when accuracy
-               is not necessary ie: just visulization)
-   :type vox: bool
+   :param method: Can be one of the options listed below:
+
+                  ================ ============================================================
+                  method           Description
+                  ================ ============================================================
+                  'direct'         Converts each exposed face of each voxel into 2 triangles
+                                   to generate a mesh that maps directly to the voxel image.
+                  'marching-cubes' Uses the marching cubes method in scikit-image to generate
+                                   a mesh. The result is naturally smoother than the 'direct'
+                                   approach, but this is due to last information.
+                  ================ ============================================================
+   :type method: str
+   :param fmt: The format of the returned mesh. Options are:
+
+               - 'openstl' or 'triangles' (default)
+               - 'skimage' or 'vfn' (as in verts, faces, vertex normals)
+               - 'pyvista' (installed with PoreSpy)
+               - 'trimesh' (not automatically installed with PoreSpy)
+               - 'open3d' (not automatically installed with PoreSpy)
+               - 'numpy-stl' (not automatically installed with PoreSpy)
+               - 'meshio' (not automatically installed with PoreSpy)
+   :type fmt: str
 
    .. rubric:: Notes
 
-   Outputs an STL file that can opened in Paraview
+   The `openstl` package has the fastest read/write performance. It
+   uses a basic numpy array of shape `[N, 4, 3]`. `N` is the number of
+   triangles, `4` refers to `norms, vert1, vert2, vert3`, where `norms` and
+   `vert<i>` are each `3` components long. Nn 'stl' file saved using `openstl`
+   can be opened by most other packages, which convert it to a usable mesh.
+   For example `mesh = pyvista.read('openstl-formatted-file.stl')` will create
+   `mesh` that can be plotted with `pyvista.plot(mesh, eye_dome_lighting=True)`.
 
    .. rubric:: Examples
 
    `Click here
-   <https://porespy.org/examples/io/reference/to_stl.html>`__
+   <https://porespy.org/examples/io/reference/to_stl.html>`_
    to view online example.
 

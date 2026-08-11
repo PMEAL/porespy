@@ -1,7 +1,7 @@
 porespy.metrics.satn_profile
 ============================
 
-.. py:function:: porespy.metrics.satn_profile(satn, s=None, im=None, axis=0, span=10, mode='tile')
+.. py:function:: porespy.metrics.satn_profile(satn, s=None, im=None, axis=0, span=10, mode='tile', voxel_size=None)
 
    Computes a saturation profile from an image of fluid invasion
 
@@ -34,6 +34,9 @@ porespy.metrics.satn_profile
                          provides more data points but is slower.
                 ======== ==============================================================
    :type mode: str
+   :param voxel_size: If given, the returned ``position`` values are scaled by this factor.
+                      If ``None`` (default), positions are returned in voxel units.
+   :type voxel_size: scalar, optional
 
    :returns: **results** -- Results is a custom porespy class with the following attributes:
 
@@ -41,7 +44,8 @@ porespy.metrics.satn_profile
              Attribute     Description
              ============= =========================================================
              position      The position along the given axis at which saturation
-                           values are computed.  The units are in voxels.
+                           values are computed.  The units are in voxels unless
+                           ``voxel_size`` is given.
              saturation    The local saturation value at each position.
              ============= =========================================================
    :rtype: dataclass

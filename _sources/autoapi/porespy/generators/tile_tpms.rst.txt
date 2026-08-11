@@ -1,0 +1,34 @@
+porespy.generators.tile_tpms
+============================
+
+.. py:function:: porespy.generators.tile_tpms(im, n, mode='periodic')
+
+   Tile a TPMS image to create a larger domain.
+
+   :param im: The 3-D boolean image to tile, typically produced by `gyroid`.
+   :type im: ndarray
+   :param n: Number of repetitions along each axis. A single integer tiles equally
+             in all directions; a sequence (e.g. ``(3, 3, 1)``) tiles each axis
+             independently.
+   :type n: int or sequence of int
+   :param mode: Tiling strategy. Options are:
+
+                ============  =========================================================
+                Value         Behaviour
+                ============  =========================================================
+                ``'periodic'`` Repeat the image using simple copy (default).
+                ``'reflect'``  Mirror the image at each boundary so that features meet
+                               smoothly across tile edges.
+                ============  =========================================================
+   :type mode: str, optional
+
+   :returns: **im2** -- Tiled boolean array. Its shape along each axis is
+             ``im.shape[i] * n[i]``.
+   :rtype: ndarray
+
+   .. rubric:: Examples
+
+   `Click here
+   <https://porespy.org/examples/generators/reference/tile_tpms.html>`__
+   to view online example.
+

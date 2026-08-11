@@ -48,6 +48,13 @@ porespy.metrics.two_point_correlation
    explanation `see this thesis
    <https://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf>`_.
 
+   The image is zero-padded to twice its size along each axis before the
+   forward transform so that the resulting autocorrelation is the proper
+   non-periodic correlation rather than the periodic one. Each lag is then
+   normalized by the number of voxel pairs that contributed to it, which
+   yields an unbiased estimate of $S_2(r)$ that averages over all radial
+   directions.
+
    .. rubric:: Examples
 
    `Click here

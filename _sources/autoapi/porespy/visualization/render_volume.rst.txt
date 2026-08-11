@@ -1,0 +1,31 @@
+porespy.visualization.render_volume
+===================================
+
+.. py:function:: porespy.visualization.render_volume(im, phase=0, voxel_size=1.0, voxelkws=dict(opacity=1.0, show_edges=False, cmap='bone', clim=[0, 2], line_width=0.1, ambient=0.2, diffuse=0.5, specular=0.5, specular_power=90, show_scalar_bar=False), plotterkws=dict(), plotter=None)
+
+   Renders voxels in an interactive 3D view
+
+   :param im: The image to be rendered
+   :type im: ndarray
+   :param phase: The phase to show.  The default is 0 which is typically the solid.
+   :type phase: int
+   :param voxel_size: The side length of the voxels.
+   :type voxel_size: float (default = 1.0)
+   :param plotter: If a plotter object already exists and you with to add more items,
+                   you can provide it.  If not provided a new plotter will be created.
+   :type plotter: pyVista.Plotter object, optional
+   :param plotterkws: A dictionary of keyword arguments that is passed to the plotter
+                      when adding the voxel mesh.
+   :type plotterkws: dict
+
+   :returns: **plotter** -- The plotter object can be visualized with `plotter.show()`. Note
+             that once it has been 'shown' no further adjustments can be made
+             to it.
+   :rtype: pyVista.plotter object
+
+   .. rubric:: Notes
+
+   This function uses pyVista, which seems to work pretty well. For more
+   powerful visualization it is recommended to expore the image to a
+   VTK file using `porespy.io.to_vtk` then using Paraview.
+

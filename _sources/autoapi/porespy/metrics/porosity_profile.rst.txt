@@ -1,7 +1,7 @@
 porespy.metrics.porosity_profile
 ================================
 
-.. py:function:: porespy.metrics.porosity_profile(im, axis=0, span=1, mode='tile')
+.. py:function:: porespy.metrics.porosity_profile(im, axis=0, span=1, mode='tile', voxel_size=None)
 
    Computes the porosity profile along the specified axis
 
@@ -24,6 +24,9 @@ porespy.metrics.porosity_profile
                          provides more data points but is slower.
                 ======== ==============================================================
    :type mode: str (Default = 'tile')
+   :param voxel_size: If given, the returned ``position`` values are scaled by this factor.
+                      If ``None`` (default), positions are returned in voxel units.
+   :type voxel_size: scalar, optional
 
    :returns: **results** -- Results is a custom class with the following attributes:
 
@@ -33,7 +36,7 @@ porespy.metrics.porosity_profile
              position      The position along the given axis at which porosity
                            values are computed, corresponding to the middle of each
                            slice, whether the mode was `'tile'` or `'slide'`.
-                           The units are in voxels.
+                           The units are in voxels unless ``voxel_size`` is given.
              porosity      The local porosity value at each position.
              ============= =========================================================
    :rtype: dataclass

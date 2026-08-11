@@ -1,0 +1,30 @@
+porespy.networks.rescale_network
+================================
+
+.. py:function:: porespy.networks.rescale_network(network, voxel_size)
+
+   Rescale a network's geometric properties to a new voxel size.
+
+   Networks extracted by porespy carry their original ``voxel_size`` in
+   ``param.voxel_size``. This function uses that value to compute a scale
+   factor and rescales every length/area/volume field accordingly, so the
+   output is identical to what a fresh extraction at the new voxel size
+   would have produced (modulo float precision).
+
+   :param network: A network produced by ``snow2``, ``regions_to_network``, or
+                   ``magnet``. Must contain ``param.voxel_size`` and ``param.ndim``.
+   :type network: dict
+   :param voxel_size: The new voxel size, in the same units as the original.
+   :type voxel_size: scalar
+
+   :returns: **rescaled** -- A new network dict with all dimensional fields rescaled and
+             ``param.voxel_size`` updated to the new value. The input is not
+             mutated.
+   :rtype: dict
+
+   .. rubric:: Notes
+
+   Anisotropic voxel sizes (i.e., a tuple stored in ``param.voxel_size``)
+   are not supported; if all axes share the same value, that scalar is
+   used, otherwise an exception is raised.
+
