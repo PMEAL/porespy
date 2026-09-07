@@ -1,6 +1,7 @@
 import logging
 from typing import Literal
 
+import cc3d
 import numpy as np
 import numpy.typing as npt
 import scipy.ndimage as spim
@@ -29,6 +30,39 @@ __all__ = [
 edt = get_edt()
 logger = logging.getLogger(__name__)
 strel = get_strel()
+
+
+def _label_components(
+    im: npt.NDArray,
+    conn: Literal["max", "min"] = "min",
+):
+    """Label a 2D or 3D binary image using the matching PoreSpy connectivity."""
+    connectivity = {
+        2: {"min": 4, "max": 8},
+        3: {"min": 6, "max": 26},
+    }
+    if im.ndim in connectivity:
+        return cc3d.connected_components(
+            im,
+            connectivity=connectivity[im.ndim][conn],
+            binary_image=True,
+            return_N=True,
+        )
+    se = strel[im.ndim][conn].copy()
+    return spim.label(input=im, structure=se)
+
+
+def _isin_labels(labels, hits, N, invert=False, out=None):
+    """Select labels using a compact lookup table instead of a full-volume isin."""
+    lookup = np.zeros(N + 1, dtype=bool)
+    lookup[np.asarray(hits, dtype=np.intp)] = True
+    lookup[0] = False
+    if out is None:
+        out = np.empty(labels.shape, dtype=bool)
+    np.take(lookup, labels, out=out)
+    if invert:
+        np.logical_not(out, out=out)
+    return out
 
 
 def trim_disconnected_voxels(
@@ -74,10 +108,6 @@ def trim_disconnected_voxels(
 
     """
     im = im.copy()
-    if isinstance(inlets, tuple):
-        temp = np.copy(inlets)
-        inlets = np.zeros_like(im, dtype=bool)
-        inlets[temp] = True
     disconnected = find_disconnected_voxels(im=im, inlets=inlets, conn=conn)
     im[disconnected] = False
     return im
@@ -125,15 +155,17 @@ def find_disconnected_voxels(
     <https://porespy.org/examples/filters/reference/find_disconnected_voxels.html>`__
     to view online example.
     """
-    se = strel[im.ndim][conn].copy()
-    labels, N = spim.label(input=im, structure=se)
+    labels, N = _label_components(im=im, conn=conn)
     if inlets is None:
         holes = clear_border(labels=labels) > 0
     else:
-        keep = np.unique(labels * inlets)
-        keep = keep[keep > 0]
-        holes = np.isin(labels, keep, invert=True)
-    holes = holes * im
+        if isinstance(inlets, tuple):
+            inlet_labels = labels[inlets]
+        else:
+            inlet_labels = labels[np.asarray(inlets, dtype=bool)]
+        keep = np.unique(inlet_labels)
+        holes = _isin_labels(labels=labels, hits=keep, N=N, invert=True)
+    np.logical_and(holes, im, out=holes)
     return holes
 
 
@@ -168,8 +200,7 @@ def find_closed_pores(
     """
     from porespy.generators import borders
 
-    se = strel[im.ndim][conn].copy()
-    labels, N = spim.label(input=im, structure=se)
+    labels, N = _label_components(im=im, conn=conn)
     mask = borders(im.shape, mode="faces")
     hits = np.unique(labels[mask])
     closed = np.isin(labels, hits, invert=True)
@@ -259,8 +290,7 @@ def find_surface_pores(
         axis = range(im.ndim)
     elif isinstance(axis, int):
         axis = [axis]
-    se = strel[im.ndim][conn].copy()
-    labels, N = spim.label(input=im, structure=se)
+    labels, N = _label_components(im=im, conn=conn)
     keep = set()
     for ax in axis:
         labels = np.swapaxes(labels, 0, ax)
@@ -542,10 +572,9 @@ def trim_nonpercolating_paths(
 
         inlets = faces(im.shape, inlet=axis)
         outlets = faces(im.shape, outlet=axis)
-    se = strel[im.ndim][conn].copy()
-    labels = spim.label(im, structure=se)[0]
-    IN = np.unique(labels * inlets)
-    OUT = np.unique(labels * outlets)
+    labels, N = _label_components(im=im, conn=conn)
+    IN = np.unique(labels[np.asarray(inlets, dtype=bool)])
+    OUT = np.unique(labels[np.asarray(outlets, dtype=bool)])
     hits = np.array(list(set(IN).intersection(set(OUT))))
-    new_im = np.isin(labels, hits[hits > 0])
+    new_im = _isin_labels(labels=labels, hits=hits[hits > 0], N=N)
     return new_im
