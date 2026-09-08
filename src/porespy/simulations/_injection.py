@@ -86,14 +86,26 @@ def qbip(
     inv_size = np.zeros_like(im, dtype=float)
     if return_sizes is False:
         inv_size *= -np.inf  # This is a flag to the numba-jit function to ignore it
-    sequence, pressure, size = _draw_qbip_spheres(
+    max_radius = int(np.max(dt))
+    if max_radius <= np.iinfo(np.uint8).max:
+        depth_dtype = np.uint8
+    elif max_radius <= np.iinfo(np.uint16).max:
+        depth_dtype = np.uint16
+    elif max_radius <= np.iinfo(np.uint32).max:
+        depth_dtype = np.uint32
+    else:
+        depth_dtype = np.uint64
+    im_depth = np.zeros_like(im, dtype=depth_dtype)
+    sequence, pressure, size, drawn, skipped = _draw_qbip_spheres(
         order=inv_order[:count],
         dt=dt,
         pc=pc,
         seq=inv_seq,
         pressure=inv_pc,
         size=inv_size,
+        im_depth=im_depth,
     )
+    logger.info(f"Drew {drawn} spheres and skipped {skipped} contained spheres")
     # Reduce back to 2D if necessary
     sequence = sequence.squeeze()
     pressure = pressure.squeeze()
@@ -210,10 +222,15 @@ def _draw_qbip_spheres(
     seq,
     pressure,
     size,
+    im_depth,
     smooth=True,
 ):  # pragma: no cover
     _, ylim, zlim = seq.shape
     stride0 = ylim * zlim
+    draw_pressure = pressure[0, 0, 0] > -np.inf
+    draw_size = size[0, 0, 0] > -np.inf
+    drawn = 0
+    skipped = 0
     step = 1
     for item in order:
         end_of_step = item < 0
@@ -223,23 +240,86 @@ def _draw_qbip_spheres(
         j = rem // zlim
         k = rem - j * zlim
         r = int(dt[i, j, k])
-        seq = _insert_disk_at_point(
-            im=seq,
-            i=i, j=j, k=k,
-            r=r, v=step, overwrite=False, smooth=smooth,)
-        # Putting -inf in images is a numba compatible flag for 'skip'
-        if pressure[0, 0, 0] > -np.inf:
-            pressure = _insert_disk_at_point(
-                im=pressure,
-                i=i, j=j, k=k,
-                r=r, v=pc[i, j, k], overwrite=False, smooth=smooth,)
-        if size[0, 0, 0] > -np.inf:
-            size = _insert_disk_at_point(
-                im=size, i=i, j=j, k=k,
-                r=r, v=dt[i, j, k], overwrite=False, smooth=smooth,)
+        # im_depth is a conservative distance to the edge of the union of
+        # earlier spheres.  This sphere is redundant when its radius fits at
+        # its center without crossing an earlier sphere's boundary.
+        if im_depth[i, j, k] >= r:
+            skipped += 1
+        else:
+            _insert_qbip_sphere(
+                seq=seq,
+                pressure=pressure,
+                size=size,
+                im_depth=im_depth,
+                i=i,
+                j=j,
+                k=k,
+                r=r,
+                step=step,
+                value_pc=pc[i, j, k],
+                value_size=dt[i, j, k],
+                draw_pressure=draw_pressure,
+                draw_size=draw_size,
+                smooth=smooth,
+            )
+            drawn += 1
         if end_of_step:
             step += 1
-    return seq, pressure, size
+    return seq, pressure, size, drawn, skipped
+
+
+@njit
+def _insert_qbip_sphere(
+    seq,
+    pressure,
+    size,
+    im_depth,
+    i,
+    j,
+    k,
+    r,
+    step,
+    value_pc,
+    value_size,
+    draw_pressure,
+    draw_size,
+    smooth,
+):  # pragma: no cover
+    xlim, ylim, zlim = seq.shape
+    for x in range(max(0, i - r), min(i + r + 1, xlim)):
+        dx = x - i
+        for y in range(max(0, j - r), min(j + r + 1, ylim)):
+            dy = y - j
+            if zlim > 1:
+                for z in range(max(0, k - r), min(k + r + 1, zlim)):
+                    dz = z - k
+                    distance = (dx**2 + dy**2 + dz**2)**0.5
+                    inside = (distance < r) if smooth else (distance <= r)
+                    if inside:
+                        # This is floor(r - distance), expressed this way to
+                        # avoid rounding a containment test upward.
+                        depth = r - int(np.ceil(distance))
+                        if im_depth[x, y, z] < depth:
+                            im_depth[x, y, z] = depth
+                        if seq[x, y, z] == 0:
+                            seq[x, y, z] = step
+                        if draw_pressure and (pressure[x, y, z] == 0):
+                            pressure[x, y, z] = value_pc
+                        if draw_size and (size[x, y, z] == 0):
+                            size[x, y, z] = value_size
+            else:
+                distance = (dx**2 + dy**2)**0.5
+                inside = (distance < r) if smooth else (distance <= r)
+                if inside:
+                    depth = r - int(np.ceil(distance))
+                    if im_depth[x, y, 0] < depth:
+                        im_depth[x, y, 0] = depth
+                    if seq[x, y, 0] == 0:
+                        seq[x, y, 0] = step
+                    if draw_pressure and (pressure[x, y, 0] == 0):
+                        pressure[x, y, 0] = value_pc
+                    if draw_size and (size[x, y, 0] == 0):
+                        size[x, y, 0] = value_size
 
 
 @njit
@@ -281,56 +361,6 @@ def _push_valid_neighbors(
                         processed[x, y, z] = True
                         nind = x * stride0 + y * zlim + z
                         hq.heappush(bd, (pc[x, y, z], nind))
-
-
-@njit
-def _insert_disk_at_point(
-    im, i, j, r, v, k=0, overwrite=False, smooth=True):  # pragma: no cover
-    r"""
-    Insert spheres (or disks) of specified radii into an image at given locations.
-
-    This function uses numba to accelerate the process, and does not overwrite
-    any existing values (i.e. only writes to locations containing zeros).
-
-    Parameters
-    ----------
-    im : ND-array
-        The image into which the spheres/disks should be inserted. This is an
-        'in-place' operation.
-    i, j, k : int
-        The center point of each sphere/disk.  If the image is 2D then ``k`` can be
-        omitted.
-    r : array_like
-        The radius of the sphere/disk to insert
-    v : scalar
-        The value to insert
-    overwrite : boolean, optional
-        If ``True`` then the inserted spheres overwrite existing values.  The
-        default is ``False``.
-    smooth : boolean
-        If `True` (default) then the small bumps on the outer perimeter of each
-        face are not present.
-
-    """
-    xlim, ylim, zlim = im.shape
-    for a, x in enumerate(range(i-r, i+r+1)):
-        if (x >= 0) and (x < xlim):
-            for b, y in enumerate(range(j-r, j+r+1)):
-                if (y >= 0) and (y < ylim):
-                    if zlim > 1:  # For a truly 3D image
-                        for c, z in enumerate(range(k-r, k+r+1)):
-                            if (z >= 0) and (z < zlim):
-                                R = ((a - r)**2 + (b - r)**2 + (c - r)**2)**0.5
-                                if ((R < r) and smooth) or ((R <= r) and not smooth):
-                                    if overwrite or (im[x, y, z] == 0):
-                                        im[x, y, z] = v
-                    else:  # For 3D image with singleton 3rd dimension
-                        R = ((a - r)**2 + (b - r)**2)**0.5
-                        if ((R < r) and smooth) or ((R <= r) and not smooth):
-                            if overwrite or (im[x, y, 0] == 0):
-                                im[x, y, 0] = v
-    return im
-
 
 @njit
 def _where(arr):
