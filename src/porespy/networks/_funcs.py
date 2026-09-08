@@ -7,7 +7,13 @@ from skimage.morphology import ball, cube
 from skimage.segmentation import find_boundaries
 
 from porespy.generators import borders
-from porespy.tools import get_tqdm, insert_cylinder, make_contiguous, overlay, settings
+from porespy.tools import (
+    get_tqdm,
+    insert_cylinder,
+    insert_shape_at_points,
+    make_contiguous,
+    settings,
+)
 
 __all__ = [
     "add_boundary_regions",
@@ -186,11 +192,8 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     desc = inspect.currentframe().f_code.co_name  # Get current func name
     for i, pore in enumerate(tqdm(network.Ps, desc=desc, **settings.tqdm)):
         elem = pore_elem(rp[i])
-        try:
-            im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
-        except ValueError:
-            elem = pore_elem(rp_max)
-            im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
+        im_pores = insert_shape_at_points(
+            im_pores, coords=xyz[i], element=elem, mode='add')
     # Get rid of pore overlaps
     im_pores[im_pores > 0] = 1
 
