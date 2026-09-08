@@ -274,6 +274,20 @@ def _draw_qbip_spheres(
 
 
 @njit
+def _get_axial_extent(distance_squared, ceil_distance, smooth):
+    if smooth:
+        if distance_squared <= 0:
+            return -1
+        return int(ceil_distance[distance_squared]) - 1
+    if distance_squared < 0:
+        return -1
+    extent = int(ceil_distance[distance_squared])
+    if extent**2 > distance_squared:
+        extent -= 1
+    return extent
+
+
+@njit
 def _insert_qbip_sphere(
     seq,
     pressure,
@@ -292,46 +306,44 @@ def _insert_qbip_sphere(
     smooth,
 ):  # pragma: no cover
     xlim, ylim, zlim = seq.shape
+    radius_squared = r**2
     for x in range(max(0, i - r), min(i + r + 1, xlim)):
         dx = x - i
-        for y in range(max(0, j - r), min(j + r + 1, ylim)):
-            dy = y - j
-            if zlim > 1:
-                for z in range(max(0, k - r), min(k + r + 1, zlim)):
+        yz_extent = _get_axial_extent(
+            radius_squared - dx**2, ceil_distance, smooth)
+        if zlim > 1:
+            for y in range(max(0, j - yz_extent), min(j + yz_extent + 1, ylim)):
+                dy = y - j
+                z_extent = _get_axial_extent(
+                    radius_squared - dx**2 - dy**2,
+                    ceil_distance,
+                    smooth,
+                )
+                for z in range(max(0, k - z_extent), min(k + z_extent + 1, zlim)):
                     dz = z - k
                     distance_squared = dx**2 + dy**2 + dz**2
-                    inside = (
-                        (distance_squared < r**2)
-                        if smooth
-                        else (distance_squared <= r**2)
-                    )
-                    if inside:
-                        depth = r - ceil_distance[distance_squared]
-                        if im_depth[x, y, z] < depth:
-                            im_depth[x, y, z] = depth
-                        if seq[x, y, z] == 0:
-                            seq[x, y, z] = step
-                        if draw_pressure and (pressure[x, y, z] == 0):
-                            pressure[x, y, z] = value_pc
-                        if draw_size and (size[x, y, z] == 0):
-                            size[x, y, z] = value_size
-            else:
-                distance_squared = dx**2 + dy**2
-                inside = (
-                    (distance_squared < r**2)
-                    if smooth
-                    else (distance_squared <= r**2)
-                )
-                if inside:
                     depth = r - ceil_distance[distance_squared]
-                    if im_depth[x, y, 0] < depth:
-                        im_depth[x, y, 0] = depth
-                    if seq[x, y, 0] == 0:
-                        seq[x, y, 0] = step
-                    if draw_pressure and (pressure[x, y, 0] == 0):
-                        pressure[x, y, 0] = value_pc
-                    if draw_size and (size[x, y, 0] == 0):
-                        size[x, y, 0] = value_size
+                    if im_depth[x, y, z] < depth:
+                        im_depth[x, y, z] = depth
+                    if seq[x, y, z] == 0:
+                        seq[x, y, z] = step
+                    if draw_pressure and (pressure[x, y, z] == 0):
+                        pressure[x, y, z] = value_pc
+                    if draw_size and (size[x, y, z] == 0):
+                        size[x, y, z] = value_size
+        else:
+            for y in range(max(0, j - yz_extent), min(j + yz_extent + 1, ylim)):
+                dy = y - j
+                distance_squared = dx**2 + dy**2
+                depth = r - ceil_distance[distance_squared]
+                if im_depth[x, y, 0] < depth:
+                    im_depth[x, y, 0] = depth
+                if seq[x, y, 0] == 0:
+                    seq[x, y, 0] = step
+                if draw_pressure and (pressure[x, y, 0] == 0):
+                    pressure[x, y, 0] = value_pc
+                if draw_size and (size[x, y, 0] == 0):
+                    size[x, y, 0] = value_size
 
 
 @njit
