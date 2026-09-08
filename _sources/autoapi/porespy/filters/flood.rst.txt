@@ -14,8 +14,8 @@ porespy.filters.flood
               and 0's elsewhere.
    :type im: array_like
    :param labels: An array containing labels identifying each individual region to be
-                  flooded. If not provided then `scipy.ndimage.label` is applied to
-                  `im > 0`.
+                  flooded. If not provided then connected-component labeling is applied
+                  to `im > 0`.
    :type labels: array_like
    :param mode: Specifies how to determine the value to flood each region. Options
                 taken from the `scipy.ndimage.measurements` function include:

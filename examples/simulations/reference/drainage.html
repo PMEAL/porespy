@@ -1040,6 +1040,20 @@
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/numba/core/serialize.py:30,</span> in <span class="ni">_numba_unpickle</span><span class="nt">(address, bytedata, hashed)</span>
+<span class="g g-Whitespace">     </span><span class="mi">27</span> <span class="n">_unpickled_memo</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="ne">---&gt; </span><span class="mi">30</span> <span class="k">def</span><span class="w"> </span><span class="nf">_numba_unpickle</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">bytedata</span><span class="p">,</span> <span class="n">hashed</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">31</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Used by `numba_unpickle` from _helperlib.c</span>
+<span class="g g-Whitespace">     </span><span class="mi">32</span><span class="sd"> </span>
+<span class="g g-Whitespace">     </span><span class="mi">33</span><span class="sd">     Parameters</span>
+<span class="sd">   (...)     42         unpickled object</span>
+<span class="g g-Whitespace">     </span><span class="mi">43</span><span class="sd">     &quot;&quot;&quot;</span>
+
+<span class="ne">KeyboardInterrupt</span>: 
+
+<span class="n">The</span> <span class="n">above</span> <span class="n">exception</span> <span class="n">was</span> <span class="n">the</span> <span class="n">direct</span> <span class="n">cause</span> <span class="n">of</span> <span class="n">the</span> <span class="n">following</span> <span class="n">exception</span><span class="p">:</span>
+
+<span class="ne">SystemError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">line</span> <span class="mi">11</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">pc</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">capillary_transform</span><span class="p">(</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span>     <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
@@ -1053,44 +1067,21 @@
 <span class="g g-Whitespace">     </span><span class="mi">15</span> <span class="p">)</span>
 <span class="g g-Whitespace">     </span><span class="mi">17</span> <span class="n">plot_results</span><span class="p">(</span><span class="n">drn</span><span class="p">)</span>
 
-<span class="nn">File ~/work/porespy/porespy/src/porespy/simulations/_drainage.py:617,</span> in <span class="ni">drainage</span><span class="nt">(im, pc, dt, inlets, outlets, residual, steps, conn, min_size, smooth)</span>
-<span class="g g-Whitespace">    </span><span class="mi">615</span> <span class="c1"># Trim locations not connected to the inlets</span>
-<span class="g g-Whitespace">    </span><span class="mi">616</span> <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">617</span>     <span class="n">seeds</span> <span class="o">=</span> <span class="n">trim_disconnected_voxels</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">seeds</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">618</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">seeds</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">619</span>     <span class="k">continue</span>
+<span class="nn">File ~/work/porespy/porespy/src/porespy/simulations/_drainage.py:634,</span> in <span class="ni">drainage</span><span class="nt">(im, pc, dt, inlets, outlets, residual, steps, conn, min_size, smooth)</span>
+<span class="g g-Whitespace">    </span><span class="mi">632</span> <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>  <span class="c1"># Find (i, j, k) coordinates of edges</span>
+<span class="g g-Whitespace">    </span><span class="mi">633</span> <span class="n">radii</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">coords</span><span class="p">]</span>  <span class="c1"># Extract sphere sizes to insert at each new location</span>
+<span class="ne">--&gt; </span><span class="mi">634</span> <span class="n">nwp_mask</span> <span class="o">=</span> <span class="n">_insert_disks_at_points_parallel</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">635</span>     <span class="n">im</span><span class="o">=</span><span class="n">nwp_mask</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">636</span>     <span class="n">coords</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">coords</span><span class="p">),</span>
+<span class="g g-Whitespace">    </span><span class="mi">637</span>     <span class="n">radii</span><span class="o">=</span><span class="n">radii</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
+<span class="g g-Whitespace">    </span><span class="mi">638</span>     <span class="n">v</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">639</span>     <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">640</span>     <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">641</span> <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">642</span> <span class="n">nwp_mask</span><span class="p">[</span><span class="n">seeds</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Fill in center in case spheres did not reach</span>
+<span class="g g-Whitespace">    </span><span class="mi">643</span> <span class="c1"># Connect residual to invasion front</span>
 
-<span class="nn">File ~/work/porespy/porespy/src/porespy/filters/_fill_and_find.py:81,</span> in <span class="ni">trim_disconnected_voxels</span><span class="nt">(im, inlets, conn)</span>
-<span class="g g-Whitespace">     </span><span class="mi">79</span>     <span class="n">inlets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">80</span>     <span class="n">inlets</span><span class="p">[</span><span class="n">temp</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="ne">---&gt; </span><span class="mi">81</span> <span class="n">disconnected</span> <span class="o">=</span> <span class="n">find_disconnected_voxels</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">82</span> <span class="n">im</span><span class="p">[</span><span class="n">disconnected</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="g g-Whitespace">     </span><span class="mi">83</span> <span class="k">return</span> <span class="n">im</span>
-
-<span class="nn">File ~/work/porespy/porespy/src/porespy/filters/_fill_and_find.py:133,</span> in <span class="ni">find_disconnected_voxels</span><span class="nt">(im, inlets, conn)</span>
-<span class="g g-Whitespace">    </span><span class="mi">131</span>     <span class="n">holes</span> <span class="o">=</span> <span class="n">clear_border</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-<span class="g g-Whitespace">    </span><span class="mi">132</span> <span class="k">else</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">133</span>     <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span> <span class="o">*</span> <span class="n">inlets</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">134</span>     <span class="n">keep</span> <span class="o">=</span> <span class="n">keep</span><span class="p">[</span><span class="n">keep</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
-<span class="g g-Whitespace">    </span><span class="mi">135</span>     <span class="n">holes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">keep</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/numpy/lib/_arraysetops_impl.py:294,</span> in <span class="ni">unique</span><span class="nt">(ar, return_index, return_inverse, return_counts, axis, equal_nan, sorted)</span>
-<span class="g g-Whitespace">    </span><span class="mi">292</span> <span class="n">ar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">293</span> <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">294</span>     <span class="n">ret</span> <span class="o">=</span> <span class="n">_unique1d</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="n">return_index</span><span class="p">,</span> <span class="n">return_inverse</span><span class="p">,</span> <span class="n">return_counts</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">295</span>                     <span class="n">equal_nan</span><span class="o">=</span><span class="n">equal_nan</span><span class="p">,</span> <span class="n">inverse_shape</span><span class="o">=</span><span class="n">ar</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">296</span>                     <span class="nb">sorted</span><span class="o">=</span><span class="nb">sorted</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">297</span>     <span class="k">return</span> <span class="n">_unpack_tuple</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">299</span> <span class="c1"># axis was specified and not None</span>
-
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/numpy/lib/_arraysetops_impl.py:371,</span> in <span class="ni">_unique1d</span><span class="nt">(ar, return_index, return_inverse, return_counts, equal_nan, inverse_shape, axis, sorted)</span>
-<span class="g g-Whitespace">    </span><span class="mi">368</span> <span class="n">conv</span> <span class="o">=</span> <span class="n">_array_converter</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">369</span> <span class="n">ar_</span><span class="p">,</span> <span class="o">=</span> <span class="n">conv</span>
-<span class="ne">--&gt; </span><span class="mi">371</span> <span class="k">if</span> <span class="p">(</span><span class="n">hash_unique</span> <span class="o">:=</span> <span class="n">_unique_hash</span><span class="p">(</span><span class="n">ar_</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">NotImplemented</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">372</span>     <span class="k">if</span> <span class="nb">sorted</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">373</span>         <span class="n">hash_unique</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-
-<span class="ne">KeyboardInterrupt</span>: 
+<span class="ne">SystemError</span>: CPUDispatcher(&lt;function _insert_disks_at_points_parallel at 0x7fbde953bec0&gt;) returned a result with an exception set
 </pre></div>
 </div>
 </div>

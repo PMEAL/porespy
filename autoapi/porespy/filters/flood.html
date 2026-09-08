@@ -751,8 +751,8 @@ value.  This is useful for visualization and statistics.</p>
 <li><p><strong>im</strong> (<em>array_like</em>) – An image with the numerical values of interest in each voxel,
 and 0’s elsewhere.</p></li>
 <li><p><strong>labels</strong> (<em>array_like</em>) – An array containing labels identifying each individual region to be
-flooded. If not provided then <cite>scipy.ndimage.label</cite> is applied to
-<cite>im &gt; 0</cite>.</p></li>
+flooded. If not provided then connected-component labeling is applied
+to <cite>im &gt; 0</cite>.</p></li>
 <li><p><strong>mode</strong> (<em>string</em>) – <p>Specifies how to determine the value to flood each region. Options
 taken from the <cite>scipy.ndimage.measurements</cite> function include:</p>
 <div class="pst-scrollable-table-container"><table class="table">
