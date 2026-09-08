@@ -158,6 +158,7 @@ def _qbip_inner_loop(
     bd = []
     _, ylim, zlim = im.shape
     stride0 = ylim * zlim
+    max_conn = conn == 'max'
     for i, j, k in zip(inds[0], inds[1], inds[2]):
         ind = i * stride0 + j * zlim + k
         bd.append((pc[i, j, k], ind))
@@ -193,46 +194,59 @@ def _qbip_inner_loop(
                 size = _insert_disk_at_point(
                     im=size, i=i, j=j, k=k,
                     r=r, v=dt[i, j, k], overwrite=False, smooth=smooth,)
-            # Add neighboring points to heap and processed array
-            neighbors = _find_valid_neighbors(
-                i=i, j=j, k=k, im=processed, conn=conn)
-            for n in neighbors:
-                nind = n[0] * stride0 + n[1] * zlim + n[2]
-                hq.heappush(bd, (pc[n], nind))
-                processed[n[0], n[1], n[2]] = True
+            _push_valid_neighbors(
+                bd=bd,
+                processed=processed,
+                pc=pc,
+                i=i,
+                j=j,
+                k=k,
+                stride0=stride0,
+                max_conn=max_conn,
+            )
         step += 1
     return seq, pressure, size, step
 
 
 @njit
-def _find_valid_neighbors(
+def _push_valid_neighbors(
+    bd,
+    processed,
+    pc,
     i,
     j,
-    im,
-    k=0,
-    conn='min',
-    valid=False
+    k,
+    stride0,
+    max_conn,
 ):  # pragma: no cover
-    xlim, ylim, zlim = im.shape
-    if conn == 'min':
-        mask = [[[0, 0, 0], [0, 1, 0], [0, 0, 0]],
-                [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
-                [[0, 0, 0], [0, 1, 0], [0, 0, 0]]]
-    elif conn == 'max':
-        mask = [[[1, 1, 1], [1, 1, 1], [1, 1, 1]],
-                [[1, 1, 1], [1, 1, 1], [1, 1, 1]],
-                [[1, 1, 1], [1, 1, 1], [1, 1, 1]]]
-    neighbors = []
-    for a, x in enumerate(range(i-1, i+2)):
-        if (x >= 0) and (x < xlim):
-            for b, y in enumerate(range(j-1, j+2)):
-                if (y >= 0) and (y < ylim):
-                    for c, z in enumerate(range(k-1, k+2)):
-                        if (z >= 0) and (z < zlim):
-                            if mask[a][b][c] == 1:
-                                if im[x, y, z] == valid:
-                                    neighbors.append((x, y, z))
-    return neighbors
+    xlim, ylim, zlim = processed.shape
+    if not max_conn:
+        if (i > 0) and not processed[i - 1, j, k]:
+            processed[i - 1, j, k] = True
+            hq.heappush(bd, (pc[i - 1, j, k], (i - 1) * stride0 + j * zlim + k))
+        if (i + 1 < xlim) and not processed[i + 1, j, k]:
+            processed[i + 1, j, k] = True
+            hq.heappush(bd, (pc[i + 1, j, k], (i + 1) * stride0 + j * zlim + k))
+        if (j > 0) and not processed[i, j - 1, k]:
+            processed[i, j - 1, k] = True
+            hq.heappush(bd, (pc[i, j - 1, k], i * stride0 + (j - 1) * zlim + k))
+        if (j + 1 < ylim) and not processed[i, j + 1, k]:
+            processed[i, j + 1, k] = True
+            hq.heappush(bd, (pc[i, j + 1, k], i * stride0 + (j + 1) * zlim + k))
+        if (k > 0) and not processed[i, j, k - 1]:
+            processed[i, j, k - 1] = True
+            hq.heappush(bd, (pc[i, j, k - 1], i * stride0 + j * zlim + k - 1))
+        if (k + 1 < zlim) and not processed[i, j, k + 1]:
+            processed[i, j, k + 1] = True
+            hq.heappush(bd, (pc[i, j, k + 1], i * stride0 + j * zlim + k + 1))
+    else:
+        for x in range(max(0, i - 1), min(i + 2, xlim)):
+            for y in range(max(0, j - 1), min(j + 2, ylim)):
+                for z in range(max(0, k - 1), min(k + 2, zlim)):
+                    if not processed[x, y, z]:
+                        processed[x, y, z] = True
+                        nind = x * stride0 + y * zlim + z
+                        hq.heappush(bd, (pc[x, y, z], nind))
 
 
 @njit
