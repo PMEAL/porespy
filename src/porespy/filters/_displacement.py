@@ -8,8 +8,8 @@ import scipy.ndimage as spim
 from numba import njit
 
 from porespy.tools import Results, get_strel, get_tqdm, make_contiguous
+from porespy.tools._label import _isin_labels, _label_components
 
-from ._fill_and_find import _isin_labels, _label_components
 from ._funcs import flood, region_size
 
 tqdm = get_tqdm()
