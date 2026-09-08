@@ -31,6 +31,7 @@ from porespy.tools import (
     ps_round,
     settings,
 )
+from porespy.tools._label import _label_components
 
 tqdm = get_tqdm()
 edt = get_edt()
@@ -912,7 +913,7 @@ def _check_skeleton_health(sk):
         detected a warning is triggered.
     """
     sk = np.pad(sk, 1)  # pad by 1 void voxel to avoid false warning
-    _, N = spim.label(input=~sk.astype("bool"))
+    _, N = _label_components(im=~sk.astype("bool"), conn="min")
     N_shells = N - 1
     if N_shells > 0:
         logger.warning(

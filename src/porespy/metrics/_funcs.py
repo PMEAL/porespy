@@ -27,6 +27,7 @@ from porespy.tools import (
     get_tqdm,
     settings,
 )
+from porespy.tools._label import _label_components
 
 
 __all__ = [
@@ -168,7 +169,7 @@ def is_percolating(im, axis=None, inlets=None, outlets=None, conn='min'):
             ans.append(is_percolating(im, axis=ax, conn=conn))
         return ans
 
-    labels, N = spim.label(im, structure=strel[im.ndim][conn])
+    labels, N = _label_components(im=im, conn=conn)
     a = np.unique(labels[inlets])
     a = a[a > 0]
     b = np.unique(labels[outlets])
@@ -293,11 +294,10 @@ def percolating_porosity(im, axis=0, inlets=None, outlets=None, conn="min"):
     <https://porespy.org/examples/metrics/reference/percolating_porosity.html>`_
     to view online example.
     """
-    se = strel[im.ndim][conn]
     if (inlets is None) and (outlets is None):
         inlets = faces(im.shape, inlet=axis)
         outlets = faces(im.shape, outlet=axis)
-    labels, N = spim.label(im, structure=se)
+    labels, N = _label_components(im=im, conn=conn)
     a = np.unique(labels[inlets])
     a = a[a > 0]
     b = np.unique(labels[outlets])

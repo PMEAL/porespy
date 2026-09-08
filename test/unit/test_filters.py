@@ -122,6 +122,39 @@ class FilterTest():
         h = ps.filters.find_disconnected_voxels(self.im, conn='min')
         assert np.sum(h) == 202
 
+    @pytest.mark.parametrize(
+        "shape, conn",
+        [
+            ((31, 29), "min"),
+            ((31, 29), "max"),
+            ((17, 19, 21), "min"),
+            ((17, 19, 21), "max"),
+        ],
+    )
+    def test_find_disconnected_voxels_matches_scipy(self, shape, conn):
+        rng = np.random.default_rng(0)
+        im = rng.random(shape) > 0.6
+        inlets = np.zeros(shape, dtype=bool)
+        inlets[0, ...] = True
+        structure = ps.tools.get_strel()[len(shape)][conn]
+        labels, _ = spim.label(im, structure=structure)
+        keep = np.unique(labels[inlets])
+        expected = np.isin(labels, keep[keep > 0], invert=True) * im
+
+        actual = ps.filters.find_disconnected_voxels(
+            im=im,
+            inlets=inlets,
+            conn=conn,
+        )
+        assert np.array_equal(actual, expected)
+
+        actual_from_indices = ps.filters.find_disconnected_voxels(
+            im=im,
+            inlets=np.where(inlets),
+            conn=conn,
+        )
+        assert np.array_equal(actual_from_indices, expected)
+
     def test_trim_nonpercolating_paths_2d_axis0(self):
         np.random.seed(0)
         im = ps.generators.blobs(

@@ -559,10 +559,11 @@ def drainage(
 
     """
     im = np.array(im, dtype=bool)
+    inlet_coords = np.where(inlets) if inlets is not None else None
 
     if (outlets is not None) and (inlets is not None):
-        outlets = outlets * im
-        if np.sum(inlets * outlets):
+        outlets = np.logical_and(outlets, im)
+        if np.any(outlets[inlet_coords]):
             raise Exception("Specified inlets and outlets overlap")
 
     if dt is None:
@@ -596,7 +597,7 @@ def drainage(
     if (outlets is not None) and (residual is not None):
         trapped = find_disconnected_voxels(
             im=im * ~residual,
-            inlets=inlets,
+            inlets=inlet_coords,
             conn=conn,
         )
         trapped += find_disconnected_voxels(
@@ -607,18 +608,27 @@ def drainage(
     im_seq[trapped] = -1
     nwp_mask = np.zeros_like(im, dtype=bool)
     seeds_prev = np.zeros_like(im, dtype=bool)
+    seeds = np.empty_like(im, dtype=bool)
+    edges = np.empty_like(im, dtype=bool)
+    mask = np.empty_like(im, dtype=bool)
 
     desc = inspect.currentframe().f_code.co_name  # Get current func name
     for step, P in enumerate(tqdm(Ps, desc=desc, **settings.tqdm)):
         # Perform erosion to find all locations invadable at current pressure
-        seeds = (pc <= P) * im
+        np.less_equal(pc, P, out=seeds)
+        np.logical_and(seeds, im, out=seeds)
         # Trim locations not connected to the inlets
         if inlets is not None:
-            seeds = trim_disconnected_voxels(im=seeds, inlets=inlets, conn=conn)
+            seeds = trim_disconnected_voxels(
+                im=seeds,
+                inlets=inlet_coords,
+                conn=conn,
+            )
         if not np.any(seeds):
             continue
         # Dilate the erosion to find locations of non-wetting phase
-        edges = seeds * (~seeds_prev)  # Isolate edges to speed up inserting
+        np.logical_not(seeds_prev, out=edges)
+        np.logical_and(seeds, edges, out=edges)
         coords = np.where(edges)  # Find (i, j, k) coordinates of edges
         radii = dt[coords]  # Extract sphere sizes to insert at each new location
         nwp_mask = _insert_disks_at_points_parallel(
@@ -649,7 +659,7 @@ def drainage(
             # front, and set it to uninvaded
             nwp_mask = trim_disconnected_voxels(
                 im=nwp_mask * ~trapped,
-                inlets=inlets,
+                inlets=inlet_coords,
                 conn=conn,
             )
             trapped += find_disconnected_voxels(
@@ -661,15 +671,18 @@ def drainage(
             nwp_mask[trapped] = False  # Set nwp in trapped regions to 0
             im_seq[trapped] = -1
 
-        mask = nwp_mask * (im_seq == 0) * im
+        np.equal(im_seq, 0, out=mask)
+        np.logical_and(mask, nwp_mask, out=mask)
+        np.logical_and(mask, im, out=mask)
         if np.any(mask):
             im_seq[mask] = step + 1
             im_pc[mask] = P
         # Add new locations to list of invaded locations
-        seeds_prev = np.copy(seeds)
+        np.copyto(seeds_prev, seeds)
 
     # Set uninvaded voxels to inf and -1
-    mask = (im_seq == 0)*im
+    np.equal(im_seq, 0, out=mask)
+    np.logical_and(mask, im, out=mask)
     im_pc[mask] = np.inf
     im_seq[mask] = -1
 
