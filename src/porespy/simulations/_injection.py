@@ -46,8 +46,9 @@ def qbip(
     including the effect of gravity
     """
     im = np.atleast_3d(im == 1)
+    n_sites = im.sum()
     if maxiter is None:  # Compute number of pixels in image
-        maxiter = im.sum()
+        maxiter = n_sites
 
     if inlets is None:
         inlets = np.zeros_like(im)
@@ -62,7 +63,22 @@ def qbip(
         pc = 2.0/dt
     pc = np.atleast_3d(pc)
 
-    # Initialize arrays and do some preprocessing
+    # Record centers in heap-pop order.  Negative entries mark the final center
+    # in each pressure batch, so no separate per-center step array is needed.
+    index_dtype = np.int32 if im.size <= np.iinfo(np.int32).max else np.int64
+    inv_order = np.empty(n_sites, dtype=index_dtype)
+    count, step = _qbip_inner_loop(
+        im=im,
+        inlets=inlets,
+        pc=pc,
+        order=inv_order,
+        maxiter=maxiter,
+        conn=conn,
+    )
+    logger.info(f"Exiting after {step} steps")
+
+    # Draw the spheres after traversal so queue operations and rasterization
+    # can be profiled and optimized independently.
     inv_seq = np.zeros_like(im, dtype=int)
     inv_pc = np.zeros_like(im, dtype=float)
     if return_pressures is False:
@@ -70,20 +86,14 @@ def qbip(
     inv_size = np.zeros_like(im, dtype=float)
     if return_sizes is False:
         inv_size *= -np.inf  # This is a flag to the numba-jit function to ignore it
-
-    # Call numba'd inner loop
-    sequence, pressure, size, step = _qbip_inner_loop(
-        im=im,
-        inlets=inlets,
+    sequence, pressure, size = _draw_qbip_spheres(
+        order=inv_order[:count],
         dt=dt,
         pc=pc,
         seq=inv_seq,
         pressure=inv_pc,
         size=inv_size,
-        maxiter=maxiter,
-        conn=conn,
     )
-    logger.info(f"Exiting after {step} steps")
     # Reduce back to 2D if necessary
     sequence = sequence.squeeze()
     pressure = pressure.squeeze()
@@ -143,14 +153,10 @@ def qbip(
 def _qbip_inner_loop(
     im,
     inlets,
-    dt,
     pc,
-    seq,
-    pressure,
-    size,
+    order,
     maxiter,
     conn,
-    smooth=True,
 ):  # pragma: no cover
     # Store only entry pressure and a flat index in the heap.  Radius and
     # coordinates are recovered after popping to keep frontier entries small.
@@ -165,6 +171,7 @@ def _qbip_inner_loop(
     hq.heapify(bd)
     # Note which sites have been added to heap already
     processed = inlets*im + ~im  # Add solid phase to be safe
+    count = 0
     step = 1  # Total step number
     for _ in range(1, maxiter):
         if len(bd) == 0:
@@ -174,26 +181,12 @@ def _qbip_inner_loop(
             pts.append(hq.heappop(bd))
         for pt in pts:
             ind = pt[1]
+            order[count] = ind
+            count += 1
             i = ind // stride0
             rem = ind - i * stride0
             j = rem // zlim
             k = rem - j * zlim
-            r = int(dt[i, j, k])
-            # Insert discs of invading fluid into image(s)
-            seq = _insert_disk_at_point(
-                im=seq,
-                i=i, j=j, k=k,
-                r=r, v=step, overwrite=False, smooth=smooth,)
-            # Putting -inf in images is a numba compatible flag for 'skip'
-            if pressure[0, 0, 0] > -np.inf:
-                pressure = _insert_disk_at_point(
-                    im=pressure,
-                    i=i, j=j, k=k,
-                    r=r, v=pt[0], overwrite=False, smooth=smooth,)
-            if size[0, 0, 0] > -np.inf:
-                size = _insert_disk_at_point(
-                    im=size, i=i, j=j, k=k,
-                    r=r, v=dt[i, j, k], overwrite=False, smooth=smooth,)
             _push_valid_neighbors(
                 bd=bd,
                 processed=processed,
@@ -204,8 +197,49 @@ def _qbip_inner_loop(
                 stride0=stride0,
                 max_conn=max_conn,
             )
+        order[count - 1] = -order[count - 1] - 1
         step += 1
-    return seq, pressure, size, step
+    return count, step
+
+
+@njit
+def _draw_qbip_spheres(
+    order,
+    dt,
+    pc,
+    seq,
+    pressure,
+    size,
+    smooth=True,
+):  # pragma: no cover
+    _, ylim, zlim = seq.shape
+    stride0 = ylim * zlim
+    step = 1
+    for item in order:
+        end_of_step = item < 0
+        ind = -item - 1 if end_of_step else item
+        i = ind // stride0
+        rem = ind - i * stride0
+        j = rem // zlim
+        k = rem - j * zlim
+        r = int(dt[i, j, k])
+        seq = _insert_disk_at_point(
+            im=seq,
+            i=i, j=j, k=k,
+            r=r, v=step, overwrite=False, smooth=smooth,)
+        # Putting -inf in images is a numba compatible flag for 'skip'
+        if pressure[0, 0, 0] > -np.inf:
+            pressure = _insert_disk_at_point(
+                im=pressure,
+                i=i, j=j, k=k,
+                r=r, v=pc[i, j, k], overwrite=False, smooth=smooth,)
+        if size[0, 0, 0] > -np.inf:
+            size = _insert_disk_at_point(
+                im=size, i=i, j=j, k=k,
+                r=r, v=dt[i, j, k], overwrite=False, smooth=smooth,)
+        if end_of_step:
+            step += 1
+    return seq, pressure, size
 
 
 @njit
