@@ -8,6 +8,7 @@ import scipy.ndimage as spim
 from numba import njit
 
 from porespy.tools import Results, get_strel, get_tqdm, make_contiguous
+from porespy.tools._label import _isin_labels, _label_components
 
 from ._funcs import flood, region_size
 
@@ -198,9 +199,8 @@ def trim_small_clusters(
     to view online example.
 
     """
-    se = strel[im.ndim]["min"]
     filtered_array = np.copy(im)
-    labels, N = spim.label(filtered_array, structure=se)
+    labels, N = _label_components(im=filtered_array, conn="min")
     id_sizes = np.array(spim.sum(im, labels, range(N + 1)))
     area_mask = id_sizes <= min_size
     filtered_array[area_mask[labels]] = 0
@@ -323,10 +323,12 @@ def _find_trapped_clusters_labels(
     mask = seq < 0  # This is used again at the end of the function to fix seq
     # All uninvaded regions should be given sequence number of lowest nearby fluid
     if np.any(mask):
-        mask_dil = spim.binary_dilation(mask, structure=se) * im
+        mask_dil = spim.binary_dilation(mask, structure=se)
+        np.logical_and(mask_dil, im, out=mask_dil)
         tmp = seq * mask_dil
-        new_seq = flood(im=tmp, labels=spim.label(mask_dil)[0], mode="maximum")
-        seq = seq * ~mask + new_seq * mask
+        labels = _label_components(im=mask_dil, conn="min")[0]
+        new_seq = flood(im=tmp, labels=labels, mode="maximum")
+        seq[mask] = new_seq[mask]
     outlets = np.where(outlets)
     # Remove all trivially trapped regions (i.e. invaded after last outlet)
     trapped = np.zeros_like(seq, dtype=bool)
@@ -335,13 +337,22 @@ def _find_trapped_clusters_labels(
     # Scan image for each value of sequence in the outlets
     bins = np.unique(seq[seq <= Lmax])[-1::-1]
     bins = bins[bins > 0]
+    temp = np.empty_like(im, dtype=bool)
+    disconnected = np.empty_like(im, dtype=bool)
     for i in range(len(bins)):
         s = bins[i]
-        temp = seq >= s
-        labels = spim.label(temp, structure=se)[0]
+        np.greater_equal(seq, s, out=temp)
+        labels, N = _label_components(im=temp, conn=conn)
         keep = np.unique(labels[outlets])
-        keep = keep[keep > 0]
-        trapped += temp * np.isin(labels, keep, invert=True)
+        _isin_labels(
+            labels=labels,
+            hits=keep,
+            N=N,
+            invert=True,
+            out=disconnected,
+        )
+        np.logical_and(disconnected, temp, out=disconnected)
+        np.logical_or(trapped, disconnected, out=trapped)
     # Set uninvaded locations back to -1, and set to untrapped
     seq[mask] = -1
     trapped[mask] = False

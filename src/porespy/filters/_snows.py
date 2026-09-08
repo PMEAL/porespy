@@ -19,6 +19,7 @@ from porespy.tools import (
     ps_round,
     settings,
 )
+from porespy.tools._label import _label_components
 
 from ._funcs import chunked_func
 
@@ -128,11 +129,19 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None):
             dt_blurred = np.copy(dt)
         peaks = find_peaks(dt=dt_blurred, r_max=r_max)
 
-        logger.debug(f"Initial number of peaks: {spim.label(peaks)[1]}")
+        logger.debug(
+            f"Initial number of peaks: {_label_components(peaks, conn='min')[1]}"
+        )
         peaks = trim_saddle_points(peaks=peaks, dt=dt)
-        logger.debug(f"Peaks after trimming saddle points: {spim.label(peaks)[1]}")
+        logger.debug(
+            "Peaks after trimming saddle points: "
+            f"{_label_components(peaks, conn='min')[1]}"
+        )
         peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
-        logger.debug(f"Peaks after trimming nearby points: {spim.label(peaks)[1]}")
+        logger.debug(
+            "Peaks after trimming nearby points: "
+            f"{_label_components(peaks, conn='min')[1]}"
+        )
     peaks, N = spim.label(peaks > 0, structure=ps_rect(3, im.ndim))
     regions = watershed(image=-dt, markers=peaks)
     tup = Results()
@@ -377,8 +386,7 @@ def reduce_peaks(peaks):
     to view online example.
 
     """
-    strel = footprint_rectangle((3,) * peaks.ndim)
-    markers, N = spim.label(input=peaks, structure=strel)
+    markers, N = _label_components(im=peaks, conn="max")
     inds = spim.center_of_mass(
         input=peaks, labels=markers, index=np.arange(1, N + 1)
     )
@@ -426,7 +434,7 @@ def trim_saddle_points(peaks, dt, maxiter=20):
     """
     new_peaks = np.zeros_like(peaks, dtype=bool)
     strel = footprint_rectangle((3,) * dt.ndim)
-    labels, N = spim.label(peaks > 0)
+    labels, N = _label_components(im=peaks > 0, conn="min")
     slices = spim.find_objects(labels)
     desc = inspect.currentframe().f_code.co_name  # Get current func name
     for i, s in tqdm(enumerate(slices), desc=desc, **settings.tqdm):
@@ -498,7 +506,7 @@ def trim_saddle_points_legacy(peaks, dt, maxiter=10):
     """
     new_peaks = np.zeros_like(peaks, dtype=bool)
     strel = footprint_rectangle((3,) * dt.ndim)
-    labels, N = spim.label(peaks > 0)
+    labels, N = _label_components(im=peaks > 0, conn="min")
     slices = spim.find_objects(labels)
     desc = inspect.currentframe().f_code.co_name  # Get current func name
     for i, s in tqdm(enumerate(slices), desc=desc, **settings.tqdm):
