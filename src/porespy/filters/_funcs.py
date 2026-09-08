@@ -19,6 +19,7 @@ from porespy.tools import (
     settings,
     unpad,
 )
+from porespy.tools._label import _label_components
 
 __all__ = [
     "apply_chords",
@@ -292,8 +293,8 @@ def flood(
         and 0's elsewhere.
     labels : array_like
         An array containing labels identifying each individual region to be
-        flooded. If not provided then `scipy.ndimage.label` is applied to
-        `im > 0`.
+        flooded. If not provided then connected-component labeling is applied
+        to `im > 0`.
     mode : string
         Specifies how to determine the value to flood each region. Options
         taken from the `scipy.ndimage.measurements` function include:
@@ -398,7 +399,7 @@ def flood_func(
 
     """
     if labels is None:
-        labels = spim.label(im > 0)[0]
+        labels = _label_components(im=im > 0, conn="min")[0]
     slices = spim.find_objects(labels)
     flooded = np.zeros_like(im, dtype=float)
     for i, s in enumerate(slices):
@@ -495,9 +496,8 @@ def region_size(
     to view online example.
 
     """
-    se = strel[im.ndim][conn].copy()
     if im.dtype == bool:
-        im = spim.label(im, structure=se)[0]
+        im = _label_components(im=im, conn=conn)[0]
     counts = np.bincount(im.flatten())
     counts[0] = 0
     return counts[im]
@@ -633,7 +633,8 @@ def apply_chords_3D(
     ch[2 :: 4 + 2 * spacing, 2 :: 4 + 2 * spacing, :] = 3  # Z-direction
     chords = ch * im
     if trim_edges:
-        temp = clear_border(spim.label(chords > 0)[0]) > 0
+        labels = _label_components(im=chords > 0, conn="min")[0]
+        temp = clear_border(labels) > 0
         chords = temp * chords
     return chords
 
@@ -798,10 +799,10 @@ def prune_branches(
     # Find arcs of skeleton by deleting branch points
     arcs = skel * (~branch_points)
     # Label arcs
-    arc_labels = spim.label(arcs, structure=cube)[0]
+    arc_labels = _label_components(im=arcs, conn="max")[0]
     # Dilate branch points so they overlap with the arcs
     branch_points = spim.binary_dilation(branch_points, structure=cube)
-    pts_labels = spim.label(branch_points, structure=cube)[0]
+    pts_labels = _label_components(im=branch_points, conn="max")[0]
     # Now scan through each arc to see if it's connected to two branch points
     slices = spim.find_objects(arc_labels)
     label_num = 0
