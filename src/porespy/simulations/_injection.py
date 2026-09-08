@@ -80,12 +80,16 @@ def qbip(
     # Draw the spheres after traversal so queue operations and rasterization
     # can be profiled and optimized independently.
     inv_seq = np.zeros_like(im, dtype=int)
-    inv_pc = np.zeros_like(im, dtype=float)
-    if return_pressures is False:
-        inv_pc *= -np.inf  # This is a flag to the numba-jit function to ignore it
-    inv_size = np.zeros_like(im, dtype=float)
-    if return_sizes is False:
-        inv_size *= -np.inf  # This is a flag to the numba-jit function to ignore it
+    inv_pc = (
+        np.zeros_like(im, dtype=float)
+        if return_pressures
+        else np.full((1, 1, 1), -np.inf)
+    )
+    inv_size = (
+        np.zeros_like(im, dtype=float)
+        if return_sizes
+        else np.full((1, 1, 1), -np.inf)
+    )
     max_radius = int(np.max(dt))
     if max_radius <= np.iinfo(np.uint8).max:
         depth_dtype = np.uint8
@@ -146,12 +150,14 @@ def qbip(
                 conn=conn,
             )
             trapped = temp.im_trapped
-        pressure = pressure.astype(float).squeeze()
-        pressure[trapped] = np.inf
+        if return_pressures:
+            pressure = pressure.astype(float).squeeze()
+            pressure[trapped] = np.inf
         sequence[trapped] = -1
         sequence = make_contiguous(im=sequence, mode='symmetric')
-        size = size.astype(float)
-        size[trapped] = np.inf
+        if return_sizes:
+            size = size.astype(float)
+            size[trapped] = np.inf
 
     # Create results object for collected returned values
     results = Results()

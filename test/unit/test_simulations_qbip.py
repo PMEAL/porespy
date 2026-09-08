@@ -38,6 +38,19 @@ class QBIPTest(GenericTest):
         r3 = ps.simulations.qbip(im=temp, inlets=inlets)
         assert np.sum(r3.im_seq == -1) == 0
 
+    def test_qbip_omits_optional_outputs_with_outlets(self):
+        inlets = ps.generators.faces(shape=self.im2D.shape, inlet=0)
+        outlets = ps.generators.faces(shape=self.im2D.shape, outlet=0)
+        result = ps.simulations.qbip(
+            im=self.im2D,
+            inlets=inlets,
+            outlets=outlets,
+            return_pressures=False,
+            return_sizes=False,
+        )
+        assert not hasattr(result, 'im_pc')
+        assert not hasattr(result, 'im_size')
+
     def test_qbip_skips_sphere_contained_by_earlier_sphere(self):
         shape = (9, 9, 1)
         dt = np.zeros(shape, dtype=float)
