@@ -52,6 +52,7 @@ class QBIPTest(GenericTest):
         pressure = np.zeros(shape, dtype=float)
         size = np.zeros(shape, dtype=float)
         im_depth = np.zeros(shape, dtype=np.uint8)
+        ceil_distance = np.ceil(np.sqrt(np.arange(10))).astype(np.uint8)
 
         _, _, _, drawn, skipped = _draw_qbip_spheres(
             order=order,
@@ -61,6 +62,7 @@ class QBIPTest(GenericTest):
             pressure=pressure,
             size=size,
             im_depth=im_depth,
+            ceil_distance=ceil_distance,
         )
 
         assert drawn == 1

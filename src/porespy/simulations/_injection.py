@@ -96,6 +96,8 @@ def qbip(
     else:
         depth_dtype = np.uint64
     im_depth = np.zeros_like(im, dtype=depth_dtype)
+    squared_distance = np.arange(max_radius**2 + 1)
+    ceil_distance = np.ceil(np.sqrt(squared_distance)).astype(depth_dtype)
     sequence, pressure, size, drawn, skipped = _draw_qbip_spheres(
         order=inv_order[:count],
         dt=dt,
@@ -104,6 +106,7 @@ def qbip(
         pressure=inv_pc,
         size=inv_size,
         im_depth=im_depth,
+        ceil_distance=ceil_distance,
     )
     logger.info(f"Drew {drawn} spheres and skipped {skipped} contained spheres")
     # Reduce back to 2D if necessary
@@ -223,6 +226,7 @@ def _draw_qbip_spheres(
     pressure,
     size,
     im_depth,
+    ceil_distance,
     smooth=True,
 ):  # pragma: no cover
     _, ylim, zlim = seq.shape
@@ -251,6 +255,7 @@ def _draw_qbip_spheres(
                 pressure=pressure,
                 size=size,
                 im_depth=im_depth,
+                ceil_distance=ceil_distance,
                 i=i,
                 j=j,
                 k=k,
@@ -274,6 +279,7 @@ def _insert_qbip_sphere(
     pressure,
     size,
     im_depth,
+    ceil_distance,
     i,
     j,
     k,
@@ -293,12 +299,14 @@ def _insert_qbip_sphere(
             if zlim > 1:
                 for z in range(max(0, k - r), min(k + r + 1, zlim)):
                     dz = z - k
-                    distance = (dx**2 + dy**2 + dz**2)**0.5
-                    inside = (distance < r) if smooth else (distance <= r)
+                    distance_squared = dx**2 + dy**2 + dz**2
+                    inside = (
+                        (distance_squared < r**2)
+                        if smooth
+                        else (distance_squared <= r**2)
+                    )
                     if inside:
-                        # This is floor(r - distance), expressed this way to
-                        # avoid rounding a containment test upward.
-                        depth = r - int(np.ceil(distance))
+                        depth = r - ceil_distance[distance_squared]
                         if im_depth[x, y, z] < depth:
                             im_depth[x, y, z] = depth
                         if seq[x, y, z] == 0:
@@ -308,10 +316,14 @@ def _insert_qbip_sphere(
                         if draw_size and (size[x, y, z] == 0):
                             size[x, y, z] = value_size
             else:
-                distance = (dx**2 + dy**2)**0.5
-                inside = (distance < r) if smooth else (distance <= r)
+                distance_squared = dx**2 + dy**2
+                inside = (
+                    (distance_squared < r**2)
+                    if smooth
+                    else (distance_squared <= r**2)
+                )
                 if inside:
-                    depth = r - int(np.ceil(distance))
+                    depth = r - ceil_distance[distance_squared]
                     if im_depth[x, y, 0] < depth:
                         im_depth[x, y, 0] = depth
                     if seq[x, y, 0] == 0:
