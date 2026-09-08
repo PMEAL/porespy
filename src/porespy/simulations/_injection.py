@@ -152,11 +152,15 @@ def _qbip_inner_loop(
     conn,
     smooth=True,
 ):  # pragma: no cover
-    # Initialize the heap
+    # Store only entry pressure and a flat index in the heap.  Radius and
+    # coordinates are recovered after popping to keep frontier entries small.
     inds = np.where(inlets*im)
     bd = []
-    for row, (i, j, k) in enumerate(zip(inds[0], inds[1], inds[2])):
-        bd.append([pc[i, j, k], dt[i, j, k], i, j, k])
+    _, ylim, zlim = im.shape
+    stride0 = ylim * zlim
+    for i, j, k in zip(inds[0], inds[1], inds[2]):
+        ind = i * stride0 + j * zlim + k
+        bd.append((pc[i, j, k], ind))
     hq.heapify(bd)
     # Note which sites have been added to heap already
     processed = inlets*im + ~im  # Add solid phase to be safe
@@ -168,26 +172,33 @@ def _qbip_inner_loop(
         while len(bd) and (bd[0][0] == pts[0][0]):  # Pop any items with equal Pc
             pts.append(hq.heappop(bd))
         for pt in pts:
+            ind = pt[1]
+            i = ind // stride0
+            rem = ind - i * stride0
+            j = rem // zlim
+            k = rem - j * zlim
+            r = int(dt[i, j, k])
             # Insert discs of invading fluid into image(s)
             seq = _insert_disk_at_point(
                 im=seq,
-                i=pt[2], j=pt[3], k=pt[4],
-                r=int(pt[1]), v=step, overwrite=False, smooth=smooth,)
+                i=i, j=j, k=k,
+                r=r, v=step, overwrite=False, smooth=smooth,)
             # Putting -inf in images is a numba compatible flag for 'skip'
             if pressure[0, 0, 0] > -np.inf:
                 pressure = _insert_disk_at_point(
                     im=pressure,
-                    i=pt[2], j=pt[3], k=pt[4],
-                    r=int(pt[1]), v=pt[0], overwrite=False, smooth=smooth,)
+                    i=i, j=j, k=k,
+                    r=r, v=pt[0], overwrite=False, smooth=smooth,)
             if size[0, 0, 0] > -np.inf:
                 size = _insert_disk_at_point(
-                    im=size, i=pt[2], j=pt[3], k=pt[4],
-                    r=int(pt[1]), v=pt[1], overwrite=False, smooth=smooth,)
+                    im=size, i=i, j=j, k=k,
+                    r=r, v=dt[i, j, k], overwrite=False, smooth=smooth,)
             # Add neighboring points to heap and processed array
             neighbors = _find_valid_neighbors(
-                i=pt[2], j=pt[3], k=pt[4], im=processed, conn=conn)
+                i=i, j=j, k=k, im=processed, conn=conn)
             for n in neighbors:
-                hq.heappush(bd, [pc[n], dt[n], n[0], n[1], n[2]])
+                nind = n[0] * stride0 + n[1] * zlim + n[2]
+                hq.heappush(bd, (pc[n], nind))
                 processed[n[0], n[1], n[2]] = True
         step += 1
     return seq, pressure, size, step
