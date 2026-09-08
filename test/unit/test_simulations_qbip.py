@@ -15,6 +15,7 @@ class QBIPTest(GenericTest):
     def test_qbip_no_pc(self):
         r1 = ps.simulations.qbip(im=self.im2D, pc=None)
         assert not hasattr(r1, 'im_size')
+        assert r1.im_seq.dtype == np.int32
         r2 = ps.simulations.qbip(im=self.im2D, pc=None,
                                  return_pressures=True, return_sizes=True)
         assert hasattr(r2, 'im_size')  # Ensure return sizes is honored

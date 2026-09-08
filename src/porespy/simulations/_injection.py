@@ -79,7 +79,8 @@ def qbip(
 
     # Draw the spheres after traversal so queue operations and rasterization
     # can be profiled and optimized independently.
-    inv_seq = np.zeros_like(im, dtype=int)
+    seq_dtype = np.int32 if maxiter <= np.iinfo(np.int32).max else np.int64
+    inv_seq = np.zeros_like(im, dtype=seq_dtype)
     inv_pc = (
         np.zeros_like(im, dtype=float)
         if return_pressures
