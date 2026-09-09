@@ -280,8 +280,7 @@ def find_trapped_clusters(
         )
 
     if method == "queue":
-        seq = np.copy(seq)  # Need a copy since the queue method updates 'in-place'
-        seq_temp = _find_trapped_clusters_queue(
+        trapped = _find_trapped_clusters_queue(
             im=im,
             seq=seq,
             outlets=outlets,
@@ -294,10 +293,9 @@ def find_trapped_clusters(
             outlets=outlets,
             conn=conn,
         )
+        trapped = (seq_temp == -1) * im
     else:
         raise Exception(f"{method} is not a supported method")
-
-    trapped = (seq_temp == -1) * im
 
     if min_size > 0:
         trapped = trim_small_clusters(im=trapped, min_size=min_size)
@@ -372,31 +370,33 @@ def _find_trapped_clusters_queue(
     r"""
     This version is meant for IBIP or QBIP (ie. invasion) simulations.
     """
-    im = im > 0
-    # Make sure outlets are masked correctly and convert to 3d
-    out_temp = np.atleast_3d(outlets * (seq > 0))
+    im = np.atleast_3d(np.asarray(im))
+    if im.dtype != bool:
+        im = im > 0
+    seq = np.atleast_3d(seq)
+    outlets = np.atleast_3d(np.asarray(outlets, dtype=bool))
+    # Reuse the masked outlet image as the processed-edge image after collecting
+    # its flat indices, avoiding several full-image Boolean temporaries.
+    edge = np.empty_like(im, dtype=bool)
+    np.greater(seq, 0, out=edge)
+    np.logical_and(edge, outlets, out=edge)
+    outlet_inds = np.flatnonzero(edge)
+    np.logical_not(im, out=edge)
+    edge.flat[outlet_inds] = True
     # Initialize im_trapped array
-    im_trapped = np.ones_like(out_temp, dtype=bool)
-    # Convert seq to negative numbers and convert to 3d
-    seq_temp = np.atleast_3d(-1 * seq)
-    # Note which sites have been added to heap already
-    edge = out_temp * np.atleast_3d(im) + np.atleast_3d(~im)
-    # seq = np.copy(np.atleast_3d(seq))
+    im_trapped = np.ones_like(im, dtype=bool)
     trapped, step = _trapped_regions_inner_loop(
-        seq=seq_temp,
+        seq=seq,
         edge=edge,
         trapped=im_trapped,
-        outlets=out_temp,
+        outlet_inds=outlet_inds,
         conn=conn,
     )
     logger.info(f"Exited after {step} steps")
-    # Finalize images
-    seq = np.squeeze(seq)
-    trapped = np.squeeze(trapped)
-    seq[trapped] = -1
-    seq[~im] = 0
-    seq = make_contiguous(im=seq, mode="symmetric")
-    return seq
+    # The inner loop already produces the desired mask, so avoid reconstructing
+    # and relabeling a temporary sequence image merely to recover this result.
+    np.logical_and(trapped, im, out=trapped)
+    return np.squeeze(trapped)
 
 
 @njit
@@ -404,86 +404,101 @@ def _trapped_regions_inner_loop(
     seq,
     edge,
     trapped,
-    outlets,
+    outlet_inds,
     conn,
 ):  # pragma: no cover
-    # Initialize the binary heap
-    inds = np.where(outlets)
+    # Store only the sequence value and a flat index in the heap.  Coordinates
+    # are recovered after popping to keep frontier entries compact.
+    _, ylim, zlim = seq.shape
+    stride0 = ylim * zlim
+    max_conn = conn == "max"
     bd = []
-    for row, (i, j, k) in enumerate(zip(inds[0], inds[1], inds[2])):
-        bd.append([seq[i, j, k], i, j, k])
+    for ind in outlet_inds:
+        i = ind // stride0
+        rem = ind - i * stride0
+        j = rem // zlim
+        k = rem - j * zlim
+        bd.append((-seq[i, j, k], ind))
     hq.heapify(bd)
-    minseq = np.amin(seq)
+    minseq = -np.amax(seq)
     step = 1
-    maxiter = np.sum(seq < 0)
+    maxiter = np.sum(seq > 0)
     for _ in range(1, maxiter):
-        if len(bd):  # Put next site into pts list
-            pts = [hq.heappop(bd)]
+        if len(bd):
+            pt = hq.heappop(bd)
+            value = pt[0]
+            inds = [pt[1]]
         else:
             break
-        # Also pop any other points in list with same value
-        while len(bd) and (bd[0][0] == pts[0][0]):
-            pts.append(hq.heappop(bd))
-        while len(pts):
-            pt = pts.pop()
-            if (pt[0] >= minseq) and (pt[0] < 0):
-                trapped[pt[1], pt[2], pt[3]] = False
-                minseq = pt[0]
-            # Add neighboring points to heap and edge
-            neighbors = _find_valid_neighbors(
-                i=pt[1], j=pt[2], k=pt[3], im=edge, conn=conn)
-            for n in neighbors:
-                hq.heappush(bd, [seq[n], n[0], n[1], n[2]])
-                edge[n[0], n[1], n[2]] = True
+        # Existing entries at this level must be processed before newly exposed
+        # voxels.  Store only their flat indices since the sequence value is shared.
+        while len(bd) and (bd[0][0] == value):
+            inds.append(hq.heappop(bd)[1])
+        while len(inds):
+            ind = inds.pop()
+            i = ind // stride0
+            rem = ind - i * stride0
+            j = rem // zlim
+            k = rem - j * zlim
+            if (value >= minseq) and (value < 0):
+                trapped[i, j, k] = False
+                minseq = value
+            _push_valid_trapping_neighbors(
+                bd=bd,
+                edge=edge,
+                seq=seq,
+                i=i,
+                j=j,
+                k=k,
+                stride0=stride0,
+                max_conn=max_conn,
+            )
         step += 1
     return trapped, step
 
 
 @njit
-def _find_valid_neighbors(
+def _push_valid_trapping_neighbors(
+    bd,
+    edge,
+    seq,
     i,
     j,
-    im,
-    k=0,
-    conn="min",
-    valid=False,
+    k,
+    stride0,
+    max_conn,
 ):  # pragma: no cover
-    if im.ndim == 2:
-        xlim, ylim = im.shape
-        if conn == "min":
-            mask = [[0, 1, 0], [1, 1, 1], [0, 1, 0]]
-        elif conn == "max":
-            mask = [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
-        neighbors = []
-        for a, x in enumerate(range(i - 1, i + 2)):
-            if (x >= 0) and (x < xlim):
-                for b, y in enumerate(range(j - 1, j + 2)):
-                    if (y >= 0) and (y < ylim):
-                        if mask[a][b] == 1:
-                            if im[x, y] == valid:
-                                neighbors.append((x, y))
+    xlim, ylim, zlim = edge.shape
+    if not max_conn:
+        if (i > 0) and not edge[i - 1, j, k]:
+            edge[i - 1, j, k] = True
+            ind = (i - 1) * stride0 + j * zlim + k
+            hq.heappush(bd, (-seq[i - 1, j, k], ind))
+        if (i + 1 < xlim) and not edge[i + 1, j, k]:
+            edge[i + 1, j, k] = True
+            ind = (i + 1) * stride0 + j * zlim + k
+            hq.heappush(bd, (-seq[i + 1, j, k], ind))
+        if (j > 0) and not edge[i, j - 1, k]:
+            edge[i, j - 1, k] = True
+            ind = i * stride0 + (j - 1) * zlim + k
+            hq.heappush(bd, (-seq[i, j - 1, k], ind))
+        if (j + 1 < ylim) and not edge[i, j + 1, k]:
+            edge[i, j + 1, k] = True
+            ind = i * stride0 + (j + 1) * zlim + k
+            hq.heappush(bd, (-seq[i, j + 1, k], ind))
+        if (k > 0) and not edge[i, j, k - 1]:
+            edge[i, j, k - 1] = True
+            ind = i * stride0 + j * zlim + k - 1
+            hq.heappush(bd, (-seq[i, j, k - 1], ind))
+        if (k + 1 < zlim) and not edge[i, j, k + 1]:
+            edge[i, j, k + 1] = True
+            ind = i * stride0 + j * zlim + k + 1
+            hq.heappush(bd, (-seq[i, j, k + 1], ind))
     else:
-        xlim, ylim, zlim = im.shape
-        if conn == "min":
-            mask = [
-                [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
-                [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
-                [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
-            ]
-        elif conn == "max":
-            mask = [
-                [[1, 1, 1], [1, 1, 1], [1, 1, 1]],
-                [[1, 1, 1], [1, 1, 1], [1, 1, 1]],
-                [[1, 1, 1], [1, 1, 1], [1, 1, 1]],
-            ]
-        neighbors = []
-        for a, x in enumerate(range(i - 1, i + 2)):
-            if (x >= 0) and (x < xlim):
-                for b, y in enumerate(range(j - 1, j + 2)):
-                    if (y >= 0) and (y < ylim):
-                        for c, z in enumerate(range(k - 1, k + 2)):
-                            if (z >= 0) and (z < zlim):
-                                if mask[a][b][c] == 1:
-                                    if im[x, y, z] == valid:
-                                        neighbors.append((x, y, z))
-    return neighbors
+        for x in range(max(0, i - 1), min(i + 2, xlim)):
+            for y in range(max(0, j - 1), min(j + 2, ylim)):
+                for z in range(max(0, k - 1), min(k + 2, zlim)):
+                    if not edge[x, y, z]:
+                        edge[x, y, z] = True
+                        ind = x * stride0 + y * zlim + z
+                        hq.heappush(bd, (-seq[x, y, z], ind))
