@@ -16,13 +16,18 @@ from porespy.tools import (
     Results,
     _insert_disk_at_points,
     _insert_disk_at_points_parallel,
-    _insert_disks_at_points_parallel,
     get_tqdm,
     get_edt,
     make_contiguous,
     parse_steps,
     ps_round,
     settings,
+)
+
+from ._tools import (
+    _get_flat_indices,
+    _insert_disks_at_indices_parallel,
+    _make_axial_extent_lookup,
 )
 
 tqdm = get_tqdm()
@@ -577,6 +582,7 @@ def imbibition(
 
     if dt is None:
         dt = edt(im)
+    ceil_distance = _make_axial_extent_lookup(np.max(dt))
 
     if pc is None:
         # Cast `dt` to float64 to avoid precision loss in `2.0/dt`. With float32
@@ -627,13 +633,12 @@ def imbibition(
         edges = (~erode(invadable, r=1, smooth=False, method='conv'))*invadable
         nwp_mask = np.zeros_like(im, dtype=bool)
         if np.any(edges):
-            coords = np.where(edges)
-            radii = dt[coords].astype(int)
-            nwp_mask = _insert_disks_at_points_parallel(
+            indices = _get_flat_indices(edges)
+            nwp_mask = _insert_disks_at_indices_parallel(
                 im=nwp_mask,
-                coords=np.vstack(coords),
-                radii=radii,
-                v=True,
+                indices=indices,
+                dt=dt,
+                ceil_distance=ceil_distance,
                 smooth=smooth,
                 overwrite=True,
             )
