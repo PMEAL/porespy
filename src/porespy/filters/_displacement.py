@@ -401,11 +401,15 @@ def _trapped_regions_inner_loop(
     outlets,
     conn,
 ):  # pragma: no cover
-    # Initialize the binary heap
+    # Store only the sequence value and a flat index in the heap.  Coordinates
+    # are recovered after popping to keep frontier entries compact.
+    _, ylim, zlim = seq.shape
+    stride0 = ylim * zlim
     inds = np.where(outlets)
     bd = []
-    for row, (i, j, k) in enumerate(zip(inds[0], inds[1], inds[2])):
-        bd.append([-seq[i, j, k], i, j, k])
+    for i, j, k in zip(inds[0], inds[1], inds[2]):
+        ind = i * stride0 + j * zlim + k
+        bd.append((-seq[i, j, k], ind))
     hq.heapify(bd)
     minseq = -np.amax(seq)
     step = 1
@@ -420,14 +424,20 @@ def _trapped_regions_inner_loop(
             pts.append(hq.heappop(bd))
         while len(pts):
             pt = pts.pop()
+            ind = pt[1]
+            i = ind // stride0
+            rem = ind - i * stride0
+            j = rem // zlim
+            k = rem - j * zlim
             if (pt[0] >= minseq) and (pt[0] < 0):
-                trapped[pt[1], pt[2], pt[3]] = False
+                trapped[i, j, k] = False
                 minseq = pt[0]
             # Add neighboring points to heap and edge
             neighbors = _find_valid_neighbors(
-                i=pt[1], j=pt[2], k=pt[3], im=edge, conn=conn)
+                i=i, j=j, k=k, im=edge, conn=conn)
             for n in neighbors:
-                hq.heappush(bd, [-seq[n], n[0], n[1], n[2]])
+                nind = n[0] * stride0 + n[1] * zlim + n[2]
+                hq.heappush(bd, (-seq[n], nind))
                 edge[n[0], n[1], n[2]] = True
         step += 1
     return trapped, step
