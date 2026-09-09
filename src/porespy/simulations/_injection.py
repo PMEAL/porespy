@@ -46,8 +46,9 @@ def qbip(
     including the effect of gravity
     """
     im = np.atleast_3d(im == 1)
+    n_sites = im.sum()
     if maxiter is None:  # Compute number of pixels in image
-        maxiter = im.sum()
+        maxiter = n_sites
 
     if inlets is None:
         inlets = np.zeros_like(im)
@@ -62,28 +63,57 @@ def qbip(
         pc = 2.0/dt
     pc = np.atleast_3d(pc)
 
-    # Initialize arrays and do some preprocessing
-    inv_seq = np.zeros_like(im, dtype=int)
-    inv_pc = np.zeros_like(im, dtype=float)
-    if return_pressures is False:
-        inv_pc *= -np.inf  # This is a flag to the numba-jit function to ignore it
-    inv_size = np.zeros_like(im, dtype=float)
-    if return_sizes is False:
-        inv_size *= -np.inf  # This is a flag to the numba-jit function to ignore it
-
-    # Call numba'd inner loop
-    sequence, pressure, size, step = _qbip_inner_loop(
+    # Record centers in heap-pop order.  Negative entries mark the final center
+    # in each pressure batch, so no separate per-center step array is needed.
+    index_dtype = np.int32 if im.size <= np.iinfo(np.int32).max else np.int64
+    inv_order = np.empty(n_sites, dtype=index_dtype)
+    count, step = _qbip_inner_loop(
         im=im,
         inlets=inlets,
+        pc=pc,
+        order=inv_order,
+        maxiter=maxiter,
+        conn=conn,
+    )
+    logger.info(f"Exiting after {step} steps")
+
+    # Draw the spheres after traversal so queue operations and rasterization
+    # can be profiled and optimized independently.
+    seq_dtype = np.int32 if maxiter <= np.iinfo(np.int32).max else np.int64
+    inv_seq = np.zeros_like(im, dtype=seq_dtype)
+    inv_pc = (
+        np.zeros_like(im, dtype=float)
+        if return_pressures
+        else np.full((1, 1, 1), -np.inf)
+    )
+    inv_size = (
+        np.zeros_like(im, dtype=float)
+        if return_sizes
+        else np.full((1, 1, 1), -np.inf)
+    )
+    max_radius = int(np.max(dt))
+    if max_radius <= np.iinfo(np.uint8).max:
+        depth_dtype = np.uint8
+    elif max_radius <= np.iinfo(np.uint16).max:
+        depth_dtype = np.uint16
+    elif max_radius <= np.iinfo(np.uint32).max:
+        depth_dtype = np.uint32
+    else:
+        depth_dtype = np.uint64
+    im_depth = np.zeros_like(im, dtype=depth_dtype)
+    squared_distance = np.arange(max_radius**2 + 1)
+    ceil_distance = np.ceil(np.sqrt(squared_distance)).astype(depth_dtype)
+    sequence, pressure, size, drawn, skipped = _draw_qbip_spheres(
+        order=inv_order[:count],
         dt=dt,
         pc=pc,
         seq=inv_seq,
         pressure=inv_pc,
         size=inv_size,
-        maxiter=maxiter,
-        conn=conn,
+        im_depth=im_depth,
+        ceil_distance=ceil_distance,
     )
-    logger.info(f"Exiting after {step} steps")
+    logger.info(f"Drew {drawn} spheres and skipped {skipped} contained spheres")
     # Reduce back to 2D if necessary
     sequence = sequence.squeeze()
     pressure = pressure.squeeze()
@@ -121,12 +151,14 @@ def qbip(
                 conn=conn,
             )
             trapped = temp.im_trapped
-        pressure = pressure.astype(float).squeeze()
-        pressure[trapped] = np.inf
+        if return_pressures:
+            pressure = pressure.astype(float).squeeze()
+            pressure[trapped] = np.inf
         sequence[trapped] = -1
         sequence = make_contiguous(im=sequence, mode='symmetric')
-        size = size.astype(float)
-        size[trapped] = np.inf
+        if return_sizes:
+            size = size.astype(float)
+            size[trapped] = np.inf
 
     # Create results object for collected returned values
     results = Results()
@@ -143,23 +175,25 @@ def qbip(
 def _qbip_inner_loop(
     im,
     inlets,
-    dt,
     pc,
-    seq,
-    pressure,
-    size,
+    order,
     maxiter,
     conn,
-    smooth=True,
 ):  # pragma: no cover
-    # Initialize the heap
+    # Store only entry pressure and a flat index in the heap.  Radius and
+    # coordinates are recovered after popping to keep frontier entries small.
     inds = np.where(inlets*im)
     bd = []
-    for row, (i, j, k) in enumerate(zip(inds[0], inds[1], inds[2])):
-        bd.append([pc[i, j, k], dt[i, j, k], i, j, k])
+    _, ylim, zlim = im.shape
+    stride0 = ylim * zlim
+    max_conn = conn == 'max'
+    for i, j, k in zip(inds[0], inds[1], inds[2]):
+        ind = i * stride0 + j * zlim + k
+        bd.append((pc[i, j, k], ind))
     hq.heapify(bd)
     # Note which sites have been added to heap already
     processed = inlets*im + ~im  # Add solid phase to be safe
+    count = 0
     step = 1  # Total step number
     for _ in range(1, maxiter):
         if len(bd) == 0:
@@ -168,110 +202,196 @@ def _qbip_inner_loop(
         while len(bd) and (bd[0][0] == pts[0][0]):  # Pop any items with equal Pc
             pts.append(hq.heappop(bd))
         for pt in pts:
-            # Insert discs of invading fluid into image(s)
-            seq = _insert_disk_at_point(
-                im=seq,
-                i=pt[2], j=pt[3], k=pt[4],
-                r=int(pt[1]), v=step, overwrite=False, smooth=smooth,)
-            # Putting -inf in images is a numba compatible flag for 'skip'
-            if pressure[0, 0, 0] > -np.inf:
-                pressure = _insert_disk_at_point(
-                    im=pressure,
-                    i=pt[2], j=pt[3], k=pt[4],
-                    r=int(pt[1]), v=pt[0], overwrite=False, smooth=smooth,)
-            if size[0, 0, 0] > -np.inf:
-                size = _insert_disk_at_point(
-                    im=size, i=pt[2], j=pt[3], k=pt[4],
-                    r=int(pt[1]), v=pt[1], overwrite=False, smooth=smooth,)
-            # Add neighboring points to heap and processed array
-            neighbors = _find_valid_neighbors(
-                i=pt[2], j=pt[3], k=pt[4], im=processed, conn=conn)
-            for n in neighbors:
-                hq.heappush(bd, [pc[n], dt[n], n[0], n[1], n[2]])
-                processed[n[0], n[1], n[2]] = True
+            ind = pt[1]
+            order[count] = ind
+            count += 1
+            i = ind // stride0
+            rem = ind - i * stride0
+            j = rem // zlim
+            k = rem - j * zlim
+            _push_valid_neighbors(
+                bd=bd,
+                processed=processed,
+                pc=pc,
+                i=i,
+                j=j,
+                k=k,
+                stride0=stride0,
+                max_conn=max_conn,
+            )
+        order[count - 1] = -order[count - 1] - 1
         step += 1
-    return seq, pressure, size, step
+    return count, step
 
 
 @njit
-def _find_valid_neighbors(
+def _draw_qbip_spheres(
+    order,
+    dt,
+    pc,
+    seq,
+    pressure,
+    size,
+    im_depth,
+    ceil_distance,
+    smooth=True,
+):  # pragma: no cover
+    _, ylim, zlim = seq.shape
+    stride0 = ylim * zlim
+    draw_pressure = pressure[0, 0, 0] > -np.inf
+    draw_size = size[0, 0, 0] > -np.inf
+    drawn = 0
+    skipped = 0
+    step = 1
+    for item in order:
+        end_of_step = item < 0
+        ind = -item - 1 if end_of_step else item
+        i = ind // stride0
+        rem = ind - i * stride0
+        j = rem // zlim
+        k = rem - j * zlim
+        r = int(dt[i, j, k])
+        # im_depth is a conservative distance to the edge of the union of
+        # earlier spheres.  This sphere is redundant when its radius fits at
+        # its center without crossing an earlier sphere's boundary.
+        if im_depth[i, j, k] >= r:
+            skipped += 1
+        else:
+            _insert_qbip_sphere(
+                seq=seq,
+                pressure=pressure,
+                size=size,
+                im_depth=im_depth,
+                ceil_distance=ceil_distance,
+                i=i,
+                j=j,
+                k=k,
+                r=r,
+                step=step,
+                value_pc=pc[i, j, k],
+                value_size=dt[i, j, k],
+                draw_pressure=draw_pressure,
+                draw_size=draw_size,
+                smooth=smooth,
+            )
+            drawn += 1
+        if end_of_step:
+            step += 1
+    return seq, pressure, size, drawn, skipped
+
+
+@njit
+def _get_axial_extent(distance_squared, ceil_distance, smooth):
+    if smooth:
+        if distance_squared <= 0:
+            return -1
+        return int(ceil_distance[distance_squared]) - 1
+    if distance_squared < 0:
+        return -1
+    extent = int(ceil_distance[distance_squared])
+    if extent**2 > distance_squared:
+        extent -= 1
+    return extent
+
+
+@njit
+def _insert_qbip_sphere(
+    seq,
+    pressure,
+    size,
+    im_depth,
+    ceil_distance,
     i,
     j,
-    im,
-    k=0,
-    conn='min',
-    valid=False
+    k,
+    r,
+    step,
+    value_pc,
+    value_size,
+    draw_pressure,
+    draw_size,
+    smooth,
 ):  # pragma: no cover
-    xlim, ylim, zlim = im.shape
-    if conn == 'min':
-        mask = [[[0, 0, 0], [0, 1, 0], [0, 0, 0]],
-                [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
-                [[0, 0, 0], [0, 1, 0], [0, 0, 0]]]
-    elif conn == 'max':
-        mask = [[[1, 1, 1], [1, 1, 1], [1, 1, 1]],
-                [[1, 1, 1], [1, 1, 1], [1, 1, 1]],
-                [[1, 1, 1], [1, 1, 1], [1, 1, 1]]]
-    neighbors = []
-    for a, x in enumerate(range(i-1, i+2)):
-        if (x >= 0) and (x < xlim):
-            for b, y in enumerate(range(j-1, j+2)):
-                if (y >= 0) and (y < ylim):
-                    for c, z in enumerate(range(k-1, k+2)):
-                        if (z >= 0) and (z < zlim):
-                            if mask[a][b][c] == 1:
-                                if im[x, y, z] == valid:
-                                    neighbors.append((x, y, z))
-    return neighbors
+    xlim, ylim, zlim = seq.shape
+    radius_squared = r**2
+    for x in range(max(0, i - r), min(i + r + 1, xlim)):
+        dx = x - i
+        yz_extent = _get_axial_extent(
+            radius_squared - dx**2, ceil_distance, smooth)
+        if zlim > 1:
+            for y in range(max(0, j - yz_extent), min(j + yz_extent + 1, ylim)):
+                dy = y - j
+                z_extent = _get_axial_extent(
+                    radius_squared - dx**2 - dy**2,
+                    ceil_distance,
+                    smooth,
+                )
+                for z in range(max(0, k - z_extent), min(k + z_extent + 1, zlim)):
+                    dz = z - k
+                    distance_squared = dx**2 + dy**2 + dz**2
+                    depth = r - ceil_distance[distance_squared]
+                    if im_depth[x, y, z] < depth:
+                        im_depth[x, y, z] = depth
+                    if seq[x, y, z] == 0:
+                        seq[x, y, z] = step
+                    if draw_pressure and (pressure[x, y, z] == 0):
+                        pressure[x, y, z] = value_pc
+                    if draw_size and (size[x, y, z] == 0):
+                        size[x, y, z] = value_size
+        else:
+            for y in range(max(0, j - yz_extent), min(j + yz_extent + 1, ylim)):
+                dy = y - j
+                distance_squared = dx**2 + dy**2
+                depth = r - ceil_distance[distance_squared]
+                if im_depth[x, y, 0] < depth:
+                    im_depth[x, y, 0] = depth
+                if seq[x, y, 0] == 0:
+                    seq[x, y, 0] = step
+                if draw_pressure and (pressure[x, y, 0] == 0):
+                    pressure[x, y, 0] = value_pc
+                if draw_size and (size[x, y, 0] == 0):
+                    size[x, y, 0] = value_size
 
 
 @njit
-def _insert_disk_at_point(
-    im, i, j, r, v, k=0, overwrite=False, smooth=True):  # pragma: no cover
-    r"""
-    Insert spheres (or disks) of specified radii into an image at given locations.
-
-    This function uses numba to accelerate the process, and does not overwrite
-    any existing values (i.e. only writes to locations containing zeros).
-
-    Parameters
-    ----------
-    im : ND-array
-        The image into which the spheres/disks should be inserted. This is an
-        'in-place' operation.
-    i, j, k : int
-        The center point of each sphere/disk.  If the image is 2D then ``k`` can be
-        omitted.
-    r : array_like
-        The radius of the sphere/disk to insert
-    v : scalar
-        The value to insert
-    overwrite : boolean, optional
-        If ``True`` then the inserted spheres overwrite existing values.  The
-        default is ``False``.
-    smooth : boolean
-        If `True` (default) then the small bumps on the outer perimeter of each
-        face are not present.
-
-    """
-    xlim, ylim, zlim = im.shape
-    for a, x in enumerate(range(i-r, i+r+1)):
-        if (x >= 0) and (x < xlim):
-            for b, y in enumerate(range(j-r, j+r+1)):
-                if (y >= 0) and (y < ylim):
-                    if zlim > 1:  # For a truly 3D image
-                        for c, z in enumerate(range(k-r, k+r+1)):
-                            if (z >= 0) and (z < zlim):
-                                R = ((a - r)**2 + (b - r)**2 + (c - r)**2)**0.5
-                                if ((R < r) and smooth) or ((R <= r) and not smooth):
-                                    if overwrite or (im[x, y, z] == 0):
-                                        im[x, y, z] = v
-                    else:  # For 3D image with singleton 3rd dimension
-                        R = ((a - r)**2 + (b - r)**2)**0.5
-                        if ((R < r) and smooth) or ((R <= r) and not smooth):
-                            if overwrite or (im[x, y, 0] == 0):
-                                im[x, y, 0] = v
-    return im
-
+def _push_valid_neighbors(
+    bd,
+    processed,
+    pc,
+    i,
+    j,
+    k,
+    stride0,
+    max_conn,
+):  # pragma: no cover
+    xlim, ylim, zlim = processed.shape
+    if not max_conn:
+        if (i > 0) and not processed[i - 1, j, k]:
+            processed[i - 1, j, k] = True
+            hq.heappush(bd, (pc[i - 1, j, k], (i - 1) * stride0 + j * zlim + k))
+        if (i + 1 < xlim) and not processed[i + 1, j, k]:
+            processed[i + 1, j, k] = True
+            hq.heappush(bd, (pc[i + 1, j, k], (i + 1) * stride0 + j * zlim + k))
+        if (j > 0) and not processed[i, j - 1, k]:
+            processed[i, j - 1, k] = True
+            hq.heappush(bd, (pc[i, j - 1, k], i * stride0 + (j - 1) * zlim + k))
+        if (j + 1 < ylim) and not processed[i, j + 1, k]:
+            processed[i, j + 1, k] = True
+            hq.heappush(bd, (pc[i, j + 1, k], i * stride0 + (j + 1) * zlim + k))
+        if (k > 0) and not processed[i, j, k - 1]:
+            processed[i, j, k - 1] = True
+            hq.heappush(bd, (pc[i, j, k - 1], i * stride0 + j * zlim + k - 1))
+        if (k + 1 < zlim) and not processed[i, j, k + 1]:
+            processed[i, j, k + 1] = True
+            hq.heappush(bd, (pc[i, j, k + 1], i * stride0 + j * zlim + k + 1))
+    else:
+        for x in range(max(0, i - 1), min(i + 2, xlim)):
+            for y in range(max(0, j - 1), min(j + 2, ylim)):
+                for z in range(max(0, k - 1), min(k + 2, zlim)):
+                    if not processed[x, y, z]:
+                        processed[x, y, z] = True
+                        nind = x * stride0 + y * zlim + z
+                        hq.heappush(bd, (pc[x, y, z], nind))
 
 @njit
 def _where(arr):
