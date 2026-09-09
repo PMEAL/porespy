@@ -79,6 +79,15 @@ class FilterTest():
         with pytest.raises(Exception):
             ps.filters.apply_chords(im=self.im, spacing=-1)
 
+    def test_apply_chords_with_zero_spacing(self):
+        im = np.ones((9, 9), dtype=bool)
+        with pytest.warns(DeprecationWarning, match="spacing=0 is deprecated"):
+            chords = ps.filters.apply_chords(
+                im=im, spacing=0, axis=0, trim_edges=False, label=True
+            )
+        assert np.all(chords > 0)
+        assert np.unique(chords).size == 9
+
     def test_apply_chords_without_trimming(self):
         c = ps.filters.apply_chords(im=self.im, trim_edges=False)
         assert c.sum() == 125043

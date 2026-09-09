@@ -6,6 +6,7 @@ import scipy.ndimage as spim
 import scipy.stats as spst
 
 from porespy.tools import _insert_disks_at_points_parallel, extend_slice, parse_shape
+from porespy.tools._label import _label_components
 
 from ._imgen import lattice_spheres
 from ._spheres_from_coords import spheres_from_coords
@@ -124,7 +125,7 @@ def rectangular_pillars_array(
         pts = ~lattice_spheres(new_shape, r=1, spacing=spacing, offset=0)
     elif lattice.startswith("t"):
         pts = ~lattice_spheres(shape=new_shape, r=1, spacing=spacing, offset=0)
-    labels = spim.label(pts)[0]
+    labels = _label_components(pts, conn="min")[0]
     tmp = np.zeros_like(pts)
     slices = spim.find_objects(labels)
     for s in slices:

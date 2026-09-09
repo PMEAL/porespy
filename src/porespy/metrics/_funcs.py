@@ -3,14 +3,13 @@ import logging
 
 import numpy as np
 import numpy.typing as npt
-import scipy.ndimage as spim
 import scipy.spatial as sptl
 import scipy.stats as spst
 from deprecated import deprecated
 from numba import njit
 from scipy import fft as sp_ft
 from skimage.measure import regionprops
-from skimage.morphology import ball, disk, skeletonize, footprint_rectangle
+from skimage.morphology import skeletonize
 
 from porespy.generators import faces
 from porespy.filters import (
@@ -64,12 +63,6 @@ __all__ = [
 edt = get_edt()
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
-strel = {
-    2: {"min": disk(1), "max": footprint_rectangle((3, 3))},
-    3: {"min": ball(1), "max": footprint_rectangle((3, 3, 3))}
-}
-
-
 def porosity_by_type(im, conn='min'):
     r"""
     Computes different types of porosity in an image including total, closed, and
@@ -715,7 +708,7 @@ def chord_length_distribution(
     im : ndarray
         An image with chords drawn in the pore space, as produced by
         ``apply_chords`` or ``apply_chords_3d``.  ``im`` can be either boolean,
-        in which case each chord will be identified using ``scipy.ndimage.label``,
+        in which case each chord will be identified by connected-component labeling,
         or numerical values in case it is assumed that chords have already been
         identified and labeled. In both cases, the size of each chord will be
         computed as the number of voxels belonging to each labelled region.
@@ -1176,7 +1169,7 @@ def chord_counts(im):
     to view online example.
 
     """
-    labels, N = spim.label(im > 0)
+    labels, N = _label_components(im > 0, conn="min")
     props = regionprops(labels)
     chord_lens = np.array([i.filled_area for i in props], dtype=int)
     return chord_lens

@@ -7,6 +7,7 @@ import scipy.ndimage as spim
 import scipy.spatial as sptl
 
 import porespy as ps
+from porespy.tools._label import _label_components
 
 edt = ps.tools.get_edt()
 ps.settings.tqdm['disable'] = True
@@ -41,6 +42,21 @@ class ToolsTest():
         im1 = np.pad(im, pad_width, mode="constant", constant_values=1)
         im2 = ps.tools.unpad(im1, pad_width)
         assert np.all(im == im2)
+
+    @pytest.mark.parametrize("ndim", [2, 3])
+    @pytest.mark.parametrize("conn", ["min", "max"])
+    def test_label_components_matches_scipy(self, ndim, conn):
+        rng = np.random.default_rng(0)
+        im = rng.random((10,) * ndim) > 0.7
+        rank = 1 if conn == "min" else ndim
+        structure = spim.generate_binary_structure(ndim, rank)
+        expected, N = spim.label(im, structure=structure)
+        actual, M = _label_components(im, conn=conn)
+        assert M == N
+        pairs = np.unique(np.column_stack((expected[im], actual[im])), axis=0)
+        assert pairs.shape[0] == N
+        assert np.unique(pairs[:, 0]).size == N
+        assert np.unique(pairs[:, 1]).size == N
 
     def test_unpad_int_padwidth(self):
         pad_width = 10
