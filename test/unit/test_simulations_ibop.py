@@ -3,6 +3,7 @@ from GenericTest import GenericTest
 
 import porespy as ps
 from porespy.simulations._tools import (
+    _find_interface,
     _get_flat_indices,
     _insert_disks_at_indices_parallel,
     _make_axial_extent_lookup,
@@ -89,6 +90,22 @@ class IBOPTest(GenericTest):
                     smooth=smooth,
                 )
                 assert np.array_equal(actual, expected)
+
+    def test_find_interface(self):
+        rng = np.random.default_rng(0)
+        for shape in [(31, 37), (19, 23, 17)]:
+            mask = rng.random(shape) > 0.25
+            expected = (
+                ~ps.filters.erode(
+                    mask,
+                    r=1,
+                    smooth=False,
+                    method="conv",
+                )
+                * mask
+            )
+            actual = _find_interface(mask, np.empty_like(mask))
+            assert np.array_equal(actual, expected)
 
     def test_ibop_w_trapping(self):
         im = np.copy(self.im2D)
