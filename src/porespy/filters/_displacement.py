@@ -370,27 +370,33 @@ def _find_trapped_clusters_queue(
     r"""
     This version is meant for IBIP or QBIP (ie. invasion) simulations.
     """
-    im = im > 0
-    # Make sure outlets are masked correctly and convert to 3d
-    out_temp = np.atleast_3d(outlets * (seq > 0))
-    # Initialize im_trapped array
-    im_trapped = np.ones_like(out_temp, dtype=bool)
+    im = np.atleast_3d(np.asarray(im))
+    if im.dtype != bool:
+        im = im > 0
     seq = np.atleast_3d(seq)
-    # Note which sites have been added to heap already
-    edge = out_temp * np.atleast_3d(im) + np.atleast_3d(~im)
+    outlets = np.atleast_3d(np.asarray(outlets, dtype=bool))
+    # Reuse the masked outlet image as the processed-edge image after collecting
+    # its flat indices, avoiding several full-image Boolean temporaries.
+    edge = np.empty_like(im, dtype=bool)
+    np.greater(seq, 0, out=edge)
+    np.logical_and(edge, outlets, out=edge)
+    outlet_inds = np.flatnonzero(edge)
+    np.logical_not(im, out=edge)
+    edge.flat[outlet_inds] = True
+    # Initialize im_trapped array
+    im_trapped = np.ones_like(im, dtype=bool)
     trapped, step = _trapped_regions_inner_loop(
         seq=seq,
         edge=edge,
         trapped=im_trapped,
-        outlets=out_temp,
+        outlet_inds=outlet_inds,
         conn=conn,
     )
     logger.info(f"Exited after {step} steps")
     # The inner loop already produces the desired mask, so avoid reconstructing
     # and relabeling a temporary sequence image merely to recover this result.
-    trapped = np.squeeze(trapped)
-    trapped[~im] = False
-    return trapped
+    np.logical_and(trapped, im, out=trapped)
+    return np.squeeze(trapped)
 
 
 @njit
@@ -398,7 +404,7 @@ def _trapped_regions_inner_loop(
     seq,
     edge,
     trapped,
-    outlets,
+    outlet_inds,
     conn,
 ):  # pragma: no cover
     # Store only the sequence value and a flat index in the heap.  Coordinates
@@ -406,10 +412,12 @@ def _trapped_regions_inner_loop(
     _, ylim, zlim = seq.shape
     stride0 = ylim * zlim
     max_conn = conn == "max"
-    inds = np.where(outlets)
     bd = []
-    for i, j, k in zip(inds[0], inds[1], inds[2]):
-        ind = i * stride0 + j * zlim + k
+    for ind in outlet_inds:
+        i = ind // stride0
+        rem = ind - i * stride0
+        j = rem // zlim
+        k = rem - j * zlim
         bd.append((-seq[i, j, k], ind))
     hq.heapify(bd)
     minseq = -np.amax(seq)
