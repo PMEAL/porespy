@@ -280,8 +280,7 @@ def find_trapped_clusters(
         )
 
     if method == "queue":
-        seq = np.copy(seq)  # Need a copy since the queue method updates 'in-place'
-        seq_temp = _find_trapped_clusters_queue(
+        trapped = _find_trapped_clusters_queue(
             im=im,
             seq=seq,
             outlets=outlets,
@@ -294,10 +293,9 @@ def find_trapped_clusters(
             outlets=outlets,
             conn=conn,
         )
+        trapped = (seq_temp == -1) * im
     else:
         raise Exception(f"{method} is not a supported method")
-
-    trapped = (seq_temp == -1) * im
 
     if min_size > 0:
         trapped = trim_small_clusters(im=trapped, min_size=min_size)
@@ -377,26 +375,22 @@ def _find_trapped_clusters_queue(
     out_temp = np.atleast_3d(outlets * (seq > 0))
     # Initialize im_trapped array
     im_trapped = np.ones_like(out_temp, dtype=bool)
-    # Convert seq to negative numbers and convert to 3d
-    seq_temp = np.atleast_3d(-1 * seq)
+    seq = np.atleast_3d(seq)
     # Note which sites have been added to heap already
     edge = out_temp * np.atleast_3d(im) + np.atleast_3d(~im)
-    # seq = np.copy(np.atleast_3d(seq))
     trapped, step = _trapped_regions_inner_loop(
-        seq=seq_temp,
+        seq=seq,
         edge=edge,
         trapped=im_trapped,
         outlets=out_temp,
         conn=conn,
     )
     logger.info(f"Exited after {step} steps")
-    # Finalize images
-    seq = np.squeeze(seq)
+    # The inner loop already produces the desired mask, so avoid reconstructing
+    # and relabeling a temporary sequence image merely to recover this result.
     trapped = np.squeeze(trapped)
-    seq[trapped] = -1
-    seq[~im] = 0
-    seq = make_contiguous(im=seq, mode="symmetric")
-    return seq
+    trapped[~im] = False
+    return trapped
 
 
 @njit
@@ -411,11 +405,11 @@ def _trapped_regions_inner_loop(
     inds = np.where(outlets)
     bd = []
     for row, (i, j, k) in enumerate(zip(inds[0], inds[1], inds[2])):
-        bd.append([seq[i, j, k], i, j, k])
+        bd.append([-seq[i, j, k], i, j, k])
     hq.heapify(bd)
-    minseq = np.amin(seq)
+    minseq = -np.amax(seq)
     step = 1
-    maxiter = np.sum(seq < 0)
+    maxiter = np.sum(seq > 0)
     for _ in range(1, maxiter):
         if len(bd):  # Put next site into pts list
             pts = [hq.heappop(bd)]
@@ -433,7 +427,7 @@ def _trapped_regions_inner_loop(
             neighbors = _find_valid_neighbors(
                 i=pt[1], j=pt[2], k=pt[3], im=edge, conn=conn)
             for n in neighbors:
-                hq.heappush(bd, [seq[n], n[0], n[1], n[2]])
+                hq.heappush(bd, [-seq[n], n[0], n[1], n[2]])
                 edge[n[0], n[1], n[2]] = True
         step += 1
     return trapped, step
