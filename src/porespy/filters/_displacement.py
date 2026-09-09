@@ -85,7 +85,7 @@ __all__ = [
 #             min_size=min_size,
 #             conn=conn,
 #         )
-#         labels = spim.label(released, structure=se)[0]
+#         labels = _label_components(released, conn=conn)[0]
 #         if seq is not None:
 #             mx = spim.maximum_filter(seq*~released, footprint=se)
 #             mx = flood_func(mx, np.amax, labels=labels)
@@ -253,7 +253,7 @@ def find_trapped_clusters(
         ========= ==================================================================
         Option    Description
         ========= ==================================================================
-        'labels'  Uses `scipy.ndimage.label` to find all clusters of invading phase
+        'labels'  Uses connected-component labeling to find all clusters of invading phase
                   connected to the outlet at each value of sequence found on the
                   outlet face. This method is faster if `ibop` was used for the
                   simulation.

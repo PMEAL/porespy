@@ -1,5 +1,6 @@
 import logging
 import operator
+import warnings
 from typing import Literal
 
 import dask
@@ -368,7 +369,7 @@ def flood_func(
         `amax`, `sum`, `mean`, `median`, etc.
     labels : ndarray
         An array containing labels identifying each individual region to be
-        flooded. If not provided then `scipy.ndimage.label` is applied to
+        flooded. If not provided then connected-component labeling is applied to
         `im > 0`.
 
     Returns
@@ -464,7 +465,7 @@ def region_size(
     ----------
     im : ndarray
         Either a boolean image wtih `True` indicating the features of
-        interest, in which case `scipy.ndimage.label` will be applied to
+        interest, in which case connected-component labeling will be applied to
         find regions, or a greyscale image with integer values indicating
         regions.
     conn : str
@@ -520,7 +521,8 @@ def apply_chords(
     spacing : int
         Separation between chords.  The default is 1 voxel.  This can be
         decreased to 0, meaning that the chords all touch each other,
-        which automatically sets to the `label` argument to `True`.
+        which automatically sets the `label` argument to `True`. The option
+        ``spacing=0`` is deprecated and will be removed in a future release.
     axis : int (default = 0)
         The axis along which the chords are drawn.
     trim_edges : bool (default = `True`)
@@ -553,24 +555,41 @@ def apply_chords(
     if spacing < 0:
         raise Exception("Spacing cannot be less than 0")
     if spacing == 0:
+        warnings.warn(
+            "spacing=0 is deprecated and will be removed in a future release; "
+            "use spacing>=1 instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         label = True
     result = np.zeros(im.shape, dtype=int)  # Will receive chords at end
     slxyz = [slice(None, None, spacing * (axis != i) + 1) for i in [0, 1, 2]]
     slices = tuple(slxyz[: im.ndim])
-    s = [[0, 1, 0], [0, 1, 0], [0, 1, 0]]  # Straight-line structuring element
-    if im.ndim == 3:  # Make structuring element 3D if necessary
-        s = np.pad(
-            np.atleast_3d(s),
-            pad_width=((0, 0), (0, 0), (1, 1)),
-            mode="constant",
-            constant_values=0,
-        )
-    im = im[slices]
-    s = np.swapaxes(s, 0, axis)
-    chords = spim.label(im, structure=s)[0]
-    if trim_edges:  # Label on border chords will be set to 0
-        chords = clear_border(chords)
-    result[slices] = chords  # Place chords into empty image created at top
+    if spacing == 0:
+        s = [[0, 1, 0], [0, 1, 0], [0, 1, 0]]
+        if im.ndim == 3:
+            s = np.pad(
+                np.atleast_3d(s),
+                pad_width=((0, 0), (0, 0), (1, 1)),
+                mode="constant",
+                constant_values=0,
+            )
+        s = np.swapaxes(s, 0, axis)
+        chords = spim.label(im, structure=s)[0]
+        if trim_edges:
+            chords = clear_border(chords)
+        result[slices] = chords
+    else:
+        # A one-voxel gap lets full connectivity distinguish neighboring chords.
+        result[slices] = im[slices]
+        chords = _label_components(result, conn="max")[0]
+        if trim_edges:
+            # Preserve the historical treatment of the sampled image boundaries.
+            chords = clear_border(chords[slices])
+            result.fill(0)
+            result[slices] = chords
+        else:
+            result = chords
     if label is False:  # Remove label if not requested
         result = result > 0
     return result
@@ -608,8 +627,7 @@ def apply_chords_3D(
     Notes
     -----
     The chords are separated by a spacing of at least 1 voxel so that
-    tools that search for connected components, such as
-    `scipy.ndimage.label` can detect individual chords.
+    connected-component labeling can detect individual chords.
 
     See Also
     --------
@@ -633,7 +651,7 @@ def apply_chords_3D(
     ch[2 :: 4 + 2 * spacing, 2 :: 4 + 2 * spacing, :] = 3  # Z-direction
     chords = ch * im
     if trim_edges:
-        labels = _label_components(im=chords > 0, conn="min")[0]
+        labels = _label_components(im=chords > 0, conn="max")[0]
         temp = clear_border(labels) > 0
         chords = temp * chords
     return chords

@@ -406,9 +406,9 @@ def find_throat_junctions(im, sk, juncs, throats, dt=None, l_max=7, mode="fast m
         dt = edt(im)
     strel = ps_rect(3, ndim=juncs.ndim)
     if juncs.dtype == bool:
-        juncs = spim.label(juncs > 0, structure=strel)[0]
+        juncs = _label_components(juncs > 0, conn="max")[0]
     if throats.dtype == bool:
-        throats = spim.label(throats > 0, structure=strel)[0]
+        throats = _label_components(throats > 0, conn="max")[0]
     if mode == "maximum filter":
         # reduce clusters to pore centers
         ct = juncs_to_pore_centers(juncs, dt)
@@ -464,9 +464,9 @@ def find_throat_junctions(im, sk, juncs, throats, dt=None, l_max=7, mode="fast m
             for d in hits:
                 new_juncs[sx] += dist == d
         # label new_juncs
-        new_juncs = spim.label(new_juncs, structure=strel)[0]
+        new_juncs = _label_components(new_juncs, conn="max")[0]
     # Remove peaks from original throat image and re-label
-    new_throats = spim.label(throats * (new_juncs == 0), structure=strel)[0]
+    new_throats = _label_components(throats * (new_juncs == 0), conn="max")[0]
     # increment new_juncs by labels in original pores
     new_juncs[new_juncs > 0] += juncs.max()
     results = Results()
@@ -498,7 +498,7 @@ def merge_nearby_juncs(sk, juncs, dt=3):
         the labelled clusters of connected voxels.
     """
     strel = ps_rect(3, sk.ndim)
-    labels = spim.label(sk * ~juncs, structure=strel)[0]
+    labels = _label_components(sk * ~juncs, conn="max")[0]
     sizes = region_size(labels)
     # Add voxels from skeleton to junctions if they are too close to each other
     if isinstance(dt, (int, float)):  # If dt is a scalar, use hard threshold
@@ -539,7 +539,7 @@ def juncs_to_pore_centers(juncs, dt):
     # cubic structuring element, full connectivity
     strel = ps_rect(3, ndim=juncs.ndim)
     if juncs.dtype == bool:
-        juncs = spim.label(juncs > 0, structure=strel)[0]
+        juncs = _label_components(juncs > 0, conn="max")[0]
     # initialize reduced juncs
     reduced_juncs = np.zeros_like(juncs, dtype=int)
     # find position of maximums by labelled cluster
@@ -598,9 +598,9 @@ def junctions_to_network(sk, juncs, throats, dt, throat_area, voxel_size=1):
     # Parse input args
     strel = ps_rect(3, ndim=juncs.ndim)
     if juncs.dtype == bool:
-        juncs = spim.label(juncs > 0, structure=strel)[0]
+        juncs = _label_components(juncs > 0, conn="max")[0]
     if throats.dtype == bool:
-        throats = spim.label(throats > 0, structure=strel)[0]
+        throats = _label_components(throats > 0, conn="max")[0]
     # max filter on dt for finding inscribed throat diameter
     # this is important since skeleton is off of peaks in dt map
     b = ps_disk(2) if sk.ndim == 2 else ps_ball(2)
@@ -842,7 +842,7 @@ def partition_skeleton(sk, juncs, dt):
         the labelled clusters of connected voxels.
     """
     strel = ps_rect(3, sk.ndim)
-    labels = spim.label(sk * ~juncs, structure=strel)[0]
+    labels = _label_components(sk * ~juncs, conn="max")[0]
     sizes = region_size(labels)
     # Add voxels from skeleton to junctions if they are too close to each other
     if isinstance(dt, (int, float)):  # If dt is a scalar, use hard threshold
@@ -854,15 +854,16 @@ def partition_skeleton(sk, juncs, dt):
         dists = flood_func(dt, np.amin, labels=labels) / (sk.ndim) ** 0.5
         juncs += (sizes <= dists) * (labels > 0)
     # Label the surviving pieces of skeleton as throats
-    throats = spim.label(sk * ~juncs, structure=strel)[0]
-    pores = spim.label(juncs, structure=strel)[0]
+    throats = _label_components(sk * ~juncs, conn="max")[0]
+    pores = _label_components(juncs, conn="max")[0]
     return pores, throats
 
 
 def sk_to_network(pores, throats, dt):
     # Find conns
     dil = spim.binary_dilation(pores > 0, structure=ps_rect(w=3, ndim=pores.ndim))
-    pores = flood_func(pores, np.amax, spim.label(dil)[0]).astype(int)
+    labels = _label_components(dil, conn="min")[0]
+    pores = flood_func(pores, np.amax, labels).astype(int)
     joints = (throats > 0) * (pores > 0)
     pts = np.where(joints)
     P1 = np.inf * np.ones(pts[0].size)
@@ -952,7 +953,7 @@ def _get_normal(sk, throats):
     # label throats if not already labelled
     strel = ps_rect(3, ndim=sk.ndim)
     if throats.dtype == bool:
-        throats = spim.label(throats > 0, structure=strel)[0]
+        throats = _label_components(throats > 0, conn="max")[0]
     n_throat_nodes = np.sum(throats > 0)
     # find neighbour voxels on sk
     neighbour_coords = np.zeros((n_throat_nodes, 2, sk.ndim))
@@ -1324,7 +1325,7 @@ def get_throat_area(
     # label throats if not already labelled
     strel = ps_rect(3, ndim=im.ndim)
     if throats.dtype == bool:
-        throats = spim.label(throats > 0, structure=strel)[0]
+        throats = _label_components(throats > 0, conn="max")[0]
     # get normals
     normals, coords = _get_normal(sk, throats)
     # perform walk

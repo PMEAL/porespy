@@ -3,6 +3,7 @@ import scipy.ndimage as spim
 from skimage.segmentation import watershed
 from porespy.generators import line_segment
 from porespy.tools import get_edt
+from porespy.tools._label import _label_components
 
 
 __all__ = [
@@ -129,7 +130,7 @@ def pts_to_voronoi(im, r=0, centroids=True, borders=True):
 
     """
     dt = edt(~im)
-    markers, N = spim.label(im)
+    markers, N = _label_components(im, conn="min")
     ws = watershed(dt, markers, watershed_line=borders)
     for _ in range(r):
         pts = spim.center_of_mass(input=ws, labels=ws, index=range(1, N))
@@ -162,7 +163,7 @@ if __name__ == "__main__":
 
     vor = sptl.Voronoi(pts)
     im1 = vor_to_im(vor, im)
-    im1 = spim.label(~im1)[0]
+    im1 = _label_components(~im1, conn="min")[0]
     im1 = ps.tools.randomize_colors(im1)
     ax[0].imshow(im1, origin='lower', interpolation='none', cmap=plt.cm.plasma)
 
