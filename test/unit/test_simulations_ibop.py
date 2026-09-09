@@ -6,6 +6,7 @@ from porespy.simulations._tools import (
     _get_flat_indices,
     _insert_disks_at_indices_parallel,
     _make_axial_extent_lookup,
+    _remove_contained_disks,
 )
 
 ps.visualization.set_mpl_style()
@@ -52,6 +53,37 @@ class IBOPTest(GenericTest):
                 actual = _insert_disks_at_indices_parallel(
                     im=np.zeros(shape, dtype=bool),
                     indices=indices,
+                    dt=dt,
+                    ceil_distance=lookup,
+                    smooth=smooth,
+                )
+                assert np.array_equal(actual, expected)
+
+    def test_remove_contained_disks(self):
+        edt = ps.tools.get_edt()
+        for shape in [(41, 37), (25, 23, 21)]:
+            centers = ps.generators.blobs(
+                shape=shape,
+                porosity=0.65,
+                seed=0,
+                periodic=False,
+            )
+            dt = edt(centers)
+            indices = _get_flat_indices(centers)
+            pruned = _remove_contained_disks(indices.copy(), centers, dt)
+            lookup = _make_axial_extent_lookup(np.max(dt))
+            assert len(pruned) < len(indices)
+            for smooth in [True, False]:
+                expected = _insert_disks_at_indices_parallel(
+                    im=np.zeros(shape, dtype=bool),
+                    indices=indices,
+                    dt=dt,
+                    ceil_distance=lookup,
+                    smooth=smooth,
+                )
+                actual = _insert_disks_at_indices_parallel(
+                    im=np.zeros(shape, dtype=bool),
+                    indices=pruned,
                     dt=dt,
                     ceil_distance=lookup,
                     smooth=smooth,

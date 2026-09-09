@@ -28,6 +28,7 @@ from ._tools import (
     _get_flat_indices,
     _insert_disks_at_indices_parallel,
     _make_axial_extent_lookup,
+    _remove_contained_disks,
 )
 
 tqdm = get_tqdm()
@@ -634,6 +635,7 @@ def imbibition(
         nwp_mask = np.zeros_like(im, dtype=bool)
         if np.any(edges):
             indices = _get_flat_indices(edges)
+            indices = _remove_contained_disks(indices, edges, dt)
             nwp_mask = _insert_disks_at_indices_parallel(
                 im=nwp_mask,
                 indices=indices,

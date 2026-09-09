@@ -30,6 +30,7 @@ from ._tools import (
     _get_flat_indices,
     _insert_disks_at_indices_parallel,
     _make_axial_extent_lookup,
+    _remove_contained_disks,
 )
 
 __all__ = [
@@ -636,6 +637,8 @@ def drainage(
         np.logical_not(seeds_prev, out=edges)
         np.logical_and(seeds, edges, out=edges)
         indices = _get_flat_indices(edges)
+        eligible = edges if residual is not None else seeds
+        indices = _remove_contained_disks(indices, eligible, dt)
         nwp_mask = _insert_disks_at_indices_parallel(
             im=nwp_mask,
             indices=indices,
@@ -761,7 +764,9 @@ def join_residual_and_invasion_front(
             conn=conn,
         )
         # Convert to just edges
-        indices = _get_flat_indices(seeds * (~seeds_prev))
+        candidates = seeds * (~seeds_prev)
+        indices = _get_flat_indices(candidates)
+        indices = _remove_contained_disks(indices, candidates, dt)
         nwp_mask = _insert_disks_at_indices_parallel(
             im=nwp_mask,
             indices=indices,
