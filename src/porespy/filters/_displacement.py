@@ -416,23 +416,25 @@ def _trapped_regions_inner_loop(
     step = 1
     maxiter = np.sum(seq > 0)
     for _ in range(1, maxiter):
-        if len(bd):  # Put next site into pts list
-            pts = [hq.heappop(bd)]
+        if len(bd):
+            pt = hq.heappop(bd)
+            value = pt[0]
+            inds = [pt[1]]
         else:
             break
-        # Also pop any other points in list with same value
-        while len(bd) and (bd[0][0] == pts[0][0]):
-            pts.append(hq.heappop(bd))
-        while len(pts):
-            pt = pts.pop()
-            ind = pt[1]
+        # Existing entries at this level must be processed before newly exposed
+        # voxels.  Store only their flat indices since the sequence value is shared.
+        while len(bd) and (bd[0][0] == value):
+            inds.append(hq.heappop(bd)[1])
+        while len(inds):
+            ind = inds.pop()
             i = ind // stride0
             rem = ind - i * stride0
             j = rem // zlim
             k = rem - j * zlim
-            if (pt[0] >= minseq) and (pt[0] < 0):
+            if (value >= minseq) and (value < 0):
                 trapped[i, j, k] = False
-                minseq = pt[0]
+                minseq = value
             _push_valid_trapping_neighbors(
                 bd=bd,
                 edge=edge,
