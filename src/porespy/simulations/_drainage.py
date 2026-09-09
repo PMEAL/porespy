@@ -634,8 +634,7 @@ def drainage(
         if not np.any(seeds):
             continue
         # Dilate the erosion to find locations of non-wetting phase
-        np.logical_not(seeds_prev, out=edges)
-        np.logical_and(seeds, edges, out=edges)
+        np.logical_xor(seeds, seeds_prev, out=edges)
         indices = _get_flat_indices(edges)
         eligible = edges if residual is not None else seeds
         indices = _remove_contained_disks(indices, eligible, dt)
