@@ -540,6 +540,37 @@ class ToolsTest():
                                               overwrite=True)
         assert im.max() == 3
 
+    @pytest.mark.parametrize(
+        "shape, coords",
+        [
+            ((31, 37), np.array([[0, 10, 30], [0, 18, 36]])),
+            ((19, 23, 17), np.array([[0, 9, 18], [0, 11, 22], [0, 8, 16]])),
+        ],
+    )
+    @pytest.mark.parametrize("smooth", [True, False])
+    @pytest.mark.parametrize("overwrite", [True, False])
+    def test_numba_insert_disks_parallel_matches_serial(
+        self, shape, coords, smooth, overwrite,
+    ):
+        radii = np.array([0, 3, 6])
+        expected = ps.tools._insert_disks_at_points_serial(
+            im=np.zeros(shape, dtype=int),
+            coords=coords,
+            radii=radii,
+            v=2,
+            smooth=smooth,
+            overwrite=overwrite,
+        )
+        actual = ps.tools._insert_disks_at_points_parallel(
+            im=np.zeros(shape, dtype=int),
+            coords=coords,
+            radii=radii,
+            v=2,
+            smooth=smooth,
+            overwrite=overwrite,
+        )
+        assert np.array_equal(actual, expected)
+
     def test_find_bbox_2D(self):
         temp = np.ones([50, 50], dtype=bool)
         temp[25, 25] = False

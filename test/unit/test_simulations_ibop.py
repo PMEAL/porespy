@@ -2,6 +2,13 @@ import numpy as np
 from GenericTest import GenericTest
 
 import porespy as ps
+from porespy.simulations._tools import (
+    _find_interface,
+    _get_flat_indices,
+    _insert_disks_at_indices_parallel,
+    _make_axial_extent_lookup,
+    _remove_contained_disks,
+)
 
 ps.visualization.set_mpl_style()
 ps.settings.tqdm["disable"] = True
@@ -23,6 +30,82 @@ class IBOPTest(GenericTest):
         pc = ps.filters.capillary_transform(im=self.im2D)
         r2 = ps.simulations.drainage(im=self.im2D, pc=pc, steps=None)
         assert np.all(r1.im_seq == r2.im_seq)
+
+    def test_flat_index_sphere_insertion(self):
+        for shape in [(31, 37), (19, 23, 17)]:
+            centers = np.zeros(shape, dtype=bool)
+            centers[(0,) * len(shape)] = True
+            centers[tuple(i // 2 for i in shape)] = True
+            centers[tuple(i - 1 for i in shape)] = True
+            coords = np.vstack(np.where(centers))
+            dt = np.zeros(shape, dtype=np.float32)
+            dt[tuple(coords)] = [0, 3, 6]
+            indices = _get_flat_indices(centers)
+            lookup = _make_axial_extent_lookup(np.max(dt))
+            assert indices.dtype == np.int32
+            for smooth in [True, False]:
+                expected = ps.tools._insert_disks_at_points_parallel(
+                    im=np.zeros(shape, dtype=bool),
+                    coords=coords,
+                    radii=dt[tuple(coords)].astype(int),
+                    v=True,
+                    smooth=smooth,
+                )
+                actual = _insert_disks_at_indices_parallel(
+                    im=np.zeros(shape, dtype=bool),
+                    indices=indices,
+                    dt=dt,
+                    ceil_distance=lookup,
+                    smooth=smooth,
+                )
+                assert np.array_equal(actual, expected)
+
+    def test_remove_contained_disks(self):
+        edt = ps.tools.get_edt()
+        for shape in [(41, 37), (25, 23, 21)]:
+            centers = ps.generators.blobs(
+                shape=shape,
+                porosity=0.65,
+                seed=0,
+                periodic=False,
+            )
+            dt = edt(centers)
+            indices = _get_flat_indices(centers)
+            pruned = _remove_contained_disks(indices.copy(), centers, dt)
+            lookup = _make_axial_extent_lookup(np.max(dt))
+            assert len(pruned) < len(indices)
+            for smooth in [True, False]:
+                expected = _insert_disks_at_indices_parallel(
+                    im=np.zeros(shape, dtype=bool),
+                    indices=indices,
+                    dt=dt,
+                    ceil_distance=lookup,
+                    smooth=smooth,
+                )
+                actual = _insert_disks_at_indices_parallel(
+                    im=np.zeros(shape, dtype=bool),
+                    indices=pruned,
+                    dt=dt,
+                    ceil_distance=lookup,
+                    smooth=smooth,
+                )
+                assert np.array_equal(actual, expected)
+
+    def test_find_interface(self):
+        rng = np.random.default_rng(0)
+        for shape in [(31, 37), (19, 23, 17)]:
+            mask = rng.random(shape) > 0.25
+            expected = (
+                ~ps.filters.erode(
+                    mask,
+                    r=1,
+                    smooth=False,
+                    method="conv",
+                )
+                * mask
+            )
+            actual = _find_interface(mask, np.empty_like(mask))
+            assert np.array_equal(actual, expected)
 
     def test_ibop_w_trapping(self):
         im = np.copy(self.im2D)

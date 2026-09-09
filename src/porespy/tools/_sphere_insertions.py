@@ -62,38 +62,78 @@ def points_to_spheres(im):
     return im_spheres
 
 
+@njit(inline='always')
+def _get_axial_extent(distance_squared, ceil_distance, smooth):
+    if smooth:
+        if distance_squared <= 0:
+            return -1
+        return int(ceil_distance[distance_squared]) - 1
+    if distance_squared < 0:
+        return -1
+    extent = int(ceil_distance[distance_squared])
+    if extent**2 > distance_squared:
+        extent -= 1
+    return extent
+
+
 @njit(parallel=True)
 def _insert_disks_at_points_parallel(im, coords, radii, v, smooth=True,
                                      overwrite=False):  # pragma: no cover
     npts = len(coords[0])
+    max_radius = 0
+    for i in range(npts):
+        max_radius = max(max_radius, int(radii[i]))
+    ceil_distance = np.empty(max_radius**2 + 1, dtype=np.int64)
+    for distance_squared in range(max_radius**2 + 1):
+        ceil_distance[distance_squared] = int(np.ceil(np.sqrt(distance_squared)))
     if im.ndim == 2:
         xlim, ylim = im.shape
         for i in prange(npts):
-            r = radii[i]
+            r = int(radii[i])
             pt = coords[:, i]
-            for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            R = ((a - r)**2 + (b - r)**2)**0.5
-                            if (R <= r)*(~smooth) or (R < r)*(smooth):
-                                if overwrite or (im[x, y] == 0):
-                                    im[x, y] = v
+            radius_squared = r**2
+            for x in range(max(0, pt[0] - r), min(pt[0] + r + 1, xlim)):
+                dx = x - pt[0]
+                y_extent = _get_axial_extent(
+                    radius_squared - dx**2,
+                    ceil_distance,
+                    smooth,
+                )
+                for y in range(
+                    max(0, pt[1] - y_extent),
+                    min(pt[1] + y_extent + 1, ylim),
+                ):
+                    if overwrite or (im[x, y] == 0):
+                        im[x, y] = v
     elif im.ndim == 3:
         xlim, ylim, zlim = im.shape
         for i in prange(npts):
-            r = radii[i]
+            r = int(radii[i])
             pt = coords[:, i]
-            for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            for c, z in enumerate(range(pt[2]-r, pt[2]+r+1)):
-                                if (z >= 0) and (z < zlim):
-                                    R = ((a - r)**2 + (b - r)**2 + (c - r)**2)**0.5
-                                    if (R <= r)*(~smooth) or (R < r)*(smooth):
-                                        if overwrite or (im[x, y, z] == 0):
-                                            im[x, y, z] = v
+            radius_squared = r**2
+            for x in range(max(0, pt[0] - r), min(pt[0] + r + 1, xlim)):
+                dx = x - pt[0]
+                yz_extent = _get_axial_extent(
+                    radius_squared - dx**2,
+                    ceil_distance,
+                    smooth,
+                )
+                for y in range(
+                    max(0, pt[1] - yz_extent),
+                    min(pt[1] + yz_extent + 1, ylim),
+                ):
+                    dy = y - pt[1]
+                    z_extent = _get_axial_extent(
+                        radius_squared - dx**2 - dy**2,
+                        ceil_distance,
+                        smooth,
+                    )
+                    for z in range(
+                        max(0, pt[2] - z_extent),
+                        min(pt[2] + z_extent + 1, zlim),
+                    ):
+                        if overwrite or (im[x, y, z] == 0):
+                            im[x, y, z] = v
     return im
 
 

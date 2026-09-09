@@ -4,7 +4,6 @@ import numpy as np
 from numba import njit, prange
 
 from porespy.filters import (
-    erode,
     fftmorphology,
     find_trapped_clusters,
     seq_to_satn,
@@ -16,13 +15,20 @@ from porespy.tools import (
     Results,
     _insert_disk_at_points,
     _insert_disk_at_points_parallel,
-    _insert_disks_at_points_parallel,
     get_tqdm,
     get_edt,
     make_contiguous,
     parse_steps,
     ps_round,
     settings,
+)
+
+from ._tools import (
+    _find_interface,
+    _get_flat_indices,
+    _insert_disks_at_indices_parallel,
+    _make_axial_extent_lookup,
+    _remove_contained_disks,
 )
 
 tqdm = get_tqdm()
@@ -577,6 +583,7 @@ def imbibition(
 
     if dt is None:
         dt = edt(im)
+    ceil_distance = _make_axial_extent_lookup(np.max(dt))
 
     if pc is None:
         # Cast `dt` to float64 to avoid precision loss in `2.0/dt`. With float32
@@ -615,29 +622,29 @@ def imbibition(
             conn=conn,
         )
     im_seq[trapped] = -1
+    invadable = np.empty_like(im, dtype=bool)
+    edges = np.empty_like(im, dtype=bool)
+    nwp_mask = np.empty_like(im, dtype=bool)
 
     desc = inspect.currentframe().f_code.co_name  # Get current func name
     for step, P in enumerate(tqdm(Ps, desc=desc, **settings.tqdm)):
-        invadable = (pc <= P)*im  # This means 'invadable by non-wetting phase'
-        # Using FFT-based erosion to find edges.  When struct is small, this is
-        # quite fast so it saves time overall by reducing the number of spheres
-        # that need to be inserted.
-        # TODO: This can be made faster if I find a way to get only seeds on edge,
-        # so less spheres need to be drawn
-        edges = (~erode(invadable, r=1, smooth=False, method='conv'))*invadable
-        nwp_mask = np.zeros_like(im, dtype=bool)
+        # Find invadable voxels and their axial interface with the solid phase
+        np.less_equal(pc, P, out=invadable)
+        np.logical_and(invadable, im, out=invadable)
+        _find_interface(invadable, edges)
+        nwp_mask.fill(False)
         if np.any(edges):
-            coords = np.where(edges)
-            radii = dt[coords].astype(int)
-            nwp_mask = _insert_disks_at_points_parallel(
+            indices = _get_flat_indices(edges)
+            indices = _remove_contained_disks(indices, edges, dt)
+            nwp_mask = _insert_disks_at_indices_parallel(
                 im=nwp_mask,
-                coords=np.vstack(coords),
-                radii=radii,
-                v=True,
+                indices=indices,
+                dt=dt,
+                ceil_distance=ceil_distance,
                 smooth=smooth,
                 overwrite=True,
             )
-            nwp_mask += invadable
+            np.logical_or(nwp_mask, invadable, out=nwp_mask)
         if inlets is not None:
             nwp_mask = ~trim_disconnected_voxels(
                 im=(~nwp_mask)*im,

@@ -17,7 +17,6 @@ from porespy.tools import (
     Results,
     _insert_disk_at_points,
     _insert_disk_at_points_parallel,
-    _insert_disks_at_points_parallel,
     get_edt,
     get_strel,
     get_tqdm,
@@ -25,6 +24,13 @@ from porespy.tools import (
     parse_steps,
     settings,
     ps_round,
+)
+
+from ._tools import (
+    _get_flat_indices,
+    _insert_disks_at_indices_parallel,
+    _make_axial_extent_lookup,
+    _remove_contained_disks,
 )
 
 __all__ = [
@@ -568,6 +574,7 @@ def drainage(
 
     if dt is None:
         dt = edt(im)
+    ceil_distance = _make_axial_extent_lookup(np.max(dt))
 
     if pc is None:
         # Cast `dt` to float64 to avoid precision loss in `2.0/dt`. With float32
@@ -627,15 +634,15 @@ def drainage(
         if not np.any(seeds):
             continue
         # Dilate the erosion to find locations of non-wetting phase
-        np.logical_not(seeds_prev, out=edges)
-        np.logical_and(seeds, edges, out=edges)
-        coords = np.where(edges)  # Find (i, j, k) coordinates of edges
-        radii = dt[coords]  # Extract sphere sizes to insert at each new location
-        nwp_mask = _insert_disks_at_points_parallel(
+        np.logical_xor(seeds, seeds_prev, out=edges)
+        indices = _get_flat_indices(edges)
+        eligible = edges if residual is not None else seeds
+        indices = _remove_contained_disks(indices, eligible, dt)
+        nwp_mask = _insert_disks_at_indices_parallel(
             im=nwp_mask,
-            coords=np.vstack(coords),
-            radii=radii.astype(int),
-            v=True,
+            indices=indices,
+            dt=dt,
+            ceil_distance=ceil_distance,
             smooth=smooth,
             overwrite=False,
         )
@@ -652,6 +659,7 @@ def drainage(
                     seeds_prev=seeds_prev,
                     P=P,
                     conn=conn,
+                    ceil_distance=ceil_distance,
                 )
         # Find trapped wetting due to presence of residual
         if all([inlets is not None, outlets is not None, residual is not None]):
@@ -738,6 +746,7 @@ def join_residual_and_invasion_front(
     P,
     seeds_prev,
     conn,
+    ceil_distance,
 ):
     # Find nwp pixels connected to residual
     temp = trim_disconnected_voxels(
@@ -754,13 +763,14 @@ def join_residual_and_invasion_front(
             conn=conn,
         )
         # Convert to just edges
-        coords = np.where(seeds * (~seeds_prev))
-        radii = dt[coords].astype(int)
-        nwp_mask = _insert_disks_at_points_parallel(
+        candidates = seeds * (~seeds_prev)
+        indices = _get_flat_indices(candidates)
+        indices = _remove_contained_disks(indices, candidates, dt)
+        nwp_mask = _insert_disks_at_indices_parallel(
             im=nwp_mask,
-            coords=np.vstack(coords),
-            radii=radii.astype(int),
-            v=True,
+            indices=indices,
+            dt=dt,
+            ceil_distance=ceil_distance,
             smooth=True,
             overwrite=False,
         )
