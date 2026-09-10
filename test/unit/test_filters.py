@@ -349,6 +349,29 @@ class FilterTest():
         lt = ps.filters.local_thickness(im, sizes=[20, 10])
         assert np.all(np.unique(lt) == [0, 10, 20])
 
+    def test_local_thickness_return_indices(self):
+        lt = ps.filters.local_thickness(self.im, method='dt')
+        sizes, indices = ps.filters.local_thickness(
+            self.im, method='dt', return_indices=True)
+        # Indices use a compact unsigned-int dtype, and sizes[indices] reproduces
+        # the float result.
+        assert indices.dtype == np.uint8
+        assert indices.nbytes * 8 == lt.nbytes
+        np.testing.assert_array_equal(sizes[indices], lt)
+        assert sizes[0] == 0
+        with pytest.raises(NotImplementedError):
+            ps.filters.local_thickness(self.im, method='conv', return_indices=True)
+
+    def test_porosimetry_return_indices(self):
+        por = ps.filters.porosimetry(self.im, method='dt')
+        sizes, indices = ps.filters.porosimetry(
+            self.im, method='dt', return_indices=True)
+        assert indices.dtype == np.uint8
+        np.testing.assert_array_equal(sizes[indices], por)
+        assert sizes[0] == 0
+        with pytest.raises(NotImplementedError):
+            ps.filters.porosimetry(self.im, method='conv', return_indices=True)
+
     def test_morphology_fft_dilate_2d(self):
         im = self.im[:, :, 50]
         truth = spim.binary_dilation(im, structure=disk(3))
