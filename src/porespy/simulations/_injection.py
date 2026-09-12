@@ -326,31 +326,119 @@ def _insert_qbip_sphere(
                     ceil_distance,
                     smooth,
                 )
-                for z in range(max(0, k - z_extent), min(k + z_extent + 1, zlim)):
-                    dz = z - k
-                    distance_squared = dx**2 + dy**2 + dz**2
-                    depth = r - ceil_distance[distance_squared]
-                    if im_depth[x, y, z] < depth:
-                        im_depth[x, y, z] = depth
-                    if seq[x, y, z] == 0:
-                        seq[x, y, z] = step
-                    if draw_pressure and (pressure[x, y, z] == 0):
-                        pressure[x, y, z] = value_pc
-                    if draw_size and (size[x, y, z] == 0):
-                        size[x, y, z] = value_size
+                if z_extent < 0:
+                    continue
+                base_distance_squared = dx**2 + dy**2
+                negative_extent = min(z_extent, k)
+                positive_extent = min(z_extent, zlim - 1 - k)
+                shared_extent = min(negative_extent, positive_extent)
+                _update_qbip_voxel(
+                    seq=seq,
+                    pressure=pressure,
+                    size=size,
+                    im_depth=im_depth,
+                    ceil_distance=ceil_distance,
+                    x=x,
+                    y=y,
+                    z=k,
+                    r=r,
+                    step=step,
+                    value_pc=value_pc,
+                    value_size=value_size,
+                    draw_pressure=draw_pressure,
+                    draw_size=draw_size,
+                    distance_squared=base_distance_squared,
+                )
+                for dz in range(1, shared_extent + 1):
+                    distance_squared = base_distance_squared + dz**2
+                    _update_qbip_voxel(
+                        seq, pressure, size, im_depth, ceil_distance,
+                        x, y, k - dz, r, step, value_pc, value_size,
+                        draw_pressure, draw_size, distance_squared,
+                    )
+                    _update_qbip_voxel(
+                        seq, pressure, size, im_depth, ceil_distance,
+                        x, y, k + dz, r, step, value_pc, value_size,
+                        draw_pressure, draw_size, distance_squared,
+                    )
+                for dz in range(shared_extent + 1, negative_extent + 1):
+                    _update_qbip_voxel(
+                        seq, pressure, size, im_depth, ceil_distance,
+                        x, y, k - dz, r, step, value_pc, value_size,
+                        draw_pressure, draw_size,
+                        base_distance_squared + dz**2,
+                    )
+                for dz in range(shared_extent + 1, positive_extent + 1):
+                    _update_qbip_voxel(
+                        seq, pressure, size, im_depth, ceil_distance,
+                        x, y, k + dz, r, step, value_pc, value_size,
+                        draw_pressure, draw_size,
+                        base_distance_squared + dz**2,
+                    )
         else:
-            for y in range(max(0, j - yz_extent), min(j + yz_extent + 1, ylim)):
-                dy = y - j
+            if yz_extent < 0:
+                continue
+            negative_extent = min(yz_extent, j)
+            positive_extent = min(yz_extent, ylim - 1 - j)
+            shared_extent = min(negative_extent, positive_extent)
+            _update_qbip_voxel(
+                seq, pressure, size, im_depth, ceil_distance,
+                x, j, 0, r, step, value_pc, value_size,
+                draw_pressure, draw_size, dx**2,
+            )
+            for dy in range(1, shared_extent + 1):
                 distance_squared = dx**2 + dy**2
-                depth = r - ceil_distance[distance_squared]
-                if im_depth[x, y, 0] < depth:
-                    im_depth[x, y, 0] = depth
-                if seq[x, y, 0] == 0:
-                    seq[x, y, 0] = step
-                if draw_pressure and (pressure[x, y, 0] == 0):
-                    pressure[x, y, 0] = value_pc
-                if draw_size and (size[x, y, 0] == 0):
-                    size[x, y, 0] = value_size
+                _update_qbip_voxel(
+                    seq, pressure, size, im_depth, ceil_distance,
+                    x, j - dy, 0, r, step, value_pc, value_size,
+                    draw_pressure, draw_size, distance_squared,
+                )
+                _update_qbip_voxel(
+                    seq, pressure, size, im_depth, ceil_distance,
+                    x, j + dy, 0, r, step, value_pc, value_size,
+                    draw_pressure, draw_size, distance_squared,
+                )
+            for dy in range(shared_extent + 1, negative_extent + 1):
+                _update_qbip_voxel(
+                    seq, pressure, size, im_depth, ceil_distance,
+                    x, j - dy, 0, r, step, value_pc, value_size,
+                    draw_pressure, draw_size, dx**2 + dy**2,
+                )
+            for dy in range(shared_extent + 1, positive_extent + 1):
+                _update_qbip_voxel(
+                    seq, pressure, size, im_depth, ceil_distance,
+                    x, j + dy, 0, r, step, value_pc, value_size,
+                    draw_pressure, draw_size, dx**2 + dy**2,
+                )
+
+
+@njit(inline="always")
+def _update_qbip_voxel(
+    seq,
+    pressure,
+    size,
+    im_depth,
+    ceil_distance,
+    x,
+    y,
+    z,
+    r,
+    step,
+    value_pc,
+    value_size,
+    draw_pressure,
+    draw_size,
+    distance_squared,
+):  # pragma: no cover
+    depth = r - ceil_distance[distance_squared]
+    if im_depth[x, y, z] < depth:
+        im_depth[x, y, z] = depth
+    if seq[x, y, z] == 0:
+        seq[x, y, z] = step
+        if draw_pressure:
+            pressure[x, y, z] = value_pc
+        if draw_size:
+            size[x, y, z] = value_size
 
 
 @njit

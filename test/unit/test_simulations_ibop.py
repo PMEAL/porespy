@@ -1,3 +1,5 @@
+import inspect
+
 import numpy as np
 from GenericTest import GenericTest
 
@@ -6,8 +8,11 @@ from porespy.simulations._tools import (
     _find_interface,
     _get_flat_indices,
     _insert_disks_at_indices_parallel,
+    _insert_disks_at_indices_parallel_direct,
+    _insert_disks_at_indices_parallel_merged,
     _make_axial_extent_lookup,
     _remove_contained_disks,
+    _use_merged_intervals,
 )
 
 ps.visualization.set_mpl_style()
@@ -31,6 +36,15 @@ class IBOPTest(GenericTest):
         r2 = ps.simulations.drainage(im=self.im2D, pc=pc, steps=None)
         assert np.all(r1.im_seq == r2.im_seq)
 
+    def test_drainage_default_steps_is_25(self):
+        params = inspect.signature(ps.simulations.drainage).parameters
+        default = params["steps"].default
+        assert default == 25
+        actual = ps.simulations.drainage(im=self.im2D)
+        expected = ps.simulations.drainage(im=self.im2D, steps=25)
+        assert np.array_equal(actual.im_seq, expected.im_seq)
+        assert np.array_equal(actual.im_pc, expected.im_pc)
+
     def test_flat_index_sphere_insertion(self):
         for shape in [(31, 37), (19, 23, 17)]:
             centers = np.zeros(shape, dtype=bool)
@@ -44,21 +58,78 @@ class IBOPTest(GenericTest):
             lookup = _make_axial_extent_lookup(np.max(dt))
             assert indices.dtype == np.int32
             for smooth in [True, False]:
-                expected = ps.tools._insert_disks_at_points_parallel(
+                for overwrite in [True, False]:
+                    expected = ps.tools._insert_disks_at_points_parallel(
+                        im=np.zeros(shape, dtype=bool),
+                        coords=coords,
+                        radii=dt[tuple(coords)].astype(int),
+                        v=True,
+                        smooth=smooth,
+                    )
+                    actual = _insert_disks_at_indices_parallel(
+                        im=np.zeros(shape, dtype=bool),
+                        indices=indices,
+                        dt=dt,
+                        ceil_distance=lookup,
+                        smooth=smooth,
+                        overwrite=overwrite,
+                    )
+                    assert np.array_equal(actual, expected)
+
+    def test_merged_interval_sphere_insertion(self):
+        for shape in [(51, 53), (51, 53, 49)]:
+            centers = np.zeros(shape, dtype=bool)
+            center_slice = tuple(slice(15, 35) for _ in shape)
+            centers[center_slice] = True
+            centers[(2,) * len(shape)] = True
+            centers[tuple(i - 3 for i in shape)] = True
+            indices = _get_flat_indices(centers)
+            dt = np.zeros(shape, dtype=np.float32)
+            dt[centers] = 8
+            lookup = _make_axial_extent_lookup(np.max(dt))
+            for smooth in [True, False]:
+                direct = _insert_disks_at_indices_parallel_direct(
                     im=np.zeros(shape, dtype=bool),
-                    coords=coords,
-                    radii=dt[tuple(coords)].astype(int),
-                    v=True,
+                    indices=indices,
+                    dt=dt,
+                    ceil_distance=lookup,
                     smooth=smooth,
+                    overwrite=True,
                 )
-                actual = _insert_disks_at_indices_parallel(
+                merged = _insert_disks_at_indices_parallel_merged(
                     im=np.zeros(shape, dtype=bool),
                     indices=indices,
                     dt=dt,
                     ceil_distance=lookup,
                     smooth=smooth,
                 )
-                assert np.array_equal(actual, expected)
+                assert np.array_equal(merged, direct)
+                adaptive = _insert_disks_at_indices_parallel(
+                    im=np.zeros(shape, dtype=bool),
+                    indices=indices,
+                    dt=dt,
+                    ceil_distance=lookup,
+                    smooth=smooth,
+                    overwrite=True,
+                )
+                assert np.array_equal(adaptive, direct)
+
+    def test_interval_merging_is_adaptive(self):
+        shape = (51, 53, 49)
+        dt = np.zeros(shape, dtype=np.float32)
+        sparse = np.zeros(shape, dtype=bool)
+        sparse[25, 26, 24] = True
+        dt[sparse] = 8
+        assert not _use_merged_intervals(
+            np.zeros(shape), _get_flat_indices(sparse), dt
+        )
+
+        dense = np.zeros(shape, dtype=bool)
+        dense[15:35, 15:35, 15:35] = True
+        dt[dense] = 8
+        assert _use_merged_intervals(
+            np.zeros(shape), _get_flat_indices(dense), dt
+        )
 
     def test_remove_contained_disks(self):
         edt = ps.tools.get_edt()
