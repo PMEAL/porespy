@@ -82,6 +82,36 @@ class QBIPTest(GenericTest):
         assert drawn == 1
         assert skipped == 1
 
+    def test_qbip_preserves_zero_first_invasion_pressure(self):
+        shape = (9, 9, 1)
+        dt = np.zeros(shape, dtype=float)
+        pc = np.zeros(shape, dtype=float)
+        dt[4, 4, 0] = 2
+        dt[4, 5, 0] = 3
+        pc[4, 5, 0] = 2
+        order = np.array([-41, -42], dtype=np.int32)
+        seq = np.zeros(shape, dtype=int)
+        pressure = np.zeros(shape, dtype=float)
+        size = np.zeros(shape, dtype=float)
+        im_depth = np.zeros(shape, dtype=np.uint8)
+        ceil_distance = np.ceil(np.sqrt(np.arange(10))).astype(np.uint8)
+
+        sequence, pressure, _, drawn, skipped = _draw_qbip_spheres(
+            order=order,
+            dt=dt,
+            pc=pc,
+            seq=seq,
+            pressure=pressure,
+            size=size,
+            im_depth=im_depth,
+            ceil_distance=ceil_distance,
+        )
+
+        assert drawn == 2
+        assert skipped == 0
+        assert sequence[4, 4, 0] == 1
+        assert pressure[4, 4, 0] == 0
+
 
 if __name__ == "__main__":
     self = QBIPTest()
