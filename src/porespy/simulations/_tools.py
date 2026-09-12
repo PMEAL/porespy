@@ -134,12 +134,14 @@ def _insert_disks_at_indices_parallel(
                     ceil_distance,
                     smooth,
                 )
-                for y in range(
-                    max(0, j - y_extent),
-                    min(j + y_extent + 1, ylim),
-                ):
-                    if overwrite or not im[x, y]:
-                        im[x, y] = True
+                y_start = max(0, j - y_extent)
+                y_stop = min(j + y_extent + 1, ylim)
+                if overwrite:
+                    im[x, y_start:y_stop] = True
+                else:
+                    for y in range(y_start, y_stop):
+                        if not im[x, y]:
+                            im[x, y] = True
     elif im.ndim == 3:
         xlim, ylim, zlim = im.shape
         stride0 = ylim * zlim
@@ -168,10 +170,12 @@ def _insert_disks_at_indices_parallel(
                         ceil_distance,
                         smooth,
                     )
-                    for z in range(
-                        max(0, k - z_extent),
-                        min(k + z_extent + 1, zlim),
-                    ):
-                        if overwrite or not im[x, y, z]:
-                            im[x, y, z] = True
+                    z_start = max(0, k - z_extent)
+                    z_stop = min(k + z_extent + 1, zlim)
+                    if overwrite:
+                        im[x, y, z_start:z_stop] = True
+                    else:
+                        for z in range(z_start, z_stop):
+                            if not im[x, y, z]:
+                                im[x, y, z] = True
     return im

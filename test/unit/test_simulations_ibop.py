@@ -1,3 +1,5 @@
+import inspect
+
 import numpy as np
 from GenericTest import GenericTest
 
@@ -31,6 +33,15 @@ class IBOPTest(GenericTest):
         r2 = ps.simulations.drainage(im=self.im2D, pc=pc, steps=None)
         assert np.all(r1.im_seq == r2.im_seq)
 
+    def test_drainage_default_steps_is_25(self):
+        params = inspect.signature(ps.simulations.drainage).parameters
+        default = params["steps"].default
+        assert default == 25
+        actual = ps.simulations.drainage(im=self.im2D)
+        expected = ps.simulations.drainage(im=self.im2D, steps=25)
+        assert np.array_equal(actual.im_seq, expected.im_seq)
+        assert np.array_equal(actual.im_pc, expected.im_pc)
+
     def test_flat_index_sphere_insertion(self):
         for shape in [(31, 37), (19, 23, 17)]:
             centers = np.zeros(shape, dtype=bool)
@@ -44,21 +55,23 @@ class IBOPTest(GenericTest):
             lookup = _make_axial_extent_lookup(np.max(dt))
             assert indices.dtype == np.int32
             for smooth in [True, False]:
-                expected = ps.tools._insert_disks_at_points_parallel(
-                    im=np.zeros(shape, dtype=bool),
-                    coords=coords,
-                    radii=dt[tuple(coords)].astype(int),
-                    v=True,
-                    smooth=smooth,
-                )
-                actual = _insert_disks_at_indices_parallel(
-                    im=np.zeros(shape, dtype=bool),
-                    indices=indices,
-                    dt=dt,
-                    ceil_distance=lookup,
-                    smooth=smooth,
-                )
-                assert np.array_equal(actual, expected)
+                for overwrite in [True, False]:
+                    expected = ps.tools._insert_disks_at_points_parallel(
+                        im=np.zeros(shape, dtype=bool),
+                        coords=coords,
+                        radii=dt[tuple(coords)].astype(int),
+                        v=True,
+                        smooth=smooth,
+                    )
+                    actual = _insert_disks_at_indices_parallel(
+                        im=np.zeros(shape, dtype=bool),
+                        indices=indices,
+                        dt=dt,
+                        ceil_distance=lookup,
+                        smooth=smooth,
+                        overwrite=overwrite,
+                    )
+                    assert np.array_equal(actual, expected)
 
     def test_remove_contained_disks(self):
         edt = ps.tools.get_edt()

@@ -454,7 +454,7 @@ def drainage(
     inlets: npt.NDArray = None,
     outlets: npt.NDArray = None,
     residual: npt.NDArray = None,
-    steps: int = None,
+    steps: int = 25,
     conn: Literal["min", "max"] = "min",
     min_size: int = 0,
     smooth: bool = True,
@@ -644,7 +644,7 @@ def drainage(
             dt=dt,
             ceil_distance=ceil_distance,
             smooth=smooth,
-            overwrite=False,
+            overwrite=True,
         )
         nwp_mask[seeds] = True  # Fill in center in case spheres did not reach
         # Connect residual to invasion front
@@ -772,7 +772,7 @@ def join_residual_and_invasion_front(
             dt=dt,
             ceil_distance=ceil_distance,
             smooth=True,
-            overwrite=False,
+            overwrite=True,
         )
     return nwp_mask
 
