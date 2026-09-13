@@ -329,18 +329,11 @@ class FilterTest():
         assert max1 > max2
 
     def test_local_thickness(self):
-        lt = ps.filters.local_thickness(self.im, method='dt')
-        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
-        lt = ps.filters.local_thickness(self.im, method='imj')
-        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
-        lt = ps.filters.local_thickness(self.im, method='conv')
-        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
-
-    def test_local_thickness_imj_2d(self):
-        im = self.im[:, :, 50]
-        lt = ps.filters.local_thickness_imj(im)
-        assert lt.shape == im.shape
-        assert lt.max() > 0
+        reference = ps.filters.local_thickness(self.im, method='dt')
+        assert reference.max() == int(self.im_dt.max())
+        for method in ['bf', 'conv']:
+            actual = ps.filters.local_thickness(self.im, method=method)
+            assert np.array_equal(actual, reference)
 
     def test_local_thickness_bf_mask(self):
         im = self.im[:, :, 50]
@@ -349,8 +342,21 @@ class FilterTest():
         center = np.unravel_index(np.argmax(dt), dt.shape)
         mask[center] = True
         lt = ps.filters.local_thickness(im, dt=dt, method='bf', mask=mask)
-        assert lt[center] == dt[center]
+        assert lt[center] == int(dt[center])
         assert np.count_nonzero(lt) < np.count_nonzero(im)
+
+    def test_local_thickness_methods_use_integer_radii(self):
+        im = self.im[:, :, 50]
+        dt = edt(im)
+        sizes = [4, 3, 2, 1]
+        reference = ps.filters.local_thickness(
+            im, dt=dt, method='dt', sizes=sizes)
+        for method in ['bf', 'conv']:
+            actual = ps.filters.local_thickness(
+                im, dt=dt, method=method, sizes=sizes)
+            assert np.array_equal(actual, reference)
+        with pytest.raises(ValueError, match='positive integer radii'):
+            ps.filters.local_thickness(im, dt=dt, sizes=[2.5])
 
     def test_local_thickness_known_sizes(self):
         im = np.zeros(shape=[300, 300])

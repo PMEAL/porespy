@@ -4,7 +4,7 @@ from typing import Literal
 
 import numpy as np
 import numpy.typing as npt
-from numba import njit, prange
+from numba import njit
 from skimage.morphology import ball, disk, footprint_rectangle
 
 from porespy.tools import (
@@ -26,7 +26,6 @@ strel = {
 
 __all__ = [
     "local_thickness_bf",
-    "local_thickness_imj",
     "local_thickness_dt",
     "local_thickness_conv",
     "local_thickness",
@@ -75,9 +74,7 @@ def porosimetry(
         This is only used if the method is `dt` or `conv`. If a list of values is
         provided they are used directly. If a scalar is provided then that number
         of points spanning the min and max of the distance transform are used.
-        If `None`, then all the unique values in the distance transform are used,
-        which may become time consuming. This can be sped up if `dt` is provided
-        and rounded to the nearest integer first.
+        If `None`, then all the unique values in the distance transform are used.
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
@@ -109,24 +106,45 @@ def porosimetry(
         sizes = np.unique(dt[im])
     if method == 'dt':
         from porespy.simulations import drainage_dt
-        drn = drainage_dt(im=im, inlets=inlets, steps=sizes, smooth=smooth)
+        drn = drainage_dt(im=im, dt=dt, inlets=inlets, steps=sizes, smooth=smooth)
     elif method in ['dsi', 'bf']:
         from porespy.simulations import drainage_bf
-        drn = drainage_bf(im=im, inlets=inlets, steps=sizes, smooth=smooth)
+        drn = drainage_bf(im=im, dt=dt, inlets=inlets, steps=sizes, smooth=smooth)
     if method in ['fft', 'conv']:
         from porespy.simulations import drainage_conv
-        drn = drainage_conv(im=im, inlets=inlets, steps=sizes, smooth=smooth)
+        drn = drainage_conv(im=im, dt=dt, inlets=inlets, steps=sizes, smooth=smooth)
     return drn.im_size
+
+
+def _parse_integer_radii(sizes, dt, im):
+    """Return requested sphere radii as descending positive integers."""
+    max_radius = int(np.floor(np.max(dt[im])))
+    if max_radius < 1:
+        return np.empty(0, dtype=int)
+    if sizes is None:
+        return np.arange(max_radius, 0, -1)
+    if isinstance(sizes, (int, np.integer)):
+        if sizes < 1:
+            raise ValueError('sizes must be a positive integer')
+        radii = np.linspace(1, max_radius, num=sizes)
+        radii = np.rint(radii).astype(int)
+    else:
+        radii = np.asarray(sizes)
+        if np.any(~np.isfinite(radii)) or np.any(radii < 1) \
+                or np.any(radii != np.floor(radii)):
+            raise ValueError('sizes must contain positive integer radii')
+        radii = radii.astype(int, copy=False)
+    return np.unique(radii)[::-1]
 
 
 def local_thickness(
     im: npt.NDArray,
     dt: npt.NDArray = None,
-    method: Literal['bf', 'imj', 'conv', 'dt'] = 'dt',
+    method: Literal['bf', 'conv', 'dt'] = 'bf',
     smooth: bool = True,
     mask: npt.NDArray = None,
     approx: bool = False,
-    sizes: int = 25,
+    sizes: int = None,
 ):
     r"""
     Insert a maximally inscribed sphere at every pixel labelled by sphere radius
@@ -149,19 +167,14 @@ def local_thickness(
         'dt'     Uses distance transforms to perform erosion and dilation for each
                  radius in the image
         'bf'     Uses brute-force to inserts spheres at each voxel
-        'imj'    Uses the brute-force method but reduces the number of insertion
-                 sites by 80-90% to speed up the process
         'conv'   Uses FFT-based convolution to perform erosion and dilation for
                  each radius in the image
         ======== ===================================================================
 
     sizes : array_like or scalar
-        This is only used if the method is `dt` or `conv`. If a list of values is
-        provided they are used directly. If a scalar is provided then that number
-        of points spanning the min and max of the distance transform are used.
-        If `None`, then all the unique values in the distance transform are used,
-        which may become time consuming. This can be sped up if `dt` is provided
-        and rounded to the nearest integer first.
+        Positive integer radii to evaluate. If a scalar is provided, that many
+        evenly-spaced integer radii between 1 and ``floor(dt.max())`` are used.
+        If `None`, every integer radius in that range is used.
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
@@ -170,10 +183,7 @@ def local_thickness(
         which sites to insert spheres at. If not provided then all `True` values in
         `im` are used.
     approx : bool, optional
-        This is only used if the method is `imj`. If `True` the algorithm is more
-        aggressive at skipping voxels to process, which speeds things up, but this
-        sacrifices accuracy in terms of a voxel-by-voxel match with the reference
-        implementation. The default is `False`, meaning full accuracy is the default.
+        Retained for compatibility with `imj` and has no effect.
 
     Returns
     -------
@@ -190,10 +200,9 @@ def local_thickness(
 
     if method == 'dt':
         lt = local_thickness_dt(im=im, dt=dt, sizes=sizes, smooth=smooth)
-    elif method == 'imj':
-        lt = local_thickness_imj(im=im, dt=dt, smooth=smooth, approx=approx)
     elif method == 'bf':
-        lt = local_thickness_bf(im=im, dt=dt, mask=mask, smooth=smooth)
+        lt = local_thickness_bf(
+            im=im, dt=dt, mask=mask, smooth=smooth, sizes=sizes)
     elif method == 'conv':
         lt = local_thickness_conv(im=im, dt=dt, sizes=sizes, smooth=smooth)
     else:
@@ -201,7 +210,7 @@ def local_thickness(
     return lt
 
 
-def local_thickness_bf(im, dt=None, mask=None, smooth=True):
+def local_thickness_bf(im, dt=None, mask=None, smooth=True, sizes=None):
     r"""
     Insert a maximally inscribed sphere at every pixel labelled by sphere radius
 
@@ -217,6 +226,10 @@ def local_thickness_bf(im, dt=None, mask=None, smooth=True):
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
+    sizes : array_like or scalar
+        Positive integer radii to evaluate. If a scalar is provided, that many
+        evenly-spaced integer radii between 1 and ``floor(dt.max())`` are used.
+        If `None`, every integer radius in that range is used.
 
     Returns
     -------
@@ -245,247 +258,74 @@ def local_thickness_bf(im, dt=None, mask=None, smooth=True):
     # Only nonzero, requested sites can modify the result.  Keeping these as
     # flat indices avoids sorting the solid phase and allocating an ``ndim``
     # coordinate array for every voxel.
-    indices = np.flatnonzero(mask & (dt > 0))
-    indices = indices[np.argsort(dt.flat[indices])]
-    max_radius = int(np.max(dt.flat[indices])) if indices.size else 0
+    radii = _parse_integer_radii(sizes=sizes, dt=dt, im=im)
+    max_radius = radii[0] if radii.size else 0
     ceil_distance = _make_axial_extent_lookup(max_radius)
-    if im.ndim == 2:
-        lt = _run2D_bf(im, dt, indices, ceil_distance, smooth)
-    elif im.ndim == 3:
-        lt = _run3D_bf(im, dt, indices, ceil_distance, smooth)
+    lt = np.zeros(im.shape, dtype=float)
+    seeds_prev = np.zeros(im.shape, dtype=bool)
+    for radius in radii:
+        seeds = (dt >= radius) & mask
+        indices = np.flatnonzero(seeds & ~seeds_prev)
+        if im.ndim == 2:
+            _run2D_bf(lt, indices, radius, ceil_distance, smooth)
+        elif im.ndim == 3:
+            _run3D_bf(lt, indices, radius, ceil_distance, smooth)
+        seeds_prev = seeds
     return lt
 
 
 @njit
-def _run2D_bf(im, dt, indices, ceil_distance, smooth):
-    im2 = np.zeros(im.shape, dtype=float)
-    ylim = im.shape[1]
+def _run2D_bf(lt, indices, radius, ceil_distance, smooth):
+    ylim = lt.shape[1]
     for index in indices:
         i = index // ylim
         j = index - i*ylim
-        r = dt[i, j]
-        radius = int(r)
-        if radius > 0:
-            radius_squared = radius**2
-            for x in range(max(0, i - radius), min(i + radius + 1, im.shape[0])):
-                distance_squared = radius_squared - (x - i)**2
-                y_extent = _get_axial_extent(
-                    distance_squared, ceil_distance, smooth)
-                if y_extent >= 0:
-                    y_start = max(0, j - y_extent)
-                    y_stop = min(j + y_extent + 1, im.shape[1])
-                    im2[x, y_start:y_stop] = r
-    return im2
+        radius_squared = radius**2
+        for x in range(max(0, i - radius), min(i + radius + 1, lt.shape[0])):
+            distance_squared = radius_squared - (x - i)**2
+            y_extent = _get_axial_extent(
+                distance_squared, ceil_distance, smooth)
+            if y_extent >= 0:
+                y_start = max(0, j - y_extent)
+                y_stop = min(j + y_extent + 1, lt.shape[1])
+                for y in range(y_start, y_stop):
+                    if lt[x, y] == 0:
+                        lt[x, y] = radius
 
 
 @njit
-def _run3D_bf(im, dt, indices, ceil_distance, smooth):
-    im3 = np.zeros(im.shape, dtype=float)
-    ylim, zlim = im.shape[1:]
+def _run3D_bf(lt, indices, radius, ceil_distance, smooth):
+    ylim, zlim = lt.shape[1:]
     stride0 = ylim*zlim
     for index in indices:
         i = index // stride0
         remainder = index - i*stride0
         j = remainder // zlim
         k = remainder - j*zlim
-        r = dt[i, j, k]
-        radius = int(r)
-        if radius > 0:
-            radius_squared = radius**2
-            for x in range(max(0, i - radius), min(i + radius + 1, im.shape[0])):
-                yz_distance_squared = radius_squared - (x - i)**2
-                y_extent = _get_axial_extent(
-                    yz_distance_squared, ceil_distance, smooth)
-                if y_extent < 0:
-                    continue
-                for y in range(max(0, j - y_extent),
-                               min(j + y_extent + 1, im.shape[1])):
-                    z_distance_squared = yz_distance_squared - (y - j)**2
-                    z_extent = _get_axial_extent(
-                        z_distance_squared, ceil_distance, smooth)
-                    if z_extent >= 0:
-                        z_start = max(0, k - z_extent)
-                        z_stop = min(k + z_extent + 1, im.shape[2])
-                        im3[x, y, z_start:z_stop] = r
-    return im3
-
-
-def local_thickness_imj(im, dt=None, smooth=False, approx=False):
-    r"""
-    Insert a maximally inscribed sphere at every pixel labelled by sphere radius
-
-    Parameters
-    ----------
-    im : ndarray
-        Boolean image of the porous material
-    dt : ndarray, optional
-        The distance transform of the image
-    smooth : bool, optional
-        Indicates if protrusions should be removed from the faces of the spheres
-        or not. Default is `True`.
-    approx : bool, optional
-        If `True` the algorithm is more aggressive at skipping voxels to process,
-        which speeds things up, but this sacrifices accuracy in terms of a
-        voxel-by-voxel match with the reference implementation. The default is
-        `False`, meaning full accuracy is the default.
-
-    Returns
-    -------
-    lt : ndarray
-        The local thickness of the image with each voxel labelled according to the
-        radius of the largest sphere which overlaps it
-
-    Notes
-    -----
-    This version uses some logic to only insert spheres at locations which
-    are not fully overlapped by larger spheres to reduce the number of insertions
-
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/filters/reference/local_thickness_imj.html>`__
-    to view online example.
-    """
-    if dt is None:
-        dt = edt(im)
-
-    # Sort dt to scan sites from largest to smallest
-    args = np.argsort(dt.flatten())[-1::-1]
-    ijk = np.vstack(np.unravel_index(args, dt.shape)).T
-
-    # Call jitted function to draw spheres. The internal helpers also report
-    # `count` and `used` for diagnostics, but the public API returns just `lt`.
-    if im.ndim == 2:
-        lt, _, _ = _run2D(im, dt, ijk, smooth, approx)
-    elif im.ndim == 3:
-        lt, _, _ = _run3D(im, dt, ijk, smooth, approx)
-
-    return lt
-
-
-@njit(parallel=True)
-def _run2D(im, dt, ijk, smooth, approx):
-    valid = np.copy(im)
-    lt = np.zeros(im.shape, dtype=float)
-    used = np.copy(lt)
-    count = 0
-    for idx in ijk:
-        i = idx[0]
-        j = idx[1]
-        rval = dt[i, j]
-        r = int(rval)
-        # Since entries in ijk are sorted by size, once we reach an entry with
-        # r = 0, then we know all remain entries will also be 0 so we can stop
-        if r == 0:
-            break
-        # Only process if point has not yet been engulfed on previous step
-        if valid[i, j]:
-            used[i, j] = 1.0
-            # Scan neighborhood around current pixel
-            mn = r_to_inds_2d(r)
-            for row in prange(len(mn[0])):
-                m = mn[0][row] - r
-                n = mn[1][row] - r
-                if ((i + m) >= 0) and ((i + m) < im.shape[0]) \
-                        and ((j + n) >= 0) and ((j + n) < im.shape[1]):
-                    # Draw spheres within L of point (i, j)
-                    L = r - ((m)**2 + (n)**2)**0.5 + 1
-                    if (lt[i+m, j+n] == 0) and (L > 1 if smooth else L >= 1):
-                        lt[i+m, j+n] = rval
-                    # Use ints here since it's about actual sphere sizes
-                    # not exact distances between pixel centers
-                    if approx:
-                        if int(dt[i+m, j+n]) <= int(L):
-                            valid[i+m, j+n] = False
-                    else:
-                        if int(dt[i+m, j+n]) < int(L):
-                            valid[i+m, j+n] = False
-            count += 1
-    return lt, count, used
-
-
-@njit(parallel=True)
-def _run3D(im, dt, ijk, smooth, approx):
-    valid = np.copy(im)
-    lt = np.zeros(im.shape, dtype=float)
-    used = np.copy(lt)
-    count = 0
-    for idx in ijk:
-        i = idx[0]
-        j = idx[1]
-        k = idx[2]
-        rval = dt[i, j, k]
-        r = int(rval)
-        # Since entries in ijk are sorted by size, once we reach an entry with
-        # r = 0, then we know all remain entries will also be 0 so we can stop
-        if r == 0:
-            break
-        # Only process if point has not yet been engulfed on a previous step
-        if valid[i, j, k]:
-            used[i, j, k] = True
-            # Scan neighborhood around current voxel
-            mno = r_to_inds_3d(r)
-            for row in prange(len(mno[0])):
-                m = mno[0][row] - r
-                n = mno[1][row] - r
-                o = mno[2][row] - r
-                if ((i + m) >= 0) and ((i + m) < im.shape[0]) \
-                    and ((j + n) >= 0) and ((j + n) < im.shape[1]) \
-                        and ((k + o) >= 0) and ((k + o) < im.shape[2]):
-                    # Draw spheres within L of point (i, j, k)
-                    L = r - (m**2 + n**2 + o**2)**0.5 + 1
-                    if (lt[i+m, j+n, k+o] == 0) and \
-                            (L > 1 if smooth else L >= 1):
-                        lt[i+m, j+n, k+o] = rval
-                    # Use ints here since it's about actual sphere
-                    # sizes not exact distances between pixel centers
-                    if approx:
-                        if int(dt[i+m, j+n, k+o]) <= int(L):
-                            valid[i+m, j+n, k+o] = False
-                    else:
-                        if int(dt[i+m, j+n, k+o]) < int(L):
-                            valid[i+m, j+n, k+o] = False
-            count += 1
-    return lt, count, used
-
-
-def r_to_inds(r, ndim):
-    m = np.meshgrid(*[np.arange(2*r+1) for _ in range(ndim)])
-    inds = np.vstack([n.flatten() for n in m]).T
-    return inds
-
-
-@njit
-def r_to_inds_3d(r):
-    size = 2*r + 1
-    xx = np.empty(shape=(size**3), dtype=np.int_)
-    yy = np.empty_like(xx)
-    zz = np.empty_like(xx)
-    for i in range(size):
-        for j in range(size):
-            for k in range(size):
-                xx[i*size**2 + j*size + k] = i
-                yy[i*size**2 + j*size + k] = j
-                zz[i*size**2 + j*size + k] = k
-    return xx, yy, zz
-
-
-@njit
-def r_to_inds_2d(r):
-    size = 2*r + 1
-    xx = np.empty(shape=(size**2), dtype=np.int_)
-    yy = np.empty_like(xx)
-    for i in range(size):
-        for j in range(size):
-            xx[i*size + j] = i
-            yy[i*size + j] = j
-    return xx, yy
+        radius_squared = radius**2
+        for x in range(max(0, i - radius), min(i + radius + 1, lt.shape[0])):
+            yz_distance_squared = radius_squared - (x - i)**2
+            y_extent = _get_axial_extent(
+                yz_distance_squared, ceil_distance, smooth)
+            if y_extent < 0:
+                continue
+            for y in range(max(0, j - y_extent),
+                           min(j + y_extent + 1, lt.shape[1])):
+                z_distance_squared = yz_distance_squared - (y - j)**2
+                z_extent = _get_axial_extent(
+                    z_distance_squared, ceil_distance, smooth)
+                if z_extent >= 0:
+                    z_start = max(0, k - z_extent)
+                    z_stop = min(k + z_extent + 1, lt.shape[2])
+                    for z in range(z_start, z_stop):
+                        if lt[x, y, z] == 0:
+                            lt[x, y, z] = radius
 
 
 def local_thickness_conv(
     im: npt.NDArray,
     dt: npt.NDArray = None,
-    sizes: int = 25,
+    sizes: int = None,
     smooth: bool = True,
 ):
     r"""
@@ -502,11 +342,9 @@ def local_thickness_conv(
         to integers and using `sizes=None` can save time by limiting the number of
         sizes that are used.
     sizes : array_like or scalar
-        The sizes to insert. If a list of values is provided they are
-        used directly. If a scalar is provided then that number of points
-        spanning the min and max of the distance transform are used. If `None`, the
-        all the unique values in the distance transform are used, which may become
-        time consuming.
+        Positive integer radii to evaluate. If a scalar is provided, that many
+        evenly-spaced integer radii between 1 and ``floor(dt.max())`` are used.
+        If `None`, every integer radius in that range is used.
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
@@ -536,12 +374,7 @@ def local_thickness_conv(
     if dt is None:
         dt = edt(im > 0)
 
-    if sizes is None:
-        sizes = np.unique(dt[im])
-    elif isinstance(sizes, int):
-        sizes = np.logspace(start=np.log10(np.amax(dt)), stop=0, num=sizes)
-    else:
-        sizes = np.unique(sizes)[-1::-1]
+    sizes = _parse_integer_radii(sizes=sizes, dt=dt, im=im)
 
     imresults = np.zeros(np.shape(im))
     desc = inspect.currentframe().f_code.co_name  # Get current func name
@@ -558,7 +391,7 @@ def local_thickness_conv(
 def local_thickness_dt(
     im: npt.NDArray,
     dt: npt.NDArray = None,
-    sizes: int = 25,
+    sizes: int = None,
     smooth: bool = True,
 ):
     r"""
@@ -575,11 +408,9 @@ def local_thickness_dt(
         to integers and using `sizes=None` can save time by limiting the number of
         sizes that are used.
     sizes : array_like or scalar
-        The sizes to insert. If a list of values is provided they are
-        used directly. If a scalar is provided then that number of points
-        spanning the min and max of the distance transform are used. If `None`, then
-        all the unique values in the distance transform are used, which may become
-        time consuming.
+        Positive integer radii to evaluate. If a scalar is provided, that many
+        evenly-spaced integer radii between 1 and ``floor(dt.max())`` are used.
+        If `None`, every integer radius in that range is used.
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
@@ -602,12 +433,7 @@ def local_thickness_dt(
         dt = edt(im > 0)
 
     # Parse given sizes
-    if sizes is None:
-        sizes = np.unique(dt[im])
-    elif isinstance(sizes, int):
-        sizes = np.logspace(start=np.log10(np.amax(dt)), stop=0, num=sizes)
-    else:
-        sizes = np.unique(sizes)[-1::-1]
+    sizes = _parse_integer_radii(sizes=sizes, dt=dt, im=im)
 
     im_results = np.zeros(np.shape(im))
     desc = inspect.currentframe().f_code.co_name  # Get current func name
@@ -620,54 +446,3 @@ def local_thickness_dt(
             im_results[(im_results == 0) * im_temp] = r
 
     return im_results
-
-
-if __name__ == "__main__":
-
-    import matplotlib.pyplot as plt
-    from localthickness import local_thickness as loct
-
-    import porespy as ps
-
-    im = ~ps.generators.random_spheres([150, 150, 150], r=10, clearance=10, seed=0)
-    dt = edt(im)
-    # Call _run3D directly so we can inspect `count` for diagnostics
-    args = np.argsort(dt.flatten())[-1::-1]
-    ijk = np.vstack(np.unravel_index(args, dt.shape)).T
-    ps.tools.tic()
-    lt1, count, used = _run3D(im, dt, ijk, True, True)
-    t1 = ps.tools.toc(quiet=True)
-    ps.tools.tic()
-    lt2, count, used = _run3D(im, dt, ijk, True, False)
-    t2 = ps.tools.toc(quiet=True)
-    ps.tools.tic()
-    lt3 = local_thickness_dt(im, dt=dt, sizes=np.unique(dt[im].astype(int)))
-    t3 = ps.tools.toc(quiet=True)
-    ps.tools.tic()
-    lt4 = loct(im)
-    t4 = ps.tools.toc(quiet=True)
-    print("Times are:")
-    print(f" Reference: {t2}")
-    print(f" New Method: {t1}")
-    print(f" PoreSpy: {t3}")
-    print(f" Dahl: {t4}")
-    print("Errors are:")
-    print(f" New Method: {np.sum(lt2 != lt1)/im.sum()}")
-    print(f" PoreSpy: {np.sum(lt2 != lt3)/im.sum()}")
-    print(f" Dahl: {np.sum(lt2 != lt4)/im.sum()}")
-    print(f"New method used {round(count/im.sum()*100, 2)}% of pixels")
-
-    if im.ndim == 2:
-        fig, ax = plt.subplots(1, 4)
-        # ax[0].imshow(lt2 / im)
-        ax[0].set_title('Reference')
-        ax[0].axis('off')
-        ax[1].imshow(lt1 / im)
-        ax[1].set_title('New Method')
-        ax[1].axis('off')
-        ax[2].imshow(lt3 / im)
-        ax[2].set_title('PoreSpy')
-        ax[2].axis('off')
-        ax[3].imshow(lt4 / im)
-        ax[3].set_title('Dahl')
-        ax[3].axis('off')
