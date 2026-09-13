@@ -152,8 +152,16 @@ def _parse_integer_radii(sizes, dt, im):
         return np.empty(0, dtype=int)
     if sizes is None:
         return np.arange(max_radius, 0, -1)
+    if isinstance(sizes, (int, np.integer)) and not isinstance(sizes, (bool, np.bool_)):
+        if sizes < 1:
+            raise ValueError('sizes must be a positive integer')
+        radii = np.linspace(1, max_radius, num=sizes, dtype=int)
+        return np.unique(radii)[::-1]
     if np.isscalar(sizes):
-        raise TypeError('sizes must be None or a collection of positive integer radii')
+        raise TypeError(
+            'sizes must be None, a positive integer, or a collection of '
+            'positive integer radii'
+        )
     radii = np.asarray(sizes)
     if np.any(~np.isfinite(radii)) or np.any(radii < 1) \
             or np.any(radii != np.floor(radii)):
@@ -175,6 +183,35 @@ def _make_lt_result(shape, sizes, return_indices):
         values = np.concatenate(([0], np.asarray(sizes)))
         return result, values
     return np.zeros(shape, dtype=float), None
+
+
+@njit(parallel=True)
+def _find_lt_interface(seeds, interface):  # pragma: no cover
+    """Find seed sites touching in-bounds background along an axial direction."""
+    if seeds.ndim == 2:
+        xlim, ylim = seeds.shape
+        for i in prange(xlim):
+            for j in range(ylim):
+                interface[i, j] = seeds[i, j] and (
+                    (i > 0 and not seeds[i - 1, j])
+                    or (i + 1 < xlim and not seeds[i + 1, j])
+                    or (j > 0 and not seeds[i, j - 1])
+                    or (j + 1 < ylim and not seeds[i, j + 1])
+                )
+    elif seeds.ndim == 3:
+        xlim, ylim, zlim = seeds.shape
+        for i in prange(xlim):
+            for j in range(ylim):
+                for k in range(zlim):
+                    interface[i, j, k] = seeds[i, j, k] and (
+                        (i > 0 and not seeds[i - 1, j, k])
+                        or (i + 1 < xlim and not seeds[i + 1, j, k])
+                        or (j > 0 and not seeds[i, j - 1, k])
+                        or (j + 1 < ylim and not seeds[i, j + 1, k])
+                        or (k > 0 and not seeds[i, j, k - 1])
+                        or (k + 1 < zlim and not seeds[i, j, k + 1])
+                    )
+    return interface
 
 
 @njit
@@ -323,11 +360,12 @@ def local_thickness(
         ======== ===================================================================
 
     sizes : array_like or scalar
-        A collection of positive integer radii to evaluate. If omitted or `None`,
-        every integer radius between 1 and ``floor(dt.max())`` is used. For
-        ``method='legacy'``, omitting this argument uses the former default of 25
-        logarithmically-spaced fractional radii; an explicit `None` uses all unique
-        distance-transform values.
+        The positive integer radii to evaluate. If an integer `N` is provided,
+        up to `N` integer radii are selected at evenly spaced intervals between 1
+        and ``floor(dt.max())``. If omitted or `None`, every integer radius in that
+        range is used. For ``method='legacy'``, omitting this argument uses the
+        former default of 25 logarithmically-spaced fractional radii; an explicit
+        `None` uses all unique distance-transform values.
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
@@ -451,8 +489,9 @@ def local_thickness_bf(
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
     sizes : array_like or scalar
-        A collection of positive integer radii to evaluate. If `None`, every
-        integer radius between 1 and ``floor(dt.max())`` is used.
+        The positive integer radii to evaluate. An integer `N` selects up to `N`
+        evenly spaced integer radii between 1 and ``floor(dt.max())``. If `None`,
+        every integer radius in that range is used.
     return_indices : bool, optional
         If `True`, return ``(sizes, indices)`` instead of a float image, where
         ``sizes[indices]`` reconstructs the usual result. Default is `False`.
@@ -466,10 +505,10 @@ def local_thickness_bf(
 
     Notes
     -----
-    This method uses distance-transform thresholds to collect new insertion sites
-    at each radius. Spheres contained by a previously inserted axial neighbor are
-    discarded, then the remaining spheres are rasterized in parallel from compact
-    flat indices.
+    Consecutive radii rasterize only the new distance-transform shell and discard
+    spheres contained by the preceding shell. When requested radii contain gaps,
+    the threshold is filled directly and spheres are rasterized only from its
+    interface. Both paths draw in parallel from compact flat indices.
 
     Examples
     --------
@@ -487,23 +526,34 @@ def local_thickness_bf(
     # inserting at every eligible voxel for every radius.
     radii = _parse_integer_radii(sizes=sizes, dt=dt, im=im)
     lt, values = _make_lt_result(im.shape, radii, return_indices)
+    interface = np.empty(im.shape, dtype=bool)
     seeds_prev = np.zeros(im.shape, dtype=bool)
     max_radius = radii[0] if radii.size else 0
     ceil_distance = _make_axial_extent_lookup(max_radius)
+    previous_radius = int(np.floor(np.max(dt[im]))) + 1
     for i, radius in enumerate(radii):
         seeds = (dt >= radius) & mask
-        indices = _get_lt_flat_indices(seeds & ~seeds_prev)
-        indices = _remove_lt_contained_disks(indices, seeds_prev)
+        use_interface = previous_radius - radius > 1
+        if use_interface:
+            interface = _find_lt_interface(seeds, interface)
+            indices = _get_lt_flat_indices(interface)
+        else:
+            indices = _get_lt_flat_indices(seeds & ~seeds_prev)
+            indices = _remove_lt_contained_disks(indices, seeds_prev)
+        value = i + 1 if return_indices else radius
         if indices.size:
             lt = _insert_lt_disks_at_indices(
                 lt=lt,
                 indices=indices,
                 radius=radius,
-                value=i + 1 if return_indices else radius,
+                value=value,
                 ceil_distance=ceil_distance,
                 smooth=smooth,
             )
+        if use_interface:
+            lt[(lt == 0) & seeds] = value
         seeds_prev = seeds
+        previous_radius = radius
     if return_indices:
         return values, lt
     return lt
@@ -530,8 +580,9 @@ def local_thickness_conv(
         to integers and using `sizes=None` can save time by limiting the number of
         sizes that are used.
     sizes : array_like or scalar
-        A collection of positive integer radii to evaluate. If `None`, every
-        integer radius between 1 and ``floor(dt.max())`` is used.
+        The positive integer radii to evaluate. An integer `N` selects up to `N`
+        evenly spaced integer radii between 1 and ``floor(dt.max())``. If `None`,
+        every integer radius in that range is used.
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
@@ -601,8 +652,9 @@ def local_thickness_dt(
         to integers and using `sizes=None` can save time by limiting the number of
         sizes that are used.
     sizes : array_like or scalar
-        A collection of positive integer radii to evaluate. If `None`, every
-        integer radius between 1 and ``floor(dt.max())`` is used.
+        The positive integer radii to evaluate. An integer `N` selects up to `N`
+        evenly spaced integer radii between 1 and ``floor(dt.max())``. If `None`,
+        every integer radius in that range is used.
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
