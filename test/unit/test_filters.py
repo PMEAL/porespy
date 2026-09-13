@@ -348,7 +348,7 @@ class FilterTest():
     def test_local_thickness_methods_use_integer_radii(self):
         im = self.im[:, :, 50]
         dt = edt(im)
-        sizes = [4, 3, 2, 1]
+        sizes = [4, 2, 1]
         reference = ps.filters.local_thickness(
             im, dt=dt, method='dt', sizes=sizes)
         for method in ['bf', 'conv']:

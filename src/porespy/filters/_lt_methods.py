@@ -4,10 +4,12 @@ from typing import Literal
 
 import numpy as np
 import numpy.typing as npt
+from numba import njit, prange
 from skimage.morphology import ball, disk, footprint_rectangle
 
 from porespy.tools import (
-    _insert_disks_at_points_parallel,
+    _get_axial_extent,
+    _make_axial_extent_lookup,
     get_edt,
     get_tqdm,
     ps_round,
@@ -137,6 +139,120 @@ def _parse_integer_radii(sizes, dt, im):
         raise ValueError('sizes must contain positive integer radii')
     radii = radii.astype(int, copy=False)
     return np.unique(radii)[::-1]
+
+
+def _get_lt_flat_indices(mask):
+    """Return compact flat indices for a local-thickness insertion bucket."""
+    dtype = np.int32 if mask.size <= np.iinfo(np.int32).max else np.int64
+    return np.flatnonzero(mask).astype(dtype, copy=False)
+
+
+@njit
+def _remove_lt_contained_disks(indices, previous):
+    """Discard disks contained by a previously inserted axial neighbor."""
+    count = 0
+    if previous.ndim == 2:
+        xlim, ylim = previous.shape
+        for q in range(len(indices)):
+            ind = indices[q]
+            i = ind // ylim
+            j = ind - i * ylim
+            contained = (
+                (i > 0 and previous[i - 1, j])
+                or (i + 1 < xlim and previous[i + 1, j])
+                or (j > 0 and previous[i, j - 1])
+                or (j + 1 < ylim and previous[i, j + 1])
+            )
+            if not contained:
+                indices[count] = ind
+                count += 1
+    elif previous.ndim == 3:
+        xlim, ylim, zlim = previous.shape
+        stride0 = ylim * zlim
+        for q in range(len(indices)):
+            ind = indices[q]
+            i = ind // stride0
+            rem = ind - i * stride0
+            j = rem // zlim
+            k = rem - j * zlim
+            contained = (
+                (i > 0 and previous[i - 1, j, k])
+                or (i + 1 < xlim and previous[i + 1, j, k])
+                or (j > 0 and previous[i, j - 1, k])
+                or (j + 1 < ylim and previous[i, j + 1, k])
+                or (k > 0 and previous[i, j, k - 1])
+                or (k + 1 < zlim and previous[i, j, k + 1])
+            )
+            if not contained:
+                indices[count] = ind
+                count += 1
+    return indices[:count]
+
+
+@njit(parallel=True)
+def _insert_lt_disks_at_indices(
+    lt,
+    indices,
+    radius,
+    ceil_distance,
+    smooth,
+):  # pragma: no cover
+    """Rasterize one equal-radius bucket directly from flat center indices."""
+    npts = len(indices)
+    radius_squared = radius * radius
+    if lt.ndim == 2:
+        xlim, ylim = lt.shape
+        lt_flat = lt.reshape(lt.size)
+        for q in prange(npts):
+            ind = indices[q]
+            i = ind // ylim
+            j = ind - i * ylim
+            for x in range(max(0, i - radius), min(i + radius + 1, xlim)):
+                dx = x - i
+                y_extent = _get_axial_extent(
+                    radius_squared - dx * dx,
+                    ceil_distance,
+                    smooth,
+                )
+                start = x * ylim + max(0, j - y_extent)
+                stop = x * ylim + min(j + y_extent + 1, ylim)
+                for p in range(start, stop):
+                    if lt_flat[p] == 0:
+                        lt_flat[p] = radius
+    elif lt.ndim == 3:
+        xlim, ylim, zlim = lt.shape
+        stride0 = ylim * zlim
+        lt_flat = lt.reshape(lt.size)
+        for q in prange(npts):
+            ind = indices[q]
+            i = ind // stride0
+            rem = ind - i * stride0
+            j = rem // zlim
+            k = rem - j * zlim
+            for x in range(max(0, i - radius), min(i + radius + 1, xlim)):
+                dx = x - i
+                dx_squared = dx * dx
+                yz_extent = _get_axial_extent(
+                    radius_squared - dx_squared,
+                    ceil_distance,
+                    smooth,
+                )
+                for y in range(
+                    max(0, j - yz_extent),
+                    min(j + yz_extent + 1, ylim),
+                ):
+                    dy = y - j
+                    z_extent = _get_axial_extent(
+                        radius_squared - dx_squared - dy * dy,
+                        ceil_distance,
+                        smooth,
+                    )
+                    start = (x * ylim + y) * zlim + max(0, k - z_extent)
+                    stop = (x * ylim + y) * zlim + min(k + z_extent + 1, zlim)
+                    for p in range(start, stop):
+                        if lt_flat[p] == 0:
+                            lt_flat[p] = radius
+    return lt
 
 
 def local_thickness(
@@ -270,10 +386,10 @@ def local_thickness_bf(im, dt=None, mask=None, smooth=True, sizes=None):
 
     Notes
     -----
-    This function uses brute force, meaning that is inserts spheres at every single
-    pixel or voxel in the void phase without making any attempt to reduce the number
-    of insertion sites. This provides a reference implementation for comparing
-    accuracy of other methods.
+    This method uses distance-transform thresholds to collect new insertion sites
+    at each radius. Spheres contained by a previously inserted axial neighbor are
+    discarded, then the remaining spheres are rasterized in parallel from compact
+    flat indices.
 
     Examples
     --------
@@ -286,22 +402,24 @@ def local_thickness_bf(im, dt=None, mask=None, smooth=True, sizes=None):
         dt = edt(im)
     if mask is None:
         mask = im
-    # Only nonzero, requested sites can modify the result.  Keeping these as
-    # flat indices avoids sorting the solid phase and allocating an ``ndim``
-    # coordinate array for every voxel.
+    # A center only needs inserting when it first becomes eligible.  This is
+    # the edge of each nested DT threshold, and is generally much smaller than
+    # inserting at every eligible voxel for every radius.
     radii = _parse_integer_radii(sizes=sizes, dt=dt, im=im)
     lt = np.zeros(im.shape, dtype=float)
     seeds_prev = np.zeros(im.shape, dtype=bool)
+    max_radius = radii[0] if radii.size else 0
+    ceil_distance = _make_axial_extent_lookup(max_radius)
     for radius in radii:
         seeds = (dt >= radius) & mask
-        indices = np.flatnonzero(seeds & ~seeds_prev)
+        indices = _get_lt_flat_indices(seeds & ~seeds_prev)
+        indices = _remove_lt_contained_disks(indices, seeds_prev)
         if indices.size:
-            coords = np.vstack(np.unravel_index(indices, im.shape))
-            lt = _insert_disks_at_points_parallel(
-                im=lt,
-                coords=coords,
-                radii=np.full(indices.size, radius),
-                v=radius,
+            lt = _insert_lt_disks_at_indices(
+                lt=lt,
+                indices=indices,
+                radius=radius,
+                ceil_distance=ceil_distance,
                 smooth=smooth,
             )
         seeds_prev = seeds

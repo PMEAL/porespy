@@ -17,6 +17,7 @@ from porespy.tools import (
     Results,
     _insert_disk_at_points,
     _insert_disk_at_points_parallel,
+    _make_axial_extent_lookup,
     get_edt,
     get_strel,
     get_tqdm,
@@ -29,7 +30,6 @@ from porespy.tools import (
 from ._tools import (
     _get_flat_indices,
     _insert_disks_at_indices_parallel,
-    _make_axial_extent_lookup,
     _remove_contained_disks,
 )
 
