@@ -1,6 +1,6 @@
 import numpy as np
 from numba import get_num_threads, get_thread_id, njit, prange
-from porespy.tools import _get_axial_extent, _make_axial_extent_lookup
+from porespy.tools import _get_axial_extent
 
 
 def _get_flat_indices(mask):
