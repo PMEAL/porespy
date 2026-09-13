@@ -357,6 +357,8 @@ class FilterTest():
             assert np.array_equal(actual, reference)
         with pytest.raises(ValueError, match='positive integer radii'):
             ps.filters.local_thickness(im, dt=dt, sizes=[2.5])
+        with pytest.raises(TypeError, match='None or a collection'):
+            ps.filters.local_thickness(im, dt=dt, sizes=25)
 
     def test_local_thickness_known_sizes(self):
         im = np.zeros(shape=[300, 300])

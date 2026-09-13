@@ -123,17 +123,13 @@ def _parse_integer_radii(sizes, dt, im):
         return np.empty(0, dtype=int)
     if sizes is None:
         return np.arange(max_radius, 0, -1)
-    if isinstance(sizes, (int, np.integer)):
-        if sizes < 1:
-            raise ValueError('sizes must be a positive integer')
-        radii = np.linspace(1, max_radius, num=sizes)
-        radii = np.rint(radii).astype(int)
-    else:
-        radii = np.asarray(sizes)
-        if np.any(~np.isfinite(radii)) or np.any(radii < 1) \
-                or np.any(radii != np.floor(radii)):
-            raise ValueError('sizes must contain positive integer radii')
-        radii = radii.astype(int, copy=False)
+    if np.isscalar(sizes):
+        raise TypeError('sizes must be None or a collection of positive integer radii')
+    radii = np.asarray(sizes)
+    if np.any(~np.isfinite(radii)) or np.any(radii < 1) \
+            or np.any(radii != np.floor(radii)):
+        raise ValueError('sizes must contain positive integer radii')
+    radii = radii.astype(int, copy=False)
     return np.unique(radii)[::-1]
 
 
@@ -172,9 +168,8 @@ def local_thickness(
         ======== ===================================================================
 
     sizes : array_like or scalar
-        Positive integer radii to evaluate. If a scalar is provided, that many
-        evenly-spaced integer radii between 1 and ``floor(dt.max())`` are used.
-        If `None`, every integer radius in that range is used.
+        A collection of positive integer radii to evaluate. If `None`, every
+        integer radius between 1 and ``floor(dt.max())`` is used.
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
@@ -227,9 +222,8 @@ def local_thickness_bf(im, dt=None, mask=None, smooth=True, sizes=None):
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
     sizes : array_like or scalar
-        Positive integer radii to evaluate. If a scalar is provided, that many
-        evenly-spaced integer radii between 1 and ``floor(dt.max())`` are used.
-        If `None`, every integer radius in that range is used.
+        A collection of positive integer radii to evaluate. If `None`, every
+        integer radius between 1 and ``floor(dt.max())`` is used.
 
     Returns
     -------
@@ -342,9 +336,8 @@ def local_thickness_conv(
         to integers and using `sizes=None` can save time by limiting the number of
         sizes that are used.
     sizes : array_like or scalar
-        Positive integer radii to evaluate. If a scalar is provided, that many
-        evenly-spaced integer radii between 1 and ``floor(dt.max())`` are used.
-        If `None`, every integer radius in that range is used.
+        A collection of positive integer radii to evaluate. If `None`, every
+        integer radius between 1 and ``floor(dt.max())`` is used.
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
@@ -408,9 +401,8 @@ def local_thickness_dt(
         to integers and using `sizes=None` can save time by limiting the number of
         sizes that are used.
     sizes : array_like or scalar
-        Positive integer radii to evaluate. If a scalar is provided, that many
-        evenly-spaced integer radii between 1 and ``floor(dt.max())`` are used.
-        If `None`, every integer radius in that range is used.
+        A collection of positive integer radii to evaluate. If `None`, every
+        integer radius between 1 and ``floor(dt.max())`` is used.
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
