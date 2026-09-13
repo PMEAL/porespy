@@ -364,7 +364,10 @@ class FilterTest():
         im = self.im[:, :, 50]
         dt = edt(im)
         lt = ps.filters.local_thickness(im, dt=dt, method='legacy')
-        np.testing.assert_allclose(lt.max(), dt.max())
+        expected = np.logspace(np.log10(dt.max()), 0, num=25)
+        labels = np.unique(lt)
+        assert np.all(np.isin(labels, np.concatenate(([0], expected))))
+        assert np.any((labels > 0) & (labels != np.floor(labels)))
         lt = ps.filters.local_thickness(im, dt=dt, method='legacy', sizes=3)
         assert np.unique(lt).size <= 4
 
