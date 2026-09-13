@@ -4,12 +4,10 @@ from typing import Literal
 
 import numpy as np
 import numpy.typing as npt
-from numba import njit
 from skimage.morphology import ball, disk, footprint_rectangle
 
 from porespy.tools import (
-    _get_axial_extent,
-    _make_axial_extent_lookup,
+    _insert_disks_at_points_parallel,
     get_edt,
     get_tqdm,
     ps_round,
@@ -292,67 +290,22 @@ def local_thickness_bf(im, dt=None, mask=None, smooth=True, sizes=None):
     # flat indices avoids sorting the solid phase and allocating an ``ndim``
     # coordinate array for every voxel.
     radii = _parse_integer_radii(sizes=sizes, dt=dt, im=im)
-    max_radius = radii[0] if radii.size else 0
-    ceil_distance = _make_axial_extent_lookup(max_radius)
     lt = np.zeros(im.shape, dtype=float)
     seeds_prev = np.zeros(im.shape, dtype=bool)
     for radius in radii:
         seeds = (dt >= radius) & mask
         indices = np.flatnonzero(seeds & ~seeds_prev)
-        if im.ndim == 2:
-            _run2D_bf(lt, indices, radius, ceil_distance, smooth)
-        elif im.ndim == 3:
-            _run3D_bf(lt, indices, radius, ceil_distance, smooth)
+        if indices.size:
+            coords = np.vstack(np.unravel_index(indices, im.shape))
+            lt = _insert_disks_at_points_parallel(
+                im=lt,
+                coords=coords,
+                radii=np.full(indices.size, radius),
+                v=radius,
+                smooth=smooth,
+            )
         seeds_prev = seeds
     return lt
-
-
-@njit
-def _run2D_bf(lt, indices, radius, ceil_distance, smooth):
-    ylim = lt.shape[1]
-    for index in indices:
-        i = index // ylim
-        j = index - i*ylim
-        radius_squared = radius**2
-        for x in range(max(0, i - radius), min(i + radius + 1, lt.shape[0])):
-            distance_squared = radius_squared - (x - i)**2
-            y_extent = _get_axial_extent(
-                distance_squared, ceil_distance, smooth)
-            if y_extent >= 0:
-                y_start = max(0, j - y_extent)
-                y_stop = min(j + y_extent + 1, lt.shape[1])
-                for y in range(y_start, y_stop):
-                    if lt[x, y] == 0:
-                        lt[x, y] = radius
-
-
-@njit
-def _run3D_bf(lt, indices, radius, ceil_distance, smooth):
-    ylim, zlim = lt.shape[1:]
-    stride0 = ylim*zlim
-    for index in indices:
-        i = index // stride0
-        remainder = index - i*stride0
-        j = remainder // zlim
-        k = remainder - j*zlim
-        radius_squared = radius**2
-        for x in range(max(0, i - radius), min(i + radius + 1, lt.shape[0])):
-            yz_distance_squared = radius_squared - (x - i)**2
-            y_extent = _get_axial_extent(
-                yz_distance_squared, ceil_distance, smooth)
-            if y_extent < 0:
-                continue
-            for y in range(max(0, j - y_extent),
-                           min(j + y_extent + 1, lt.shape[1])):
-                z_distance_squared = yz_distance_squared - (y - j)**2
-                z_extent = _get_axial_extent(
-                    z_distance_squared, ceil_distance, smooth)
-                if z_extent >= 0:
-                    z_start = max(0, k - z_extent)
-                    z_stop = min(k + z_extent + 1, lt.shape[2])
-                    for z in range(z_start, z_stop):
-                        if lt[x, y, z] == 0:
-                            lt[x, y, z] = radius
 
 
 def local_thickness_conv(
