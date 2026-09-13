@@ -24,6 +24,14 @@ strel = {
     3: {'min': ball(1), 'max': footprint_rectangle((3, 3, 3))}
 }
 
+
+class _DefaultSizes:
+    def __repr__(self):
+        return 'None'
+
+
+_DEFAULT_SIZES = _DefaultSizes()
+
 __all__ = [
     "local_thickness_bf",
     "local_thickness_dt",
@@ -136,11 +144,11 @@ def _parse_integer_radii(sizes, dt, im):
 def local_thickness(
     im: npt.NDArray,
     dt: npt.NDArray = None,
-    method: Literal['bf', 'conv', 'dt'] = 'bf',
+    method: Literal['bf', 'conv', 'dt', 'legacy'] = 'bf',
     smooth: bool = True,
     mask: npt.NDArray = None,
     approx: bool = False,
-    sizes: int = None,
+    sizes: int = _DEFAULT_SIZES,
 ):
     r"""
     Insert a maximally inscribed sphere at every pixel labelled by sphere radius
@@ -165,11 +173,15 @@ def local_thickness(
         'bf'     Uses brute-force to inserts spheres at each voxel
         'conv'   Uses FFT-based convolution to perform erosion and dilation for
                  each radius in the image
+        'legacy' Reproduces the former fractional-radius distance-transform method
         ======== ===================================================================
 
     sizes : array_like or scalar
-        A collection of positive integer radii to evaluate. If `None`, every
-        integer radius between 1 and ``floor(dt.max())`` is used.
+        A collection of positive integer radii to evaluate. If omitted or `None`,
+        every integer radius between 1 and ``floor(dt.max())`` is used. For
+        ``method='legacy'``, omitting this argument uses the former default of 25
+        logarithmically-spaced fractional radii; an explicit `None` uses all unique
+        distance-transform values.
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
@@ -193,16 +205,43 @@ def local_thickness(
     to view online example.
     """
 
+    integer_sizes = None if sizes is _DEFAULT_SIZES else sizes
     if method == 'dt':
-        lt = local_thickness_dt(im=im, dt=dt, sizes=sizes, smooth=smooth)
+        lt = local_thickness_dt(im=im, dt=dt, sizes=integer_sizes, smooth=smooth)
     elif method == 'bf':
         lt = local_thickness_bf(
-            im=im, dt=dt, mask=mask, smooth=smooth, sizes=sizes)
+            im=im, dt=dt, mask=mask, smooth=smooth, sizes=integer_sizes)
     elif method == 'conv':
-        lt = local_thickness_conv(im=im, dt=dt, sizes=sizes, smooth=smooth)
+        lt = local_thickness_conv(
+            im=im, dt=dt, sizes=integer_sizes, smooth=smooth)
+    elif method == 'legacy':
+        legacy_sizes = 25 if sizes is _DEFAULT_SIZES else sizes
+        lt = _local_thickness_legacy(
+            im=im, dt=dt, sizes=legacy_sizes, smooth=smooth)
     else:
         raise Exception(f"Unrecognized method {method}")
     return lt
+
+
+def _local_thickness_legacy(im, dt=None, sizes=25, smooth=True):
+    """Reproduce the pre-integer-radius DT local-thickness implementation."""
+    im = np.squeeze(im)
+    if dt is None:
+        dt = edt(im > 0)
+    if sizes is None:
+        sizes = np.unique(dt[im])
+    elif isinstance(sizes, (int, np.integer)):
+        sizes = np.logspace(np.log10(np.amax(dt)), 0, num=sizes)
+    else:
+        sizes = np.unique(sizes)[-1::-1]
+
+    results = np.zeros(im.shape)
+    for radius in tqdm(sizes, desc='local_thickness_legacy', **settings.tqdm):
+        seeds = dt >= radius
+        if np.any(seeds):
+            dilated = edt(~seeds) < radius if smooth else edt(~seeds) <= radius
+            results[(results == 0) & dilated] = radius
+    return results
 
 
 def local_thickness_bf(im, dt=None, mask=None, smooth=True, sizes=None):

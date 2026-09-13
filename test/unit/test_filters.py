@@ -360,6 +360,14 @@ class FilterTest():
         with pytest.raises(TypeError, match='None or a collection'):
             ps.filters.local_thickness(im, dt=dt, sizes=25)
 
+    def test_local_thickness_legacy(self):
+        im = self.im[:, :, 50]
+        dt = edt(im)
+        lt = ps.filters.local_thickness(im, dt=dt, method='legacy')
+        np.testing.assert_allclose(lt.max(), dt.max())
+        lt = ps.filters.local_thickness(im, dt=dt, method='legacy', sizes=3)
+        assert np.unique(lt).size <= 4
+
     def test_local_thickness_known_sizes(self):
         im = np.zeros(shape=[300, 300])
         im = ps.generators.random_spheres(im=im, r=20)
