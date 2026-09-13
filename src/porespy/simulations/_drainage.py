@@ -15,6 +15,7 @@ from porespy.filters import (
 from porespy.metrics import pc_map_to_pc_curve
 from porespy.tools import (
     Results,
+    _get_uint_dtype,
     _insert_disk_at_points,
     _insert_disk_at_points_parallel,
     _make_axial_extent_lookup,
@@ -207,12 +208,17 @@ def drainage_dt_conv(
                     it was first invaded. -1 indicates uninvaded, either due to
                     the applied `steps` not spanning the full range of sizes in the
                     image, or due to trapping, while 0 indicates residual invading
-                    phase.
+                    phase. With `return_indices=True`, 0 represents uninvaded or
+                    solid voxels and the array has a compact unsigned dtype.
         `im_size`   A numpy array with each voxel containing the radius of the
                     sphere, in voxels, that first overlapped it. `inf` indicates
                     uninvaded, either due to the applied `steps` not spanning the
                     full range of sizes in the image, or due to trapping, while 0
-                    indicates residual invading phase.
+                    indicates residual invading phase. Not present when
+                    `return_indices` is `True`.
+        `bins`      Applied sizes prefixed with 0, so that ``bins[im_seq]``
+                    reconstructs `im_size`. Only present when `return_indices` is
+                    `True`.
         =========== ================================================================
 
     Notes
@@ -356,6 +362,7 @@ def drainage_dt(
     dt=None,
     steps=None,
     smooth=False,
+    return_indices=False,
 ):
     r"""
     Performs a distance transform based drainage simulation using distance transform
@@ -383,6 +390,11 @@ def drainage_dt(
         between 1 and the maximum size are used. A `tuple` is treated as the start
         and stop of the integer values. A `list` or `ndarray` is used directly. If
         `None` (default) then each unique value in the distance transform is used.
+    return_indices : bool, optional
+        If `True`, store compact step indices and their corresponding sizes instead
+        of allocating `im_size`. The returned ``bins[im_seq]`` reconstructs the
+        usual size image. This mode is incompatible with `outlets`. Default is
+        `False`.
 
     Returns
     -------
@@ -409,13 +421,21 @@ def drainage_dt(
     The distance transforms will be executed in parallel if
     `porespy.settings.ncores > 1`
     """
+    if return_indices and outlets is not None:
+        raise NotImplementedError(
+            "return_indices=True is incompatible with outlets because trapping "
+            "requires signed sequence and size images"
+        )
     im = np.array(im, dtype=bool)
     if dt is None:
         dt = edt(im)
     dt = dt.astype(int)
     bins = parse_steps(steps=steps, vals=dt[im], descending=True)
-    im_seq = -np.ones_like(im, dtype=int)
-    im_size = np.zeros_like(im, dtype=float)
+    if return_indices:
+        im_seq = np.zeros_like(im, dtype=_get_uint_dtype(len(bins)))
+    else:
+        im_seq = -np.ones_like(im, dtype=int)
+        im_size = np.zeros_like(im, dtype=float)
     desc = inspect.currentframe().f_code.co_name  # Get current func name
     for i, r in enumerate(tqdm(bins, desc=desc, **settings.tqdm)):
         seeds = dt >= r
@@ -425,8 +445,10 @@ def drainage_dt(
             continue
         tmp = edt(~seeds)
         nwp = tmp < r if smooth else tmp <= r
-        mask = nwp * (im_seq == -1)
-        im_size[mask] = max(r, 1)
+        uninvaded = 0 if return_indices else -1
+        mask = nwp * (im_seq == uninvaded)
+        if not return_indices:
+            im_size[mask] = max(r, 1)
         im_seq[mask] = i + 1
 
     # Apply trapping as a post-processing step if outlets given
@@ -443,7 +465,10 @@ def drainage_dt(
         im_size[trapped] = -1
     results = Results()
     results.im_seq = im_seq * im
-    results.im_size = im_size * im
+    if return_indices:
+        results.bins = np.concatenate(([0], np.maximum(bins, 1)))
+    else:
+        results.im_size = im_size * im
     return results
 
 

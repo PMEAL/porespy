@@ -378,6 +378,43 @@ class FilterTest():
         lt = ps.filters.local_thickness(im, sizes=[20, 10])
         assert np.all(np.unique(lt) == [0, 10, 20])
 
+    def test_local_thickness_return_indices(self):
+        im = self.im[:, :, 50]
+        dt = edt(im)
+        for method in ['bf', 'dt', 'conv', 'legacy']:
+            expected = ps.filters.local_thickness(im, dt=dt, method=method)
+            sizes, indices = ps.filters.local_thickness(
+                im,
+                dt=dt,
+                method=method,
+                return_indices=True,
+            )
+            assert indices.dtype == np.uint8
+            np.testing.assert_array_equal(sizes[indices], expected)
+
+    def test_local_thickness_return_indices_uses_uint16(self):
+        im = self.im[:, :, 50]
+        sizes, indices = ps.filters.local_thickness(
+            im,
+            sizes=np.arange(300, 0, -1),
+            return_indices=True,
+        )
+        assert len(sizes) == 301
+        assert indices.dtype == np.uint16
+
+    def test_porosimetry_return_indices(self):
+        im = self.im[:, :, 50]
+        expected = ps.filters.porosimetry(im, method='dt')
+        sizes, indices = ps.filters.porosimetry(
+            im,
+            method='dt',
+            return_indices=True,
+        )
+        assert indices.dtype == np.uint8
+        np.testing.assert_array_equal(sizes[indices], expected)
+        with pytest.raises(NotImplementedError):
+            ps.filters.porosimetry(im, method='conv', return_indices=True)
+
     def test_morphology_fft_dilate_2d(self):
         im = self.im[:, :, 50]
         truth = spim.binary_dilation(im, structure=disk(3))

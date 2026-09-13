@@ -11,6 +11,7 @@ from porespy.filters import find_small_clusters, find_trapped_clusters, seq_to_s
 from porespy.tools import (
     Results,
     _get_axial_extent,
+    _get_uint_dtype,
     _insert_disk_at_points,
     get_edt,
     get_tqdm,
@@ -93,14 +94,7 @@ def qbip(
         else np.full((1, 1, 1), -np.inf)
     )
     max_radius = int(np.max(dt))
-    if max_radius <= np.iinfo(np.uint8).max:
-        depth_dtype = np.uint8
-    elif max_radius <= np.iinfo(np.uint16).max:
-        depth_dtype = np.uint16
-    elif max_radius <= np.iinfo(np.uint32).max:
-        depth_dtype = np.uint32
-    else:
-        depth_dtype = np.uint64
+    depth_dtype = _get_uint_dtype(max_radius)
     im_depth = np.zeros_like(im, dtype=depth_dtype)
     squared_distance = np.arange(max_radius**2 + 1)
     ceil_distance = np.ceil(np.sqrt(squared_distance)).astype(depth_dtype)
