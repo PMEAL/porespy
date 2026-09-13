@@ -27,7 +27,7 @@ def test_drainage(plot=False):
         outlets=outlets,
     )
     pc = None
-    lt = ps.filters.local_thickness(im)
+    lt = ps.filters.local_thickness(im, method='legacy')
     dt = edt(im)
     residual = lt > 25
     steps = 25

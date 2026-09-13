@@ -24,10 +24,19 @@ __all__ = [
     "parse_shape",
     "get_fixtures_path",
     "Settings",
+    "_get_uint_dtype",
 ]
 
 
 logger = logging.getLogger("porespy")
+
+
+def _get_uint_dtype(max_value):
+    """Return the smallest unsigned integer dtype that can hold ``max_value``."""
+    for dtype in [np.uint8, np.uint16, np.uint32, np.uint64]:
+        if max_value <= np.iinfo(dtype).max:
+            return dtype
+    raise ValueError(f"max_value exceeds the uint64 range: {max_value}")
 
 
 def parse_shape(im_or_shape):

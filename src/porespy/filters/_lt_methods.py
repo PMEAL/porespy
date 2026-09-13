@@ -8,7 +8,9 @@ from numba import njit, prange
 from skimage.morphology import ball, disk, footprint_rectangle
 
 from porespy.tools import (
-    _insert_disk_at_points,
+    _get_axial_extent,
+    _get_uint_dtype,
+    _make_axial_extent_lookup,
     get_edt,
     get_tqdm,
     ps_round,
@@ -23,9 +25,16 @@ strel = {
     3: {'min': ball(1), 'max': footprint_rectangle((3, 3, 3))}
 }
 
+
+class _DefaultSizes:
+    def __repr__(self):
+        return 'None'
+
+
+_DEFAULT_SIZES = _DefaultSizes()
+
 __all__ = [
     "local_thickness_bf",
-    "local_thickness_imj",
     "local_thickness_dt",
     "local_thickness_conv",
     "local_thickness",
@@ -40,6 +49,7 @@ def porosimetry(
     sizes: int = None,
     method: Literal['dsi', 'fft', 'dt'] = 'dt',
     smooth: bool = True,
+    return_indices: bool = False,
 ):
     r"""
     Each location is assigned the radius of the largest sphere that can reach it
@@ -74,18 +84,22 @@ def porosimetry(
         This is only used if the method is `dt` or `conv`. If a list of values is
         provided they are used directly. If a scalar is provided then that number
         of points spanning the min and max of the distance transform are used.
-        If `None`, then all the unique values in the distance transform are used,
-        which may become time consuming. This can be sped up if `dt` is provided
-        and rounded to the nearest integer first.
+        If `None`, then all the unique values in the distance transform are used.
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
+    return_indices : bool, optional
+        If `True`, return ``(sizes, indices)`` instead of a float image, where
+        ``sizes[indices]`` reconstructs the usual result. The index image uses
+        the smallest suitable unsigned integer dtype. This is currently only
+        supported for ``method='dt'``. Default is `False`.
 
     Returns
     -------
-    sizes : ndarray
-        In image with each voxel value indicating the largest overlapping sphere
-        which can reach it from the given inlets.
+    image : ndarray or tuple[ndarray, ndarray]
+        An image with each voxel indicating the largest overlapping sphere which
+        can reach it from the given inlets, or ``(sizes, indices)`` when
+        `return_indices` is `True`.
 
     See Also
     --------
@@ -99,6 +113,10 @@ def porosimetry(
     to view online example.
 
     """
+    if return_indices and method != 'dt':
+        raise NotImplementedError(
+            "return_indices=True is currently only supported with method='dt'"
+        )
     if inlets is None:
         from porespy.generators import borders
         inlets = borders(im.shape, mode='faces')
@@ -108,24 +126,175 @@ def porosimetry(
         sizes = np.unique(dt[im])
     if method == 'dt':
         from porespy.simulations import drainage_dt
-        drn = drainage_dt(im=im, inlets=inlets, steps=sizes, smooth=smooth)
+        drn = drainage_dt(
+            im=im,
+            dt=dt,
+            inlets=inlets,
+            steps=sizes,
+            smooth=smooth,
+            return_indices=return_indices,
+        )
     elif method in ['dsi', 'bf']:
         from porespy.simulations import drainage_bf
-        drn = drainage_bf(im=im, inlets=inlets, steps=sizes, smooth=smooth)
+        drn = drainage_bf(im=im, dt=dt, inlets=inlets, steps=sizes, smooth=smooth)
     if method in ['fft', 'conv']:
         from porespy.simulations import drainage_conv
-        drn = drainage_conv(im=im, inlets=inlets, steps=sizes, smooth=smooth)
+        drn = drainage_conv(im=im, dt=dt, inlets=inlets, steps=sizes, smooth=smooth)
+    if return_indices:
+        return drn.bins, drn.im_seq
     return drn.im_size
+
+
+def _parse_integer_radii(sizes, dt, im):
+    """Return requested sphere radii as descending positive integers."""
+    max_radius = int(np.floor(np.max(dt[im])))
+    if max_radius < 1:
+        return np.empty(0, dtype=int)
+    if sizes is None:
+        return np.arange(max_radius, 0, -1)
+    if np.isscalar(sizes):
+        raise TypeError('sizes must be None or a collection of positive integer radii')
+    radii = np.asarray(sizes)
+    if np.any(~np.isfinite(radii)) or np.any(radii < 1) \
+            or np.any(radii != np.floor(radii)):
+        raise ValueError('sizes must contain positive integer radii')
+    radii = radii.astype(int, copy=False)
+    return np.unique(radii)[::-1]
+
+
+def _get_lt_flat_indices(mask):
+    """Return compact flat indices for a local-thickness insertion bucket."""
+    dtype = np.int32 if mask.size <= np.iinfo(np.int32).max else np.int64
+    return np.flatnonzero(mask).astype(dtype, copy=False)
+
+
+def _make_lt_result(shape, sizes, return_indices):
+    """Allocate a local-thickness result and its optional value lookup."""
+    if return_indices:
+        result = np.zeros(shape, dtype=_get_uint_dtype(len(sizes)))
+        values = np.concatenate(([0], np.asarray(sizes)))
+        return result, values
+    return np.zeros(shape, dtype=float), None
+
+
+@njit
+def _remove_lt_contained_disks(indices, previous):
+    """Discard disks contained by a previously inserted axial neighbor."""
+    count = 0
+    if previous.ndim == 2:
+        xlim, ylim = previous.shape
+        for q in range(len(indices)):
+            ind = indices[q]
+            i = ind // ylim
+            j = ind - i * ylim
+            contained = (
+                (i > 0 and previous[i - 1, j])
+                or (i + 1 < xlim and previous[i + 1, j])
+                or (j > 0 and previous[i, j - 1])
+                or (j + 1 < ylim and previous[i, j + 1])
+            )
+            if not contained:
+                indices[count] = ind
+                count += 1
+    elif previous.ndim == 3:
+        xlim, ylim, zlim = previous.shape
+        stride0 = ylim * zlim
+        for q in range(len(indices)):
+            ind = indices[q]
+            i = ind // stride0
+            rem = ind - i * stride0
+            j = rem // zlim
+            k = rem - j * zlim
+            contained = (
+                (i > 0 and previous[i - 1, j, k])
+                or (i + 1 < xlim and previous[i + 1, j, k])
+                or (j > 0 and previous[i, j - 1, k])
+                or (j + 1 < ylim and previous[i, j + 1, k])
+                or (k > 0 and previous[i, j, k - 1])
+                or (k + 1 < zlim and previous[i, j, k + 1])
+            )
+            if not contained:
+                indices[count] = ind
+                count += 1
+    return indices[:count]
+
+
+@njit(parallel=True)
+def _insert_lt_disks_at_indices(
+    lt,
+    indices,
+    radius,
+    value,
+    ceil_distance,
+    smooth,
+):  # pragma: no cover
+    """Rasterize one equal-radius bucket directly from flat center indices."""
+    npts = len(indices)
+    radius_squared = radius * radius
+    if lt.ndim == 2:
+        xlim, ylim = lt.shape
+        lt_flat = lt.reshape(lt.size)
+        for q in prange(npts):
+            ind = indices[q]
+            i = ind // ylim
+            j = ind - i * ylim
+            for x in range(max(0, i - radius), min(i + radius + 1, xlim)):
+                dx = x - i
+                y_extent = _get_axial_extent(
+                    radius_squared - dx * dx,
+                    ceil_distance,
+                    smooth,
+                )
+                start = x * ylim + max(0, j - y_extent)
+                stop = x * ylim + min(j + y_extent + 1, ylim)
+                for p in range(start, stop):
+                    if lt_flat[p] == 0:
+                        lt_flat[p] = value
+    elif lt.ndim == 3:
+        xlim, ylim, zlim = lt.shape
+        stride0 = ylim * zlim
+        lt_flat = lt.reshape(lt.size)
+        for q in prange(npts):
+            ind = indices[q]
+            i = ind // stride0
+            rem = ind - i * stride0
+            j = rem // zlim
+            k = rem - j * zlim
+            for x in range(max(0, i - radius), min(i + radius + 1, xlim)):
+                dx = x - i
+                dx_squared = dx * dx
+                yz_extent = _get_axial_extent(
+                    radius_squared - dx_squared,
+                    ceil_distance,
+                    smooth,
+                )
+                for y in range(
+                    max(0, j - yz_extent),
+                    min(j + yz_extent + 1, ylim),
+                ):
+                    dy = y - j
+                    z_extent = _get_axial_extent(
+                        radius_squared - dx_squared - dy * dy,
+                        ceil_distance,
+                        smooth,
+                    )
+                    start = (x * ylim + y) * zlim + max(0, k - z_extent)
+                    stop = (x * ylim + y) * zlim + min(k + z_extent + 1, zlim)
+                    for p in range(start, stop):
+                        if lt_flat[p] == 0:
+                            lt_flat[p] = value
+    return lt
 
 
 def local_thickness(
     im: npt.NDArray,
     dt: npt.NDArray = None,
-    method: Literal['bf', 'imj', 'conv', 'dt'] = 'dt',
+    method: Literal['bf', 'conv', 'dt', 'legacy'] = 'bf',
     smooth: bool = True,
     mask: npt.NDArray = None,
     approx: bool = False,
-    sizes: int = 25,
+    sizes: int = _DEFAULT_SIZES,
+    return_indices: bool = False,
 ):
     r"""
     Insert a maximally inscribed sphere at every pixel labelled by sphere radius
@@ -148,19 +317,17 @@ def local_thickness(
         'dt'     Uses distance transforms to perform erosion and dilation for each
                  radius in the image
         'bf'     Uses brute-force to inserts spheres at each voxel
-        'imj'    Uses the brute-force method but reduces the number of insertion
-                 sites by 80-90% to speed up the process
         'conv'   Uses FFT-based convolution to perform erosion and dilation for
                  each radius in the image
+        'legacy' Reproduces the former fractional-radius distance-transform method
         ======== ===================================================================
 
     sizes : array_like or scalar
-        This is only used if the method is `dt` or `conv`. If a list of values is
-        provided they are used directly. If a scalar is provided then that number
-        of points spanning the min and max of the distance transform are used.
-        If `None`, then all the unique values in the distance transform are used,
-        which may become time consuming. This can be sped up if `dt` is provided
-        and rounded to the nearest integer first.
+        A collection of positive integer radii to evaluate. If omitted or `None`,
+        every integer radius between 1 and ``floor(dt.max())`` is used. For
+        ``method='legacy'``, omitting this argument uses the former default of 25
+        logarithmically-spaced fractional radii; an explicit `None` uses all unique
+        distance-transform values.
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
@@ -169,16 +336,18 @@ def local_thickness(
         which sites to insert spheres at. If not provided then all `True` values in
         `im` are used.
     approx : bool, optional
-        This is only used if the method is `imj`. If `True` the algorithm is more
-        aggressive at skipping voxels to process, which speeds things up, but this
-        sacrifices accuracy in terms of a voxel-by-voxel match with the reference
-        implementation. The default is `False`, meaning full accuracy is the default.
+        Retained for compatibility with `imj` and has no effect.
+    return_indices : bool, optional
+        If `True`, return ``(sizes, indices)`` instead of a float image, where
+        ``sizes[indices]`` reconstructs the usual result. The index image uses
+        the smallest suitable unsigned integer dtype. Default is `False`.
 
     Returns
     -------
-    lt : ndarray
+    lt : ndarray or tuple[ndarray, ndarray]
         The local thickness of the image with each voxel labelled according to the
-        radius of the largest sphere which overlaps it.
+        radius of the largest sphere which overlaps it, or ``(sizes, indices)``
+        when `return_indices` is `True`.
 
     Examples
     --------
@@ -187,20 +356,85 @@ def local_thickness(
     to view online example.
     """
 
+    integer_sizes = None if sizes is _DEFAULT_SIZES else sizes
     if method == 'dt':
-        lt = local_thickness_dt(im=im, dt=dt, sizes=sizes, smooth=smooth)
-    elif method == 'imj':
-        lt = local_thickness_imj(im=im, dt=dt, smooth=smooth)
+        lt = local_thickness_dt(
+            im=im,
+            dt=dt,
+            sizes=integer_sizes,
+            smooth=smooth,
+            return_indices=return_indices,
+        )
     elif method == 'bf':
-        lt = local_thickness_bf(im=im, dt=dt, smooth=smooth)
+        lt = local_thickness_bf(
+            im=im,
+            dt=dt,
+            mask=mask,
+            smooth=smooth,
+            sizes=integer_sizes,
+            return_indices=return_indices,
+        )
     elif method == 'conv':
-        lt = local_thickness_conv(im=im, dt=dt, sizes=sizes, smooth=smooth)
+        lt = local_thickness_conv(
+            im=im,
+            dt=dt,
+            sizes=integer_sizes,
+            smooth=smooth,
+            return_indices=return_indices,
+        )
+    elif method == 'legacy':
+        legacy_sizes = 25 if sizes is _DEFAULT_SIZES else sizes
+        lt = _local_thickness_legacy(
+            im=im,
+            dt=dt,
+            sizes=legacy_sizes,
+            smooth=smooth,
+            return_indices=return_indices,
+        )
     else:
         raise Exception(f"Unrecognized method {method}")
     return lt
 
 
-def local_thickness_bf(im, dt=None, mask=None, smooth=True):
+def _local_thickness_legacy(
+    im,
+    dt=None,
+    sizes=25,
+    smooth=True,
+    return_indices=False,
+):
+    """Reproduce the pre-integer-radius DT local-thickness implementation."""
+    im = np.squeeze(im)
+    if dt is None:
+        dt = edt(im > 0)
+    if sizes is None:
+        sizes = np.unique(dt[im])
+    elif isinstance(sizes, (int, np.integer)):
+        sizes = np.logspace(np.log10(np.amax(dt)), 0, num=sizes)
+    else:
+        sizes = np.unique(sizes)[-1::-1]
+
+    results, values = _make_lt_result(im.shape, sizes, return_indices)
+    for i, radius in enumerate(
+        tqdm(sizes, desc='local_thickness_legacy', **settings.tqdm)
+    ):
+        seeds = dt >= radius
+        if np.any(seeds):
+            dilated = edt(~seeds) < radius if smooth else edt(~seeds) <= radius
+            results[(results == 0) & dilated] = i + 1 if return_indices else radius
+    if return_indices:
+        return values, results
+    return results
+
+
+def local_thickness_bf(
+    im,
+    dt=None,
+    mask=None,
+    smooth=True,
+    sizes=None,
+    return_indices=False,
+):
     r"""
     Insert a maximally inscribed sphere at every pixel labelled by sphere radius
 
@@ -216,19 +450,26 @@ def local_thickness_bf(im, dt=None, mask=None, smooth=True):
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
+    sizes : array_like or scalar
+        A collection of positive integer radii to evaluate. If `None`, every
+        integer radius between 1 and ``floor(dt.max())`` is used.
+    return_indices : bool, optional
+        If `True`, return ``(sizes, indices)`` instead of a float image, where
+        ``sizes[indices]`` reconstructs the usual result. Default is `False`.
 
     Returns
     -------
-    lt : ndarray
+    lt : ndarray or tuple[ndarray, ndarray]
         The local thickness of the image with each voxel labelled according to the
-        radius of the largest sphere which overlaps it
+        radius of the largest sphere which overlaps it, or ``(sizes, indices)``
+        when `return_indices` is `True`.
 
     Notes
     -----
-    This function uses brute force, meaning that is inserts spheres at every single
-    pixel or voxel in the void phase without making any attempt to reduce the number
-    of insertion sites. This provides a reference implementation for comparing
-    accuracy of other methods.
+    This method uses distance-transform thresholds to collect new insertion sites
+    at each radius. Spheres contained by a previously inserted axial neighbor are
+    discarded, then the remaining spheres are rasterized in parallel from compact
+    flat indices.
 
     Examples
     --------
@@ -241,222 +482,39 @@ def local_thickness_bf(im, dt=None, mask=None, smooth=True):
         dt = edt(im)
     if mask is None:
         mask = im
-    args = np.argsort(dt.flatten())
-    inds = np.vstack(np.unravel_index(args, dt.shape)).T
-    if im.ndim == 2:
-        lt = _run2D_bf(im, dt, mask, inds, smooth)
-    elif im.ndim == 3:
-        lt = _run3D_bf(im, dt, mask, inds, smooth)
+    # A center only needs inserting when it first becomes eligible.  This is
+    # the edge of each nested DT threshold, and is generally much smaller than
+    # inserting at every eligible voxel for every radius.
+    radii = _parse_integer_radii(sizes=sizes, dt=dt, im=im)
+    lt, values = _make_lt_result(im.shape, radii, return_indices)
+    seeds_prev = np.zeros(im.shape, dtype=bool)
+    max_radius = radii[0] if radii.size else 0
+    ceil_distance = _make_axial_extent_lookup(max_radius)
+    for i, radius in enumerate(radii):
+        seeds = (dt >= radius) & mask
+        indices = _get_lt_flat_indices(seeds & ~seeds_prev)
+        indices = _remove_lt_contained_disks(indices, seeds_prev)
+        if indices.size:
+            lt = _insert_lt_disks_at_indices(
+                lt=lt,
+                indices=indices,
+                radius=radius,
+                value=i + 1 if return_indices else radius,
+                ceil_distance=ceil_distance,
+                smooth=smooth,
+            )
+        seeds_prev = seeds
+    if return_indices:
+        return values, lt
     return lt
-
-
-@njit
-def _run2D_bf(im, dt, mask, inds, smooth):
-    im2 = np.zeros(im.shape, dtype=float)
-    # if im2.ndim == 2:
-    for idx in inds:
-        i = idx[0]
-        j = idx[1]
-        idx = np.array([[i, j]]).T
-        r = dt[i, j]
-        if mask[i, j]:
-            im2 = _insert_disk_at_points(
-                im=im2, coords=idx, r=int(r), v=r, overwrite=True, smooth=smooth)
-    return im2
-
-
-@njit
-def _run3D_bf(im, dt, mask, inds, smooth):
-    im3 = np.zeros(im.shape, dtype=float)
-    for idx in inds:
-        i = idx[0]
-        j = idx[1]
-        k = idx[2]
-        idx = np.array([[i, j, k]]).T
-        r = dt[i, j, k]
-        if mask[i, j, k]:
-            im3 = _insert_disk_at_points(
-                im=im3, coords=idx, r=int(r), v=r, overwrite=True, smooth=smooth)
-    return im3
-
-
-def local_thickness_imj(im, dt=None, smooth=False, approx=False):
-    r"""
-    Insert a maximally inscribed sphere at every pixel labelled by sphere radius
-
-    Parameters
-    ----------
-    im : ndarray
-        Boolean image of the porous material
-    dt : ndarray, optional
-        The distance transform of the image
-    smooth : bool, optional
-        Indicates if protrusions should be removed from the faces of the spheres
-        or not. Default is `True`.
-    approx : bool, optional
-        If `True` the algorithm is more aggressive at skipping voxels to process,
-        which speeds things up, but this sacrifices accuracy in terms of a
-        voxel-by-voxel match with the reference implementation. The default is
-        `False`, meaning full accuracy is the default.
-
-    Returns
-    -------
-    lt : ndarray
-        The local thickness of the image with each voxel labelled according to the
-        radius of the largest sphere which overlaps it
-
-    Notes
-    -----
-    This version uses some logic to only insert spheres at locations which
-    are not fully overlapped by larger spheres to reduce the number of insertions
-
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/filters/reference/local_thickness_imj.html>`__
-    to view online example.
-    """
-    if dt is None:
-        dt = edt(im)
-
-    # Sort dt to scan sites from largest to smallest
-    args = np.argsort(dt.flatten())[-1::-1]
-    ijk = np.vstack(np.unravel_index(args, dt.shape)).T
-
-    # Call jitted function to draw spheres. The internal helpers also report
-    # `count` and `used` for diagnostics, but the public API returns just `lt`.
-    if im.ndim == 2:
-        lt, _, _ = _run2D(im, dt, ijk, smooth, approx)
-    elif im.ndim == 3:
-        lt, _, _ = _run3D(im, dt, ijk, smooth, approx)
-
-    return lt
-
-
-@njit(parallel=True)
-def _run2D(im, dt, ijk, smooth, approx):
-    valid = np.copy(im)
-    lt = np.zeros(im.shape, dtype=float)
-    used = np.copy(lt)
-    count = 0
-    for idx in ijk:
-        i = idx[0]
-        j = idx[1]
-        rval = dt[i, j]
-        r = int(rval)
-        # Since entries in ijk are sorted by size, once we reach an entry with
-        # r = 0, then we know all remain entries will also be 0 so we can stop
-        if r == 0:
-            break
-        # Only process if point has not yet been engulfed on previous step
-        if valid[i, j]:
-            used[i, j] = 1.0
-            # Scan neighborhood around current pixel
-            mn = r_to_inds_2d(r)
-            for row in prange(len(mn[0])):
-                m = mn[0][row] - r
-                n = mn[1][row] - r
-                if ((i + m) >= 0) and ((i + m) < im.shape[0]) \
-                        and ((j + n) >= 0) and ((j + n) < im.shape[1]):
-                    # Draw spheres within L of point (i, j)
-                    L = r - ((m)**2 + (n)**2)**0.5 + 1
-                    if (lt[i+m, j+n] == 0) and (L > 1 if smooth else L >= 1):
-                        lt[i+m, j+n] = rval
-                    # Use ints here since it's about actual sphere sizes
-                    # not exact distances between pixel centers
-                    if approx:
-                        if int(dt[i+m, j+n]) <= int(L):
-                            valid[i+m, j+n] = False
-                    else:
-                        if int(dt[i+m, j+n]) < int(L):
-                            valid[i+m, j+n] = False
-            count += 1
-    return lt, count, used
-
-
-@njit(parallel=True)
-def _run3D(im, dt, ijk, smooth, approx):
-    valid = np.copy(im)
-    lt = np.zeros(im.shape, dtype=float)
-    used = np.copy(lt)
-    count = 0
-    for idx in ijk:
-        i = idx[0]
-        j = idx[1]
-        k = idx[2]
-        rval = dt[i, j, k]
-        r = int(rval)
-        # Since entries in ijk are sorted by size, once we reach an entry with
-        # r = 0, then we know all remain entries will also be 0 so we can stop
-        if r == 0:
-            break
-        # Only process if point has not yet been engulfed on a previous step
-        if valid[i, j, k]:
-            used[i, j, k] = True
-            # Scan neighborhood around current voxel
-            mno = r_to_inds_3d(r)
-            for row in prange(len(mno[0])):
-                m = mno[0][row] - r
-                n = mno[1][row] - r
-                o = mno[2][row] - r
-                if ((i + m) >= 0) and ((i + m) < im.shape[0]) \
-                    and ((j + n) >= 0) and ((j + n) < im.shape[1]) \
-                        and ((k + o) >= 0) and ((k + o) < im.shape[2]):
-                    # Draw spheres within L of point (i, j, k)
-                    L = r - (m**2 + n**2 + o**2)**0.5 + 1
-                    if (lt[i+m, j+n, k+o] == 0) and \
-                            (L > 1 if smooth else L >= 1):
-                        lt[i+m, j+n, k+o] = rval
-                    # Use ints here since it's about actual sphere
-                    # sizes not exact distances between pixel centers
-                    if approx:
-                        if int(dt[i+m, j+n, k+o]) <= int(L):
-                            valid[i+m, j+n, k+o] = False
-                    else:
-                        if int(dt[i+m, j+n, k+o]) < int(L):
-                            valid[i+m, j+n, k+o] = False
-            count += 1
-    return lt, count, used
-
-
-def r_to_inds(r, ndim):
-    m = np.meshgrid(*[np.arange(2*r+1) for _ in range(ndim)])
-    inds = np.vstack([n.flatten() for n in m]).T
-    return inds
-
-
-@njit
-def r_to_inds_3d(r):
-    size = 2*r + 1
-    xx = np.empty(shape=(size**3), dtype=np.int_)
-    yy = np.empty_like(xx)
-    zz = np.empty_like(xx)
-    for i in range(size):
-        for j in range(size):
-            for k in range(size):
-                xx[i*size**2 + j*size + k] = i
-                yy[i*size**2 + j*size + k] = j
-                zz[i*size**2 + j*size + k] = k
-    return xx, yy, zz
-
-
-@njit
-def r_to_inds_2d(r):
-    size = 2*r + 1
-    xx = np.empty(shape=(size**2), dtype=np.int_)
-    yy = np.empty_like(xx)
-    for i in range(size):
-        for j in range(size):
-            xx[i*size + j] = i
-            yy[i*size + j] = j
-    return xx, yy
 
 
 def local_thickness_conv(
     im: npt.NDArray,
     dt: npt.NDArray = None,
-    sizes: int = 25,
+    sizes: int = None,
     smooth: bool = True,
+    return_indices: bool = False,
 ):
     r"""
     Calculates the radius of the largest sphere that overlaps each voxel while
@@ -472,18 +530,18 @@ def local_thickness_conv(
         to integers and using `sizes=None` can save time by limiting the number of
         sizes that are used.
     sizes : array_like or scalar
-        The sizes to insert. If a list of values is provided they are
-        used directly. If a scalar is provided then that number of points
-        spanning the min and max of the distance transform are used. If `None`, the
-        all the unique values in the distance transform are used, which may become
-        time consuming.
+        A collection of positive integer radii to evaluate. If `None`, every
+        integer radius between 1 and ``floor(dt.max())`` is used.
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
+    return_indices : bool, optional
+        If `True`, return ``(sizes, indices)`` instead of a float image, where
+        ``sizes[indices]`` reconstructs the usual result. Default is `False`.
 
     Returns
     -------
-    image : ndarray
+    image : ndarray or tuple[ndarray, ndarray]
         A copy of `im` with the pore size values in each voxel
 
     Notes
@@ -506,30 +564,28 @@ def local_thickness_conv(
     if dt is None:
         dt = edt(im > 0)
 
-    if sizes is None:
-        sizes = np.unique(dt[im])
-    elif isinstance(sizes, int):
-        sizes = np.logspace(start=np.log10(np.amax(dt)), stop=0, num=sizes)
-    else:
-        sizes = np.unique(sizes)[-1::-1]
+    sizes = _parse_integer_radii(sizes=sizes, dt=dt, im=im)
 
-    imresults = np.zeros(np.shape(im))
+    imresults, values = _make_lt_result(im.shape, sizes, return_indices)
     desc = inspect.currentframe().f_code.co_name  # Get current func name
-    for r in tqdm(sizes, desc=desc, **settings.tqdm):
+    for i, r in enumerate(tqdm(sizes, desc=desc, **settings.tqdm)):
         imtemp = dt >= r
         if np.any(imtemp):
             se = ps_round(r, ndim=im.ndim, smooth=smooth)
             imtemp = fftmorphology(imtemp, se, mode="dilation")
-            imresults[(imresults == 0) * imtemp] = r
+            imresults[(imresults == 0) * imtemp] = i + 1 if return_indices else r
 
+    if return_indices:
+        return values, imresults
     return imresults
 
 
 def local_thickness_dt(
     im: npt.NDArray,
     dt: npt.NDArray = None,
-    sizes: int = 25,
+    sizes: int = None,
     smooth: bool = True,
+    return_indices: bool = False,
 ):
     r"""
     Calculates the radius of the largest sphere that overlaps each voxel while
@@ -545,18 +601,18 @@ def local_thickness_dt(
         to integers and using `sizes=None` can save time by limiting the number of
         sizes that are used.
     sizes : array_like or scalar
-        The sizes to insert. If a list of values is provided they are
-        used directly. If a scalar is provided then that number of points
-        spanning the min and max of the distance transform are used. If `None`, then
-        all the unique values in the distance transform are used, which may become
-        time consuming.
+        A collection of positive integer radii to evaluate. If `None`, every
+        integer radius between 1 and ``floor(dt.max())`` is used.
     smooth : bool, optional
         Indicates if protrusions should be removed from the faces of the spheres
         or not. Default is `True`.
+    return_indices : bool, optional
+        If `True`, return ``(sizes, indices)`` instead of a float image, where
+        ``sizes[indices]`` reconstructs the usual result. Default is `False`.
 
     Returns
     -------
-    image : ndarray
+    image : ndarray or tuple[ndarray, ndarray]
         A copy of `im` with the pore size values in each voxel
 
     Examples
@@ -572,72 +628,20 @@ def local_thickness_dt(
         dt = edt(im > 0)
 
     # Parse given sizes
-    if sizes is None:
-        sizes = np.unique(dt[im])
-    elif isinstance(sizes, int):
-        sizes = np.logspace(start=np.log10(np.amax(dt)), stop=0, num=sizes)
-    else:
-        sizes = np.unique(sizes)[-1::-1]
+    sizes = _parse_integer_radii(sizes=sizes, dt=dt, im=im)
 
-    im_results = np.zeros(np.shape(im))
+    im_results, values = _make_lt_result(im.shape, sizes, return_indices)
     desc = inspect.currentframe().f_code.co_name  # Get current func name
-    for r in tqdm(sizes, desc=desc, **settings.tqdm):
+    for i, r in enumerate(tqdm(sizes, desc=desc, **settings.tqdm)):
         im_temp = dt >= r  # Perform erosion
         if np.any(im_temp):
             # Perform dilation
             im_temp = edt(~im_temp) < r if smooth else edt(~im_temp) <= r
             # Add values to im_results
-            im_results[(im_results == 0) * im_temp] = r
+            im_results[(im_results == 0) * im_temp] = (
+                i + 1 if return_indices else r
+            )
 
+    if return_indices:
+        return values, im_results
     return im_results
-
-
-if __name__ == "__main__":
-
-    import matplotlib.pyplot as plt
-    from localthickness import local_thickness as loct
-
-    import porespy as ps
-
-    im = ~ps.generators.random_spheres([150, 150, 150], r=10, clearance=10, seed=0)
-    dt = edt(im)
-    # Call _run3D directly so we can inspect `count` for diagnostics
-    args = np.argsort(dt.flatten())[-1::-1]
-    ijk = np.vstack(np.unravel_index(args, dt.shape)).T
-    ps.tools.tic()
-    lt1, count, used = _run3D(im, dt, ijk, True, True)
-    t1 = ps.tools.toc(quiet=True)
-    ps.tools.tic()
-    lt2, count, used = _run3D(im, dt, ijk, True, False)
-    t2 = ps.tools.toc(quiet=True)
-    ps.tools.tic()
-    lt3 = local_thickness_dt(im, dt=dt, sizes=np.unique(dt[im].astype(int)))
-    t3 = ps.tools.toc(quiet=True)
-    ps.tools.tic()
-    lt4 = loct(im)
-    t4 = ps.tools.toc(quiet=True)
-    print("Times are:")
-    print(f" Reference: {t2}")
-    print(f" New Method: {t1}")
-    print(f" PoreSpy: {t3}")
-    print(f" Dahl: {t4}")
-    print("Errors are:")
-    print(f" New Method: {np.sum(lt2 != lt1)/im.sum()}")
-    print(f" PoreSpy: {np.sum(lt2 != lt3)/im.sum()}")
-    print(f" Dahl: {np.sum(lt2 != lt4)/im.sum()}")
-    print(f"New method used {round(count/im.sum()*100, 2)}% of pixels")
-
-    if im.ndim == 2:
-        fig, ax = plt.subplots(1, 4)
-        # ax[0].imshow(lt2 / im)
-        ax[0].set_title('Reference')
-        ax[0].axis('off')
-        ax[1].imshow(lt1 / im)
-        ax[1].set_title('New Method')
-        ax[1].axis('off')
-        ax[2].imshow(lt3 / im)
-        ax[2].set_title('PoreSpy')
-        ax[2].axis('off')
-        ax[3].imshow(lt4 / im)
-        ax[3].set_title('Dahl')
-        ax[3].axis('off')

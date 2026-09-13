@@ -26,7 +26,7 @@ def test_imbibition(plot=False):
         outlets=outlets,
     )
     pc = None
-    lt = ps.filters.local_thickness(im)
+    lt = ps.filters.local_thickness(im, method='legacy')
     dt = edt(im)
     residual = ~(lt > 10)*im
     steps = 25

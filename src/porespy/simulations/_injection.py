@@ -10,6 +10,8 @@ from numba import njit
 from porespy.filters import find_small_clusters, find_trapped_clusters, seq_to_satn
 from porespy.tools import (
     Results,
+    _get_axial_extent,
+    _get_uint_dtype,
     _insert_disk_at_points,
     get_edt,
     get_tqdm,
@@ -92,14 +94,7 @@ def qbip(
         else np.full((1, 1, 1), -np.inf)
     )
     max_radius = int(np.max(dt))
-    if max_radius <= np.iinfo(np.uint8).max:
-        depth_dtype = np.uint8
-    elif max_radius <= np.iinfo(np.uint16).max:
-        depth_dtype = np.uint16
-    elif max_radius <= np.iinfo(np.uint32).max:
-        depth_dtype = np.uint32
-    else:
-        depth_dtype = np.uint64
+    depth_dtype = _get_uint_dtype(max_radius)
     im_depth = np.zeros_like(im, dtype=depth_dtype)
     squared_distance = np.arange(max_radius**2 + 1)
     ceil_distance = np.ceil(np.sqrt(squared_distance)).astype(depth_dtype)
@@ -278,20 +273,6 @@ def _draw_qbip_spheres(
         if end_of_step:
             step += 1
     return seq, pressure, size, drawn, skipped
-
-
-@njit
-def _get_axial_extent(distance_squared, ceil_distance, smooth):
-    if smooth:
-        if distance_squared <= 0:
-            return -1
-        return int(ceil_distance[distance_squared]) - 1
-    if distance_squared < 0:
-        return -1
-    extent = int(ceil_distance[distance_squared])
-    if extent**2 > distance_squared:
-        extent -= 1
-    return extent
 
 
 @njit

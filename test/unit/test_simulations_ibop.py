@@ -1,16 +1,17 @@
 import inspect
 
 import numpy as np
+import pytest
 from GenericTest import GenericTest
 
 import porespy as ps
+from porespy.tools import _make_axial_extent_lookup
 from porespy.simulations._tools import (
     _find_interface,
     _get_flat_indices,
     _insert_disks_at_indices_parallel,
     _insert_disks_at_indices_parallel_direct,
     _insert_disks_at_indices_parallel_merged,
-    _make_axial_extent_lookup,
     _remove_contained_disks,
     _use_merged_intervals,
 )
@@ -44,6 +45,23 @@ class IBOPTest(GenericTest):
         expected = ps.simulations.drainage(im=self.im2D, steps=25)
         assert np.array_equal(actual.im_seq, expected.im_seq)
         assert np.array_equal(actual.im_pc, expected.im_pc)
+
+    def test_drainage_dt_return_indices(self):
+        expected = ps.simulations.drainage_dt(im=self.im2D, steps=25)
+        actual = ps.simulations.drainage_dt(
+            im=self.im2D,
+            steps=25,
+            return_indices=True,
+        )
+        assert actual.im_seq.dtype == np.uint8
+        assert not hasattr(actual, 'im_size')
+        np.testing.assert_array_equal(actual.bins[actual.im_seq], expected.im_size)
+        with pytest.raises(NotImplementedError):
+            ps.simulations.drainage_dt(
+                im=self.im2D,
+                outlets=np.ones_like(self.im2D),
+                return_indices=True,
+            )
 
     def test_flat_index_sphere_insertion(self):
         for shape in [(31, 37), (19, 23, 17)]:
