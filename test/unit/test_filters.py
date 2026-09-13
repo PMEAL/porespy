@@ -342,6 +342,16 @@ class FilterTest():
         assert lt.shape == im.shape
         assert lt.max() > 0
 
+    def test_local_thickness_bf_mask(self):
+        im = self.im[:, :, 50]
+        dt = edt(im)
+        mask = np.zeros_like(im, dtype=bool)
+        center = np.unravel_index(np.argmax(dt), dt.shape)
+        mask[center] = True
+        lt = ps.filters.local_thickness(im, dt=dt, method='bf', mask=mask)
+        assert lt[center] == dt[center]
+        assert np.count_nonzero(lt) < np.count_nonzero(im)
+
     def test_local_thickness_known_sizes(self):
         im = np.zeros(shape=[300, 300])
         im = ps.generators.random_spheres(im=im, r=20)

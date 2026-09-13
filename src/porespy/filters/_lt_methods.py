@@ -8,7 +8,6 @@ from numba import njit, prange
 from skimage.morphology import ball, disk, footprint_rectangle
 
 from porespy.tools import (
-    _insert_disk_at_points,
     get_edt,
     get_tqdm,
     ps_round,
@@ -190,9 +189,9 @@ def local_thickness(
     if method == 'dt':
         lt = local_thickness_dt(im=im, dt=dt, sizes=sizes, smooth=smooth)
     elif method == 'imj':
-        lt = local_thickness_imj(im=im, dt=dt, smooth=smooth)
+        lt = local_thickness_imj(im=im, dt=dt, smooth=smooth, approx=approx)
     elif method == 'bf':
-        lt = local_thickness_bf(im=im, dt=dt, smooth=smooth)
+        lt = local_thickness_bf(im=im, dt=dt, mask=mask, smooth=smooth)
     elif method == 'conv':
         lt = local_thickness_conv(im=im, dt=dt, sizes=sizes, smooth=smooth)
     else:
@@ -241,43 +240,88 @@ def local_thickness_bf(im, dt=None, mask=None, smooth=True):
         dt = edt(im)
     if mask is None:
         mask = im
-    args = np.argsort(dt.flatten())
-    inds = np.vstack(np.unravel_index(args, dt.shape)).T
+    # Only nonzero, requested sites can modify the result.  Keeping these as
+    # flat indices avoids sorting the solid phase and allocating an ``ndim``
+    # coordinate array for every voxel.
+    indices = np.flatnonzero(mask & (dt > 0))
+    indices = indices[np.argsort(dt.flat[indices])]
+    max_radius = int(np.max(dt.flat[indices])) if indices.size else 0
+    ceil_distance = np.ceil(
+        np.sqrt(np.arange(max_radius**2 + 1))).astype(np.int32)
     if im.ndim == 2:
-        lt = _run2D_bf(im, dt, mask, inds, smooth)
+        lt = _run2D_bf(im, dt, indices, ceil_distance, smooth)
     elif im.ndim == 3:
-        lt = _run3D_bf(im, dt, mask, inds, smooth)
+        lt = _run3D_bf(im, dt, indices, ceil_distance, smooth)
     return lt
 
 
 @njit
-def _run2D_bf(im, dt, mask, inds, smooth):
+def _run2D_bf(im, dt, indices, ceil_distance, smooth):
     im2 = np.zeros(im.shape, dtype=float)
-    # if im2.ndim == 2:
-    for idx in inds:
-        i = idx[0]
-        j = idx[1]
-        idx = np.array([[i, j]]).T
+    ylim = im.shape[1]
+    for index in indices:
+        i = index // ylim
+        j = index - i*ylim
         r = dt[i, j]
-        if mask[i, j]:
-            im2 = _insert_disk_at_points(
-                im=im2, coords=idx, r=int(r), v=r, overwrite=True, smooth=smooth)
+        radius = int(r)
+        if radius > 0:
+            radius_squared = radius**2
+            for x in range(max(0, i - radius), min(i + radius + 1, im.shape[0])):
+                distance_squared = radius_squared - (x - i)**2
+                y_extent = _get_axial_extent(
+                    distance_squared, ceil_distance, smooth)
+                if y_extent >= 0:
+                    y_start = max(0, j - y_extent)
+                    y_stop = min(j + y_extent + 1, im.shape[1])
+                    im2[x, y_start:y_stop] = r
     return im2
 
 
 @njit
-def _run3D_bf(im, dt, mask, inds, smooth):
+def _run3D_bf(im, dt, indices, ceil_distance, smooth):
     im3 = np.zeros(im.shape, dtype=float)
-    for idx in inds:
-        i = idx[0]
-        j = idx[1]
-        k = idx[2]
-        idx = np.array([[i, j, k]]).T
+    ylim, zlim = im.shape[1:]
+    stride0 = ylim*zlim
+    for index in indices:
+        i = index // stride0
+        remainder = index - i*stride0
+        j = remainder // zlim
+        k = remainder - j*zlim
         r = dt[i, j, k]
-        if mask[i, j, k]:
-            im3 = _insert_disk_at_points(
-                im=im3, coords=idx, r=int(r), v=r, overwrite=True, smooth=smooth)
+        radius = int(r)
+        if radius > 0:
+            radius_squared = radius**2
+            for x in range(max(0, i - radius), min(i + radius + 1, im.shape[0])):
+                yz_distance_squared = radius_squared - (x - i)**2
+                y_extent = _get_axial_extent(
+                    yz_distance_squared, ceil_distance, smooth)
+                if y_extent < 0:
+                    continue
+                for y in range(max(0, j - y_extent),
+                               min(j + y_extent + 1, im.shape[1])):
+                    z_distance_squared = yz_distance_squared - (y - j)**2
+                    z_extent = _get_axial_extent(
+                        z_distance_squared, ceil_distance, smooth)
+                    if z_extent >= 0:
+                        z_start = max(0, k - z_extent)
+                        z_stop = min(k + z_extent + 1, im.shape[2])
+                        im3[x, y, z_start:z_stop] = r
     return im3
+
+
+@njit(inline='always')
+def _get_axial_extent(distance_squared, ceil_distance, smooth):
+    """Return the integer half-width of a disk cross-section."""
+    if smooth:
+        if distance_squared <= 0:
+            return -1
+        return int(ceil_distance[distance_squared]) - 1
+    if distance_squared < 0:
+        return -1
+    extent = int(ceil_distance[distance_squared])
+    if extent**2 > distance_squared:
+        extent -= 1
+    return extent
 
 
 def local_thickness_imj(im, dt=None, smooth=False, approx=False):
