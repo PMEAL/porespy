@@ -1,10 +1,6 @@
 import numpy as np
 from numba import get_num_threads, get_thread_id, njit, prange
-
-
-def _make_axial_extent_lookup(max_radius):
-    squared_distance = np.arange(int(max_radius)**2 + 1)
-    return np.ceil(np.sqrt(squared_distance)).astype(np.int32)
+from porespy.tools import _get_axial_extent, _make_axial_extent_lookup
 
 
 def _get_flat_indices(mask):
@@ -93,20 +89,6 @@ def _find_interface(mask, interface):  # pragma: no cover
                         or (k + 1 < zlim and not mask[i, j, k + 1])
                     )
     return interface
-
-
-@njit(inline="always")
-def _get_axial_extent(distance_squared, ceil_distance, smooth):
-    if smooth:
-        if distance_squared <= 0:
-            return -1
-        return int(ceil_distance[distance_squared]) - 1
-    if distance_squared < 0:
-        return -1
-    extent = int(ceil_distance[distance_squared])
-    if extent**2 > distance_squared:
-        extent -= 1
-    return extent
 
 
 def _insert_disks_at_indices_parallel(

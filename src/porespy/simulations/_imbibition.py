@@ -1,7 +1,6 @@
 import inspect
 
 import numpy as np
-from numba import njit, prange
 
 from porespy.filters import (
     fftmorphology,
@@ -721,46 +720,6 @@ def imbibition(
     results.pc = pc_curve.pc
     results.snwp = pc_curve.snwp
     return results
-
-
-@njit(parallel=True)
-def _insert_disks_npoints_nradii_1value_parallel(
-    im,
-    coords,
-    radii,
-    v,
-    overwrite=False,
-    smooth=False,
-):  # pragma: no cover
-    if im.ndim == 2:
-        xlim, ylim = im.shape
-        for row in prange(len(coords[0])):
-            i, j = coords[0][row], coords[1][row]
-            r = radii[row]
-            for a, x in enumerate(range(i-r, i+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(j-r, j+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            R = ((a - r)**2 + (b - r)**2)**0.5
-                            if (R <= r)*(~smooth) or (R < r)*(smooth):
-                                if overwrite or (im[x, y] == 0):
-                                    im[x, y] = v
-    else:
-        xlim, ylim, zlim = im.shape
-        for row in prange(len(coords[0])):
-            i, j, k = coords[0][row], coords[1][row], coords[2][row]
-            r = radii[row]
-            for a, x in enumerate(range(i-r, i+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(j-r, j+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            for c, z in enumerate(range(k-r, k+r+1)):
-                                if (z >= 0) and (z < zlim):
-                                    R = ((a - r)**2 + (b - r)**2 + (c - r)**2)**0.5
-                                    if (R <= r)*(~smooth) or (R < r)*(smooth):
-                                        if overwrite or (im[x, y, z] == 0):
-                                            im[x, y, z] = v
-    return im
 
 
 # %%

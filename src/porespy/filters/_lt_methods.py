@@ -8,6 +8,8 @@ from numba import njit, prange
 from skimage.morphology import ball, disk, footprint_rectangle
 
 from porespy.tools import (
+    _get_axial_extent,
+    _make_axial_extent_lookup,
     get_edt,
     get_tqdm,
     ps_round,
@@ -246,8 +248,7 @@ def local_thickness_bf(im, dt=None, mask=None, smooth=True):
     indices = np.flatnonzero(mask & (dt > 0))
     indices = indices[np.argsort(dt.flat[indices])]
     max_radius = int(np.max(dt.flat[indices])) if indices.size else 0
-    ceil_distance = np.ceil(
-        np.sqrt(np.arange(max_radius**2 + 1))).astype(np.int32)
+    ceil_distance = _make_axial_extent_lookup(max_radius)
     if im.ndim == 2:
         lt = _run2D_bf(im, dt, indices, ceil_distance, smooth)
     elif im.ndim == 3:
@@ -307,21 +308,6 @@ def _run3D_bf(im, dt, indices, ceil_distance, smooth):
                         z_stop = min(k + z_extent + 1, im.shape[2])
                         im3[x, y, z_start:z_stop] = r
     return im3
-
-
-@njit(inline='always')
-def _get_axial_extent(distance_squared, ceil_distance, smooth):
-    """Return the integer half-width of a disk cross-section."""
-    if smooth:
-        if distance_squared <= 0:
-            return -1
-        return int(ceil_distance[distance_squared]) - 1
-    if distance_squared < 0:
-        return -1
-    extent = int(ceil_distance[distance_squared])
-    if extent**2 > distance_squared:
-        extent -= 1
-    return extent
 
 
 def local_thickness_imj(im, dt=None, smooth=False, approx=False):

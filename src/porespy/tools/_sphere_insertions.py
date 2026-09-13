@@ -6,6 +6,8 @@ __all__ = [
     '_make_disks',
     '_make_ball',
     '_make_balls',
+    '_make_axial_extent_lookup',
+    '_get_axial_extent',
     '_insert_disk_at_points',
     '_insert_disk_at_point',
     '_insert_disk_at_points_parallel',
@@ -62,6 +64,16 @@ def points_to_spheres(im):
     return im_spheres
 
 
+@njit
+def _make_axial_extent_lookup(max_radius):
+    """Build the lookup used to rasterize circular scan-line spans."""
+    ceil_distance = np.empty(int(max_radius)**2 + 1, dtype=np.int32)
+    for distance_squared in range(len(ceil_distance)):
+        ceil_distance[distance_squared] = int(
+            np.ceil(np.sqrt(distance_squared)))
+    return ceil_distance
+
+
 @njit(inline='always')
 def _get_axial_extent(distance_squared, ceil_distance, smooth):
     if smooth:
@@ -83,9 +95,7 @@ def _insert_disks_at_points_parallel(im, coords, radii, v, smooth=True,
     max_radius = 0
     for i in range(npts):
         max_radius = max(max_radius, int(radii[i]))
-    ceil_distance = np.empty(max_radius**2 + 1, dtype=np.int64)
-    for distance_squared in range(max_radius**2 + 1):
-        ceil_distance[distance_squared] = int(np.ceil(np.sqrt(distance_squared)))
+    ceil_distance = _make_axial_extent_lookup(max_radius)
     if im.ndim == 2:
         xlim, ylim = im.shape
         for i in prange(npts):
