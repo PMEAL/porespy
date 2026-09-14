@@ -1,5 +1,5 @@
 import numpy as np
-from numba import njit, prange
+from numba import get_num_threads, get_thread_id, njit, prange
 
 __all__ = [
     '_make_disk',
@@ -8,6 +8,10 @@ __all__ = [
     '_make_balls',
     '_make_axial_extent_lookup',
     '_get_axial_extent',
+    '_insert_disks_at_indices_parallel',
+    '_insert_disks_at_indices_parallel_direct',
+    '_insert_disks_at_indices_parallel_merged',
+    '_use_merged_intervals',
     '_insert_disk_at_points',
     '_insert_disk_at_point',
     '_insert_disk_at_points_parallel',
@@ -86,6 +90,258 @@ def _get_axial_extent(distance_squared, ceil_distance, smooth):
     if extent**2 > distance_squared:
         extent -= 1
     return extent
+
+
+def _insert_disks_at_indices_parallel(
+    im,
+    indices,
+    dt,
+    ceil_distance,
+    smooth=True,
+    overwrite=False,
+    fixed_radius=-1,
+):  # pragma: no cover
+    """Insert disks from flat indices using direct or merged scan-line writes."""
+    if overwrite and _use_merged_intervals(im, indices, dt, fixed_radius):
+        return _insert_disks_at_indices_parallel_merged(
+            im=im,
+            indices=indices,
+            dt=dt,
+            ceil_distance=ceil_distance,
+            smooth=smooth,
+            fixed_radius=fixed_radius,
+        )
+    return _insert_disks_at_indices_parallel_direct(
+        im=im,
+        indices=indices,
+        dt=dt,
+        ceil_distance=ceil_distance,
+        smooth=smooth,
+        overwrite=overwrite,
+        fixed_radius=fixed_radius,
+    )
+
+
+@njit
+def _use_merged_intervals(im, indices, dt, fixed_radius=-1):
+    """Estimate whether merging scan-line intervals will reduce write work."""
+    if len(indices) == 0:
+        return False
+    nsamples = min(len(indices), 256)
+    estimated_intervals = 0
+    if im.ndim == 2:
+        ylim = im.shape[1]
+        for q in range(nsamples):
+            ind = indices[q * len(indices) // nsamples]
+            i = ind // ylim
+            j = ind - i * ylim
+            r = fixed_radius if fixed_radius >= 0 else int(dt[i, j])
+            estimated_intervals += 2 * r + 1
+        nrows = im.shape[0]
+    else:
+        ylim, zlim = im.shape[1:]
+        stride0 = ylim * zlim
+        for q in range(nsamples):
+            ind = indices[q * len(indices) // nsamples]
+            i = ind // stride0
+            rem = ind - i * stride0
+            j = rem // zlim
+            k = rem - j * zlim
+            r = fixed_radius if fixed_radius >= 0 else int(dt[i, j, k])
+            diameter = 2 * r + 1
+            estimated_intervals += diameter**2
+        nrows = im.shape[0] * im.shape[1]
+    # Row buffers and their initialization cost more than direct writes for
+    # sparse disks. Benchmarks place the crossover near 256 generated intervals
+    # per output row, while strongly overlapping spheres exceed this by orders
+    # of magnitude.
+    return estimated_intervals * len(indices) >= 256 * nrows * nsamples
+
+
+@njit(parallel=True)
+def _insert_disks_at_indices_parallel_direct(
+    im,
+    indices,
+    dt,
+    ceil_distance,
+    smooth=True,
+    overwrite=False,
+    fixed_radius=-1,
+    value=True,
+):  # pragma: no cover
+    """Insert disks from flat indices using direct scan-line writes."""
+    npts = len(indices)
+    if im.ndim == 2:
+        xlim, ylim = im.shape
+        for q in prange(npts):
+            ind = indices[q]
+            i = ind // ylim
+            j = ind - i * ylim
+            r = fixed_radius if fixed_radius >= 0 else int(dt[i, j])
+            radius_squared = r**2
+            for x in range(max(0, i - r), min(i + r + 1, xlim)):
+                dx = x - i
+                y_extent = _get_axial_extent(
+                    radius_squared - dx**2,
+                    ceil_distance,
+                    smooth,
+                )
+                y_start = max(0, j - y_extent)
+                y_stop = min(j + y_extent + 1, ylim)
+                if overwrite:
+                    im[x, y_start:y_stop] = value
+                else:
+                    for y in range(y_start, y_stop):
+                        if not im[x, y]:
+                            im[x, y] = value
+    elif im.ndim == 3:
+        xlim, ylim, zlim = im.shape
+        stride0 = ylim * zlim
+        for q in prange(npts):
+            ind = indices[q]
+            i = ind // stride0
+            rem = ind - i * stride0
+            j = rem // zlim
+            k = rem - j * zlim
+            r = fixed_radius if fixed_radius >= 0 else int(dt[i, j, k])
+            radius_squared = r**2
+            for x in range(max(0, i - r), min(i + r + 1, xlim)):
+                dx = x - i
+                yz_extent = _get_axial_extent(
+                    radius_squared - dx**2,
+                    ceil_distance,
+                    smooth,
+                )
+                for y in range(
+                    max(0, j - yz_extent),
+                    min(j + yz_extent + 1, ylim),
+                ):
+                    dy = y - j
+                    z_extent = _get_axial_extent(
+                        radius_squared - dx**2 - dy**2,
+                        ceil_distance,
+                        smooth,
+                    )
+                    z_start = max(0, k - z_extent)
+                    z_stop = min(k + z_extent + 1, zlim)
+                    if overwrite:
+                        im[x, y, z_start:z_stop] = value
+                    else:
+                        for z in range(z_start, z_stop):
+                            if not im[x, y, z]:
+                                im[x, y, z] = value
+    return im
+
+
+@njit(parallel=True)
+def _insert_disks_at_indices_parallel_merged(
+    im,
+    indices,
+    dt,
+    ceil_distance,
+    smooth=True,
+    fixed_radius=-1,
+):  # pragma: no cover
+    """Insert disks by merging consecutive overlapping scan-line intervals."""
+    nthreads = get_num_threads()
+    if im.ndim == 2:
+        xlim, ylim = im.shape
+        starts = np.full((nthreads, xlim), ylim, dtype=np.int32)
+        stops = np.zeros((nthreads, xlim), dtype=np.int32)
+        for q in prange(len(indices)):
+            thread = get_thread_id()
+            ind = indices[q]
+            i = ind // ylim
+            j = ind - i * ylim
+            r = fixed_radius if fixed_radius >= 0 else int(dt[i, j])
+            radius_squared = r**2
+            for x in range(max(0, i - r), min(i + r + 1, xlim)):
+                dx = x - i
+                extent = _get_axial_extent(
+                    radius_squared - dx**2,
+                    ceil_distance,
+                    smooth,
+                )
+                start = max(0, j - extent)
+                stop = min(j + extent + 1, ylim)
+                if start >= stop:
+                    continue
+                old_start = starts[thread, x]
+                old_stop = stops[thread, x]
+                if old_start == ylim:
+                    starts[thread, x] = start
+                    stops[thread, x] = stop
+                elif (start <= old_stop) and (stop >= old_start):
+                    starts[thread, x] = min(start, old_start)
+                    stops[thread, x] = max(stop, old_stop)
+                else:
+                    im[x, old_start:old_stop] = True
+                    starts[thread, x] = start
+                    stops[thread, x] = stop
+        for q in prange(nthreads * xlim):
+            thread = q // xlim
+            x = q - thread * xlim
+            start = starts[thread, x]
+            if start < ylim:
+                im[x, start:stops[thread, x]] = True
+    elif im.ndim == 3:
+        xlim, ylim, zlim = im.shape
+        stride0 = ylim * zlim
+        nrows = xlim * ylim
+        starts = np.full((nthreads, nrows), zlim, dtype=np.int32)
+        stops = np.zeros((nthreads, nrows), dtype=np.int32)
+        for q in prange(len(indices)):
+            thread = get_thread_id()
+            ind = indices[q]
+            i = ind // stride0
+            rem = ind - i * stride0
+            j = rem // zlim
+            k = rem - j * zlim
+            r = fixed_radius if fixed_radius >= 0 else int(dt[i, j, k])
+            radius_squared = r**2
+            for x in range(max(0, i - r), min(i + r + 1, xlim)):
+                dx = x - i
+                yz_extent = _get_axial_extent(
+                    radius_squared - dx**2,
+                    ceil_distance,
+                    smooth,
+                )
+                for y in range(
+                    max(0, j - yz_extent),
+                    min(j + yz_extent + 1, ylim),
+                ):
+                    dy = y - j
+                    z_extent = _get_axial_extent(
+                        radius_squared - dx**2 - dy**2,
+                        ceil_distance,
+                        smooth,
+                    )
+                    start = max(0, k - z_extent)
+                    stop = min(k + z_extent + 1, zlim)
+                    if start >= stop:
+                        continue
+                    row = x * ylim + y
+                    old_start = starts[thread, row]
+                    old_stop = stops[thread, row]
+                    if old_start == zlim:
+                        starts[thread, row] = start
+                        stops[thread, row] = stop
+                    elif (start <= old_stop) and (stop >= old_start):
+                        starts[thread, row] = min(start, old_start)
+                        stops[thread, row] = max(stop, old_stop)
+                    else:
+                        im[x, y, old_start:old_stop] = True
+                        starts[thread, row] = start
+                        stops[thread, row] = stop
+        for q in prange(nthreads * nrows):
+            thread = q // nrows
+            row = q - thread * nrows
+            start = starts[thread, row]
+            if start < zlim:
+                x = row // ylim
+                y = row - x * ylim
+                im[x, y, start:stops[thread, row]] = True
+    return im
 
 
 @njit(parallel=True)
