@@ -357,8 +357,41 @@ class FilterTest():
             assert np.array_equal(actual, reference)
         with pytest.raises(ValueError, match='positive integer radii'):
             ps.filters.local_thickness(im, dt=dt, sizes=[2.5])
-        with pytest.raises(TypeError, match='None or a collection'):
-            ps.filters.local_thickness(im, dt=dt, sizes=25)
+        with pytest.raises(TypeError, match='None, a positive integer'):
+            ps.filters.local_thickness(im, dt=dt, sizes=2.5)
+        with pytest.raises(ValueError, match='positive integer'):
+            ps.filters.local_thickness(im, dt=dt, sizes=0)
+
+    def test_local_thickness_integer_sizes_selects_even_radii(self):
+        im = self.im[:, :, 50]
+        dt = edt(im)
+        n = 3
+        radii = np.unique(
+            np.linspace(1, int(np.floor(dt[im].max())), num=n, dtype=int)
+        )[::-1]
+        for method in ['bf', 'dt', 'conv']:
+            expected = ps.filters.local_thickness(
+                im,
+                dt=dt,
+                method=method,
+                sizes=radii,
+            )
+            actual = ps.filters.local_thickness(
+                im,
+                dt=dt,
+                method=method,
+                sizes=n,
+            )
+            np.testing.assert_array_equal(actual, expected)
+
+        values, indices = ps.filters.local_thickness(
+            im,
+            dt=dt,
+            sizes=n,
+            return_indices=True,
+        )
+        np.testing.assert_array_equal(values, np.concatenate(([0], radii)))
+        np.testing.assert_array_equal(values[indices], expected)
 
     def test_local_thickness_legacy(self):
         im = self.im[:, :, 50]
