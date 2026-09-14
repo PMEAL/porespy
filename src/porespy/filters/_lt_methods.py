@@ -8,8 +8,9 @@ from numba import njit, prange
 from skimage.morphology import ball, disk, footprint_rectangle
 
 from porespy.tools import (
-    _get_axial_extent,
     _get_uint_dtype,
+    _insert_disks_at_indices_parallel,
+    _insert_disks_at_indices_parallel_direct,
     _make_axial_extent_lookup,
     get_edt,
     get_tqdm,
@@ -256,73 +257,6 @@ def _remove_lt_contained_disks(indices, previous):
     return indices[:count]
 
 
-@njit(parallel=True)
-def _insert_lt_disks_at_indices(
-    lt,
-    indices,
-    radius,
-    value,
-    ceil_distance,
-    smooth,
-):  # pragma: no cover
-    """Rasterize one equal-radius bucket directly from flat center indices."""
-    npts = len(indices)
-    radius_squared = radius * radius
-    if lt.ndim == 2:
-        xlim, ylim = lt.shape
-        lt_flat = lt.reshape(lt.size)
-        for q in prange(npts):
-            ind = indices[q]
-            i = ind // ylim
-            j = ind - i * ylim
-            for x in range(max(0, i - radius), min(i + radius + 1, xlim)):
-                dx = x - i
-                y_extent = _get_axial_extent(
-                    radius_squared - dx * dx,
-                    ceil_distance,
-                    smooth,
-                )
-                start = x * ylim + max(0, j - y_extent)
-                stop = x * ylim + min(j + y_extent + 1, ylim)
-                for p in range(start, stop):
-                    if lt_flat[p] == 0:
-                        lt_flat[p] = value
-    elif lt.ndim == 3:
-        xlim, ylim, zlim = lt.shape
-        stride0 = ylim * zlim
-        lt_flat = lt.reshape(lt.size)
-        for q in prange(npts):
-            ind = indices[q]
-            i = ind // stride0
-            rem = ind - i * stride0
-            j = rem // zlim
-            k = rem - j * zlim
-            for x in range(max(0, i - radius), min(i + radius + 1, xlim)):
-                dx = x - i
-                dx_squared = dx * dx
-                yz_extent = _get_axial_extent(
-                    radius_squared - dx_squared,
-                    ceil_distance,
-                    smooth,
-                )
-                for y in range(
-                    max(0, j - yz_extent),
-                    min(j + yz_extent + 1, ylim),
-                ):
-                    dy = y - j
-                    z_extent = _get_axial_extent(
-                        radius_squared - dx_squared - dy * dy,
-                        ceil_distance,
-                        smooth,
-                    )
-                    start = (x * ylim + y) * zlim + max(0, k - z_extent)
-                    stop = (x * ylim + y) * zlim + min(k + z_extent + 1, zlim)
-                    for p in range(start, stop):
-                        if lt_flat[p] == 0:
-                            lt_flat[p] = value
-    return lt
-
-
 def local_thickness(
     im: npt.NDArray,
     dt: npt.NDArray = None,
@@ -508,7 +442,8 @@ def local_thickness_bf(
     Consecutive radii rasterize only the new distance-transform shell and discard
     spheres contained by the preceding shell. When requested radii contain gaps,
     the threshold is filled directly and spheres are rasterized only from its
-    interface. Both paths draw in parallel from compact flat indices.
+    interface. Shells write labels directly, while interfaces build a cumulative
+    boolean union using adaptive direct or merged parallel scan-line writes.
 
     Examples
     --------
@@ -526,6 +461,7 @@ def local_thickness_bf(
     # inserting at every eligible voxel for every radius.
     radii = _parse_integer_radii(sizes=sizes, dt=dt, im=im)
     lt, values = _make_lt_result(im.shape, radii, return_indices)
+    nwp = np.zeros(im.shape, dtype=bool)
     interface = np.empty(im.shape, dtype=bool)
     seeds_prev = np.zeros(im.shape, dtype=bool)
     max_radius = radii[0] if radii.size else 0
@@ -541,17 +477,30 @@ def local_thickness_bf(
             indices = _get_lt_flat_indices(seeds & ~seeds_prev)
             indices = _remove_lt_contained_disks(indices, seeds_prev)
         value = i + 1 if return_indices else radius
-        if indices.size:
-            lt = _insert_lt_disks_at_indices(
-                lt=lt,
+        if use_interface:
+            np.not_equal(lt, 0, out=nwp)
+            if indices.size:
+                nwp = _insert_disks_at_indices_parallel(
+                    im=nwp,
+                    indices=indices,
+                    dt=dt,
+                    ceil_distance=ceil_distance,
+                    smooth=smooth,
+                    overwrite=True,
+                    fixed_radius=radius,
+                )
+            nwp[seeds] = True
+            lt[(lt == 0) & nwp] = value
+        elif indices.size:
+            lt = _insert_disks_at_indices_parallel_direct(
+                im=lt,
                 indices=indices,
-                radius=radius,
-                value=value,
+                dt=dt,
                 ceil_distance=ceil_distance,
                 smooth=smooth,
+                fixed_radius=radius,
+                value=value,
             )
-        if use_interface:
-            lt[(lt == 0) & seeds] = value
         seeds_prev = seeds
         previous_radius = radius
     if return_indices:

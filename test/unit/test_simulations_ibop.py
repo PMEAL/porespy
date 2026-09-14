@@ -132,6 +132,46 @@ class IBOPTest(GenericTest):
                 )
                 assert np.array_equal(adaptive, direct)
 
+    def test_flat_index_insertion_with_fixed_radius_and_value(self):
+        for shape in [(31, 37), (19, 23, 17)]:
+            centers = np.zeros(shape, dtype=bool)
+            center_slice = tuple(slice(10, 20) for _ in shape)
+            centers[center_slice] = True
+            indices = _get_flat_indices(centers)
+            coords = np.vstack(np.where(centers))
+            dt = np.zeros(shape, dtype=np.float32)
+            dt[centers] = 8
+            radius = 3
+            lookup = _make_axial_extent_lookup(radius)
+            expected = ps.tools._insert_disks_at_points_parallel(
+                im=np.zeros(shape, dtype=bool),
+                coords=coords,
+                radii=np.full(coords.shape[1], radius),
+                v=True,
+                smooth=True,
+            )
+            actual = _insert_disks_at_indices_parallel(
+                im=np.zeros(shape, dtype=bool),
+                indices=indices,
+                dt=dt,
+                ceil_distance=lookup,
+                smooth=True,
+                overwrite=True,
+                fixed_radius=radius,
+            )
+            assert np.array_equal(actual, expected)
+
+            labels = _insert_disks_at_indices_parallel_direct(
+                im=np.zeros(shape, dtype=np.uint8),
+                indices=indices,
+                dt=dt,
+                ceil_distance=lookup,
+                smooth=True,
+                fixed_radius=radius,
+                value=7,
+            )
+            assert np.array_equal(labels, expected * 7)
+
     def test_interval_merging_is_adaptive(self):
         shape = (51, 53, 49)
         dt = np.zeros(shape, dtype=np.float32)
