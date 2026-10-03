@@ -12,6 +12,21 @@ _TRAPPING_SHAPES = [
 ]
 
 
+_CONTACT_OFFSETS = [
+    pytest.param((1, 0), id="2d-face"),
+    pytest.param((1, 1), id="2d-diagonal"),
+    pytest.param((0, 1, 1), id="3d-edge"),
+    pytest.param((1, 1, 1), id="3d-corner"),
+]
+
+
+def _contact_pair(offset):
+    pair = np.zeros((5,) * len(offset), dtype=bool)
+    pair[(1,) * len(offset)] = True
+    pair[tuple(1 + d for d in offset)] = True
+    return pair
+
+
 def _path(values, outlet_count=1):
     im = np.zeros((3, len(values) + 2), dtype=bool)
     im[1, 1:-1] = True
@@ -134,3 +149,50 @@ class TrappingQueueTest:
         )
         assert edge[im].all()
         np.testing.assert_array_equal(trapped[im], seq[im] <= 0)
+
+
+class TrappingClusterSizeTest:
+    @pytest.mark.parametrize("offset", _CONTACT_OFFSETS)
+    @pytest.mark.parametrize("conn", ["min", "max"])
+    @pytest.mark.parametrize("min_size", [0, 1, 2])
+    def test_trim_small_clusters_uses_connectivity(self, offset, conn, min_size):
+        pair = _contact_pair(offset)
+        original = pair.copy()
+        cluster_size = 2 if conn == "max" or sum(offset) == 1 else 1
+        expected = pair if cluster_size > min_size else np.zeros_like(pair)
+        trimmed = ps.filters.trim_small_clusters(im=pair, min_size=min_size, conn=conn)
+        np.testing.assert_array_equal(trimmed, expected)
+        np.testing.assert_array_equal(pair, original)
+
+    @pytest.mark.parametrize("offset", _CONTACT_OFFSETS)
+    @pytest.mark.parametrize("min_size", [0, 1, 2])
+    def test_trim_small_clusters_default_is_face_connected(self, offset, min_size):
+        pair = _contact_pair(offset)
+        original = pair.copy()
+        cluster_size = 2 if sum(offset) == 1 else 1
+        expected = pair if cluster_size > min_size else np.zeros_like(pair)
+        # Existing positional calls must retain face connectivity and inclusive cutoff.
+        trimmed = ps.filters.trim_small_clusters(pair, min_size)
+        np.testing.assert_array_equal(trimmed, expected)
+        np.testing.assert_array_equal(pair, original)
+
+    @pytest.mark.parametrize("offset", _CONTACT_OFFSETS)
+    @pytest.mark.parametrize("method", ["queue", "labels"])
+    @pytest.mark.parametrize("conn", ["min", "max"])
+    @pytest.mark.parametrize("min_size", [0, 1, 2])
+    def test_trapped_cluster_cutoff_uses_connectivity(self, offset, method, conn, min_size):
+        pair = _contact_pair(offset)
+        im = np.ones_like(pair)
+        seq = np.ones(im.shape, dtype=int)
+        seq[pair] = 4
+        outlets = np.zeros_like(im)
+        outlets[-1] = True
+        originals = [a.copy() for a in (im, seq, outlets)]
+        cluster_size = 2 if conn == "max" or sum(offset) == 1 else 1
+        expected = pair if cluster_size > min_size else np.zeros_like(pair)
+        trapped = ps.filters.find_trapped_clusters(
+            im=im, seq=seq, outlets=outlets, method=method, conn=conn, min_size=min_size
+        )
+        np.testing.assert_array_equal(trapped, expected)
+        for actual, original in zip((im, seq, outlets), originals):
+            np.testing.assert_array_equal(actual, original)
