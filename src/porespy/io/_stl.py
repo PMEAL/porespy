@@ -233,6 +233,7 @@ def to_stl(
     fmt='openstl',
     remove_duplicates=False,
     tol=None,
+    close_faces=True,
 ):
     r"""
     Converts an voxel image to an STL mesh in a variety of formats
@@ -241,8 +242,8 @@ def to_stl(
     ----------
     im : 3D image
         The image of the porous material
-    voxel_size : int
-        The side length of the voxels (voxels  are cubic)
+    voxel_size : float
+        The side length of the voxels (voxels are cubic)
     method : str
         Can be one of the options listed below:
 
@@ -267,8 +268,30 @@ def to_stl(
         - 'numpy-stl' (not automatically installed with PoreSpy)
         - 'meshio' (not automatically installed with PoreSpy)
 
+    close_faces : bool, optional
+        If `True` (default), cap the selected phase where it meets the image
+        boundary. If `False`, return only interfaces between `True` and
+        `False` regions inside the image, treating the exterior as unknown.
+        Uniform images return an empty mesh in open mode.
+
     Notes
     -----
+    With ``close_faces=False``, interfaces that reach the crop boundary remain
+    open. Such meshes may not be watertight, so volume calculations require
+    additional assumptions. Downstream smoothing may need to pin boundary
+    vertices to prevent the interface from retracting.
+
+    Coordinates follow the image axis order and are scaled by `voxel_size`.
+    The direct method places voxel corners at integer coordinates, spanning
+    0 to ``im.shape`` before scaling. Marching cubes retains the historical
+    padding offset: original voxel samples are at coordinates 1 through
+    ``im.shape``. In open mode it extracts only within that sampling domain,
+    so its boundary lies half a voxel inward from the closed caps. The flag
+    does not translate internal geometry. The methods have different
+    discretizations and need not give the same interfacial area.
+    Open marching cubes returns an empty mesh when any axis has fewer than
+    two samples, since there are no three-dimensional sampling cells.
+
     The `openstl` package has the fastest read/write performance. It
     uses a basic numpy array of shape `[N, 4, 3]`. `N` is the number of
     triangles, `4` refers to `norms, vert1, vert2, vert3`, where `norms` and
@@ -288,9 +311,9 @@ def to_stl(
     if len(im.shape) == 2:
         im = im[:, :, np.newaxis]
     if method == 'marching-cubes':
-        tris = _to_stl_marching_cubes(im, voxel_size)
+        tris = _to_stl_marching_cubes(im, voxel_size, close_faces=close_faces)
     elif method == 'direct':
-        tris = _to_stl_porespy(im, voxel_size)
+        tris = _to_stl_porespy(im, voxel_size, close_faces=close_faces)
     else:
         raise ValueError(f"{method} is not a supported method")
 
@@ -538,7 +561,7 @@ def remove_duplicate_faces(faces=None, verts=None, tris=None, tol=None):
         return faces
 
 
-def _to_stl_marching_cubes(im, voxel_size):
+def _to_stl_marching_cubes(im, voxel_size, close_faces=True):
     r"""
     Helper method to convert an array to an STL file.
 
@@ -548,10 +571,21 @@ def _to_stl_marching_cubes(im, voxel_size):
         The image of the porous material
     voxel_size : int
         The side length of the voxels (voxels are cubic)
+    close_faces : bool
+        Whether to pad the image with the unselected phase to close its surface.
 
     """
-    mask = np.pad(im, pad_width=1, mode="constant", constant_values=False)
+    if close_faces:
+        mask = np.pad(im, pad_width=1, mode="constant", constant_values=False)
+    else:
+        # No sampling cells or no phase transition means no internal interface.
+        if min(im.shape) < 2 or not im.any() or im.all():
+            return np.empty((0, 4, 3), dtype=np.float32)
+        mask = im
     verts, faces, _, _ = ms.marching_cubes(mask)
+    if not close_faces:
+        # Match the original samples' coordinates in the padded, closed mesh.
+        verts += 1
     verts = verts * voxel_size
 
     v0 = verts[faces[:, 0]]
@@ -571,22 +605,17 @@ def _to_stl_marching_cubes(im, voxel_size):
     return tris
 
 
-def _to_stl_porespy(im, voxel_size=1):
-    mask = np.pad(im, pad_width=1, mode='constant', constant_values=False)
-    xm, xp, ym, yp, zm, zp = _exposed_face_masks(mask)
-    xm = xm[1:-1, 1:-1, 1:-1]
-    xp = xp[1:-1, 1:-1, 1:-1]
-    ym = ym[1:-1, 1:-1, 1:-1]
-    yp = yp[1:-1, 1:-1, 1:-1]
-    zm = zm[1:-1, 1:-1, 1:-1]
-    zp = zp[1:-1, 1:-1, 1:-1]
+def _to_stl_porespy(im, voxel_size=1, close_faces=True):
+    xm, xp, ym, yp, zm, zp = _exposed_face_masks(im, close_faces=close_faces)
     tris = _build_triangles(im, xm, xp, ym, yp, zm, zp)
+    if not np.issubdtype(np.asarray(voxel_size).dtype, np.integer):
+        tris = tris.astype(np.float32)
     tris[:, 1:, :] *= voxel_size
     return tris
 
 
 @njit
-def _exposed_face_masks(mask):
+def _exposed_face_masks(mask, close_faces=True):
     nx, ny, nz = mask.shape
     xm = np.zeros(mask.shape, dtype=np.bool_)
     xp = np.zeros(mask.shape, dtype=np.bool_)
@@ -600,12 +629,12 @@ def _exposed_face_masks(mask):
             for z in range(nz):
                 if not mask[x, y, z]:
                     continue
-                xm[x, y, z] = (x == 0) or (not mask[x - 1, y, z])
-                xp[x, y, z] = (x == nx - 1) or (not mask[x + 1, y, z])
-                ym[x, y, z] = (y == 0) or (not mask[x, y - 1, z])
-                yp[x, y, z] = (y == ny - 1) or (not mask[x, y + 1, z])
-                zm[x, y, z] = (z == 0) or (not mask[x, y, z - 1])
-                zp[x, y, z] = (z == nz - 1) or (not mask[x, y, z + 1])
+                xm[x, y, z] = close_faces if x == 0 else not mask[x - 1, y, z]
+                xp[x, y, z] = close_faces if x == nx - 1 else not mask[x + 1, y, z]
+                ym[x, y, z] = close_faces if y == 0 else not mask[x, y - 1, z]
+                yp[x, y, z] = close_faces if y == ny - 1 else not mask[x, y + 1, z]
+                zm[x, y, z] = close_faces if z == 0 else not mask[x, y, z - 1]
+                zp[x, y, z] = close_faces if z == nz - 1 else not mask[x, y, z + 1]
     return xm, xp, ym, yp, zm, zp
 
 
