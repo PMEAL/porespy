@@ -422,14 +422,12 @@ def _trapped_regions_inner_loop(
     hq.heapify(bd)
     minseq = -np.amax(seq)
     step = 1
-    maxiter = np.sum(seq > 0)
-    for _ in range(1, maxiter):
-        if len(bd):
-            pt = hq.heappop(bd)
-            value = pt[0]
-            inds = [pt[1]]
-        else:
-            break
+    # Exhaust the frontier: batches can expose further equal-priority entries
+    # or nonpositive-sequence pore voxels, so a positive-voxel cap is insufficient.
+    while len(bd) > 0:
+        pt = hq.heappop(bd)
+        value = pt[0]
+        inds = [pt[1]]
         # Existing entries at this level must be processed before newly exposed
         # voxels.  Store only their flat indices since the sequence value is shared.
         while len(bd) and (bd[0][0] == value):
