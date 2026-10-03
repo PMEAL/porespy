@@ -173,9 +173,10 @@ def find_small_clusters(
 def trim_small_clusters(
     im: npt.NDArray,
     min_size: int = 1,
+    conn: Literal["min", "max"] = "min",
 ):
     r"""
-    Removes clusters voxel of a given size or smaller
+    Removes clusters of the given size or smaller
 
     Parameters
     ----------
@@ -185,12 +186,17 @@ def trim_small_clusters(
         The threshold size of clusters to trim.  As clusters with this
         many voxels or fewer will be trimmed.  The default is 1 so only
         single voxels are removed.
+    conn : str
+        Controls which neighboring voxels belong to the same cluster. The
+        default is 'min', giving face connectivity (4 neighbors in 2D and 6
+        in 3D). 'max' includes diagonal contacts (8 neighbors in 2D and 26
+        in 3D).
 
     Returns
     -------
     im : ndarray
-        A copy of `im` with clusters of voxels smaller than the given
-        `size` removed.
+        A copy of `im` with clusters containing `min_size` voxels or fewer
+        removed.
 
     Examples
     --------
@@ -200,7 +206,7 @@ def trim_small_clusters(
 
     """
     filtered_array = np.copy(im)
-    labels, N = _label_components(im=filtered_array, conn="min")
+    labels, N = _label_components(im=filtered_array, conn=conn)
     id_sizes = np.array(spim.sum(im, labels, range(N + 1)))
     area_mask = id_sizes <= min_size
     filtered_array[area_mask[labels]] = 0
@@ -299,7 +305,7 @@ def find_trapped_clusters(
         raise Exception(f"{method} is not a supported method")
 
     if min_size > 0:
-        trapped = trim_small_clusters(im=trapped, min_size=min_size)
+        trapped = trim_small_clusters(im=trapped, min_size=min_size, conn=conn)
 
     return trapped
 
