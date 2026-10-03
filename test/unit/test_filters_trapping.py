@@ -6,6 +6,12 @@ import porespy as ps
 from porespy.filters._displacement import _trapped_regions_inner_loop
 
 
+_TRAPPING_SHAPES = [
+    (1, 1), (1, 4), (4, 1), (3, 4),
+    (1, 1, 1), (1, 3, 4), (3, 1, 4), (3, 4, 1), (3, 4, 5),
+]
+
+
 def _path(values, outlet_count=1):
     im = np.zeros((3, len(values) + 2), dtype=bool)
     im[1, 1:-1] = True
@@ -32,6 +38,42 @@ def _threshold_flood_reference(im, seq, outlets, conn):
 
 
 class TrappingQueueTest:
+    @pytest.mark.parametrize("shape", _TRAPPING_SHAPES)
+    @pytest.mark.parametrize("conn", ["min", "max"])
+    def test_all_outlets_preserve_shape_dtype_and_inputs(self, shape, conn):
+        im = np.ones(shape, dtype=bool)
+        seq = np.ones(shape, dtype=int)
+        outlets = im.copy()
+        originals = [a.copy() for a in (im, seq, outlets)]
+        trapped = ps.filters.find_trapped_clusters(
+            im=im, seq=seq, outlets=outlets, method="queue", conn=conn
+        )
+        assert trapped.shape == shape
+        assert trapped.dtype == bool
+        assert not trapped.any()
+        for actual, original in zip((im, seq, outlets), originals):
+            np.testing.assert_array_equal(actual, original)
+
+    @pytest.mark.parametrize("shape", _TRAPPING_SHAPES)
+    @pytest.mark.parametrize("conn", ["min", "max"])
+    def test_mask_preserves_shape_dtype_and_inputs(self, shape, conn):
+        rng = np.random.default_rng(0)
+        im = rng.random(shape) < 0.75
+        im.flat[-1] = True
+        seq = np.where(im, rng.integers(1, 7, size=shape), 0)
+        outlets = np.zeros(shape, dtype=bool)
+        outlets.flat[-1] = True
+        originals = [a.copy() for a in (im, seq, outlets)]
+        expected = _threshold_flood_reference(im, seq, outlets, conn)
+        trapped = ps.filters.find_trapped_clusters(
+            im=im, seq=seq, outlets=outlets, method="queue", conn=conn
+        )
+        assert trapped.shape == shape
+        assert trapped.dtype == bool
+        np.testing.assert_array_equal(trapped, expected)
+        for actual, original in zip((im, seq, outlets), originals):
+            np.testing.assert_array_equal(actual, original)
+
     @pytest.mark.parametrize("conn", ["min", "max"])
     @pytest.mark.parametrize("values", [[1, 2, 3], [1, 1, 1], [1]])
     def test_outlet_connected_path_is_not_trapped(self, values, conn):

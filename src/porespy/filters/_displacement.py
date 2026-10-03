@@ -265,7 +265,8 @@ def find_trapped_clusters(
     Returns
     -------
     trapped : ndarray
-        A boolean mask indicating which voxels were found to be trapped.
+        A boolean mask with the same shape as `im`, indicating which voxels
+        were found to be trapped.
 
     Examples
     --------
@@ -370,7 +371,9 @@ def _find_trapped_clusters_queue(
     r"""
     This version is meant for IBIP or QBIP (ie. invasion) simulations.
     """
-    im = np.atleast_3d(np.asarray(im))
+    im = np.asarray(im)
+    original_shape = im.shape
+    im = np.atleast_3d(im)
     if im.dtype != bool:
         im = im > 0
     seq = np.atleast_3d(seq)
@@ -396,7 +399,7 @@ def _find_trapped_clusters_queue(
     # The inner loop already produces the desired mask, so avoid reconstructing
     # and relabeling a temporary sequence image merely to recover this result.
     np.logical_and(trapped, im, out=trapped)
-    return np.squeeze(trapped)
+    return trapped.reshape(original_shape)
 
 
 @njit
