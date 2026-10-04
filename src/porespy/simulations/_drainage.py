@@ -712,6 +712,7 @@ def drainage(
                         P=P,
                         conn=conn,
                         ceil_distance=ceil_distance,
+                        smooth=smooth,
                     )
         # Find trapped wetting due to presence of residual
         if all([inlets is not None, outlets is not None, residual is not None]):
@@ -849,6 +850,7 @@ def join_residual_and_invasion_front(
     seeds_prev,
     conn,
     ceil_distance,
+    smooth=True,
 ):
     # Find nwp pixels connected to residual
     temp = trim_disconnected_voxels(
@@ -873,7 +875,7 @@ def join_residual_and_invasion_front(
             indices=indices,
             dt=dt,
             ceil_distance=ceil_distance,
-            smooth=True,
+            smooth=smooth,
             overwrite=True,
         )
     return nwp_mask
