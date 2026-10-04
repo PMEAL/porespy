@@ -206,7 +206,8 @@ def test_imbibition(plot=False):
     assert pc_imb[1].snwp[-1] == 0
     assert pc_imb[2].snwp[-1] == 0.07100578258174928
     assert pc_imb[3].snwp[-1] == 0
-    assert pc_imb[4].snwp[-1] == 0.22214893701705207
+    # With h[i] = i * voxel_size, 39144 void voxels retain non-wetting fluid.
+    assert pc_imb[4].snwp[-1] == 0.22256969517777037
 
     if plot:
         fig, ax = plt.subplots(2, 2, facecolor=bg)
