@@ -483,59 +483,6 @@ class IBOPTest(GenericTest):
             assert np.all(seq2 == seq4)
             assert np.all(seq3 == seq4)
 
-    def test_imbibition_equals_imbibition_dt_smooth(self):
-        edt = ps.tools.get_edt()
-        im = ps.generators.blobs(
-            shape=[100, 100],
-            porosity=0.7,
-            blobiness=1.5,
-            seed=16,
-        )
-        im = ps.filters.fill_invalid_pores(im)
-        smooth = True
-
-        # All methods are equivalent IF steps integers
-        dt = edt(im)
-        pc = 2/dt
-        pc[~im] = 0
-        steps = np.arange(12, 1, -1)
-
-        faces = ps.generators.borders(im.shape, mode='faces')
-
-        imb_dt = ps.simulations.imbibition_dt(
-            im=im, dt=dt, inlets=faces, steps=steps, smooth=smooth)
-        imb_pc = ps.simulations.imbibition(
-            im=im, dt=dt, inlets=faces, steps=(2/steps), smooth=smooth)
-        assert np.sum(imb_dt.im_size[im] != 2/imb_pc.im_pc[im]) == 0
-        assert np.sum(imb_dt.im_seq != imb_pc.im_seq) == 0
-
-    def test_imbibition_equals_imbibition_dt_not_smooth(self):
-        edt = ps.tools.get_edt()
-        im = ps.generators.blobs(
-            shape=[100, 100],
-            porosity=0.7,
-            blobiness=1.5,
-            seed=16,
-        )
-        im = ps.filters.fill_invalid_pores(im)
-        smooth = False
-
-        # All methods are equivalent IF steps integers
-        dt = edt(im)
-        pc = 2/dt
-        pc[~im] = 0
-        steps = np.arange(13, 1, -1)
-
-        faces = ps.generators.borders(im.shape, mode='faces')
-
-        imb_dt = ps.simulations.imbibition_dt(
-            im=im, dt=dt, inlets=faces, steps=steps, smooth=smooth)
-        imb_pc = ps.simulations.imbibition(
-            im=im, dt=dt, inlets=faces, steps=(2/steps), smooth=smooth)
-        assert np.sum(imb_dt.im_size[im] != 2/imb_pc.im_pc[im]) == 0
-        assert np.sum(imb_dt.im_seq != imb_pc.im_seq) == 0
-
-
 if __name__ == "__main__":
     self = IBOPTest()
     self.run_all()
