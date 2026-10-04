@@ -516,9 +516,11 @@ def drainage(
         that would otherwise be removed. The residual phase is indicated
         in the capillary pressure map by ``-np.inf`` values, since these voxels
         are invaded at all applied capillary pressures.
-        Without outlets, reconnection is repeated at each pressure until no
-        additional sphere centers become accessible. With outlets, the existing
-        single-pass reconnection followed by trapping is used.
+        Residual blobs remain at their supplied locations and carry inlet access
+        once reached by connected invading phase. Reconnection is repeated at
+        each pressure until no additional sphere centers become accessible. With
+        outlets, defending-phase trapping is checked before invasion and between
+        reconnection rounds; trapped defender cannot initiate or carry growth.
     steps : int or array_like (default = 25)
         The range of pressures to apply. If an integer is given then the given
         number of steps will be created between the lowest and highest values in
@@ -578,6 +580,15 @@ def drainage(
                      value of capillary pressure (``pc``).
         ============ ===============================================================
 
+    Notes
+    -----
+    When both residual and outlets are supplied, all newly accessible centers in
+    a reconnection round invade as one batch. Trapping is then updated on the
+    remaining defending phase before the next round. All rounds at the same
+    applied pressure share one invasion sequence event. Lack of inlet access
+    alone does not imply defending-phase trapping, and accepted invasion is
+    never reclassified as trapped defending phase.
+
     References
     ----------
     .. [1] Chadwick EA, Hammen LH, Schulz VP, Bazylak A, Ioannidis MA, Gostick JT.
@@ -633,11 +644,6 @@ def drainage(
     if (outlets is not None) and (residual is not None):
         trapped = find_disconnected_voxels(
             im=im * ~residual,
-            inlets=inlet_coords,
-            conn=conn,
-        )
-        trapped += find_disconnected_voxels(
-            im=im * ~residual,
             inlets=outlets,
             conn=conn,
         )
@@ -645,101 +651,93 @@ def drainage(
     nwp_mask = np.zeros_like(im, dtype=bool)
     seeds_prev = np.zeros_like(im, dtype=bool)
     residual_components = None
-    if residual is not None and outlets is None:
+    if residual is not None:
         residual_components = _label_components(residual, conn=conn)
+    combined = residual is not None and outlets is not None
+    if combined:
+        # Keep sphere coverage separate from validated inlet-connected invasion,
+        # so previously drawn, untrapped fragments can reconnect without redraws.
+        coverage = np.zeros_like(im, dtype=bool)
+        labels, N = residual_components
+        activated = np.zeros(N + 1, dtype=bool)
+        if inlets is not None:
+            activated[labels[inlet_coords]] = True
+            activated[0] = False
     seeds = np.empty_like(im, dtype=bool)
     edges = np.empty_like(im, dtype=bool)
     mask = np.empty_like(im, dtype=bool)
 
     desc = inspect.currentframe().f_code.co_name  # Get current func name
     for step, P in enumerate(tqdm(Ps, desc=desc, **settings.tqdm)):
-        # Perform erosion to find all locations invadable at current pressure
-        np.less_equal(pc, P, out=seeds)
-        np.logical_and(seeds, im, out=seeds)
-        # Trim locations not connected to the inlets
-        if inlets is not None:
-            seeds = trim_disconnected_voxels(
-                im=seeds,
+        if combined:
+            nwp_mask = _drainage_residual_step(
+                im=im,
+                pc=pc,
+                dt=dt,
                 inlets=inlet_coords,
+                outlets=outlets,
+                residual=residual,
+                residual_components=residual_components,
+                activated=activated,
+                coverage=coverage,
+                processed=seeds_prev,
+                trapped=trapped,
+                P=P,
                 conn=conn,
+                ceil_distance=ceil_distance,
+                smooth=smooth,
             )
-        if not np.any(seeds):
-            continue
-        # Dilate the erosion to find locations of non-wetting phase
-        np.logical_not(seeds_prev, out=edges)
-        np.logical_and(seeds, edges, out=edges)
-        indices = _get_flat_indices(edges)
-        eligible = edges if residual is not None else seeds
-        indices = _remove_contained_disks(indices, eligible, dt)
-        nwp_mask = _insert_disks_at_indices_parallel(
-            im=nwp_mask,
-            indices=indices,
-            dt=dt,
-            ceil_distance=ceil_distance,
-            smooth=smooth,
-            overwrite=True,
-        )
-        nwp_mask[seeds] = True  # Fill in center in case spheres did not reach
-        # Connect residual to invasion front
-        if residual is not None:
-            if np.any(nwp_mask):  # Add residual blobs to invasion front if touching
-                if outlets is None:
-                    # All previously processed centers retain their coverage in
-                    # this monotone, no-trapping mode.
-                    seeds |= seeds_prev
-                    nwp_mask = _close_residual_and_invasion_front(
-                        im=im,
-                        pc=pc,
-                        dt=dt,
-                        residual_components=residual_components,
-                        nwp_mask=nwp_mask,
-                        seeds=seeds,
-                        P=P,
-                        conn=conn,
-                        ceil_distance=ceil_distance,
-                        smooth=smooth,
-                    )
-                else:
-                    # Residual/trapping evolution requires separate validation;
-                    # preserve its single-pass ordering here.
-                    nwp_mask = join_residual_and_invasion_front(
-                        im=im,
-                        pc=pc,
-                        dt=dt,
-                        residual=residual,
-                        nwp_mask=nwp_mask,
-                        seeds_prev=seeds_prev,
-                        P=P,
-                        conn=conn,
-                        ceil_distance=ceil_distance,
-                        smooth=smooth,
-                    )
-        # Find trapped wetting due to presence of residual
-        if all([inlets is not None, outlets is not None, residual is not None]):
-            # Find any wetting phase which is pinned between residual and invading
-            # front, and set it to uninvaded
-            nwp_mask = trim_disconnected_voxels(
-                im=nwp_mask * ~trapped,
-                inlets=inlet_coords,
-                conn=conn,
-            )
-            trapped += find_disconnected_voxels(
-                im=im * ~nwp_mask * ~residual,
-                inlets=outlets,
-                conn=conn,
-            )
-            trapped[residual] = False
-            nwp_mask[trapped] = False  # Set nwp in trapped regions to 0
             im_seq[trapped] = -1
-
+        else:
+            # Perform erosion to find all locations invadable at current pressure
+            np.less_equal(pc, P, out=seeds)
+            np.logical_and(seeds, im, out=seeds)
+            # Trim locations not connected to the inlets
+            if inlets is not None:
+                seeds = trim_disconnected_voxels(
+                    im=seeds,
+                    inlets=inlet_coords,
+                    conn=conn,
+                )
+            if not np.any(seeds):
+                continue
+            # Dilate the erosion to find locations of non-wetting phase
+            np.logical_not(seeds_prev, out=edges)
+            np.logical_and(seeds, edges, out=edges)
+            indices = _get_flat_indices(edges)
+            eligible = edges if residual is not None else seeds
+            indices = _remove_contained_disks(indices, eligible, dt)
+            nwp_mask = _insert_disks_at_indices_parallel(
+                im=nwp_mask,
+                indices=indices,
+                dt=dt,
+                ceil_distance=ceil_distance,
+                smooth=smooth,
+                overwrite=True,
+            )
+            nwp_mask[seeds] = True  # Fill in center in case spheres did not reach
+            # Close residual reconnection without trapping.
+            if residual is not None:
+                seeds |= seeds_prev
+                nwp_mask = _close_residual_and_invasion_front(
+                    im=im,
+                    pc=pc,
+                    dt=dt,
+                    residual_components=residual_components,
+                    nwp_mask=nwp_mask,
+                    seeds=seeds,
+                    P=P,
+                    conn=conn,
+                    ceil_distance=ceil_distance,
+                    smooth=smooth,
+                )
+            np.copyto(seeds_prev, seeds)
         np.equal(im_seq, 0, out=mask)
         np.logical_and(mask, nwp_mask, out=mask)
         np.logical_and(mask, im, out=mask)
         if np.any(mask):
             im_seq[mask] = step + 1
             im_pc[mask] = P
-        # Add new locations to list of invaded locations
-        np.copyto(seeds_prev, seeds)
 
     # Set uninvaded voxels to inf and -1
     np.equal(im_seq, 0, out=mask)
@@ -840,44 +838,70 @@ def _close_residual_and_invasion_front(
     return nwp_mask
 
 
-def join_residual_and_invasion_front(
+def _drainage_residual_step(
     im,
     pc,
     dt,
-    nwp_mask,
+    inlets,
+    outlets,
     residual,
+    residual_components,
+    activated,
+    coverage,
+    processed,
+    trapped,
     P,
-    seeds_prev,
     conn,
     ceil_distance,
-    smooth=True,
+    smooth,
 ):
-    # Find nwp pixels connected to residual
-    temp = trim_disconnected_voxels(
-        im=residual,
-        inlets=nwp_mask,
-        conn=conn,
-    )
-    if np.any(temp):
-        # Trim invadable pixels not connected to residual
-        seeds = (pc <= P) * im  # Find full set of invadable seeds again
-        seeds = trim_disconnected_voxels(
-            im=seeds,
-            inlets=temp,
-            conn=conn,
-        )
-        # Convert to just edges
-        candidates = seeds * (~seeds_prev)
+    """Advance one pressure, checking trapping between residual growth batches."""
+    residual_labels, _ = residual_components
+    active = activated[residual_labels]
+    coverage &= ~trapped
+    nwp_mask = coverage | active
+    if inlets is not None:
+        nwp_mask = trim_disconnected_voxels(nwp_mask, inlets=inlets, conn=conn)
+    while True:
+        eligible = im & (pc <= P) & ~trapped
+        if inlets is None:
+            candidates = eligible
+        else:
+            labels, N = _label_components(eligible, conn=conn)
+            hits = np.concatenate((labels[inlets], labels[active]))
+            candidates = _isin_labels(labels, np.unique(hits), N)
+        candidates &= ~processed
+        if not np.any(candidates):
+            break
         indices = _get_flat_indices(candidates)
         indices = _remove_contained_disks(indices, candidates, dt)
-        nwp_mask = _insert_disks_at_indices_parallel(
-            im=nwp_mask,
+        coverage = _insert_disks_at_indices_parallel(
+            im=coverage,
             indices=indices,
             dt=dt,
             ceil_distance=ceil_distance,
             smooth=smooth,
             overwrite=True,
         )
+        coverage[candidates] = True
+        processed |= candidates
+        coverage &= im & ~trapped
+        # Validate coverage before it can attach residual. Clipped sphere
+        # fragments can reconnect through an attached blob within this batch,
+        # but overlap made solely through trapped defender cannot activate one.
+        while True:
+            nwp_mask = coverage | active
+            if inlets is not None:
+                nwp_mask = trim_disconnected_voxels(nwp_mask, inlets=inlets, conn=conn)
+            hits = np.unique(residual_labels[nwp_mask])
+            hits = hits[(hits != 0) & ~activated[hits]]
+            if hits.size == 0:
+                break
+            activated[hits] = True
+            active = activated[residual_labels]
+        defending = im & ~nwp_mask & ~residual
+        trapped |= find_disconnected_voxels(defending, inlets=outlets, conn=conn)
+        coverage &= ~trapped
     return nwp_mask
 
 
