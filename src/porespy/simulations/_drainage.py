@@ -27,6 +27,7 @@ from porespy.tools import (
     settings,
     ps_round,
 )
+from porespy.tools._label import _isin_labels, _label_components
 
 from ._tools import (
     _get_flat_indices,
@@ -515,6 +516,9 @@ def drainage(
         that would otherwise be removed. The residual phase is indicated
         in the capillary pressure map by ``-np.inf`` values, since these voxels
         are invaded at all applied capillary pressures.
+        Without outlets, reconnection is repeated at each pressure until no
+        additional sphere centers become accessible. With outlets, the existing
+        single-pass reconnection followed by trapping is used.
     steps : int or array_like (default = 25)
         The range of pressures to apply. If an integer is given then the given
         number of steps will be created between the lowest and highest values in
@@ -640,6 +644,9 @@ def drainage(
     im_seq[trapped] = -1
     nwp_mask = np.zeros_like(im, dtype=bool)
     seeds_prev = np.zeros_like(im, dtype=bool)
+    residual_components = None
+    if residual is not None and outlets is None:
+        residual_components = _label_components(residual, conn=conn)
     seeds = np.empty_like(im, dtype=bool)
     edges = np.empty_like(im, dtype=bool)
     mask = np.empty_like(im, dtype=bool)
@@ -659,7 +666,8 @@ def drainage(
         if not np.any(seeds):
             continue
         # Dilate the erosion to find locations of non-wetting phase
-        np.logical_xor(seeds, seeds_prev, out=edges)
+        np.logical_not(seeds_prev, out=edges)
+        np.logical_and(seeds, edges, out=edges)
         indices = _get_flat_indices(edges)
         eligible = edges if residual is not None else seeds
         indices = _remove_contained_disks(indices, eligible, dt)
@@ -675,17 +683,36 @@ def drainage(
         # Connect residual to invasion front
         if residual is not None:
             if np.any(nwp_mask):  # Add residual blobs to invasion front if touching
-                nwp_mask = join_residual_and_invasion_front(
-                    im=im,
-                    pc=pc,
-                    dt=dt,
-                    residual=residual,
-                    nwp_mask=nwp_mask,
-                    seeds_prev=seeds_prev,
-                    P=P,
-                    conn=conn,
-                    ceil_distance=ceil_distance,
-                )
+                if outlets is None:
+                    # All previously processed centers retain their coverage in
+                    # this monotone, no-trapping mode.
+                    seeds |= seeds_prev
+                    nwp_mask = _close_residual_and_invasion_front(
+                        im=im,
+                        pc=pc,
+                        dt=dt,
+                        residual_components=residual_components,
+                        nwp_mask=nwp_mask,
+                        seeds=seeds,
+                        P=P,
+                        conn=conn,
+                        ceil_distance=ceil_distance,
+                        smooth=smooth,
+                    )
+                else:
+                    # Residual/trapping evolution requires separate validation;
+                    # preserve its single-pass ordering here.
+                    nwp_mask = join_residual_and_invasion_front(
+                        im=im,
+                        pc=pc,
+                        dt=dt,
+                        residual=residual,
+                        nwp_mask=nwp_mask,
+                        seeds_prev=seeds_prev,
+                        P=P,
+                        conn=conn,
+                        ceil_distance=ceil_distance,
+                    )
         # Find trapped wetting due to presence of residual
         if all([inlets is not None, outlets is not None, residual is not None]):
             # Find any wetting phase which is pinned between residual and invading
@@ -762,6 +789,56 @@ def drainage(
 
 
 # The following functions are helpers to make the drainage code more concise
+def _close_residual_and_invasion_front(
+    im,
+    pc,
+    dt,
+    nwp_mask,
+    residual_components,
+    P,
+    seeds,
+    conn,
+    ceil_distance,
+    smooth,
+):
+    """Close no-trapping reconnection, updating processed centers in ``seeds``."""
+    residual_labels, nresidual = residual_components
+    activated = np.zeros(nresidual + 1, dtype=bool)
+    activated[0] = True  # Background is never a residual component
+    eligible_labels = None
+    while True:
+        # Contact means mask overlap, matching trim_disconnected_voxels. Merely
+        # neighboring a residual voxel does not activate its component.
+        hits = np.unique(residual_labels[nwp_mask])
+        hits = hits[~activated[hits]]
+        if hits.size == 0:
+            break
+        activated[hits] = True
+        attached = _isin_labels(residual_labels, hits, nresidual)
+        if eligible_labels is None:
+            eligible_labels, neligible = _label_components(im & (pc <= P), conn=conn)
+        hits = np.unique(eligible_labels[attached])
+        candidates = _isin_labels(eligible_labels, hits, neligible)
+        candidates &= ~seeds
+        if not np.any(candidates):
+            break
+        indices = _get_flat_indices(candidates)
+        indices = _remove_contained_disks(indices, candidates, dt)
+        nwp_mask = _insert_disks_at_indices_parallel(
+            im=nwp_mask,
+            indices=indices,
+            dt=dt,
+            ceil_distance=ceil_distance,
+            smooth=smooth,
+            overwrite=True,
+        )
+        nwp_mask[candidates] = True
+        # Pruned centers are safely covered by another candidate's sphere. Mark
+        # the entire wave processed so neither drawn nor pruned centers recur.
+        seeds |= candidates
+    return nwp_mask
+
+
 def join_residual_and_invasion_front(
     im,
     pc,
