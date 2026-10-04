@@ -249,9 +249,10 @@ def test_drainage(plot=False):
 
     # Ensure final saturations correspond to trapping
     assert pc_drn1.snwp[-1] == 1
-    assert pc_drn2.snwp[-1] == 0.9209031517060606  # Changed from 0.9169855520745083
+    # With h[i] = i * voxel_size, 161967 and 146681 void voxels are invaded.
+    assert pc_drn2.snwp[-1] == 0.9209315813115145
     assert pc_drn3.snwp[-1] == 1
-    assert pc_drn4.snwp[-1] == 0.833988161912289
+    assert pc_drn4.snwp[-1] == 0.8340165915177429
 
     if plot:
         from copy import copy
