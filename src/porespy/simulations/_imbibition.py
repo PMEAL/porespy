@@ -24,7 +24,6 @@ from porespy.tools import (
 )
 
 from ._tools import (
-    _find_interface,
     _get_flat_indices,
     _insert_disks_at_indices_parallel,
     _remove_contained_disks,
@@ -622,19 +621,18 @@ def imbibition(
         )
     im_seq[trapped] = -1
     invadable = np.empty_like(im, dtype=bool)
-    edges = np.empty_like(im, dtype=bool)
     nwp_mask = np.empty_like(im, dtype=bool)
 
     desc = inspect.currentframe().f_code.co_name  # Get current func name
     for step, P in enumerate(tqdm(Ps, desc=desc, **settings.tqdm)):
-        # Find invadable voxels and their axial interface with the solid phase
+        # Start with every eligible center: interior variable-radius spheres
+        # can cover voxels that spheres on the axial interface do not reach.
         np.less_equal(pc, P, out=invadable)
         np.logical_and(invadable, im, out=invadable)
-        _find_interface(invadable, edges)
         nwp_mask.fill(False)
-        if np.any(edges):
-            indices = _get_flat_indices(edges)
-            indices = _remove_contained_disks(indices, edges, dt)
+        if np.any(invadable):
+            indices = _get_flat_indices(invadable)
+            indices = _remove_contained_disks(indices, invadable, dt)
             nwp_mask = _insert_disks_at_indices_parallel(
                 im=nwp_mask,
                 indices=indices,
