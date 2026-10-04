@@ -1317,7 +1317,10 @@ def pc_map_to_pc_curve(
         Minimum and maximum values to clip the capillary pressures. This is useful
         if the minimum or maximum capillary pressure values are -/+ infinity, which
         means they do not show up when plotting.  Using `pc_min=1` and `pc_max=1e6`
-        for instance, will make plateaus render when plotting.
+        for instance, will make plateaus render when plotting. If a bound lies
+        outside the curve's pressure range, a constant-saturation plateau is added
+        at that bound. Lower bounds extend the start of drainage curves and the
+        end of imbibition curves; upper bounds extend the opposite end.
 
     Returns
     -------
@@ -1337,6 +1340,11 @@ def pc_map_to_pc_curve(
     To use this function with the results of `porosimetry` or `ibip` the sizes map
     must be converted to a capillary pressure map first.  `drainage` and `invasion`
     both return capillary pressure maps which can be passed directly as `pc`.
+
+    Clipping preserves event order and all saturation values. Events clipped to
+    the same pressure are retained, including those with different saturations
+    that form a vertical step. No padding is added for a bound already represented
+    in the clipped curve. Nonmonotone injection histories retain their order.
 
     Examples
     --------
@@ -1399,14 +1407,22 @@ def pc_map_to_pc_curve(
                 snwp = np.hstack((snwp, snwp[-1]))
 
     # Apply clipping to Pc values
-    if pc_min or pc_max:
+    if pc_min is not None or pc_max is not None:
         pcs = np.clip(pcs, a_min=pc_min, a_max=pc_max)
-        if pc_min and pcs.min() > pc_min:
-            pcs = np.hstack((pc_min, pcs))
-            snwp = np.hstack((snwp[0], snwp))
-        if pc_max and pcs.min() < pc_max:
-            pcs = np.hstack((pcs, pc_max))
-            snwp = np.hstack((snwp, snwp[-1]))
+        if pc_min is not None and pcs.min() > pc_min:
+            if mode.startswith("dr"):
+                pcs = np.hstack((pc_min, pcs))
+                snwp = np.hstack((snwp[0], snwp))
+            else:
+                pcs = np.hstack((pcs, pc_min))
+                snwp = np.hstack((snwp, snwp[-1]))
+        if pc_max is not None and pcs.max() < pc_max:
+            if mode.startswith("dr"):
+                pcs = np.hstack((pcs, pc_max))
+                snwp = np.hstack((snwp, snwp[-1]))
+            else:
+                pcs = np.hstack((pc_max, pcs))
+                snwp = np.hstack((snwp[0], snwp))
 
     results = Results()
     results.pc = pcs
