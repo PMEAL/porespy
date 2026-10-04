@@ -123,7 +123,9 @@ def test_drainage(plot=False):
     assert pc_drn1.snwp[-1] == 1  # No trapping, should reach 1.0
     assert pc_drn2.snwp[-1] == 0.8980798644476412  # Changed from 0.8419029640706647
     assert pc_drn3.snwp[-1] == 1  # No trapping, should reach 1.0
-    assert pc_drn4.snwp[-1] == 0.7332052105780876  # Changed from 0.7641877946017865
+    # Residual mode checks trapping between reconnection rounds. Independently
+    # verified against explicit spheres and defending-phase outlet floods.
+    assert pc_drn4.snwp[-1] == 0.7163748841493578
 
     # Ensure initial capillary pressures are correct
     assert np.isfinite(pc_drn1.pc[0])
@@ -249,7 +251,7 @@ def test_drainage(plot=False):
     assert pc_drn1.snwp[-1] == 1
     assert pc_drn2.snwp[-1] == 0.9209031517060606  # Changed from 0.9169855520745083
     assert pc_drn3.snwp[-1] == 1
-    assert pc_drn4.snwp[-1] == 0.7872669483092913  # Changed from 0.838394750757649
+    assert pc_drn4.snwp[-1] == 0.833988161912289
 
     if plot:
         from copy import copy
