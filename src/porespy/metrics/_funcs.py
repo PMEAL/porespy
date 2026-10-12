@@ -398,8 +398,9 @@ def porosity(im, mask=None, fill_closed=False, fill_surface=False):
         A flag to indicate if closed pores (not connected to any image boundary)
         should be filled or not before computing the porosity.
     fill_surface : bool (default = `False`)
-        A flag to indicate if surface pores connected only to one surface should be
-        filled or not before computing the porosity.
+        A flag to indicate if non-spanning pores with exactly one connected
+        boundary opening should be filled before computing the porosity. An
+        opening may wrap around an edge or corner; separate openings are retained.
 
     Returns
     -------
