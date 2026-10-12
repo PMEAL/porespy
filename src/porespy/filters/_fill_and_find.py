@@ -165,7 +165,8 @@ def find_closed_pores(
     labels, N = _label_components(im=im, conn=conn)
     mask = borders(im.shape, mode="faces")
     hits = np.unique(labels[mask])
-    closed = np.isin(labels, hits, invert=True)
+    closed = _isin_labels(labels, hits, N, invert=True)
+    np.logical_and(closed, im, out=closed)
     return closed
 
 
@@ -215,13 +216,28 @@ def fill_closed_pores(
     return im
 
 
+def _nonpercolating_labels(labels, N, axis):
+    """Return positive labels that do not span any of the requested axes."""
+    if axis is None:
+        axis = range(labels.ndim)
+    elif isinstance(axis, int):
+        axis = [axis]
+    keep = np.ones(N + 1, dtype=bool)
+    keep[0] = False
+    for ax in axis:
+        faces = np.swapaxes(labels, 0, ax)
+        spanning = np.intersect1d(np.unique(faces[0]), np.unique(faces[-1]))
+        keep[spanning] = False
+    return np.flatnonzero(keep)
+
+
 def find_surface_pores(
     im: npt.NDArray,
     axis: int = None,
     conn: Literal["max", "min"] = "min",
 ):
     r"""
-    Finds surface pores that do not span the domain
+    Finds pores with one connected opening on the image boundary
 
     Parameters
     ----------
@@ -242,28 +258,34 @@ def find_surface_pores(
         A array containing boolean values indicating voxels which belong to surface
         pores.
 
+    Notes
+    -----
+    A surface pore has exactly one connected component when restricted to the
+    exterior faces of the image, and does not span opposite faces along any of
+    the requested axes. The same connectivity is used in the full image and on
+    its boundary. This allows a single opening to wrap around an edge or corner.
+    A tunnel with separate openings is not a surface pore, even if its openings
+    lie on adjacent faces or on the same face. Closed pores are also excluded.
+
+    All exterior faces are used to count openings. The ``axis`` argument only
+    controls which directions are checked for spanning paths.
+
     Examples
     --------
     `Click here
     <https://porespy.org/examples/filters/reference/find_surface_pores.html>`__
     to view online example.
     """
-    if axis is None:
-        axis = range(im.ndim)
-    elif isinstance(axis, int):
-        axis = [axis]
+    from porespy.generators import borders
+
     labels, N = _label_components(im=im, conn=conn)
-    keep = set()
-    for ax in axis:
-        labels = np.swapaxes(labels, 0, ax)
-        s1 = set(np.unique(labels[0, ...]))
-        s2 = set(np.unique(labels[-1, ...]))
-        tmp = s1.intersection(s2)
-        keep.update(tmp)
-        labels = np.swapaxes(labels, 0, ax)
-    closed = find_closed_pores(im, conn=conn)
-    surface = np.isin(labels, list(keep), invert=True) * ~closed
-    return surface
+    boundary = borders(im.shape, mode="faces") & im
+    openings, _ = _label_components(im=boundary, conn=conn)
+    pairs = np.unique(np.column_stack((labels[boundary], openings[boundary])), axis=0)
+    counts = np.bincount(pairs[:, 0].astype(np.intp), minlength=N + 1)
+    candidates = _nonpercolating_labels(labels, N, axis)
+    hits = candidates[counts[candidates] == 1]
+    return _isin_labels(labels, hits, N)
 
 
 def fill_surface_pores(
@@ -272,7 +294,7 @@ def fill_surface_pores(
     conn: Literal["max", "min"] = "min",
 ):
     r"""
-    Fill surface pores
+    Fill pores with one connected boundary opening that do not span the domain
 
     Parameters
     ----------
@@ -327,8 +349,15 @@ def find_invalid_pores(
     Returns
     -------
     invalid : ndarray
-        A array containing `1` indicated closed pores and `2` indicating surface
-        pores.
+        An array containing `1` indicating closed pores and `2` indicating
+        surface-connected nonpercolating pores, including tunnels with multiple
+        boundary openings. Solid voxels and percolating pores are `0`.
+
+    Notes
+    -----
+    Unlike `find_surface_pores`, this function includes nonpercolating clusters
+    with multiple boundary openings, so `fill_invalid_pores` removes all pores
+    that do not span the domain along the requested axes.
 
     Examples
     --------
@@ -337,7 +366,9 @@ def find_invalid_pores(
     to view online example.
     """
     closed = find_closed_pores(im=im, conn=conn)
-    surface = find_surface_pores(im=im, axis=axis, conn=conn)
+    labels, N = _label_components(im=im, conn=conn)
+    nonpercolating = _isin_labels(labels, _nonpercolating_labels(labels, N, axis), N)
+    surface = nonpercolating & ~closed
     invalid = closed.astype(int) + 2 * surface.astype(int)
     return invalid
 
