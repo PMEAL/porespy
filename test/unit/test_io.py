@@ -1,7 +1,12 @@
+import io
 import os
+import stat
 import sys
 from pathlib import Path
+from unittest.mock import patch
+from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
+import imageio.v3 as iio
 import numpy as np
 import pyvista as pv
 import pytest
@@ -279,12 +284,262 @@ class ExportTest():
     def test_zip_to_stack_and_folder_to_stack(self):
         p = Path(os.path.realpath(__file__),
                  '../../../test/fixtures/blobs_layers.zip').resolve()
-        im = ps.io.zip_to_stack(p)
-        assert im.shape == (100, 100, 10)
+        zipped = ps.io.zip_to_stack(p)
+        assert zipped.shape == (100, 100, 10)
         p = Path(os.path.realpath(__file__),
                  '../../../test/fixtures/blobs_layers').resolve()
         im = ps.io.folder_to_stack(p)
         assert im.shape == (100, 100, 10)
+        assert im.dtype == zipped.dtype
+        assert np.array_equal(im, zipped)
+
+
+@pytest.fixture(params=["folder", "zip"])
+def stack_source(request, tmp_path):
+    def read(slices, **kwargs):
+        folder = tmp_path / "slices"
+        folder.mkdir()
+        for name, value in slices.items():
+            path = folder / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            if isinstance(value, bytes):
+                path.write_bytes(value)
+            else:
+                iio.imwrite(path, value)
+        if request.param == "folder":
+            return ps.io.folder_to_stack(folder, **kwargs)
+        archive = tmp_path / "slices.zip"
+        with ZipFile(archive, "w", compression=ZIP_DEFLATED) as zf:
+            for path in folder.rglob("*"):
+                if path.is_file():
+                    zf.write(path, path.relative_to(folder).as_posix())
+        result = ps.io.zip_to_stack(archive, **kwargs)
+        # Loading an archive must preserve a pre-existing same-named directory.
+        assert all((folder / name).is_file() for name in slices)
+        return result
+
+    return read
+
+
+class ImageStackTest:
+    @pytest.mark.parametrize(
+        "extension,dtype",
+        [
+            (".tif", np.uint16),
+            (".tiff", np.float32),
+            (".tif", bool),
+            (".png", np.uint8),
+            (".png", np.uint16),
+            (".bmp", np.uint8),
+        ],
+    )
+    def test_order_values_dtype_and_metadata(self, stack_source, extension, dtype):
+        # Insertion order, lexical order and natural order are all different.
+        slices = {
+            f"slice10{extension}": np.full((2, 5), 10, dtype=dtype),
+            f"Slice2{extension}": np.full((2, 5), 2, dtype=dtype),
+            f"slice1{extension}": np.arange(10).reshape(2, 5).astype(dtype),
+            ".DS_Store": b"metadata",
+            f"._slice1{extension}": b"resource fork",
+            "__MACOSX/ignored.tif": b"metadata",
+            "README.txt": b"notes",
+        }
+        result = stack_source(slices)
+        expected = np.stack(
+            [
+                slices[f"slice1{extension}"],
+                slices[f"Slice2{extension}"],
+                slices[f"slice10{extension}"],
+            ],
+            axis=2,
+        )
+        assert result.dtype == expected.dtype
+        assert np.array_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "slices,message",
+        [
+            ({}, "No supported image"),
+            ({"notes.txt": b"notes"}, "No supported image"),
+            (
+                {
+                    "1.tif": np.ones((2, 5), dtype=np.uint8),
+                    "2.tif": np.ones((1, 5), dtype=np.uint8),
+                },
+                "shape",
+            ),
+            (
+                {
+                    "1.tif": np.ones((2, 5), dtype=np.uint8),
+                    "2.tif": np.ones((2, 5), dtype=np.uint16),
+                },
+                "dtype",
+            ),
+            ({"1.png": np.zeros((2, 5, 3), dtype=np.uint8)}, "2D grayscale"),
+            ({"1.tif": np.zeros((2, 5, 3), dtype=np.uint8)}, "2D grayscale"),
+            (
+                {
+                    "1.tif": np.ones((2, 5), dtype=np.uint8),
+                    "01.tif": np.ones((2, 5), dtype=np.uint8),
+                },
+                "ambiguous",
+            ),
+            ({"broken.tif": b"invalid image data"}, "broken.tif"),
+        ],
+    )
+    def test_invalid_slices_fail_before_pixel_decode(self, stack_source, slices, message):
+        with patch("porespy.io._unzipper.iio.imread") as decode:
+            with pytest.raises(ValueError, match=message):
+                stack_source(slices)
+        decode.assert_not_called()
+
+    def test_limit_is_checked_before_allocating_or_decoding(self, stack_source):
+        slices = {"1.png": np.ones((2, 5), dtype=np.uint16)}
+        with (
+            patch("porespy.io._unzipper.iio.imread") as decode,
+            patch(
+                "porespy.io._unzipper.np.empty", side_effect=AssertionError("allocated stack")
+            ),
+        ):
+            with pytest.raises(ValueError, match="requires 20 bytes"):
+                stack_source(slices, max_bytes=19)
+        decode.assert_not_called()
+
+    def test_single_slice_and_exact_limit(self, stack_source):
+        layer = np.array([[0, 500], [65535, 42]], dtype=np.uint16)
+        result = stack_source({"001.tif": layer}, max_bytes=layer.nbytes)
+        assert result.shape == (2, 2, 1)
+        assert np.array_equal(result[..., 0], layer)
+
+    @pytest.mark.parametrize("limit", [-1, 1.5, True])
+    def test_invalid_limit(self, stack_source, limit):
+        with pytest.raises(ValueError, match="max_bytes must be"):
+            stack_source({"1.png": np.zeros((2, 5), dtype=np.uint8)}, max_bytes=limit)
+
+    @pytest.mark.parametrize("failure", ["dtype", "shape", "decode"])
+    def test_decoded_slice_is_validated(self, stack_source, failure):
+        layer = np.zeros((2, 5), dtype=np.uint8)
+        if failure == "decode":
+            decoder = patch(
+                "porespy.io._unzipper.iio.imread", side_effect=OSError("bad pixels")
+            )
+            message = "Could not read slice '1.png'"
+        else:
+            decoded = layer.astype(np.uint16) if failure == "dtype" else layer[:1]
+            decoder = patch("porespy.io._unzipper.iio.imread", return_value=decoded)
+            message = "shape .* and dtype"
+        with decoder, pytest.raises(ValueError, match=message):
+            stack_source({"1.png": layer})
+
+    def test_zip_wrapper_folder_and_binary_stream(self):
+        buffer = io.BytesIO()
+        with ZipFile(buffer, "w") as zf:
+            zf.writestr("sample/", b"")
+            for name, value in [("10.png", 10), ("2.png", 2)]:
+                zf.writestr(
+                    f"sample/{name}",
+                    iio.imwrite(
+                        "<bytes>",
+                        np.full((2, 5), value, dtype=np.uint8),
+                        extension=".png",
+                    ),
+                )
+            zf.writestr("__MACOSX/sample/._2.png", b"metadata")
+        buffer.seek(0)
+        result = ps.io.zip_to_stack(buffer)
+        assert not buffer.closed
+        assert result.shape == (2, 5, 2)
+        assert np.array_equal(result[0, 0], [2, 10])
+
+    @pytest.mark.parametrize(
+        "names,message",
+        [
+            (["a/1.png", "b/2.png"], "one folder"),
+            (["../1.png"], "Unsafe"),
+            (["/1.png"], "Unsafe"),
+            ([r"a\1.png"], "Unsafe"),
+            (["C:/1.png"], "Unsafe"),
+            (["1.png", "1.png"], "duplicate"),
+        ],
+    )
+    def test_zip_rejects_unsafe_or_ambiguous_members(self, tmp_path, names, message):
+        archive = tmp_path / "slices.zip"
+        with ZipFile(archive, "w") as zf:
+            for index, name in enumerate(names):
+                if index and name == names[index - 1]:
+                    with pytest.warns(UserWarning, match="Duplicate name"):
+                        zf.writestr(name, b"not decoded")
+                else:
+                    zf.writestr(name, b"not decoded")
+        with pytest.raises(ValueError, match=message):
+            ps.io.zip_to_stack(archive)
+        assert sorted(p.name for p in tmp_path.iterdir()) == ["slices.zip"]
+
+    @pytest.mark.parametrize("valid", [False, True])
+    def test_zip_preserves_existing_directory(self, tmp_path, monkeypatch, valid):
+        monkeypatch.chdir(tmp_path)
+        folder = tmp_path / "slices"
+        folder.mkdir()
+        sentinel = folder / "important.txt"
+        sentinel.write_text("keep")
+        archive = tmp_path / "slices.zip"
+        with ZipFile(archive, "w") as zf:
+            if valid:
+                zf.writestr(
+                    "1.png",
+                    iio.imwrite(
+                        "<bytes>",
+                        np.zeros((2, 5), dtype=np.uint8),
+                        extension=".png",
+                    ),
+                )
+            else:
+                zf.writestr("broken.tif", b"invalid image")
+        if valid:
+            assert ps.io.zip_to_stack(archive).shape == (2, 5, 1)
+        else:
+            with pytest.raises(ValueError, match="broken.tif"):
+                ps.io.zip_to_stack(archive)
+        assert sentinel.read_text() == "keep"
+        assert sorted(p.name for p in folder.iterdir()) == ["important.txt"]
+
+    def test_folder_image_symlinks_are_refused(self, tmp_path):
+        folder = tmp_path / "slices"
+        folder.mkdir()
+        image = tmp_path / "actual.png"
+        iio.imwrite(image, np.zeros((2, 5), dtype=np.uint8))
+        try:
+            (folder / "1.png").symlink_to(image)
+        except (OSError, NotImplementedError):
+            pytest.skip("Creating symbolic links is not permitted on this platform")
+        with pytest.raises(ValueError, match="Symbolic"):
+            ps.io.folder_to_stack(folder)
+
+    def test_zip_image_symlinks_are_refused(self, tmp_path):
+        member = ZipInfo("1.png")
+        member.create_system = 3
+        member.external_attr = (stat.S_IFLNK | 0o777) << 16
+        archive = tmp_path / "slices.zip"
+        with ZipFile(archive, "w") as zf:
+            zf.writestr(member, "actual.png")
+        with pytest.raises(ValueError, match="Symbolic"):
+            ps.io.zip_to_stack(archive)
+
+    @pytest.mark.parametrize("series", [False, True])
+    def test_multi_page_tiff_is_refused_before_decode(self, stack_source, series):
+        import tifffile
+
+        buffer = io.BytesIO()
+        with tifffile.TiffWriter(buffer) as tif:
+            if series:
+                tif.write(np.ones((2, 5), dtype=np.uint8))
+                tif.write(np.ones((3, 6), dtype=np.uint8))
+            else:
+                tif.write(np.ones((2, 4, 5), dtype=np.uint8), photometric="minisblack")
+        with patch("porespy.io._unzipper.iio.imread") as decode:
+            with pytest.raises(ValueError, match="exactly one"):
+                stack_source({"1.tif": buffer.getvalue()})
+        decode.assert_not_called()
 
 
 if __name__ == "__main__":
