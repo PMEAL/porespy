@@ -466,14 +466,38 @@ class ImageStackTest:
         archive = tmp_path / "slices.zip"
         with ZipFile(archive, "w") as zf:
             for index, name in enumerate(names):
+                # Preserve malformed names verbatim: ZipInfo normally replaces
+                # backslashes with slashes on Windows, even when writing a ZIP.
+                member = ZipInfo(name)
+                member.filename = name
                 if index and name == names[index - 1]:
                     with pytest.warns(UserWarning, match="Duplicate name"):
-                        zf.writestr(name, b"not decoded")
+                        zf.writestr(member, b"not decoded")
                 else:
-                    zf.writestr(name, b"not decoded")
+                    zf.writestr(member, b"not decoded")
         with pytest.raises(ValueError, match=message):
             ps.io.zip_to_stack(archive)
         assert sorted(p.name for p in tmp_path.iterdir()) == ["slices.zip"]
+
+    def test_zip_checks_original_name_after_windows_normalization(self, tmp_path):
+        archive = tmp_path / "slices.zip"
+        member = ZipInfo(r"a\1.png")
+        member.filename = member.orig_filename
+        with ZipFile(archive, "w") as zf:
+            zf.writestr(member, b"not decoded")
+        with ZipFile(archive) as zf:
+            # Simulate Windows on every platform. ZipInfo retains orig_filename
+            # when normalizing filename as the ZIP is opened.
+            member = zf.infolist()[0]
+            assert member.orig_filename == r"a\1.png"
+            member.filename = "a/1.png"
+            with (
+                patch("porespy.io._unzipper.ZipFile", return_value=zf),
+                patch("porespy.io._unzipper.iio.improps") as inspect_header,
+                pytest.raises(ValueError, match="Unsafe image member path"),
+            ):
+                ps.io.zip_to_stack(archive)
+            inspect_header.assert_not_called()
 
     @pytest.mark.parametrize("valid", [False, True])
     def test_zip_preserves_existing_directory(self, tmp_path, monkeypatch, valid):

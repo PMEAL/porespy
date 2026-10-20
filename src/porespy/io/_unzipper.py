@@ -210,16 +210,19 @@ def zip_to_stack(f, *, max_bytes=None):
     with ZipFile(f) as archive:
         names = []
         for member in archive.infolist():
-            path = PurePosixPath(member.filename)
+            # ZipInfo normalizes backslashes on Windows. Validate the name
+            # actually stored in the ZIP so admission is platform-independent.
+            original_name = member.orig_filename
+            path = PurePosixPath(original_name)
             if member.is_dir() or path.suffix.lower() not in _IMAGE_SUFFIXES:
                 continue
             if (
                 path.is_absolute()
                 or ".." in path.parts
-                or "\\" in member.filename
-                or ":" in member.filename
+                or "\\" in original_name
+                or ":" in original_name
             ):
-                raise ValueError(f"Unsafe image member path: {member.filename!r}")
+                raise ValueError(f"Unsafe image member path: {original_name!r}")
             if not _is_image(path):
                 continue
             if stat.S_ISLNK(member.external_attr >> 16):
