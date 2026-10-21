@@ -9,6 +9,7 @@ from skimage.morphology import ball, disk
 from skimage.segmentation import relabel_sequential
 
 from ._utils import Results, Settings, get_edt, get_tqdm
+from ._label import _label_components
 
 try:
     from skimage.measure import marching_cubes
@@ -624,7 +625,7 @@ def isolate_object(region, i, s=None):
     ----------
     region : ndarray
         An image containing labelled regions, as returned by
-        ``scipy.ndimage.label``.
+        connected-component labeling.
     i : int
         The integer value
     s : tuple of slice objects, optional
@@ -896,8 +897,8 @@ def find_outer_region(im, r=None):
     dt = edt(im_padded)
     seeds = (dt >= r) + borders(shape=im_padded.shape)
     # Remove seeds not connected to edges
-    labels = spim.label(seeds)[0]
-    mask = labels == 1  # Assume label of 1 on edges, assured by adding border
+    labels = _label_components(seeds, conn="min")[0]
+    mask = labels == labels.flat[0]
     dt = edt(~mask)
     outer_region = dt < r
     outer_region = extract_subsection(im=outer_region, shape=im.shape)
@@ -1167,7 +1168,7 @@ def randomize_colors(im, keep_vals=[0]):
 
     This function is useful for improving the visibility of images with
     neighboring regions that are only incrementally different from each other,
-    such as that returned by `scipy.ndimage.label`.
+    such as that returned by connected-component labeling.
 
     Examples
     --------

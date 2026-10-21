@@ -2973,7 +2973,7 @@ wheels = [
 
 [[package]]
 name = "porespy"
-version = "3.1.0"
+version = "3.1.1.dev8"
 source = { editable = "." }
 dependencies = [
     { name = "connected-components-3d" },
@@ -2999,6 +2999,7 @@ dependencies = [
 [package.optional-dependencies]
 extras = [
     { name = "imageio" },
+    { name = "meshio" },
     { name = "nanomesh" },
     { name = "numpy-stl" },
     { name = "openpnm" },
@@ -3060,6 +3061,7 @@ requires-dist = [
     { name = "imageio", marker = "extra == 'extras'" },
     { name = "matplotlib" },
     { name = "matplotlib-inline", specifier = ">=0.1.7" },
+    { name = "meshio", marker = "extra == 'extras'" },
     { name = "nanomesh", marker = "extra == 'extras'" },
     { name = "numba" },
     { name = "numpy" },

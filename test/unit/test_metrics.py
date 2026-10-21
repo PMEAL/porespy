@@ -45,11 +45,34 @@ class MetricsTest:
         phi = ps.metrics.porosity(im)
         assert np.allclose(phi, 0.6)
         phi = ps.metrics.porosity(im, fill_surface=True, fill_closed=False)
-        assert np.allclose(phi, 0.3963111111111111)
+        # 2,741 voxels have one connected boundary opening. The 15,591
+        # nonpercolating voxels with separate openings must remain pore space.
+        assert np.allclose(phi, (54000 - 2741) / 90000)
         phi = ps.metrics.porosity(im, fill_surface=False, fill_closed=True)
         assert np.allclose(phi, 0.5996222222222222)
         phi = ps.metrics.porosity(im, fill_surface=True, fill_closed=True)
-        assert np.allclose(phi, 0.39593333333333336)
+        assert np.allclose(phi, (54000 - 2741 - 34) / 90000)
+
+    @pytest.mark.parametrize("ndim", [2, 3])
+    @pytest.mark.parametrize("fill_surface", [False, True])
+    @pytest.mark.parametrize("fill_closed", [False, True])
+    def test_porosity_filling_known_pore_components(self, ndim, fill_surface, fill_closed):
+        plane = np.zeros((30, 30), dtype=bool)
+        plane[:3, :3] = True  # One corner opening: 9 surface voxels.
+        plane[10:12, 10:12] = True  # Closed pore: 4 voxels.
+        plane[:7, 20] = plane[6, :21] = True  # Adjacent-face tunnel: 27 voxels.
+        plane[20:, 5] = plane[20:, 15] = plane[20, 5:16] = True  # Same-face tunnel: 29.
+        plane[:, 27] = True  # Opposite-face spanning pore: 30 voxels.
+        im = plane
+        if ndim == 3:
+            im = np.zeros((30, 30, 5), dtype=bool)
+            im[:, :, 2] = plane
+        original = im.copy()
+        assert im.sum() == 99
+        expected = (99 - 9 * fill_surface - 4 * fill_closed) / im.size
+        phi = ps.metrics.porosity(im, fill_surface=fill_surface, fill_closed=fill_closed)
+        assert_allclose(phi, expected)
+        assert np.array_equal(im, original)
 
     def test_tpcf_fft_2d(self):
         tpcf_fft_1 = ps.metrics.two_point_correlation(self.im2D)

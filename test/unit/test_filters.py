@@ -79,6 +79,15 @@ class FilterTest():
         with pytest.raises(Exception):
             ps.filters.apply_chords(im=self.im, spacing=-1)
 
+    def test_apply_chords_with_zero_spacing(self):
+        im = np.ones((9, 9), dtype=bool)
+        with pytest.warns(DeprecationWarning, match="spacing=0 is deprecated"):
+            chords = ps.filters.apply_chords(
+                im=im, spacing=0, axis=0, trim_edges=False, label=True
+            )
+        assert np.all(chords > 0)
+        assert np.unique(chords).size == 9
+
     def test_apply_chords_without_trimming(self):
         c = ps.filters.apply_chords(im=self.im, trim_edges=False)
         assert c.sum() == 125043
@@ -320,18 +329,80 @@ class FilterTest():
         assert max1 > max2
 
     def test_local_thickness(self):
-        lt = ps.filters.local_thickness(self.im, method='dt')
-        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
-        lt = ps.filters.local_thickness(self.im, method='imj')
-        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
-        lt = ps.filters.local_thickness(self.im, method='conv')
-        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
+        reference = ps.filters.local_thickness(self.im, method='dt')
+        assert reference.max() == int(self.im_dt.max())
+        for method in ['bf', 'conv']:
+            actual = ps.filters.local_thickness(self.im, method=method)
+            assert np.array_equal(actual, reference)
 
-    def test_local_thickness_imj_2d(self):
+    def test_local_thickness_bf_mask(self):
         im = self.im[:, :, 50]
-        lt = ps.filters.local_thickness_imj(im)
-        assert lt.shape == im.shape
-        assert lt.max() > 0
+        dt = edt(im)
+        mask = np.zeros_like(im, dtype=bool)
+        center = np.unravel_index(np.argmax(dt), dt.shape)
+        mask[center] = True
+        lt = ps.filters.local_thickness(im, dt=dt, method='bf', mask=mask)
+        assert lt[center] == int(dt[center])
+        assert np.count_nonzero(lt) < np.count_nonzero(im)
+
+    def test_local_thickness_methods_use_integer_radii(self):
+        im = self.im[:, :, 50]
+        dt = edt(im)
+        sizes = [4, 2, 1]
+        reference = ps.filters.local_thickness(
+            im, dt=dt, method='dt', sizes=sizes)
+        for method in ['bf', 'conv']:
+            actual = ps.filters.local_thickness(
+                im, dt=dt, method=method, sizes=sizes)
+            assert np.array_equal(actual, reference)
+        with pytest.raises(ValueError, match='positive integer radii'):
+            ps.filters.local_thickness(im, dt=dt, sizes=[2.5])
+        with pytest.raises(TypeError, match='None, a positive integer'):
+            ps.filters.local_thickness(im, dt=dt, sizes=2.5)
+        with pytest.raises(ValueError, match='positive integer'):
+            ps.filters.local_thickness(im, dt=dt, sizes=0)
+
+    def test_local_thickness_integer_sizes_selects_even_radii(self):
+        im = self.im[:, :, 50]
+        dt = edt(im)
+        n = 3
+        radii = np.unique(
+            np.linspace(1, int(np.floor(dt[im].max())), num=n, dtype=int)
+        )[::-1]
+        for method in ['bf', 'dt', 'conv']:
+            expected = ps.filters.local_thickness(
+                im,
+                dt=dt,
+                method=method,
+                sizes=radii,
+            )
+            actual = ps.filters.local_thickness(
+                im,
+                dt=dt,
+                method=method,
+                sizes=n,
+            )
+            np.testing.assert_array_equal(actual, expected)
+
+        values, indices = ps.filters.local_thickness(
+            im,
+            dt=dt,
+            sizes=n,
+            return_indices=True,
+        )
+        np.testing.assert_array_equal(values, np.concatenate(([0], radii)))
+        np.testing.assert_array_equal(values[indices], expected)
+
+    def test_local_thickness_legacy(self):
+        im = self.im[:, :, 50]
+        dt = edt(im)
+        lt = ps.filters.local_thickness(im, dt=dt, method='legacy')
+        expected = np.logspace(np.log10(dt.max()), 0, num=25)
+        labels = np.unique(lt)
+        assert np.all(np.isin(labels, np.concatenate(([0], expected))))
+        assert np.any((labels > 0) & (labels != np.floor(labels)))
+        lt = ps.filters.local_thickness(im, dt=dt, method='legacy', sizes=3)
+        assert np.unique(lt).size <= 4
 
     def test_local_thickness_known_sizes(self):
         im = np.zeros(shape=[300, 300])
@@ -339,6 +410,43 @@ class FilterTest():
         im = ps.generators.random_spheres(im=im, r=10)
         lt = ps.filters.local_thickness(im, sizes=[20, 10])
         assert np.all(np.unique(lt) == [0, 10, 20])
+
+    def test_local_thickness_return_indices(self):
+        im = self.im[:, :, 50]
+        dt = edt(im)
+        for method in ['bf', 'dt', 'conv', 'legacy']:
+            expected = ps.filters.local_thickness(im, dt=dt, method=method)
+            sizes, indices = ps.filters.local_thickness(
+                im,
+                dt=dt,
+                method=method,
+                return_indices=True,
+            )
+            assert indices.dtype == np.uint8
+            np.testing.assert_array_equal(sizes[indices], expected)
+
+    def test_local_thickness_return_indices_uses_uint16(self):
+        im = self.im[:, :, 50]
+        sizes, indices = ps.filters.local_thickness(
+            im,
+            sizes=np.arange(300, 0, -1),
+            return_indices=True,
+        )
+        assert len(sizes) == 301
+        assert indices.dtype == np.uint16
+
+    def test_porosimetry_return_indices(self):
+        im = self.im[:, :, 50]
+        expected = ps.filters.porosimetry(im, method='dt')
+        sizes, indices = ps.filters.porosimetry(
+            im,
+            method='dt',
+            return_indices=True,
+        )
+        assert indices.dtype == np.uint8
+        np.testing.assert_array_equal(sizes[indices], expected)
+        with pytest.raises(NotImplementedError):
+            ps.filters.porosimetry(im, method='conv', return_indices=True)
 
     def test_morphology_fft_dilate_2d(self):
         im = self.im[:, :, 50]

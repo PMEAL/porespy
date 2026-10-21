@@ -1,10 +1,8 @@
 import inspect
 
 import numpy as np
-from numba import njit, prange
 
 from porespy.filters import (
-    erode,
     fftmorphology,
     find_trapped_clusters,
     seq_to_satn,
@@ -16,13 +14,19 @@ from porespy.tools import (
     Results,
     _insert_disk_at_points,
     _insert_disk_at_points_parallel,
-    _insert_disks_at_points_parallel,
+    _make_axial_extent_lookup,
     get_tqdm,
     get_edt,
     make_contiguous,
     parse_steps,
     ps_round,
     settings,
+)
+
+from ._tools import (
+    _get_flat_indices,
+    _insert_disks_at_indices_parallel,
+    _remove_contained_disks,
 )
 
 tqdm = get_tqdm()
@@ -577,6 +581,7 @@ def imbibition(
 
     if dt is None:
         dt = edt(im)
+    ceil_distance = _make_axial_extent_lookup(np.max(dt))
 
     if pc is None:
         # Cast `dt` to float64 to avoid precision loss in `2.0/dt`. With float32
@@ -615,29 +620,28 @@ def imbibition(
             conn=conn,
         )
     im_seq[trapped] = -1
+    invadable = np.empty_like(im, dtype=bool)
+    nwp_mask = np.empty_like(im, dtype=bool)
 
     desc = inspect.currentframe().f_code.co_name  # Get current func name
     for step, P in enumerate(tqdm(Ps, desc=desc, **settings.tqdm)):
-        invadable = (pc <= P)*im  # This means 'invadable by non-wetting phase'
-        # Using FFT-based erosion to find edges.  When struct is small, this is
-        # quite fast so it saves time overall by reducing the number of spheres
-        # that need to be inserted.
-        # TODO: This can be made faster if I find a way to get only seeds on edge,
-        # so less spheres need to be drawn
-        edges = (~erode(invadable, r=1, smooth=False, method='conv'))*invadable
-        nwp_mask = np.zeros_like(im, dtype=bool)
-        if np.any(edges):
-            coords = np.where(edges)
-            radii = dt[coords].astype(int)
-            nwp_mask = _insert_disks_at_points_parallel(
+        # Start with every eligible center: interior variable-radius spheres
+        # can cover voxels that spheres on the axial interface do not reach.
+        np.less_equal(pc, P, out=invadable)
+        np.logical_and(invadable, im, out=invadable)
+        nwp_mask.fill(False)
+        if np.any(invadable):
+            indices = _get_flat_indices(invadable)
+            indices = _remove_contained_disks(indices, invadable, dt)
+            nwp_mask = _insert_disks_at_indices_parallel(
                 im=nwp_mask,
-                coords=np.vstack(coords),
-                radii=radii,
-                v=True,
+                indices=indices,
+                dt=dt,
+                ceil_distance=ceil_distance,
                 smooth=smooth,
                 overwrite=True,
             )
-            nwp_mask += invadable
+            np.logical_or(nwp_mask, invadable, out=nwp_mask)
         if inlets is not None:
             nwp_mask = ~trim_disconnected_voxels(
                 im=(~nwp_mask)*im,
@@ -714,46 +718,6 @@ def imbibition(
     results.pc = pc_curve.pc
     results.snwp = pc_curve.snwp
     return results
-
-
-@njit(parallel=True)
-def _insert_disks_npoints_nradii_1value_parallel(
-    im,
-    coords,
-    radii,
-    v,
-    overwrite=False,
-    smooth=False,
-):  # pragma: no cover
-    if im.ndim == 2:
-        xlim, ylim = im.shape
-        for row in prange(len(coords[0])):
-            i, j = coords[0][row], coords[1][row]
-            r = radii[row]
-            for a, x in enumerate(range(i-r, i+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(j-r, j+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            R = ((a - r)**2 + (b - r)**2)**0.5
-                            if (R <= r)*(~smooth) or (R < r)*(smooth):
-                                if overwrite or (im[x, y] == 0):
-                                    im[x, y] = v
-    else:
-        xlim, ylim, zlim = im.shape
-        for row in prange(len(coords[0])):
-            i, j, k = coords[0][row], coords[1][row], coords[2][row]
-            r = radii[row]
-            for a, x in enumerate(range(i-r, i+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(j-r, j+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            for c, z in enumerate(range(k-r, k+r+1)):
-                                if (z >= 0) and (z < zlim):
-                                    R = ((a - r)**2 + (b - r)**2 + (c - r)**2)**0.5
-                                    if (R <= r)*(~smooth) or (R < r)*(smooth):
-                                        if overwrite or (im[x, y, z] == 0):
-                                            im[x, y, z] = v
-    return im
 
 
 # %%

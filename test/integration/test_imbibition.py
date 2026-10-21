@@ -26,7 +26,7 @@ def test_imbibition(plot=False):
         outlets=outlets,
     )
     pc = None
-    lt = ps.filters.local_thickness(im)
+    lt = ps.filters.local_thickness(im, method='legacy')
     dt = edt(im)
     residual = ~(lt > 10)*im
     steps = 25
@@ -97,9 +97,9 @@ def test_imbibition(plot=False):
 
     # Ensure final saturations correspond to trapping
     assert pc_imb[1].snwp[-1] == 0  # No trapping, should reach 1.0
-    assert pc_imb[2].snwp[-1] == 0.380899853871828
+    assert pc_imb[2].snwp[-1] == 0.38093396939837265
     assert pc_imb[3].snwp[-1] == 0  # No trapping, should reach 1.0
-    assert pc_imb[4].snwp[-1] == 0.5201310036219318
+    assert pc_imb[4].snwp[-1] == 0.5201537473062949
 
     # Ensure initial capillary pressures are correct
     assert np.isfinite(pc_imb[1].pc[0])
@@ -206,7 +206,8 @@ def test_imbibition(plot=False):
     assert pc_imb[1].snwp[-1] == 0
     assert pc_imb[2].snwp[-1] == 0.07100578258174928
     assert pc_imb[3].snwp[-1] == 0
-    assert pc_imb[4].snwp[-1] == 0.22210344964832573
+    # With h[i] = i * voxel_size, 39144 void voxels retain non-wetting fluid.
+    assert pc_imb[4].snwp[-1] == 0.22256969517777037
 
     if plot:
         fig, ax = plt.subplots(2, 2, facecolor=bg)

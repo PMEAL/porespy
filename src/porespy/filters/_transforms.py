@@ -30,24 +30,26 @@ def capillary_transform(
         A boolean image describing the porous medium with ``True`` values indicating
         the phase of interest.
     dt : ndarray, optional
-        The distance transform of the void phase. If not provided it will be
-        calculated, so some time can be save if a pre-computed array is already
+        The distance transform of the void phase, in voxels. If not provided it will
+        be calculated, so some time can be saved if a pre-computed array is already
         available.
     sigma : scalar (default = 1.0)
-        The surface tension of the fluid-fluid interface.
+        The surface tension of the fluid-fluid interface, in N/m when using SI units.
     theta : scalar (default = 180)
         The contact angle of the fluid-fluid-solid system, in degrees, measured through
         the non-wetting phase.  It must be >90.
     g : scalar (default = 0)
-        The gravitational constant acting on the fluids. Gravity is assumed to act
-        toward the x=0 axis. To have gravity act in different directions use
-        `np.swapaxes(im, 0, ax)` where `ax` is the desired direction.
+        The gravitational acceleration acting on the fluids, in m/s^2 when using SI
+        units. Gravity is assumed to act toward index 0 along axis 0. To have gravity
+        act along a different axis use `np.swapaxes(im, 0, ax)` where `ax` is the
+        desired axis, and swap the same axes of `dt` if it is supplied.
     rho_nwp : scalar
-        The density of the non-wetting fluid
+        The density of the non-wetting fluid, in kg/m^3 when using SI units.
     rho_wp : scalar
-        The density of the wetting fluid
-    voxel_size : scalar (default = 0.0)
-        The resolution of the image
+        The density of the wetting fluid, in kg/m^3 when using SI units.
+    voxel_size : scalar (default = 1.0)
+        The physical distance between adjacent voxel centers, in m when using SI
+        units.
     spacing : scalar (default = None)
         If a 2D image is provided, this value is used to compute the second
         radii of curvature.  Setting it to `np.inf` will make the calculation truly
@@ -55,10 +57,21 @@ def capillary_transform(
         will force the calculation to be 3D.  If `im` is 3D this argument is
         ignored.  This should be in units of physical length, not voxels.
 
+    Returns
+    -------
+    pc : ndarray
+        The capillary pressure including the gravity correction, in Pa when using SI
+        units.
+
     Notes
     -----
     All physical properties should be in self-consistent units, and it is strongly
     recommended to use SI for everything.
+
+    The gravity correction is ``(rho_nwp - rho_wp) * g * h``, where voxel centers
+    along axis 0 have heights ``h[i] = i * voxel_size``. The first voxel center is
+    the zero-height reference, so the last center is at
+    ``(im.shape[0] - 1) * voxel_size``. A singleton axis has zero height.
 
     Examples
     --------
@@ -78,6 +91,6 @@ def capillary_transform(
         pc = -sigma*np.cos(np.deg2rad(theta))*(1/(dt*voxel_size) + 2/spacing)
     else:
         pc = -2*sigma*np.cos(np.deg2rad(theta))/(dt*voxel_size)
-    h = ramp(im.shape, inlet=0, outlet=im.shape[0], axis=0)*voxel_size
+    h = ramp(im.shape, inlet=0, outlet=im.shape[0] - 1, axis=0)*voxel_size
     pc = pc + delta_rho*g*h
     return pc

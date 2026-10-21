@@ -3,14 +3,13 @@ import logging
 
 import numpy as np
 import numpy.typing as npt
-import scipy.ndimage as spim
 import scipy.spatial as sptl
 import scipy.stats as spst
 from deprecated import deprecated
 from numba import njit
 from scipy import fft as sp_ft
 from skimage.measure import regionprops
-from skimage.morphology import ball, disk, skeletonize, footprint_rectangle
+from skimage.morphology import skeletonize
 
 from porespy.generators import faces
 from porespy.filters import (
@@ -64,12 +63,6 @@ __all__ = [
 edt = get_edt()
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
-strel = {
-    2: {"min": disk(1), "max": footprint_rectangle((3, 3))},
-    3: {"min": ball(1), "max": footprint_rectangle((3, 3, 3))}
-}
-
-
 def porosity_by_type(im, conn='min'):
     r"""
     Computes different types of porosity in an image including total, closed, and
@@ -405,8 +398,9 @@ def porosity(im, mask=None, fill_closed=False, fill_surface=False):
         A flag to indicate if closed pores (not connected to any image boundary)
         should be filled or not before computing the porosity.
     fill_surface : bool (default = `False`)
-        A flag to indicate if surface pores connected only to one surface should be
-        filled or not before computing the porosity.
+        A flag to indicate if non-spanning pores with exactly one connected
+        boundary opening should be filled before computing the porosity. An
+        opening may wrap around an edge or corner; separate openings are retained.
 
     Returns
     -------
@@ -715,7 +709,7 @@ def chord_length_distribution(
     im : ndarray
         An image with chords drawn in the pore space, as produced by
         ``apply_chords`` or ``apply_chords_3d``.  ``im`` can be either boolean,
-        in which case each chord will be identified using ``scipy.ndimage.label``,
+        in which case each chord will be identified by connected-component labeling,
         or numerical values in case it is assumed that chords have already been
         identified and labeled. In both cases, the size of each chord will be
         computed as the number of voxels belonging to each labelled region.
@@ -1176,7 +1170,7 @@ def chord_counts(im):
     to view online example.
 
     """
-    labels, N = spim.label(im > 0)
+    labels, N = _label_components(im > 0, conn="min")
     props = regionprops(labels)
     chord_lens = np.array([i.filled_area for i in props], dtype=int)
     return chord_lens
@@ -1324,7 +1318,10 @@ def pc_map_to_pc_curve(
         Minimum and maximum values to clip the capillary pressures. This is useful
         if the minimum or maximum capillary pressure values are -/+ infinity, which
         means they do not show up when plotting.  Using `pc_min=1` and `pc_max=1e6`
-        for instance, will make plateaus render when plotting.
+        for instance, will make plateaus render when plotting. If a bound lies
+        outside the curve's pressure range, a constant-saturation plateau is added
+        at that bound. Lower bounds extend the start of drainage curves and the
+        end of imbibition curves; upper bounds extend the opposite end.
 
     Returns
     -------
@@ -1344,6 +1341,11 @@ def pc_map_to_pc_curve(
     To use this function with the results of `porosimetry` or `ibip` the sizes map
     must be converted to a capillary pressure map first.  `drainage` and `invasion`
     both return capillary pressure maps which can be passed directly as `pc`.
+
+    Clipping preserves event order and all saturation values. Events clipped to
+    the same pressure are retained, including those with different saturations
+    that form a vertical step. No padding is added for a bound already represented
+    in the clipped curve. Nonmonotone injection histories retain their order.
 
     Examples
     --------
@@ -1406,14 +1408,22 @@ def pc_map_to_pc_curve(
                 snwp = np.hstack((snwp, snwp[-1]))
 
     # Apply clipping to Pc values
-    if pc_min or pc_max:
+    if pc_min is not None or pc_max is not None:
         pcs = np.clip(pcs, a_min=pc_min, a_max=pc_max)
-        if pc_min and pcs.min() > pc_min:
-            pcs = np.hstack((pc_min, pcs))
-            snwp = np.hstack((snwp[0], snwp))
-        if pc_max and pcs.min() < pc_max:
-            pcs = np.hstack((pcs, pc_max))
-            snwp = np.hstack((snwp, snwp[-1]))
+        if pc_min is not None and pcs.min() > pc_min:
+            if mode.startswith("dr"):
+                pcs = np.hstack((pc_min, pcs))
+                snwp = np.hstack((snwp[0], snwp))
+            else:
+                pcs = np.hstack((pcs, pc_min))
+                snwp = np.hstack((snwp, snwp[-1]))
+        if pc_max is not None and pcs.max() < pc_max:
+            if mode.startswith("dr"):
+                pcs = np.hstack((pcs, pc_max))
+                snwp = np.hstack((snwp, snwp[-1]))
+            else:
+                pcs = np.hstack((pc_max, pcs))
+                snwp = np.hstack((snwp[0], snwp))
 
     results = Results()
     results.pc = pcs

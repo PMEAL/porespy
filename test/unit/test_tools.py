@@ -7,6 +7,7 @@ import scipy.ndimage as spim
 import scipy.spatial as sptl
 
 import porespy as ps
+from porespy.tools._label import _label_components
 
 edt = ps.tools.get_edt()
 ps.settings.tqdm['disable'] = True
@@ -41,6 +42,21 @@ class ToolsTest():
         im1 = np.pad(im, pad_width, mode="constant", constant_values=1)
         im2 = ps.tools.unpad(im1, pad_width)
         assert np.all(im == im2)
+
+    @pytest.mark.parametrize("ndim", [2, 3])
+    @pytest.mark.parametrize("conn", ["min", "max"])
+    def test_label_components_matches_scipy(self, ndim, conn):
+        rng = np.random.default_rng(0)
+        im = rng.random((10,) * ndim) > 0.7
+        rank = 1 if conn == "min" else ndim
+        structure = spim.generate_binary_structure(ndim, rank)
+        expected, N = spim.label(im, structure=structure)
+        actual, M = _label_components(im, conn=conn)
+        assert M == N
+        pairs = np.unique(np.column_stack((expected[im], actual[im])), axis=0)
+        assert pairs.shape[0] == N
+        assert np.unique(pairs[:, 0]).size == N
+        assert np.unique(pairs[:, 1]).size == N
 
     def test_unpad_int_padwidth(self):
         pad_width = 10
@@ -539,6 +555,37 @@ class ToolsTest():
         im = ps.tools._insert_disks_at_points(im=im, coords=c, radii=r, v=3,
                                               overwrite=True)
         assert im.max() == 3
+
+    @pytest.mark.parametrize(
+        "shape, coords",
+        [
+            ((31, 37), np.array([[0, 10, 30], [0, 18, 36]])),
+            ((19, 23, 17), np.array([[0, 9, 18], [0, 11, 22], [0, 8, 16]])),
+        ],
+    )
+    @pytest.mark.parametrize("smooth", [True, False])
+    @pytest.mark.parametrize("overwrite", [True, False])
+    def test_numba_insert_disks_parallel_matches_serial(
+        self, shape, coords, smooth, overwrite,
+    ):
+        radii = np.array([0, 3, 6])
+        expected = ps.tools._insert_disks_at_points_serial(
+            im=np.zeros(shape, dtype=int),
+            coords=coords,
+            radii=radii,
+            v=2,
+            smooth=smooth,
+            overwrite=overwrite,
+        )
+        actual = ps.tools._insert_disks_at_points_parallel(
+            im=np.zeros(shape, dtype=int),
+            coords=coords,
+            radii=radii,
+            v=2,
+            smooth=smooth,
+            overwrite=overwrite,
+        )
+        assert np.array_equal(actual, expected)
 
     def test_find_bbox_2D(self):
         temp = np.ones([50, 50], dtype=bool)

@@ -2,12 +2,12 @@ import inspect
 import logging
 
 import numpy as np
-import scipy.ndimage as spim
 from skimage.morphology import ball, cube
 from skimage.segmentation import find_boundaries
 
 from porespy.generators import borders
 from porespy.tools import get_tqdm, insert_cylinder, make_contiguous, overlay, settings
+from porespy.tools._label import _label_components
 
 __all__ = [
     "add_boundary_regions",
@@ -54,9 +54,9 @@ def map_to_regions(regions, values):
     values = np.array(values).flatten()
     if np.size(values) != regions.max():
         raise Exception('Number of values does not match number of regions')
-    im = np.zeros_like(regions)
-    im = values[regions-1]
-    im = im*(regions > 0)
+    im = np.zeros(regions.shape, dtype=values.dtype)
+    mask = regions > 0
+    im[mask] = values[regions[mask] - 1]
     return im
 
 
@@ -113,7 +113,10 @@ def add_boundary_regions(regions, pad_width=3):
     # Extract a mask of just the faces
     mask = borders(shape=face_regions.shape, mode='faces', thickness=t)
     # Relabel regions on faces
-    new_regions = spim.label(face_regions*mask)[0] + mx*(face_regions > 0)
+    new_regions = (
+        _label_components(face_regions*mask, conn="min")[0]
+        + mx*(face_regions > 0)
+    )
     new_regions[~mask] = regions.flatten()
     # Trim image down to user specified size
     s = tuple([slice(t-ax[0], -(t-ax[1]) or None) for ax in faces])

@@ -153,8 +153,8 @@ def snow2(
     peaks : ndarray, optional
         Optionally, it is possible to supply an array containing peaks, which
         are used as markers in the watershed segmentation. If a boolean array
-        is received (``True`` indicating peaks), then ``scipy.ndimage.label``
-        with cubic connectivity is used to label them. If an integer array is
+        is received (``True`` indicating peaks), then connected-component labeling
+        with cubic connectivity is used. If an integer array is
         received then it is assumed the peaks have already been labelled.
         This allows for comparison of peak finding algorithms for instance.
         If this argument is provided, then ``r_max`` and ``sigma`` are ignored
