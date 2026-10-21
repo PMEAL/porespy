@@ -7,7 +7,7 @@ porespy.metrics.chord_length_distribution
 
    :param im: An image with chords drawn in the pore space, as produced by
               ``apply_chords`` or ``apply_chords_3d``.  ``im`` can be either boolean,
-              in which case each chord will be identified using ``scipy.ndimage.label``,
+              in which case each chord will be identified by connected-component labeling,
               or numerical values in case it is assumed that chords have already been
               identified and labeled. In both cases, the size of each chord will be
               computed as the number of voxels belonging to each labelled region.

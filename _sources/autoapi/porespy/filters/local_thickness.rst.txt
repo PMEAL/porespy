@@ -1,7 +1,7 @@
 porespy.filters.local_thickness
 ===============================
 
-.. py:function:: porespy.filters.local_thickness(im: numpy.typing.NDArray, dt: numpy.typing.NDArray = None, method: Literal['bf', 'imj', 'conv', 'dt'] = 'dt', smooth: bool = True, mask: numpy.typing.NDArray = None, approx: bool = False, sizes: int = 25)
+.. py:function:: porespy.filters.local_thickness(im: numpy.typing.NDArray, dt: numpy.typing.NDArray = None, method: Literal['bf', 'conv', 'dt', 'legacy'] = 'bf', smooth: bool = True, mask: numpy.typing.NDArray = None, approx: bool = False, sizes: int = _DEFAULT_SIZES, return_indices: bool = False)
 
    Insert a maximally inscribed sphere at every pixel labelled by sphere radius
 
@@ -20,18 +20,17 @@ porespy.filters.local_thickness
                   'dt'     Uses distance transforms to perform erosion and dilation for each
                            radius in the image
                   'bf'     Uses brute-force to inserts spheres at each voxel
-                  'imj'    Uses the brute-force method but reduces the number of insertion
-                           sites by 80-90% to speed up the process
                   'conv'   Uses FFT-based convolution to perform erosion and dilation for
                            each radius in the image
+                  'legacy' Reproduces the former fractional-radius distance-transform method
                   ======== ===================================================================
    :type method: str
-   :param sizes: This is only used if the method is `dt` or `conv`. If a list of values is
-                 provided they are used directly. If a scalar is provided then that number
-                 of points spanning the min and max of the distance transform are used.
-                 If `None`, then all the unique values in the distance transform are used,
-                 which may become time consuming. This can be sped up if `dt` is provided
-                 and rounded to the nearest integer first.
+   :param sizes: The positive integer radii to evaluate. If an integer `N` is provided,
+                 up to `N` integer radii are selected at evenly spaced intervals between 1
+                 and ``floor(dt.max())``. If omitted or `None`, every integer radius in that
+                 range is used. For ``method='legacy'``, omitting this argument uses the
+                 former default of 25 logarithmically-spaced fractional radii; an explicit
+                 `None` uses all unique distance-transform values.
    :type sizes: array_like or scalar
    :param smooth: Indicates if protrusions should be removed from the faces of the spheres
                   or not. Default is `True`.
@@ -40,15 +39,17 @@ porespy.filters.local_thickness
                 which sites to insert spheres at. If not provided then all `True` values in
                 `im` are used.
    :type mask: ndarray, optional
-   :param approx: This is only used if the method is `imj`. If `True` the algorithm is more
-                  aggressive at skipping voxels to process, which speeds things up, but this
-                  sacrifices accuracy in terms of a voxel-by-voxel match with the reference
-                  implementation. The default is `False`, meaning full accuracy is the default.
+   :param approx: Retained for compatibility with `imj` and has no effect.
    :type approx: bool, optional
+   :param return_indices: If `True`, return ``(sizes, indices)`` instead of a float image, where
+                          ``sizes[indices]`` reconstructs the usual result. The index image uses
+                          the smallest suitable unsigned integer dtype. Default is `False`.
+   :type return_indices: bool, optional
 
    :returns: **lt** -- The local thickness of the image with each voxel labelled according to the
-             radius of the largest sphere which overlaps it.
-   :rtype: ndarray
+             radius of the largest sphere which overlaps it, or ``(sizes, indices)``
+             when `return_indices` is `True`.
+   :rtype: ndarray or tuple[ndarray, ndarray]
 
    .. rubric:: Examples
 

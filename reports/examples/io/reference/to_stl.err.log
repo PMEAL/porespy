@@ -15,7 +15,7 @@ Traceback (most recent call last):
   File "/home/runner/work/porespy/porespy/.venv/lib/python3.13/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
     return loop.run_until_complete(inner)
            ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
-  File "/home/runner/work/_temp/uv-python-dir/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/asyncio/base_events.py", line 726, in run_until_complete
+  File "/home/runner/work/_temp/uv-python-dir/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/asyncio/base_events.py", line 726, in run_until_complete
     return future.result()
            ~~~~~~~~~~~~~^^
   File "/home/runner/work/porespy/porespy/.venv/lib/python3.13/site-packages/nbclient/client.py", line 709, in async_execute
@@ -35,10 +35,10 @@ print(mesh)
 
 [31m---------------------------------------------------------------------------[39m
 [31mModuleNotFoundError[39m                       Traceback (most recent call last)
-[36mFile [39m[32m~/work/porespy/porespy/src/porespy/io/_stl.py:315[39m, in [36mto_stl[39m[34m(im, filename, voxel_size, method, fmt, remove_duplicates, tol)[39m
-[32m    314[39m [38;5;28;01mtry[39;00m:
-[32m--> [39m[32m315[39m     [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mtrimesh[39;00m
-[32m    316[39m [38;5;28;01mexcept[39;00m [38;5;167;01mModuleNotFoundError[39;00m:
+[36mFile [39m[32m~/work/porespy/porespy/src/porespy/io/_stl.py:338[39m, in [36mto_stl[39m[34m(im, filename, voxel_size, method, fmt, remove_duplicates, tol, close_faces)[39m
+[32m    337[39m [38;5;28;01mtry[39;00m:
+[32m--> [39m[32m338[39m     [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mtrimesh[39;00m
+[32m    339[39m [38;5;28;01mexcept[39;00m [38;5;167;01mModuleNotFoundError[39;00m:
 
 [31mModuleNotFoundError[39m: No module named 'trimesh'
 
@@ -49,12 +49,12 @@ During handling of the above exception, another exception occurred:
 [32m----> [39m[32m1[39m mesh = [43mps[49m[43m.[49m[43mio[49m[43m.[49m[43mto_stl[49m[43m([49m[43mim[49m[43m,[49m[43m [49m[43mfmt[49m[43m=[49m[33;43m'[39;49m[33;43mtrimesh[39;49m[33;43m'[39;49m[43m)[49m
 [32m      2[39m [38;5;28mprint[39m(mesh)
 
-[36mFile [39m[32m~/work/porespy/porespy/src/porespy/io/_stl.py:318[39m, in [36mto_stl[39m[34m(im, filename, voxel_size, method, fmt, remove_duplicates, tol)[39m
-[32m    316[39m     [38;5;28;01mexcept[39;00m [38;5;167;01mModuleNotFoundError[39;00m:
-[32m    317[39m         msg = [33m"[39m[33mtrimesh can be installed with pip install trimesh[39m[33m"[39m
-[32m--> [39m[32m318[39m         [38;5;28;01mraise[39;00m [38;5;167;01mModuleNotFoundError[39;00m(msg)
-[32m    319[39m     mesh = trimesh.Trimesh(vertices=v, faces=f, face_normals=n, process=[38;5;28;01mFalse[39;00m)
-[32m    320[39m [38;5;28;01melif[39;00m fmt == [33m'[39m[33mopen3d[39m[33m'[39m:
+[36mFile [39m[32m~/work/porespy/porespy/src/porespy/io/_stl.py:341[39m, in [36mto_stl[39m[34m(im, filename, voxel_size, method, fmt, remove_duplicates, tol, close_faces)[39m
+[32m    339[39m     [38;5;28;01mexcept[39;00m [38;5;167;01mModuleNotFoundError[39;00m:
+[32m    340[39m         msg = [33m"[39m[33mtrimesh can be installed with pip install trimesh[39m[33m"[39m
+[32m--> [39m[32m341[39m         [38;5;28;01mraise[39;00m [38;5;167;01mModuleNotFoundError[39;00m(msg)
+[32m    342[39m     mesh = trimesh.Trimesh(vertices=v, faces=f, face_normals=n, process=[38;5;28;01mFalse[39;00m)
+[32m    343[39m [38;5;28;01melif[39;00m fmt == [33m'[39m[33mopen3d[39m[33m'[39m:
 
 [31mModuleNotFoundError[39m: trimesh can be installed with pip install trimesh
 

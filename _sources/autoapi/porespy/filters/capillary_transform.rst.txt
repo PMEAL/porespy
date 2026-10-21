@@ -9,25 +9,27 @@ porespy.filters.capillary_transform
    :param im: A boolean image describing the porous medium with ``True`` values indicating
               the phase of interest.
    :type im: ndarray
-   :param dt: The distance transform of the void phase. If not provided it will be
-              calculated, so some time can be save if a pre-computed array is already
+   :param dt: The distance transform of the void phase, in voxels. If not provided it will
+              be calculated, so some time can be saved if a pre-computed array is already
               available.
    :type dt: ndarray, optional
-   :param sigma: The surface tension of the fluid-fluid interface.
+   :param sigma: The surface tension of the fluid-fluid interface, in N/m when using SI units.
    :type sigma: scalar (default = 1.0)
    :param theta: The contact angle of the fluid-fluid-solid system, in degrees, measured through
                  the non-wetting phase.  It must be >90.
    :type theta: scalar (default = 180)
-   :param g: The gravitational constant acting on the fluids. Gravity is assumed to act
-             toward the x=0 axis. To have gravity act in different directions use
-             `np.swapaxes(im, 0, ax)` where `ax` is the desired direction.
+   :param g: The gravitational acceleration acting on the fluids, in m/s^2 when using SI
+             units. Gravity is assumed to act toward index 0 along axis 0. To have gravity
+             act along a different axis use `np.swapaxes(im, 0, ax)` where `ax` is the
+             desired axis, and swap the same axes of `dt` if it is supplied.
    :type g: scalar (default = 0)
-   :param rho_nwp: The density of the non-wetting fluid
+   :param rho_nwp: The density of the non-wetting fluid, in kg/m^3 when using SI units.
    :type rho_nwp: scalar
-   :param rho_wp: The density of the wetting fluid
+   :param rho_wp: The density of the wetting fluid, in kg/m^3 when using SI units.
    :type rho_wp: scalar
-   :param voxel_size: The resolution of the image
-   :type voxel_size: scalar (default = 0.0)
+   :param voxel_size: The physical distance between adjacent voxel centers, in m when using SI
+                      units.
+   :type voxel_size: scalar (default = 1.0)
    :param spacing: If a 2D image is provided, this value is used to compute the second
                    radii of curvature.  Setting it to `np.inf` will make the calculation truly
                    2D since only one radii of curvature is considered. Setting it to `None`
@@ -35,10 +37,19 @@ porespy.filters.capillary_transform
                    ignored.  This should be in units of physical length, not voxels.
    :type spacing: scalar (default = None)
 
+   :returns: **pc** -- The capillary pressure including the gravity correction, in Pa when using SI
+             units.
+   :rtype: ndarray
+
    .. rubric:: Notes
 
    All physical properties should be in self-consistent units, and it is strongly
    recommended to use SI for everything.
+
+   The gravity correction is ``(rho_nwp - rho_wp) * g * h``, where voxel centers
+   along axis 0 have heights ``h[i] = i * voxel_size``. The first voxel center is
+   the zero-height reference, so the last center is at
+   ``(im.shape[0] - 1) * voxel_size``. A singleton axis has zero height.
 
    .. rubric:: Examples
 

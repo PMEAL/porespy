@@ -432,7 +432,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../filters/local_thickness_bf.html">porespy.filters.local_thickness_bf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/local_thickness_conv.html">porespy.filters.local_thickness_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/local_thickness_dt.html">porespy.filters.local_thickness_dt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../filters/local_thickness_imj.html">porespy.filters.local_thickness_imj</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/nl_means_layered.html">porespy.filters.nl_means_layered</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/nphase_border.html">porespy.filters.nphase_border</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/pc_to_satn.html">porespy.filters.pc_to_satn</a></li>
@@ -572,7 +571,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_conv.html">porespy.simulations.drainage_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt.html">porespy.simulations.drainage_dt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt_conv.html">porespy.simulations.drainage_dt_conv</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/hg_porosimetry.html">porespy.simulations.hg_porosimetry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/ibip.html">porespy.simulations.ibip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition.html">porespy.simulations.imbibition</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_bf.html">porespy.simulations.imbibition_bf</a></li>
@@ -743,8 +741,8 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="dict_to_vtk.html#porespy.io.dict_to_vtk" title="porespy.io.dict_to_vtk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict_to_vtk</span></code></a>(data, filename[, voxel_size, origin])</p></td>
 <td><p>Accepts multiple images as a dictionary and compiles them into a vtk file</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="folder_to_stack.html#porespy.io.folder_to_stack" title="porespy.io.folder_to_stack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">folder_to_stack</span></code></a>(target_dir)</p></td>
-<td><p>Opens all images found in the target directory as single 3D numpy array</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="folder_to_stack.html#porespy.io.folder_to_stack" title="porespy.io.folder_to_stack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">folder_to_stack</span></code></a>(target_dir, *[, max_bytes])</p></td>
+<td><p>Read a folder of 2D grayscale images into one 3D array.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="from_stl.html#porespy.io.from_stl" title="porespy.io.from_stl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_stl</span></code></a>(stl_path[, method, density, fill_holes])</p></td>
 <td><p>Converts an STL file to a boolean array</p></td>
@@ -761,8 +759,8 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="to_vtk.html#porespy.io.to_vtk" title="porespy.io.to_vtk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_vtk</span></code></a>(im, filename[, divide, downsample, voxel_size, vox])</p></td>
 <td><p>Converts an array to a vtk file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="zip_to_stack.html#porespy.io.zip_to_stack" title="porespy.io.zip_to_stack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zip_to_stack</span></code></a>(f)</p></td>
-<td><p>Reads a zip file containing 2D slices of a 3D image, and converts to a 3D stack</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="zip_to_stack.html#porespy.io.zip_to_stack" title="porespy.io.zip_to_stack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zip_to_stack</span></code></a>(f, *[, max_bytes])</p></td>
+<td><p>Read a ZIP of 2D grayscale image slices into one 3D array.</p></td>
 </tr>
 </tbody>
 </table>

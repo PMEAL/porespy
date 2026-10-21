@@ -432,7 +432,6 @@
 <li class="toctree-l2"><a class="reference internal" href="local_thickness_bf.html">porespy.filters.local_thickness_bf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="local_thickness_conv.html">porespy.filters.local_thickness_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="local_thickness_dt.html">porespy.filters.local_thickness_dt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="local_thickness_imj.html">porespy.filters.local_thickness_imj</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nl_means_layered.html">porespy.filters.nl_means_layered</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nphase_border.html">porespy.filters.nphase_border</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pc_to_satn.html">porespy.filters.pc_to_satn</a></li>
@@ -572,7 +571,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_conv.html">porespy.simulations.drainage_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt.html">porespy.simulations.drainage_dt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt_conv.html">porespy.simulations.drainage_dt_conv</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/hg_porosimetry.html">porespy.simulations.hg_porosimetry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/ibip.html">porespy.simulations.ibip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition.html">porespy.simulations.imbibition</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_bf.html">porespy.simulations.imbibition_bf</a></li>
@@ -784,7 +782,7 @@ in 3D.</p></td>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>’labels’</p></td>
-<td><p>Uses <cite>scipy.ndimage.label</cite> to find all clusters of invading phase
+<td><p>Uses connected-component labeling to find all clusters of invading phase
 connected to the outlet at each value of sequence found on the
 outlet face. This method is faster if <cite>ibop</cite> was used for the
 simulation.</p></td>
@@ -801,7 +799,8 @@ to find all trapped voxels. This method is faster if <cite>ibip</cite> or
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>trapped</strong> – A boolean mask indicating which voxels were found to be trapped.</p>
+<dd class="field-even"><p><strong>trapped</strong> – A boolean mask with the same shape as <cite>im</cite>, indicating which voxels
+were found to be trapped.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>

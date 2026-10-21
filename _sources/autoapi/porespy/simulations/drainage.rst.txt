@@ -1,7 +1,7 @@
 porespy.simulations.drainage
 ============================
 
-.. py:function:: porespy.simulations.drainage(im: numpy.typing.NDArray, pc: numpy.typing.NDArray = None, dt: numpy.typing.NDArray = None, inlets: numpy.typing.NDArray = None, outlets: numpy.typing.NDArray = None, residual: numpy.typing.NDArray = None, steps: int = None, conn: Literal['min', 'max'] = 'min', min_size: int = 0, smooth: bool = True)
+.. py:function:: porespy.simulations.drainage(im: numpy.typing.NDArray, pc: numpy.typing.NDArray = None, dt: numpy.typing.NDArray = None, inlets: numpy.typing.NDArray = None, outlets: numpy.typing.NDArray = None, residual: numpy.typing.NDArray = None, steps: int = 25, conn: Literal['min', 'max'] = 'min', min_size: int = 0, smooth: bool = True)
 
    Simulate drainage using image-based sphere insertion, optionally including
    gravity [1]_.
@@ -30,6 +30,11 @@ porespy.simulations.drainage
                     that would otherwise be removed. The residual phase is indicated
                     in the capillary pressure map by ``-np.inf`` values, since these voxels
                     are invaded at all applied capillary pressures.
+                    Residual blobs remain at their supplied locations and carry inlet access
+                    once reached by connected invading phase. Reconnection is repeated at
+                    each pressure until no additional sphere centers become accessible. With
+                    outlets, defending-phase trapping is checked before invasion and between
+                    reconnection rounds; trapped defender cannot initiate or carry growth.
    :type residual: ndarray, optional
    :param steps: The range of pressures to apply. If an integer is given then the given
                  number of steps will be created between the lowest and highest values in
@@ -86,6 +91,15 @@ porespy.simulations.drainage
                           value of capillary pressure (``pc``).
              ============ ===============================================================
    :rtype: Results object
+
+   .. rubric:: Notes
+
+   When both residual and outlets are supplied, all newly accessible centers in
+   a reconnection round invade as one batch. Trapping is then updated on the
+   remaining defending phase before the next round. All rounds at the same
+   applied pressure share one invasion sequence event. Lack of inlet access
+   alone does not imply defending-phase trapping, and accepted invasion is
+   never reclassified as trapped defending phase.
 
    .. rubric:: References
 

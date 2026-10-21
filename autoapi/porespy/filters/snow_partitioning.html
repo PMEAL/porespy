@@ -432,7 +432,6 @@
 <li class="toctree-l2"><a class="reference internal" href="local_thickness_bf.html">porespy.filters.local_thickness_bf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="local_thickness_conv.html">porespy.filters.local_thickness_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="local_thickness_dt.html">porespy.filters.local_thickness_dt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="local_thickness_imj.html">porespy.filters.local_thickness_imj</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nl_means_layered.html">porespy.filters.nl_means_layered</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nphase_border.html">porespy.filters.nphase_border</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pc_to_satn.html">porespy.filters.pc_to_satn</a></li>
@@ -572,7 +571,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_conv.html">porespy.simulations.drainage_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt.html">porespy.simulations.drainage_dt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt_conv.html">porespy.simulations.drainage_dt_conv</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/hg_porosimetry.html">porespy.simulations.hg_porosimetry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/ibip.html">porespy.simulations.ibip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition.html">porespy.simulations.imbibition</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_bf.html">porespy.simulations.imbibition_bf</a></li>
@@ -758,8 +756,8 @@ which is useful if a distance transform is supplied as the <code class="docutils
 argument that has already been processed.</p></li>
 <li><p><strong>peaks</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – Optionally, it is possible to supply an array containing peaks, which
 are used as markers in the watershed segmentation. If a boolean array
-is received (<code class="docutils literal notranslate"><span class="pre">True</span></code> indicating peaks), then <code class="docutils literal notranslate"><span class="pre">scipy.ndimage.label</span></code>
-with cubic connectivity is used to label them. If an integer array is
+is received (<code class="docutils literal notranslate"><span class="pre">True</span></code> indicating peaks), then connected-component labeling
+with cubic connectivity is used. If an integer array is
 received then it is assumed the peaks have already been labelled.
 This allows for comparison of peak finding algorithms for instance.
 If this argument is provided, then <code class="docutils literal notranslate"><span class="pre">r_max</span></code> and <code class="docutils literal notranslate"><span class="pre">sigma</span></code> are ignored

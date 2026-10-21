@@ -432,7 +432,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../filters/local_thickness_bf.html">porespy.filters.local_thickness_bf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/local_thickness_conv.html">porespy.filters.local_thickness_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/local_thickness_dt.html">porespy.filters.local_thickness_dt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../filters/local_thickness_imj.html">porespy.filters.local_thickness_imj</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/nl_means_layered.html">porespy.filters.nl_means_layered</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/nphase_border.html">porespy.filters.nphase_border</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/pc_to_satn.html">porespy.filters.pc_to_satn</a></li>
@@ -572,7 +571,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_conv.html">porespy.simulations.drainage_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt.html">porespy.simulations.drainage_dt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt_conv.html">porespy.simulations.drainage_dt_conv</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/hg_porosimetry.html">porespy.simulations.hg_porosimetry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/ibip.html">porespy.simulations.ibip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition.html">porespy.simulations.imbibition</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_bf.html">porespy.simulations.imbibition_bf</a></li>
@@ -739,13 +737,13 @@
 <h1>porespy.io.to_stl<a class="headerlink" href="#porespy-io-to-stl" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.io.to_stl">
-<span class="sig-prename descclassname"><span class="pre">porespy.io.</span></span><span class="sig-name descname"><span class="pre">to_stl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'direct'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'openstl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_duplicates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#porespy.io.to_stl" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">porespy.io.</span></span><span class="sig-name descname"><span class="pre">to_stl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'direct'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'openstl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_duplicates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">close_faces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#porespy.io.to_stl" title="Link to this definition">#</a></dt>
 <dd><p>Converts an voxel image to an STL mesh in a variety of formats</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>im</strong> (<em>3D image</em>) – The image of the porous material</p></li>
-<li><p><strong>voxel_size</strong> (<em>int</em>) – The side length of the voxels (voxels  are cubic)</p></li>
+<li><p><strong>voxel_size</strong> (<em>float</em>) – The side length of the voxels (voxels are cubic)</p></li>
 <li><p><strong>method</strong> (<em>str</em>) – <p>Can be one of the options listed below:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
@@ -778,10 +776,28 @@ approach, but this is due to last information.</p></td>
 <li><p>’meshio’ (not automatically installed with PoreSpy)</p></li>
 </ul>
 </p></li>
+<li><p><strong>close_faces</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite> (default), cap the selected phase where it meets the image
+boundary. If <cite>False</cite>, return only interfaces between <cite>True</cite> and
+<cite>False</cite> regions inside the image, treating the exterior as unknown.
+Uniform images return an empty mesh in open mode.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">close_faces=False</span></code>, interfaces that reach the crop boundary remain
+open. Such meshes may not be watertight, so volume calculations require
+additional assumptions. Downstream smoothing may need to pin boundary
+vertices to prevent the interface from retracting.</p>
+<p>Coordinates follow the image axis order and are scaled by <cite>voxel_size</cite>.
+The direct method places voxel corners at integer coordinates, spanning
+0 to <code class="docutils literal notranslate"><span class="pre">im.shape</span></code> before scaling. Marching cubes retains the historical
+padding offset: original voxel samples are at coordinates 1 through
+<code class="docutils literal notranslate"><span class="pre">im.shape</span></code>. In open mode it extracts only within that sampling domain,
+so its boundary lies half a voxel inward from the closed caps. The flag
+does not translate internal geometry. The methods have different
+discretizations and need not give the same interfacial area.
+Open marching cubes returns an empty mesh when any axis has fewer than
+two samples, since there are no three-dimensional sampling cells.</p>
 <p>The <cite>openstl</cite> package has the fastest read/write performance. It
 uses a basic numpy array of shape <cite>[N, 4, 3]</cite>. <cite>N</cite> is the number of
 triangles, <cite>4</cite> refers to <cite>norms, vert1, vert2, vert3</cite>, where <cite>norms</cite> and

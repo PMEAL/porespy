@@ -17,8 +17,8 @@ porespy.filters.snow_partitioning_n
    :type sigma: scalar
    :param peaks: Optionally, it is possible to supply an array containing peaks, which
                  are used as markers in the watershed segmentation. Must be a boolean
-                 array with ``True`` indicating peaks; ``scipy.ndimage.label``
-                 with cubic connectivity is used to label them. If this argument is
+                 array with ``True`` indicating peaks; connected-component labeling
+                 with cubic connectivity is used. If this argument is
                  provided then ``r_max`` and ``sigma`` are ignored, since these are
                  specfically used in the peak finding process.
    :type peaks: ndarray, optional

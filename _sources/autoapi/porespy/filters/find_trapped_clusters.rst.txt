@@ -36,7 +36,7 @@ porespy.filters.find_trapped_clusters
                   ========= ==================================================================
                   Option    Description
                   ========= ==================================================================
-                  'labels'  Uses `scipy.ndimage.label` to find all clusters of invading phase
+                  'labels'  Uses connected-component labeling to find all clusters of invading phase
                             connected to the outlet at each value of sequence found on the
                             outlet face. This method is faster if `ibop` was used for the
                             simulation.
@@ -46,7 +46,8 @@ porespy.filters.find_trapped_clusters
                   ========= ==================================================================
    :type method: str
 
-   :returns: **trapped** -- A boolean mask indicating which voxels were found to be trapped.
+   :returns: **trapped** -- A boolean mask with the same shape as `im`, indicating which voxels
+             were found to be trapped.
    :rtype: ndarray
 
    .. rubric:: Examples

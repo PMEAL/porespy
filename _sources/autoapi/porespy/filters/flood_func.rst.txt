@@ -14,7 +14,7 @@ porespy.filters.flood_func
                 `amax`, `sum`, `mean`, `median`, etc.
    :type func: Numpy function handle
    :param labels: An array containing labels identifying each individual region to be
-                  flooded. If not provided then `scipy.ndimage.label` is applied to
+                  flooded. If not provided then connected-component labeling is applied to
                   `im > 0`.
    :type labels: ndarray
 

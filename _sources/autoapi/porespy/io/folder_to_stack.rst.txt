@@ -1,18 +1,37 @@
 porespy.io.folder_to_stack
 ==========================
 
-.. py:function:: porespy.io.folder_to_stack(target_dir)
+.. py:function:: porespy.io.folder_to_stack(target_dir, *, max_bytes=None)
 
-   Opens all images found in the target directory as single 3D numpy array
+   Read a folder of 2D grayscale images into one 3D array.
 
-   :param target_dir: The location of the folder containing the images.
+   :param target_dir: Folder containing the image slices. Subfolders are not searched.
    :type target_dir: str or path object
+   :param max_bytes: Maximum size in bytes of the returned array. The image headers are
+                     checked before allocating the array or decoding pixels. This does not
+                     include the memory needed to decode an individual slice. By default,
+                     no limit is imposed.
+   :type max_bytes: int, optional
 
-   :returns: **im** -- A 3D numpy array of the imported image.
+   :returns: **im** -- Array with shape ``(rows, columns, number_of_slices)`` and the slices'
+             original dtype and values.
    :rtype: ndarray
+
+   :raises ValueError: If no supported images are found, a slice cannot be read, the slices
+       are not 2D or have differing shapes or dtypes, filenames have ambiguous
+       ordering, or the array exceeds ``max_bytes``.
 
    .. rubric:: Notes
 
-   The files should be named with leading numerical values indicating their
-   layer number, like 001, 002, etc.
+   Images are sorted by filename in case-insensitive natural order: ``slice2``
+   precedes ``slice10``. Zero-padded names such as ``001.tif`` also work.
+   Names equivalent under this ordering, such as ``1.tif`` and ``01.tif``,
+   are rejected. Missing sequence numbers are not filled or inferred.
+
+   TIFF, PNG, JPEG, BMP, GIF, PBM, PGM, PNM and WebP extensions are recognized;
+   the corresponding imageio decoder must be installed. Color images and
+   multi-page images are rejected. Hidden files, subfolders and files with
+   other extensions are ignored. Symbolic links to images are rejected.
+
+   .. seealso:: :py:obj:`zip_to_stack`
 

@@ -432,7 +432,6 @@
 <li class="toctree-l2"><a class="reference internal" href="local_thickness_bf.html">porespy.filters.local_thickness_bf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="local_thickness_conv.html">porespy.filters.local_thickness_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="local_thickness_dt.html">porespy.filters.local_thickness_dt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="local_thickness_imj.html">porespy.filters.local_thickness_imj</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nl_means_layered.html">porespy.filters.nl_means_layered</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nphase_border.html">porespy.filters.nphase_border</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pc_to_satn.html">porespy.filters.pc_to_satn</a></li>
@@ -572,7 +571,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_conv.html">porespy.simulations.drainage_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt.html">porespy.simulations.drainage_dt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt_conv.html">porespy.simulations.drainage_dt_conv</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/hg_porosimetry.html">porespy.simulations.hg_porosimetry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/ibip.html">porespy.simulations.ibip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition.html">porespy.simulations.imbibition</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_bf.html">porespy.simulations.imbibition_bf</a></li>
@@ -747,7 +745,8 @@
 <li><p><strong>im</strong> (<em>ndarray</em>) – An image of the porous material with void marked as <cite>True</cite>.</p></li>
 <li><p><strong>spacing</strong> (<em>int</em>) – Separation between chords.  The default is 1 voxel.  This can be
 decreased to 0, meaning that the chords all touch each other,
-which automatically sets to the <cite>label</cite> argument to <cite>True</cite>.</p></li>
+which automatically sets the <cite>label</cite> argument to <cite>True</cite>. The option
+<code class="docutils literal notranslate"><span class="pre">spacing=0</span></code> is deprecated and will be removed in a future release.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em> (</em><em>default = 0</em><em>)</em>) – The axis along which the chords are drawn.</p></li>
 <li><p><strong>trim_edges</strong> (bool (default = <cite>True</cite>)) – Whether or not to remove chords that touch the edges of the image.
 These chords are artifically shortened, so skew the chord length

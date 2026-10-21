@@ -19,8 +19,9 @@ porespy.metrics.porosity
    :param fill_closed: A flag to indicate if closed pores (not connected to any image boundary)
                        should be filled or not before computing the porosity.
    :type fill_closed: bool (default = `False`)
-   :param fill_surface: A flag to indicate if surface pores connected only to one surface should be
-                        filled or not before computing the porosity.
+   :param fill_surface: A flag to indicate if non-spanning pores with exactly one connected
+                        boundary opening should be filled before computing the porosity. An
+                        opening may wrap around an edge or corner; separate openings are retained.
    :type fill_surface: bool (default = `False`)
 
    :returns: **porosity** -- Calculated as the sum of all 1's divided by the sum of all 1's and 0's.

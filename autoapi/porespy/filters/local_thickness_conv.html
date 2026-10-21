@@ -432,7 +432,6 @@
 <li class="toctree-l2"><a class="reference internal" href="local_thickness_bf.html">porespy.filters.local_thickness_bf</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">porespy.filters.local_thickness_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="local_thickness_dt.html">porespy.filters.local_thickness_dt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="local_thickness_imj.html">porespy.filters.local_thickness_imj</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nl_means_layered.html">porespy.filters.nl_means_layered</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nphase_border.html">porespy.filters.nphase_border</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pc_to_satn.html">porespy.filters.pc_to_satn</a></li>
@@ -572,7 +571,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_conv.html">porespy.simulations.drainage_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt.html">porespy.simulations.drainage_dt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt_conv.html">porespy.simulations.drainage_dt_conv</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/hg_porosimetry.html">porespy.simulations.hg_porosimetry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/ibip.html">porespy.simulations.ibip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition.html">porespy.simulations.imbibition</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_bf.html">porespy.simulations.imbibition_bf</a></li>
@@ -739,7 +737,7 @@
 <h1>porespy.filters.local_thickness_conv<a class="headerlink" href="#porespy-filters-local-thickness-conv" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.local_thickness_conv">
-<span class="sig-prename descclassname"><span class="pre">porespy.filters.</span></span><span class="sig-name descname"><span class="pre">local_thickness_conv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sizes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#porespy.filters.local_thickness_conv" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">porespy.filters.</span></span><span class="sig-name descname"><span class="pre">local_thickness_conv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sizes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#porespy.filters.local_thickness_conv" title="Link to this definition">#</a></dt>
 <dd><p>Calculates the radius of the largest sphere that overlaps each voxel while
 fitting entirely within the void space.</p>
 <dl class="field-list simple">
@@ -750,20 +748,20 @@ fitting entirely within the void space.</p>
 but providing it saves time. Note that rounding and/or converting the values
 to integers and using <cite>sizes=None</cite> can save time by limiting the number of
 sizes that are used.</p></li>
-<li><p><strong>sizes</strong> (<em>array_like</em><em> or </em><em>scalar</em>) – The sizes to insert. If a list of values is provided they are
-used directly. If a scalar is provided then that number of points
-spanning the min and max of the distance transform are used. If <cite>None</cite>, the
-all the unique values in the distance transform are used, which may become
-time consuming.</p></li>
+<li><p><strong>sizes</strong> (<em>array_like</em><em> or </em><em>scalar</em>) – The positive integer radii to evaluate. An integer <cite>N</cite> selects up to <cite>N</cite>
+evenly spaced integer radii between 1 and <code class="docutils literal notranslate"><span class="pre">floor(dt.max())</span></code>. If <cite>None</cite>,
+every integer radius in that range is used.</p></li>
 <li><p><strong>smooth</strong> (<em>bool</em><em>, </em><em>optional</em>) – Indicates if protrusions should be removed from the faces of the spheres
 or not. Default is <cite>True</cite>.</p></li>
+<li><p><strong>return_indices</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, return <code class="docutils literal notranslate"><span class="pre">(sizes,</span> <span class="pre">indices)</span></code> instead of a float image, where
+<code class="docutils literal notranslate"><span class="pre">sizes[indices]</span></code> reconstructs the usual result. Default is <cite>False</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>image</strong> – A copy of <cite>im</cite> with the pore size values in each voxel</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray</p>
+<dd class="field-odd"><p>ndarray or tuple[ndarray, ndarray]</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>

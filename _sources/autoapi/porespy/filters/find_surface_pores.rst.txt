@@ -3,7 +3,7 @@ porespy.filters.find_surface_pores
 
 .. py:function:: porespy.filters.find_surface_pores(im: numpy.typing.NDArray, axis: int = None, conn: Literal['max', 'min'] = 'min')
 
-   Finds surface pores that do not span the domain
+   Finds pores with one connected opening on the image boundary
 
    :param im: A boolean array with `True` indicating the phase of interest
    :type im: ndarray
@@ -19,6 +19,18 @@ porespy.filters.find_surface_pores
    :returns: **surface** -- A array containing boolean values indicating voxels which belong to surface
              pores.
    :rtype: ndarray
+
+   .. rubric:: Notes
+
+   A surface pore has exactly one connected component when restricted to the
+   exterior faces of the image, and does not span opposite faces along any of
+   the requested axes. The same connectivity is used in the full image and on
+   its boundary. This allows a single opening to wrap around an edge or corner.
+   A tunnel with separate openings is not a surface pore, even if its openings
+   lie on adjacent faces or on the same face. Closed pores are also excluded.
+
+   All exterior faces are used to count openings. The ``axis`` argument only
+   controls which directions are checked for spanning paths.
 
    .. rubric:: Examples
 

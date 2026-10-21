@@ -432,7 +432,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../filters/local_thickness_bf.html">porespy.filters.local_thickness_bf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/local_thickness_conv.html">porespy.filters.local_thickness_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/local_thickness_dt.html">porespy.filters.local_thickness_dt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../filters/local_thickness_imj.html">porespy.filters.local_thickness_imj</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/nl_means_layered.html">porespy.filters.nl_means_layered</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/nphase_border.html">porespy.filters.nphase_border</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/pc_to_satn.html">porespy.filters.pc_to_satn</a></li>
@@ -572,7 +571,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_conv.html">porespy.simulations.drainage_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt.html">porespy.simulations.drainage_dt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt_conv.html">porespy.simulations.drainage_dt_conv</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/hg_porosimetry.html">porespy.simulations.hg_porosimetry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/ibip.html">porespy.simulations.ibip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition.html">porespy.simulations.imbibition</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_bf.html">porespy.simulations.imbibition_bf</a></li>
@@ -739,22 +737,44 @@
 <h1>porespy.io.folder_to_stack<a class="headerlink" href="#porespy-io-folder-to-stack" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.io.folder_to_stack">
-<span class="sig-prename descclassname"><span class="pre">porespy.io.</span></span><span class="sig-name descname"><span class="pre">folder_to_stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#porespy.io.folder_to_stack" title="Link to this definition">#</a></dt>
-<dd><p>Opens all images found in the target directory as single 3D numpy array</p>
+<span class="sig-prename descclassname"><span class="pre">porespy.io.</span></span><span class="sig-name descname"><span class="pre">folder_to_stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_dir</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bytes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#porespy.io.folder_to_stack" title="Link to this definition">#</a></dt>
+<dd><p>Read a folder of 2D grayscale images into one 3D array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>target_dir</strong> (<em>str</em><em> or </em><em>path object</em>) – The location of the folder containing the images.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_dir</strong> (<em>str</em><em> or </em><em>path object</em>) – Folder containing the image slices. Subfolders are not searched.</p></li>
+<li><p><strong>max_bytes</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum size in bytes of the returned array. The image headers are
+checked before allocating the array or decoding pixels. This does not
+include the memory needed to decode an individual slice. By default,
+no limit is imposed.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>im</strong> – A 3D numpy array of the imported image.</p>
+<dd class="field-even"><p><strong>im</strong> – Array with shape <code class="docutils literal notranslate"><span class="pre">(rows,</span> <span class="pre">columns,</span> <span class="pre">number_of_slices)</span></code> and the slices’
+original dtype and values.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If no supported images are found, a slice cannot be read, the slices
+are not 2D or have differing shapes or dtypes, filenames have ambiguous
+ordering, or the array exceeds <code class="docutils literal notranslate"><span class="pre">max_bytes</span></code>.</p>
+</dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The files should be named with leading numerical values indicating their
-layer number, like 001, 002, etc.</p>
+<p>Images are sorted by filename in case-insensitive natural order: <code class="docutils literal notranslate"><span class="pre">slice2</span></code>
+precedes <code class="docutils literal notranslate"><span class="pre">slice10</span></code>. Zero-padded names such as <code class="docutils literal notranslate"><span class="pre">001.tif</span></code> also work.
+Names equivalent under this ordering, such as <code class="docutils literal notranslate"><span class="pre">1.tif</span></code> and <code class="docutils literal notranslate"><span class="pre">01.tif</span></code>,
+are rejected. Missing sequence numbers are not filled or inferred.</p>
+<p>TIFF, PNG, JPEG, BMP, GIF, PBM, PGM, PNM and WebP extensions are recognized;
+the corresponding imageio decoder must be installed. Color images and
+multi-page images are rejected. Hidden files, subfolders and files with
+other extensions are ignored. Symbolic links to images are rejected.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="zip_to_stack.html#porespy.io.zip_to_stack" title="porespy.io.zip_to_stack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zip_to_stack</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

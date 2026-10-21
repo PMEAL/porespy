@@ -1,7 +1,7 @@
 porespy.filters.local_thickness_dt
 ==================================
 
-.. py:function:: porespy.filters.local_thickness_dt(im: numpy.typing.NDArray, dt: numpy.typing.NDArray = None, sizes: int = 25, smooth: bool = True)
+.. py:function:: porespy.filters.local_thickness_dt(im: numpy.typing.NDArray, dt: numpy.typing.NDArray = None, sizes: int = None, smooth: bool = True, return_indices: bool = False)
 
    Calculates the radius of the largest sphere that overlaps each voxel while
    fitting entirely within the void space.
@@ -13,18 +13,19 @@ porespy.filters.local_thickness_dt
               to integers and using `sizes=None` can save time by limiting the number of
               sizes that are used.
    :type dt: ndarray
-   :param sizes: The sizes to insert. If a list of values is provided they are
-                 used directly. If a scalar is provided then that number of points
-                 spanning the min and max of the distance transform are used. If `None`, then
-                 all the unique values in the distance transform are used, which may become
-                 time consuming.
+   :param sizes: The positive integer radii to evaluate. An integer `N` selects up to `N`
+                 evenly spaced integer radii between 1 and ``floor(dt.max())``. If `None`,
+                 every integer radius in that range is used.
    :type sizes: array_like or scalar
    :param smooth: Indicates if protrusions should be removed from the faces of the spheres
                   or not. Default is `True`.
    :type smooth: bool, optional
+   :param return_indices: If `True`, return ``(sizes, indices)`` instead of a float image, where
+                          ``sizes[indices]`` reconstructs the usual result. Default is `False`.
+   :type return_indices: bool, optional
 
    :returns: **image** -- A copy of `im` with the pore size values in each voxel
-   :rtype: ndarray
+   :rtype: ndarray or tuple[ndarray, ndarray]
 
    .. rubric:: Examples
 

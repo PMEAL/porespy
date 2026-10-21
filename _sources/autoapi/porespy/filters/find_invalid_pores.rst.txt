@@ -16,9 +16,16 @@ porespy.filters.find_invalid_pores
                 considered connected.
    :type conn: str
 
-   :returns: **invalid** -- A array containing `1` indicated closed pores and `2` indicating surface
-             pores.
+   :returns: **invalid** -- An array containing `1` indicating closed pores and `2` indicating
+             surface-connected nonpercolating pores, including tunnels with multiple
+             boundary openings. Solid voxels and percolating pores are `0`.
    :rtype: ndarray
+
+   .. rubric:: Notes
+
+   Unlike `find_surface_pores`, this function includes nonpercolating clusters
+   with multiple boundary openings, so `fill_invalid_pores` removes all pores
+   that do not span the domain along the requested axes.
 
    .. rubric:: Examples
 

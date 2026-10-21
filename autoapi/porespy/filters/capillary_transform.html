@@ -432,7 +432,6 @@
 <li class="toctree-l2"><a class="reference internal" href="local_thickness_bf.html">porespy.filters.local_thickness_bf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="local_thickness_conv.html">porespy.filters.local_thickness_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="local_thickness_dt.html">porespy.filters.local_thickness_dt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="local_thickness_imj.html">porespy.filters.local_thickness_imj</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nl_means_layered.html">porespy.filters.nl_means_layered</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nphase_border.html">porespy.filters.nphase_border</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pc_to_satn.html">porespy.filters.pc_to_satn</a></li>
@@ -572,7 +571,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_conv.html">porespy.simulations.drainage_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt.html">porespy.simulations.drainage_dt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt_conv.html">porespy.simulations.drainage_dt_conv</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/hg_porosimetry.html">porespy.simulations.hg_porosimetry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/ibip.html">porespy.simulations.ibip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition.html">porespy.simulations.imbibition</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_bf.html">porespy.simulations.imbibition_bf</a></li>
@@ -747,18 +745,20 @@ transform.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>im</strong> (<em>ndarray</em>) – A boolean image describing the porous medium with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating
 the phase of interest.</p></li>
-<li><p><strong>dt</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – The distance transform of the void phase. If not provided it will be
-calculated, so some time can be save if a pre-computed array is already
+<li><p><strong>dt</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – The distance transform of the void phase, in voxels. If not provided it will
+be calculated, so some time can be saved if a pre-computed array is already
 available.</p></li>
-<li><p><strong>sigma</strong> (<em>scalar</em><em> (</em><em>default = 1.0</em><em>)</em>) – The surface tension of the fluid-fluid interface.</p></li>
+<li><p><strong>sigma</strong> (<em>scalar</em><em> (</em><em>default = 1.0</em><em>)</em>) – The surface tension of the fluid-fluid interface, in N/m when using SI units.</p></li>
 <li><p><strong>theta</strong> (<em>scalar</em><em> (</em><em>default = 180</em><em>)</em>) – The contact angle of the fluid-fluid-solid system, in degrees, measured through
 the non-wetting phase.  It must be &gt;90.</p></li>
-<li><p><strong>g</strong> (<em>scalar</em><em> (</em><em>default = 0</em><em>)</em>) – The gravitational constant acting on the fluids. Gravity is assumed to act
-toward the x=0 axis. To have gravity act in different directions use
-<cite>np.swapaxes(im, 0, ax)</cite> where <cite>ax</cite> is the desired direction.</p></li>
-<li><p><strong>rho_nwp</strong> (<em>scalar</em>) – The density of the non-wetting fluid</p></li>
-<li><p><strong>rho_wp</strong> (<em>scalar</em>) – The density of the wetting fluid</p></li>
-<li><p><strong>voxel_size</strong> (<em>scalar</em><em> (</em><em>default = 0.0</em><em>)</em>) – The resolution of the image</p></li>
+<li><p><strong>g</strong> (<em>scalar</em><em> (</em><em>default = 0</em><em>)</em>) – The gravitational acceleration acting on the fluids, in m/s^2 when using SI
+units. Gravity is assumed to act toward index 0 along axis 0. To have gravity
+act along a different axis use <cite>np.swapaxes(im, 0, ax)</cite> where <cite>ax</cite> is the
+desired axis, and swap the same axes of <cite>dt</cite> if it is supplied.</p></li>
+<li><p><strong>rho_nwp</strong> (<em>scalar</em>) – The density of the non-wetting fluid, in kg/m^3 when using SI units.</p></li>
+<li><p><strong>rho_wp</strong> (<em>scalar</em>) – The density of the wetting fluid, in kg/m^3 when using SI units.</p></li>
+<li><p><strong>voxel_size</strong> (<em>scalar</em><em> (</em><em>default = 1.0</em><em>)</em>) – The physical distance between adjacent voxel centers, in m when using SI
+units.</p></li>
 <li><p><strong>spacing</strong> (<em>scalar</em><em> (</em><em>default = None</em><em>)</em>) – If a 2D image is provided, this value is used to compute the second
 radii of curvature.  Setting it to <cite>np.inf</cite> will make the calculation truly
 2D since only one radii of curvature is considered. Setting it to <cite>None</cite>
@@ -766,10 +766,21 @@ will force the calculation to be 3D.  If <cite>im</cite> is 3D this argument is
 ignored.  This should be in units of physical length, not voxels.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>pc</strong> – The capillary pressure including the gravity correction, in Pa when using SI
+units.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>All physical properties should be in self-consistent units, and it is strongly
 recommended to use SI for everything.</p>
+<p>The gravity correction is <code class="docutils literal notranslate"><span class="pre">(rho_nwp</span> <span class="pre">-</span> <span class="pre">rho_wp)</span> <span class="pre">*</span> <span class="pre">g</span> <span class="pre">*</span> <span class="pre">h</span></code>, where voxel centers
+along axis 0 have heights <code class="docutils literal notranslate"><span class="pre">h[i]</span> <span class="pre">=</span> <span class="pre">i</span> <span class="pre">*</span> <span class="pre">voxel_size</span></code>. The first voxel center is
+the zero-height reference, so the last center is at
+<code class="docutils literal notranslate"><span class="pre">(im.shape[0]</span> <span class="pre">-</span> <span class="pre">1)</span> <span class="pre">*</span> <span class="pre">voxel_size</span></code>. A singleton axis has zero height.</p>
 <p class="rubric">Examples</p>
 <p><a class="reference external" href="https://porespy.org/examples/filters/reference/capillary_transform.html">Click here</a>
 to view online example.</p>

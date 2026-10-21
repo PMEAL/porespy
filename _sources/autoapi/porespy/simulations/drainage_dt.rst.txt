@@ -1,7 +1,7 @@
 porespy.simulations.drainage_dt
 ===============================
 
-.. py:function:: porespy.simulations.drainage_dt(im, inlets=None, outlets=None, dt=None, steps=None, smooth=False)
+.. py:function:: porespy.simulations.drainage_dt(im, inlets=None, outlets=None, dt=None, steps=None, smooth=False, return_indices=False)
 
    Performs a distance transform based drainage simulation using distance transform
    thresholding for the erosion step and a second distance transform for the
@@ -26,6 +26,11 @@ porespy.simulations.drainage_dt
                  and stop of the integer values. A `list` or `ndarray` is used directly. If
                  `None` (default) then each unique value in the distance transform is used.
    :type steps: scalar or array_like
+   :param return_indices: If `True`, store compact step indices and their corresponding sizes instead
+                          of allocating `im_size`. The returned ``bins[im_seq]`` reconstructs the
+                          usual size image. This mode is incompatible with `outlets`. Default is
+                          `False`.
+   :type return_indices: bool, optional
 
    :returns: **results** -- A dataclass-like object with the following attributes:
 

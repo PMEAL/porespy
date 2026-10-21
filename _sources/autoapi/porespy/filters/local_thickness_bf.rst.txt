@@ -1,7 +1,7 @@
 porespy.filters.local_thickness_bf
 ==================================
 
-.. py:function:: porespy.filters.local_thickness_bf(im, dt=None, mask=None, smooth=True)
+.. py:function:: porespy.filters.local_thickness_bf(im, dt=None, mask=None, smooth=True, sizes=None, return_indices=False)
 
    Insert a maximally inscribed sphere at every pixel labelled by sphere radius
 
@@ -15,17 +15,26 @@ porespy.filters.local_thickness_bf
    :param smooth: Indicates if protrusions should be removed from the faces of the spheres
                   or not. Default is `True`.
    :type smooth: bool, optional
+   :param sizes: The positive integer radii to evaluate. An integer `N` selects up to `N`
+                 evenly spaced integer radii between 1 and ``floor(dt.max())``. If `None`,
+                 every integer radius in that range is used.
+   :type sizes: array_like or scalar
+   :param return_indices: If `True`, return ``(sizes, indices)`` instead of a float image, where
+                          ``sizes[indices]`` reconstructs the usual result. Default is `False`.
+   :type return_indices: bool, optional
 
    :returns: **lt** -- The local thickness of the image with each voxel labelled according to the
-             radius of the largest sphere which overlaps it
-   :rtype: ndarray
+             radius of the largest sphere which overlaps it, or ``(sizes, indices)``
+             when `return_indices` is `True`.
+   :rtype: ndarray or tuple[ndarray, ndarray]
 
    .. rubric:: Notes
 
-   This function uses brute force, meaning that is inserts spheres at every single
-   pixel or voxel in the void phase without making any attempt to reduce the number
-   of insertion sites. This provides a reference implementation for comparing
-   accuracy of other methods.
+   Consecutive radii rasterize only the new distance-transform shell and discard
+   spheres contained by the preceding shell. When requested radii contain gaps,
+   the threshold is filled directly and spheres are rasterized only from its
+   interface. Shells write labels directly, while interfaces build a cumulative
+   boolean union using adaptive direct or merged parallel scan-line writes.
 
    .. rubric:: Examples
 

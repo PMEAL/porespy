@@ -1,14 +1,14 @@
 porespy.io.to_stl
 =================
 
-.. py:function:: porespy.io.to_stl(im, filename=None, voxel_size=1, method='direct', fmt='openstl', remove_duplicates=False, tol=None)
+.. py:function:: porespy.io.to_stl(im, filename=None, voxel_size=1, method='direct', fmt='openstl', remove_duplicates=False, tol=None, close_faces=True)
 
    Converts an voxel image to an STL mesh in a variety of formats
 
    :param im: The image of the porous material
    :type im: 3D image
-   :param voxel_size: The side length of the voxels (voxels  are cubic)
-   :type voxel_size: int
+   :param voxel_size: The side length of the voxels (voxels are cubic)
+   :type voxel_size: float
    :param method: Can be one of the options listed below:
 
                   ================ ============================================================
@@ -31,8 +31,29 @@ porespy.io.to_stl
                - 'numpy-stl' (not automatically installed with PoreSpy)
                - 'meshio' (not automatically installed with PoreSpy)
    :type fmt: str
+   :param close_faces: If `True` (default), cap the selected phase where it meets the image
+                       boundary. If `False`, return only interfaces between `True` and
+                       `False` regions inside the image, treating the exterior as unknown.
+                       Uniform images return an empty mesh in open mode.
+   :type close_faces: bool, optional
 
    .. rubric:: Notes
+
+   With ``close_faces=False``, interfaces that reach the crop boundary remain
+   open. Such meshes may not be watertight, so volume calculations require
+   additional assumptions. Downstream smoothing may need to pin boundary
+   vertices to prevent the interface from retracting.
+
+   Coordinates follow the image axis order and are scaled by `voxel_size`.
+   The direct method places voxel corners at integer coordinates, spanning
+   0 to ``im.shape`` before scaling. Marching cubes retains the historical
+   padding offset: original voxel samples are at coordinates 1 through
+   ``im.shape``. In open mode it extracts only within that sampling domain,
+   so its boundary lies half a voxel inward from the closed caps. The flag
+   does not translate internal geometry. The methods have different
+   discretizations and need not give the same interfacial area.
+   Open marching cubes returns an empty mesh when any axis has fewer than
+   two samples, since there are no three-dimensional sampling cells.
 
    The `openstl` package has the fastest read/write performance. It
    uses a basic numpy array of shape `[N, 4, 3]`. `N` is the number of

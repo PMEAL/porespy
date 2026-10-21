@@ -458,7 +458,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/a290c30357d2e55d24aad553cef83ac41f8f8dc6ebdeea1f25308478e56e3748.png" src="../../../_images/a290c30357d2e55d24aad553cef83ac41f8f8dc6ebdeea1f25308478e56e3748.png" />
+<img alt="../../../_images/7ebc560ce96f027fb419772676cf3b3bd182d1a4e26660f0152803493cdbd538.png" src="../../../_images/7ebc560ce96f027fb419772676cf3b3bd182d1a4e26660f0152803493cdbd538.png" />
 </div>
 </div>
 </section>
@@ -475,10 +475,10 @@
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="nn">File ~/work/porespy/porespy/src/porespy/io/_stl.py:315,</span> in <span class="ni">to_stl</span><span class="nt">(im, filename, voxel_size, method, fmt, remove_duplicates, tol)</span>
-<span class="g g-Whitespace">    </span><span class="mi">314</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">315</span>     <span class="kn">import</span><span class="w"> </span><span class="nn">trimesh</span>
-<span class="g g-Whitespace">    </span><span class="mi">316</span> <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+<span class="nn">File ~/work/porespy/porespy/src/porespy/io/_stl.py:338,</span> in <span class="ni">to_stl</span><span class="nt">(im, filename, voxel_size, method, fmt, remove_duplicates, tol, close_faces)</span>
+<span class="g g-Whitespace">    </span><span class="mi">337</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">338</span>     <span class="kn">import</span><span class="w"> </span><span class="nn">trimesh</span>
+<span class="g g-Whitespace">    </span><span class="mi">339</span> <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
 
 <span class="ne">ModuleNotFoundError</span>: No module named &#39;trimesh&#39;
 
@@ -489,12 +489,12 @@
 <span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">mesh</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">to_stl</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;trimesh&#39;</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
 
-<span class="nn">File ~/work/porespy/porespy/src/porespy/io/_stl.py:318,</span> in <span class="ni">to_stl</span><span class="nt">(im, filename, voxel_size, method, fmt, remove_duplicates, tol)</span>
-<span class="g g-Whitespace">    </span><span class="mi">316</span>     <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">317</span>         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;trimesh can be installed with pip install trimesh&quot;</span>
-<span class="ne">--&gt; </span><span class="mi">318</span>         <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">319</span>     <span class="n">mesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">faces</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">face_normals</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">320</span> <span class="k">elif</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s1">&#39;open3d&#39;</span><span class="p">:</span>
+<span class="nn">File ~/work/porespy/porespy/src/porespy/io/_stl.py:341,</span> in <span class="ni">to_stl</span><span class="nt">(im, filename, voxel_size, method, fmt, remove_duplicates, tol, close_faces)</span>
+<span class="g g-Whitespace">    </span><span class="mi">339</span>     <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">340</span>         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;trimesh can be installed with pip install trimesh&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">341</span>         <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">342</span>     <span class="n">mesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">faces</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">face_normals</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">343</span> <span class="k">elif</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s1">&#39;open3d&#39;</span><span class="p">:</span>
 
 <span class="ne">ModuleNotFoundError</span>: trimesh can be installed with pip install trimesh
 </pre></div>
@@ -516,6 +516,45 @@
 <img alt="../../../_images/00d421d9b7ec51ac99eac54374911ad9f17683116967c58368a26707d3dea6bf.png" src="../../../_images/00d421d9b7ec51ac99eac54374911ad9f17683116967c58368a26707d3dea6bf.png" />
 </div>
 </div>
+</section>
+<section id="close-faces">
+<h2><code class="docutils literal notranslate"><span class="pre">close_faces</span></code><a class="headerlink" href="#close-faces" title="Link to this heading">#</a></h2>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">close_faces=True</span></code> caps the selected phase wherever it meets the edge of the image. Set <code class="docutils literal notranslate"><span class="pre">close_faces=False</span></code> to retain only interfaces between <code class="docutils literal notranslate"><span class="pre">True</span></code> and <code class="docutils literal notranslate"><span class="pre">False</span></code> voxels inside the image. The exterior is treated as unknown, and uniform images return empty meshes.</p>
+<p>For a half-filled 8 × 8 × 8 image, the direct method gives a closed surface area of 256 voxel². The open mesh contains only the internal 8 × 8 interface, with area 64 voxel². This example uses PyVista, which is installed with PoreSpy. It also works with <code class="docutils literal notranslate"><span class="pre">fmt='trimesh'</span></code> if the optional package is installed.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">half_block</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+<span class="n">half_block</span><span class="p">[:</span><span class="mi">4</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">closed</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">to_stl</span><span class="p">(</span><span class="n">half_block</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;pyvista&#39;</span><span class="p">,</span> <span class="n">remove_duplicates</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">opened</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">to_stl</span><span class="p">(</span>
+    <span class="n">half_block</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;pyvista&#39;</span><span class="p">,</span> <span class="n">remove_duplicates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">close_faces</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Closed area: </span><span class="si">{</span><span class="n">closed</span><span class="o">.</span><span class="n">area</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">; open area: </span><span class="si">{</span><span class="n">opened</span><span class="o">.</span><span class="n">area</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">closed</span><span class="o">.</span><span class="n">area</span><span class="p">,</span> <span class="mf">256.0</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">opened</span><span class="o">.</span><span class="n">area</span><span class="p">,</span> <span class="mf">64.0</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">opened</span><span class="o">.</span><span class="n">n_open_edges</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The flag also works with <code class="docutils literal notranslate"><span class="pre">method='marching-cubes'</span></code>. Coordinates follow the image axis order, multiplied by <code class="docutils literal notranslate"><span class="pre">voxel_size</span></code>. Direct meshes place voxel corners at integer coordinates from 0 to the image shape. Marching cubes preserves its historical padding offset: original voxel samples are at coordinates 1 through the image shape. Open marching-cubes meshes end at those outermost samples, half a voxel inward from the closed caps. Switching the flag preserves internal surface positions.</p>
+<p>The methods have different discretizations: for this image, the marching-cubes interface is at coordinate 4.5 along the first axis and spans 7 × 7 between the outermost samples, while the direct interface is at coordinate 4 and spans 8 × 8. Their areas need not agree.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">open_mc</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">to_stl</span><span class="p">(</span>
+    <span class="n">half_block</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;marching-cubes&#39;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;pyvista&#39;</span><span class="p">,</span>
+    <span class="n">remove_duplicates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">close_faces</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Open marching-cubes area: </span><span class="si">{</span><span class="n">open_mc</span><span class="o">.</span><span class="n">area</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">open_mc</span><span class="o">.</span><span class="n">area</span><span class="p">,</span> <span class="mf">49.0</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">open_mc</span><span class="o">.</span><span class="n">points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="mf">4.5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Open meshes may not be watertight. Their surface area describes the retained interface, but volume calculations require additional assumptions about how to close the surface. Downstream smoothing may need to pin vertices at the crop boundary to keep the interface from retracting.</p>
 </section>
 <section id="remove-duplicates">
 <h2><code class="docutils literal notranslate"><span class="pre">remove_duplicates</span></code><a class="headerlink" href="#remove-duplicates" title="Link to this heading">#</a></h2>
@@ -580,6 +619,7 @@ PolyData (0x300a92b00)
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im"><code class="docutils literal notranslate"><span class="pre">im</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fmt"><code class="docutils literal notranslate"><span class="pre">fmt</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method">‘method’</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#close-faces"><code class="docutils literal notranslate"><span class="pre">close_faces</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#remove-duplicates"><code class="docutils literal notranslate"><span class="pre">remove_duplicates</span></code></a></li>
 </ul>
   </nav></div>

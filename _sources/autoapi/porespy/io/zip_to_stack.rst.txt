@@ -1,21 +1,34 @@
 porespy.io.zip_to_stack
 =======================
 
-.. py:function:: porespy.io.zip_to_stack(f)
+.. py:function:: porespy.io.zip_to_stack(f, *, max_bytes=None)
 
-   Reads a zip file containing 2D slices of a 3D image, and converts to a 3D stack
+   Read a ZIP of 2D grayscale image slices into one 3D array.
 
-   :param f: The path and/or file name of the zip archive.  If ``<name>.zip`` is given,
-             then it's assumed to be located in the current working directory. Otherwise
-             a full path should be given, like ``C:\path\to\file.zip``. Either way, the
-             archive is extracted into a folder in the given directory.
-   :type f: str
+   :param f: ZIP archive containing the slices, either at its root or in one folder.
+             A file-like object must be seekable and opened in binary mode.
+   :type f: str, path object or file-like object
+   :param max_bytes: Maximum size in bytes of the returned array, as in ``folder_to_stack``.
+                     By default, no limit is imposed.
+   :type max_bytes: int, optional
 
-   :returns: **im** -- A 3D numpy array of the imported image.
+   :returns: **im** -- Array with shape ``(rows, columns, number_of_slices)`` and the slices'
+             original dtype and values.
    :rtype: ndarray
+
+   :raises ValueError: For the slice and size validation failures listed in
+       ``folder_to_stack``, or if image members have unsafe paths, are symbolic
+       links, have duplicate names, or occur in more than one folder.
 
    .. rubric:: Notes
 
-   The files should be named with leading numerical values indicating their
-   layer number, like 001, 002, etc.
+   Slice formats, natural filename ordering and validation are the same as in
+   ``folder_to_stack``. Hidden files, ``__MACOSX`` metadata and files with
+   unrecognized extensions are ignored. Images must all share one parent
+   folder; separate series are never combined automatically.
+
+   Members are read directly from the ZIP without extraction. No directory
+   is created, overwritten or deleted on disk, including on failure.
+
+   .. seealso:: :py:obj:`folder_to_stack`
 

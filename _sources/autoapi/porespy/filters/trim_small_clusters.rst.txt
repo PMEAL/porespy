@@ -1,9 +1,9 @@
 porespy.filters.trim_small_clusters
 ===================================
 
-.. py:function:: porespy.filters.trim_small_clusters(im: numpy.typing.NDArray, min_size: int = 1)
+.. py:function:: porespy.filters.trim_small_clusters(im: numpy.typing.NDArray, min_size: int = 1, conn: Literal['min', 'max'] = 'min')
 
-   Removes clusters voxel of a given size or smaller
+   Removes clusters of the given size or smaller
 
    :param im: The binary image from which voxels are to be removed.
    :type im: ndarray
@@ -11,9 +11,14 @@ porespy.filters.trim_small_clusters
                     many voxels or fewer will be trimmed.  The default is 1 so only
                     single voxels are removed.
    :type min_size: scalar
+   :param conn: Controls which neighboring voxels belong to the same cluster. The
+                default is 'min', giving face connectivity (4 neighbors in 2D and 6
+                in 3D). 'max' includes diagonal contacts (8 neighbors in 2D and 26
+                in 3D).
+   :type conn: str
 
-   :returns: **im** -- A copy of `im` with clusters of voxels smaller than the given
-             `size` removed.
+   :returns: **im** -- A copy of `im` with clusters containing `min_size` voxels or fewer
+             removed.
    :rtype: ndarray
 
    .. rubric:: Examples

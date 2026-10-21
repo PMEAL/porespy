@@ -432,7 +432,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../filters/local_thickness_bf.html">porespy.filters.local_thickness_bf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/local_thickness_conv.html">porespy.filters.local_thickness_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/local_thickness_dt.html">porespy.filters.local_thickness_dt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../filters/local_thickness_imj.html">porespy.filters.local_thickness_imj</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/nl_means_layered.html">porespy.filters.nl_means_layered</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/nphase_border.html">porespy.filters.nphase_border</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filters/pc_to_satn.html">porespy.filters.pc_to_satn</a></li>
@@ -572,7 +571,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_conv.html">porespy.simulations.drainage_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt.html">porespy.simulations.drainage_dt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt_conv.html">porespy.simulations.drainage_dt_conv</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simulations/hg_porosimetry.html">porespy.simulations.hg_porosimetry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/ibip.html">porespy.simulations.ibip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition.html">porespy.simulations.imbibition</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_bf.html">porespy.simulations.imbibition_bf</a></li>
@@ -755,8 +753,9 @@ to 2 will also exclude them from consideration so provides the same effect
 as <cite>mask</cite>, but providing a <cite>mask</cite> is usually much easier.</p></li>
 <li><p><strong>fill_closed</strong> (bool (default = <cite>False</cite>)) – A flag to indicate if closed pores (not connected to any image boundary)
 should be filled or not before computing the porosity.</p></li>
-<li><p><strong>fill_surface</strong> (bool (default = <cite>False</cite>)) – A flag to indicate if surface pores connected only to one surface should be
-filled or not before computing the porosity.</p></li>
+<li><p><strong>fill_surface</strong> (bool (default = <cite>False</cite>)) – A flag to indicate if non-spanning pores with exactly one connected
+boundary opening should be filled before computing the porosity. An
+opening may wrap around an edge or corner; separate openings are retained.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

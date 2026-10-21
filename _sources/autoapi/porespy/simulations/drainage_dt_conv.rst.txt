@@ -36,12 +36,17 @@ porespy.simulations.drainage_dt_conv
                          it was first invaded. -1 indicates uninvaded, either due to
                          the applied `steps` not spanning the full range of sizes in the
                          image, or due to trapping, while 0 indicates residual invading
-                         phase.
+                         phase. With `return_indices=True`, 0 represents uninvaded or
+                         solid voxels and the array has a compact unsigned dtype.
              `im_size`   A numpy array with each voxel containing the radius of the
                          sphere, in voxels, that first overlapped it. `inf` indicates
                          uninvaded, either due to the applied `steps` not spanning the
                          full range of sizes in the image, or due to trapping, while 0
-                         indicates residual invading phase.
+                         indicates residual invading phase. Not present when
+                         `return_indices` is `True`.
+             `bins`      Applied sizes prefixed with 0, so that ``bins[im_seq]``
+                         reconstructs `im_size`. Only present when `return_indices` is
+                         `True`.
              =========== ================================================================
    :rtype: Dataclass-like object
 

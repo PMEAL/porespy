@@ -6,7 +6,7 @@ porespy.filters.region_size
    Replace each voxel with the size of the region to which it belongs
 
    :param im: Either a boolean image wtih `True` indicating the features of
-              interest, in which case `scipy.ndimage.label` will be applied to
+              interest, in which case connected-component labeling will be applied to
               find regions, or a greyscale image with integer values indicating
               regions.
    :type im: ndarray

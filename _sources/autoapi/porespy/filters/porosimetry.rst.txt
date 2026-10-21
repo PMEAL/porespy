@@ -1,7 +1,7 @@
 porespy.filters.porosimetry
 ===========================
 
-.. py:function:: porespy.filters.porosimetry(im: numpy.typing.NDArray, dt: numpy.typing.NDArray = None, inlets: numpy.typing.NDArray = None, sizes: int = None, method: Literal['dsi', 'fft', 'dt'] = 'dt', smooth: bool = True)
+.. py:function:: porespy.filters.porosimetry(im: numpy.typing.NDArray, dt: numpy.typing.NDArray = None, inlets: numpy.typing.NDArray = None, sizes: int = None, method: Literal['dsi', 'fft', 'dt'] = 'dt', smooth: bool = True, return_indices: bool = False)
 
    Each location is assigned the radius of the largest sphere that can reach it
    from the given inlets.
@@ -31,17 +31,21 @@ porespy.filters.porosimetry
    :param sizes: This is only used if the method is `dt` or `conv`. If a list of values is
                  provided they are used directly. If a scalar is provided then that number
                  of points spanning the min and max of the distance transform are used.
-                 If `None`, then all the unique values in the distance transform are used,
-                 which may become time consuming. This can be sped up if `dt` is provided
-                 and rounded to the nearest integer first.
+                 If `None`, then all the unique values in the distance transform are used.
    :type sizes: array_like or scalar
    :param smooth: Indicates if protrusions should be removed from the faces of the spheres
                   or not. Default is `True`.
    :type smooth: bool, optional
+   :param return_indices: If `True`, return ``(sizes, indices)`` instead of a float image, where
+                          ``sizes[indices]`` reconstructs the usual result. The index image uses
+                          the smallest suitable unsigned integer dtype. This is currently only
+                          supported for ``method='dt'``. Default is `False`.
+   :type return_indices: bool, optional
 
-   :returns: **sizes** -- In image with each voxel value indicating the largest overlapping sphere
-             which can reach it from the given inlets.
-   :rtype: ndarray
+   :returns: **image** -- An image with each voxel indicating the largest overlapping sphere which
+             can reach it from the given inlets, or ``(sizes, indices)`` when
+             `return_indices` is `True`.
+   :rtype: ndarray or tuple[ndarray, ndarray]
 
    .. seealso:: :py:obj:`local_thickness`, :py:obj:`drainage`
 
