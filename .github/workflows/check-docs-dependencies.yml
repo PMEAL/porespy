@@ -8,6 +8,8 @@ on:
       - docs/**
       - scripts/check_docs*.py
       - examples/generators/reference/cylindrical_pillars_mesh.ipynb
+      - examples/generators/reference/fractal_noise.ipynb
+      - test/unit/test_generators.py
       - examples/filters/reference/nl_means_layered.ipynb
       - examples/metrics/reference/mesh_volume.ipynb
       - examples/metrics/reference/region_volumes.ipynb
@@ -27,7 +29,9 @@ jobs:
           python-version: "3.13"
           cache-dependency-glob: "**/pyproject.toml"
       - name: Install documentation dependencies
-        run: uv sync --group docs --group interactive
+        run: uv sync --group docs --group interactive --group test
+      - name: Check fractal noise behavior
+        run: uv run --group docs --group interactive --group test pytest test/unit/test_generators.py -k fractal_noise -q
       - name: Ensure Xvfb is available
         run: |
           if ! command -v xvfb-run >/dev/null 2>&1; then

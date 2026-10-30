@@ -2973,7 +2973,7 @@ wheels = [
 
 [[package]]
 name = "porespy"
-version = "3.2.0.dev2"
+version = "3.2.0.dev3"
 source = { editable = "." }
 dependencies = [
     { name = "connected-components-3d" },
@@ -3028,6 +3028,7 @@ docs = [
     { name = "openpnm" },
     { name = "pandoc" },
     { name = "pydata-sphinx-theme" },
+    { name = "pyfastnoisesimd" },
     { name = "pywavelets" },
     { name = "scikit-learn" },
     { name = "sphinx" },
@@ -3106,6 +3107,7 @@ docs = [
     { name = "openpnm" },
     { name = "pandoc" },
     { name = "pydata-sphinx-theme" },
+    { name = "pyfastnoisesimd", git = "https://github.com/robbmcleod/pyfastnoisesimd?rev=40a3e68cadc06ca39ba5c21709e069ab8ae5eee5" },
     { name = "pywavelets" },
     { name = "scikit-learn" },
     { name = "sphinx" },
@@ -3381,6 +3383,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/44/dd/d20c1a0c0105611b831536d2c6d9132bb83d70ed80f4b6d328c04acfeb0d/pyevtk-1.6.0.tar.gz", hash = "sha256:1f6be7876a3a005c8258861551da4fe7e44ff1a2e7ff2a93d6dc51deedfda5f4", size = 38980, upload-time = "2023-06-05T15:25:27.522Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/06/da/d57b07c565cc5f8705da436cfcc44754343416c1187d83f04d5443d5cc1a/pyevtk-1.6.0-py3-none-any.whl", hash = "sha256:057415512ab902785c72251df8f8450e4bbc9eab16677f091a4b8ee53b9cc775", size = 20521, upload-time = "2023-06-05T15:25:25.625Z" },
+]
+
+[[package]]
+name = "pyfastnoisesimd"
+version = "0.4.3"
+source = { git = "https://github.com/robbmcleod/pyfastnoisesimd?rev=40a3e68cadc06ca39ba5c21709e069ab8ae5eee5#40a3e68cadc06ca39ba5c21709e069ab8ae5eee5" }
+dependencies = [
+    { name = "numpy" },
+    { name = "setuptools" },
 ]
 
 [[package]]
