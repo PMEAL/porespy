@@ -17,6 +17,7 @@ from check_docs_outputs import NotebookImages
 
 EXAMPLES = {
     "generators/reference/cylindrical_pillars_mesh": 4,
+    "generators/reference/fractal_noise": 9,
     "filters/reference/nl_means_layered": 7,
     "metrics/reference/mesh_volume": 1,
     "metrics/reference/region_volumes": 3,

@@ -1,6 +1,6 @@
 [project]
 name = "porespy"
-version = "3.2.0-dev3"
+version = "3.2.0-dev4"
 description = "A set of tools for analyzing 3D images of porous materials"
 authors = [{ name = "PoreSpy Team", email = "jgostick@gmail.com" }]
 maintainers = [
@@ -219,6 +219,8 @@ docs = [
     "nbstripout>=0.8.1",
     "pandoc",
     "pydata-sphinx-theme",
+    # v0.4.3 fixes NumPy 2 compatibility but is not yet available on PyPI.
+    "pyfastnoisesimd @ git+https://github.com/robbmcleod/pyfastnoisesimd@40a3e68cadc06ca39ba5c21709e069ab8ae5eee5",
     "pywavelets",
     "sphinx",
     "sphinx-autoapi",
@@ -237,6 +239,10 @@ interactive = [
     "jupyterlab_widgets",
 ]
 
+# The upstream legacy build needs NumPy headers in its isolated build environment.
+[tool.uv.extra-build-dependencies]
+pyfastnoisesimd = ["numpy"]
+
 [tool.hatch.metadata]
 allow-direct-references = true
 
@@ -247,7 +253,7 @@ path = "src/porespy/__version__.py"
 packages = ["src/porespy"]
 
 [tool.bumpversion]
-current_version = "3.2.0-dev3"
+current_version = "3.2.0-dev4"
 parse = """(?x)
     (?P<major>0|[1-9]\\d*)\\.
     (?P<minor>0|[1-9]\\d*)\\.
