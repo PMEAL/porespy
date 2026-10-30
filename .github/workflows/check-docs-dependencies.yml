@@ -1,0 +1,44 @@
+name: Documentation dependencies
+
+on:
+  pull_request:
+    paths:
+      - pyproject.toml
+      - uv.lock
+      - docs/**
+      - scripts/check_docs*.py
+      - examples/generators/reference/cylindrical_pillars_mesh.ipynb
+      - examples/filters/reference/nl_means_layered.ipynb
+      - examples/metrics/reference/mesh_volume.ipynb
+      - examples/metrics/reference/region_volumes.ipynb
+      - examples/io/reference/to_stl.ipynb
+      - .github/workflows/check-docs-dependencies.yml
+      - .github/workflows/generate-docs.yml
+  workflow_dispatch:
+
+jobs:
+  example-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          python-version: "3.13"
+          cache-dependency-glob: "**/pyproject.toml"
+      - name: Install documentation dependencies
+        run: uv sync --group docs --group interactive
+      - name: Ensure Xvfb is available
+        run: |
+          if ! command -v xvfb-run >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y xvfb
+          fi
+      - name: Build examples with fresh outputs
+        env:
+          MPLBACKEND: module://matplotlib_inline.backend_inline
+          PYVISTA_OFF_SCREEN: "true"
+          PYVISTA_JUPYTER_BACKEND: static
+        run: |
+          xvfb-run -a -s "-screen 0 1024x768x24" \
+          uv run python scripts/check_docs_dependencies.py docs/_build/dependency-smoke
