@@ -222,7 +222,8 @@ def sem(im, axis=0):  # pragma: no cover
     -------
     image : ndarray
         A 2D greyscale image suitable for use in matplotlib's `imshow`
-        function.
+        function. The remaining two axes keep their input order, so for a
+        ``(X, Y, Z)`` image ``axis=0`` gives a ``(Y, Z)`` view.
 
     Examples
     --------
@@ -232,9 +233,9 @@ def sem(im, axis=0):  # pragma: no cover
 
     """
     im = np.array(~im, dtype=int)
-    im = np.swapaxes(im, 0, axis)
+    # _sem_parallel scans along the last axis
+    im = np.ascontiguousarray(np.moveaxis(im, axis, -1))
     view = _sem_parallel(im)
-    im = np.swapaxes(im, 0, axis)
     return view
 
 
