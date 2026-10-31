@@ -242,9 +242,9 @@ def prep_for_imshow(
     Parameters
     ----------
     im : ndimage
-        The image to show. If ``im`` includes ``+inf`` or ``-inf`` values,
-        they are converted to 1 above or below the minimum and maximum finite
-        values in ``im``, respectively.
+        The image to show. Positive infinity (``+inf``) is replaced by
+        ``vmax + 1``, and negative infinity (``-inf``) by ``vmin - 1``,
+        placing them above and below the colormap range, respectively.
     mask : ndimage, optional
         An image of the porous material with ``True`` indicating voxels of
         interest. The ``False`` voxels are excluded from the ``vmax`` and
