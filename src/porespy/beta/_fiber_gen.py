@@ -6,7 +6,7 @@ from porespy.tools import get_edt
 __all__ = [
     "fibers_2D",
     "fibers_1D",
-    "fibers_3D",
+    "fibers",
 ]
 
 
@@ -25,7 +25,7 @@ def _fiber_directions(n, phi_max, theta_max):
     return directions, transverse
 
 
-def fibers_3D(shape, r, n=None, porosity=None, phi_max=90, theta_max=90,
+def fibers(shape, r, n=None, porosity=None, phi_max=90, theta_max=90,
               maxiter=10, seed=None):
     r"""
     Generate overlapping fibers with spatially uniform random placement.
@@ -77,9 +77,11 @@ def fibers_3D(shape, r, n=None, porosity=None, phi_max=90, theta_max=90,
 
     Examples
     --------
-    >>> from porespy.beta import fibers_3D
-    >>> im = fibers_3D([50, 50, 50], r=2, n=100, seed=0)
-    >>> mat = fibers_3D([50, 50, 50], r=2, n=100, phi_max=0, seed=0)
+    >>> from porespy.beta import fibers
+    >>> im = fibers([50, 50, 50], r=2, n=100, seed=0)
+    >>> mat = fibers([50, 50, 50], r=2, n=100, phi_max=0, seed=0)
+    >>> aligned = fibers([50, 50, 50], r=2, n=100,
+    ...                  phi_max=0, theta_max=0, seed=0)
     """
     shape = np.asarray(shape)
     if (shape.shape != (3,) or not np.all(np.isfinite(shape))
@@ -193,7 +195,7 @@ def fibers_1D(shape, r, n, overlap=None):
     return im
 
 
-def fibers_2D(shape, r, n=None, porosity=None):
+def fibers_2D(shape, r, n=None, porosity=None, theta_max=90):
     r"""
     Generates randomly located fibers which are randomly oriented in the x-y plane
     but aligned in the z-plane
@@ -204,8 +206,14 @@ def fibers_2D(shape, r, n=None, porosity=None):
         The shape of the image to generate.  This must be 3D.
     r : int
         The radius of the fibers to generate
-    porosity : float
-        The radius of the fibers
+    n : int, optional
+        Number of candidate lines to sample.
+    porosity : float, optional
+        Target void fraction, used when ``n`` is not supplied.
+    theta_max : float
+        Maximum in-plane angle away from the X direction, in degrees, from
+        0 to 90. The default gives uniformly random planar orientations;
+        zero gives perfectly X-aligned fibers.
 
     Returns
     -------
@@ -225,11 +233,20 @@ def fibers_2D(shape, r, n=None, porosity=None):
         `doi <https://doi.org/10.1016/j.compstruct.2022.116242>`_
     """
 
+    if (not np.isscalar(theta_max) or not np.isfinite(theta_max)
+            or not 0 <= theta_max <= 90):
+        raise ValueError('theta_max must be between 0 and 90 degrees')
+
     def add_n_lines(im, r, n):
         x1, y1 = im.shape[0]/2, im.shape[1]/2
         Lmax = (x1**2 + y1**2)**0.5
         for _ in range(n):
-            phi = np.random.rand()*2*np.pi
+            if theta_max == 90:
+                phi = np.random.rand()*2*np.pi
+            else:
+                # phi describes the normal, not the fiber direction.
+                phi = np.pi/2 + np.random.uniform(
+                    -np.deg2rad(theta_max), np.deg2rad(theta_max))
             L = 2*(0.5 - np.random.rand())*Lmax
             x2 = x1 + L*np.cos(phi)
             y2 = y1 + L*np.sin(phi)
