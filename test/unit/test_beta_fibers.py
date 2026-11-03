@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from porespy.beta import fibers, fibers_2D
+from porespy.beta import fibers
 from porespy.beta._fiber_gen import _fiber_directions
 
 
@@ -51,22 +51,14 @@ def test_empty_image():
 def test_planar_alignment_controls():
     for angle in [0, 15, 90]:
         np.random.seed(0)
-        im = fibers_2D([24, 32, 40], r=2, n=80, theta_max=angle)
+        im = fibers([24, 32, 40], r=2, n=80, phi_max=0, theta_max=angle)
         assert im.shape == (24, 32, 40)
         assert 0 < im.mean() < 1
         if angle == 0:
             np.testing.assert_array_equal(im, np.broadcast_to(im[0], im.shape))
     for angle in [-1, 91, np.nan]:
         with pytest.raises(ValueError):
-            fibers_2D([24, 32, 40], r=2, n=80, theta_max=angle)
-
-
-def test_planar_default_unchanged():
-    np.random.seed(0)
-    default = fibers_2D([24, 32, 40], r=2, n=80)
-    np.random.seed(0)
-    explicit = fibers_2D([24, 32, 40], r=2, n=80, theta_max=90)
-    np.testing.assert_array_equal(default, explicit)
+            fibers([24, 32, 40], r=2, n=80, phi_max=0, theta_max=angle)
 
 
 def test_target_porosity():
