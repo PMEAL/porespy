@@ -4,10 +4,12 @@ from typing import Literal
 
 import numpy as np
 import numpy.typing as npt
-from numba import njit, prange
+from numba import njit
 from skimage.morphology import ball, disk, footprint_rectangle
 
 from porespy.tools import (
+    _get_sphere_indices as _get_lt_flat_indices,
+    _find_sphere_interface as _find_lt_interface,
     _get_uint_dtype,
     _insert_disks_at_indices_parallel,
     _insert_disks_at_indices_parallel_direct,
@@ -171,12 +173,6 @@ def _parse_integer_radii(sizes, dt, im):
     return np.unique(radii)[::-1]
 
 
-def _get_lt_flat_indices(mask):
-    """Return compact flat indices for a local-thickness insertion bucket."""
-    dtype = np.int32 if mask.size <= np.iinfo(np.int32).max else np.int64
-    return np.flatnonzero(mask).astype(dtype, copy=False)
-
-
 def _make_lt_result(shape, sizes, return_indices):
     """Allocate a local-thickness result and its optional value lookup."""
     if return_indices:
@@ -184,35 +180,6 @@ def _make_lt_result(shape, sizes, return_indices):
         values = np.concatenate(([0], np.asarray(sizes)))
         return result, values
     return np.zeros(shape, dtype=float), None
-
-
-@njit(parallel=True)
-def _find_lt_interface(seeds, interface):  # pragma: no cover
-    """Find seed sites touching in-bounds background along an axial direction."""
-    if seeds.ndim == 2:
-        xlim, ylim = seeds.shape
-        for i in prange(xlim):
-            for j in range(ylim):
-                interface[i, j] = seeds[i, j] and (
-                    (i > 0 and not seeds[i - 1, j])
-                    or (i + 1 < xlim and not seeds[i + 1, j])
-                    or (j > 0 and not seeds[i, j - 1])
-                    or (j + 1 < ylim and not seeds[i, j + 1])
-                )
-    elif seeds.ndim == 3:
-        xlim, ylim, zlim = seeds.shape
-        for i in prange(xlim):
-            for j in range(ylim):
-                for k in range(zlim):
-                    interface[i, j, k] = seeds[i, j, k] and (
-                        (i > 0 and not seeds[i - 1, j, k])
-                        or (i + 1 < xlim and not seeds[i + 1, j, k])
-                        or (j > 0 and not seeds[i, j - 1, k])
-                        or (j + 1 < ylim and not seeds[i, j + 1, k])
-                        or (k > 0 and not seeds[i, j, k - 1])
-                        or (k + 1 < zlim and not seeds[i, j, k + 1])
-                    )
-    return interface
 
 
 @njit

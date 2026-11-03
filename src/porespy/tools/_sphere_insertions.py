@@ -18,6 +18,8 @@ __all__ = [
     '_insert_disks_at_points',
     '_insert_disks_at_points_serial',
     '_insert_disks_at_points_parallel',
+    '_get_sphere_indices',
+    '_find_sphere_interface',
     'points_to_spheres',
 ]
 
@@ -868,3 +870,39 @@ if __name__ == "__main__":
                                            radii=rs, v=1)
     t = toc(quiet=True)
     print(f"Multiple radii, parallel: {t}")
+
+
+def _get_sphere_indices(mask):
+    """Return compact flat indices of candidate sphere centers."""
+    dtype = np.int32 if mask.size <= np.iinfo(np.int32).max else np.int64
+    return np.flatnonzero(mask).astype(dtype, copy=False)
+
+
+
+@njit(parallel=True)
+def _find_sphere_interface(mask, interface):  # pragma: no cover
+    """Find foreground voxels touching in-bounds background axially."""
+    if mask.ndim == 2:
+        xlim, ylim = mask.shape
+        for i in prange(xlim):
+            for j in range(ylim):
+                interface[i, j] = mask[i, j] and (
+                    (i > 0 and not mask[i - 1, j])
+                    or (i + 1 < xlim and not mask[i + 1, j])
+                    or (j > 0 and not mask[i, j - 1])
+                    or (j + 1 < ylim and not mask[i, j + 1])
+                )
+    elif mask.ndim == 3:
+        xlim, ylim, zlim = mask.shape
+        for i in prange(xlim):
+            for j in range(ylim):
+                for k in range(zlim):
+                    interface[i, j, k] = mask[i, j, k] and (
+                        (i > 0 and not mask[i - 1, j, k])
+                        or (i + 1 < xlim and not mask[i + 1, j, k])
+                        or (j > 0 and not mask[i, j - 1, k])
+                        or (j + 1 < ylim and not mask[i, j + 1, k])
+                        or (k > 0 and not mask[i, j, k - 1])
+                        or (k + 1 < zlim and not mask[i, j, k + 1])
+                    )
+    return interface

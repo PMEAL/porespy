@@ -1,7 +1,15 @@
+import numpy as np
 import numpy.typing as npt
 from scipy.signal import fftconvolve
 
-from porespy.tools import get_edt, ps_round
+from porespy.tools import (
+    _find_sphere_interface,
+    _get_sphere_indices,
+    _insert_disks_at_indices_parallel,
+    _make_axial_extent_lookup,
+    get_edt,
+    ps_round,
+)
 
 __all__ = [
     'erode',
@@ -37,16 +45,19 @@ def erode(
     method : str
         Controls which method is used. Options are:
 
-        ========= =============================================================
-        method    Description
-        ========= =============================================================
-        `'dt'`    Uses a distance transform to find all voxels within `r` of
-                  the background, then removes them to affect an erosion
-        `'conv'`  Uses a FFT based convolution to find all voxels within `r`
-                  of the background (voxels with a value smaller than the sum
-                  of the structuring element), then removes them to affect an
-                  erosion.
-        ========= =============================================================
+        ================= =============================================================
+        method            Description
+        ================= =============================================================
+        `'dt'`            Uses a distance transform to find all voxels within `r` of
+                          the background, then removes them to affect an erosion
+        `'conv'`          Uses a FFT based convolution to find all voxels within `r`
+                          of the background (voxels with a value smaller than the sum
+                          of the structuring element), then removes them to affect an
+                          erosion.
+        `'brute_force'`   Draws spheres at the phase interface using optimized
+                          scan-line insertion. Also accepts 'bf'. Requires a
+                          nonnegative integer radius and a 2D or 3D image.
+        ================= =============================================================
 
     Returns
     -------
@@ -68,6 +79,8 @@ def erode(
         else:
             tmp = dt >= r if smooth else dt > r
         ero = tmp * im
+    elif method in ('brute_force', 'bf'):
+        ero = ~_dilate_spheres(~(im == 1), r, smooth)
     elif method.startswith('conv'):
         se = ps_round(r=r, ndim=im.ndim, smooth=smooth)
         ero = ~(fftconvolve(~im, se, mode='same') > 0.1)
@@ -99,15 +112,18 @@ def dilate(
     method : str
         Controls which method is used. Options are:
 
-        ========= =============================================================
-        method    Description
-        ========= =============================================================
-        `'dt'`    Uses a distance transform to find all voxels within `r` of
-                  the foreground, then adds them to affect a dilation
-        `'conv'`  Using a FFT based convolution to find all voxels within `r`
-                  of the foreground (voxels with a value larger than 0), then adds
-                  them to affect a dilation.
-        ========= =============================================================
+        ================= =============================================================
+        method            Description
+        ================= =============================================================
+        `'dt'`            Uses a distance transform to find all voxels within `r` of
+                          the foreground, then adds them to affect a dilation
+        `'conv'`          Using a FFT based convolution to find all voxels within `r`
+                          of the foreground (voxels with a value larger than 0), then adds
+                          them to affect a dilation.
+        `'brute_force'`   Draws spheres at the phase interface using optimized
+                          scan-line insertion. Also accepts 'bf'. Requires a
+                          nonnegative integer radius and a 2D or 3D image.
+        ================= =============================================================
 
     Returns
     -------
@@ -127,10 +143,37 @@ def dilate(
             dt = edt(~im)
         dil = dt < r if smooth else dt <= r
         dil += im
+    elif method in ('brute_force', 'bf'):
+        dil = _dilate_spheres(im, r, smooth)
     elif method.startswith('conv'):
         se = ps_round(r=r, ndim=im.ndim, smooth=smooth)
         dil = fftconvolve(im, se, mode='same') > 0.1
     return dil
+
+
+def _dilate_spheres(im, r, smooth):
+    """Dilate a binary phase using the shared interface and sphere renderer."""
+    if im.ndim not in (2, 3):
+        raise ValueError('brute_force requires a 2D or 3D image')
+    if not np.isscalar(r) or not np.isfinite(r) or r < 0 or r != int(r):
+        raise ValueError('brute_force requires a nonnegative integer radius')
+    r = int(r)
+    result = np.array(im, dtype=bool, order='C', copy=True)
+    if r == 0:
+        return result
+    interface = _find_sphere_interface(result, np.empty_like(result))
+    indices = _get_sphere_indices(interface)
+    if indices.size:
+        _insert_disks_at_indices_parallel(
+            im=result,
+            indices=indices,
+            dt=result,
+            ceil_distance=_make_axial_extent_lookup(r),
+            smooth=smooth,
+            overwrite=True,
+            fixed_radius=r,
+        )
+    return result
 
 
 if __name__ == "__main__":
