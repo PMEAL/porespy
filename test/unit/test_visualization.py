@@ -18,6 +18,27 @@ class VisualizationTest():
         sem = ps.visualization.sem(self.im)
         assert sem.ndim == 2
 
+    def test_sem_scans_requested_axis(self):
+        im = np.zeros((4, 5, 6), dtype=bool)
+        im[1, 2, 3] = True
+        expected = {
+            0: ((5, 6), (2, 3), 1 / 4),
+            1: ((4, 6), (1, 3), 2 / 5),
+            2: ((4, 5), (1, 2), 3 / 6),
+        }
+        for axis, (shape, pixel, brightness) in expected.items():
+            sem = ps.visualization.sem(im, axis=axis)
+            assert sem.shape == shape
+            assert np.argwhere(sem > 0).tolist() == [list(pixel)]
+            assert np.isclose(sem[pixel], brightness)
+
+    def test_sem_shows_voxel_nearest_viewing_face(self):
+        im = np.zeros((4, 5, 6), dtype=bool)
+        im[1, 2, 2] = True
+        im[1, 2, 4] = True
+        sem = ps.visualization.sem(im, axis=2)
+        assert np.isclose(sem[1, 2], 4 / 6)
+
     def test_xray_x(self):
         xray = ps.visualization.xray(self.im)
         assert np.min(xray) >= 0 and np.max(xray) <= 1
