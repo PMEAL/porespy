@@ -26,11 +26,15 @@ dependencies = [
     "connected-components-3d",
     "dask",
     "deprecated",
-    "edt<3.1",
+    "edt<3.1; python_version < '3.14'",
+    # Older edt source builds produce incorrect distances on Python 3.14.
+    "edt>=3.1.2; python_version >= '3.14'",
     "matplotlib",
     "numba",
-    "numpy",
-    "pandas",
+    "numpy; python_version < '3.15'",
+    "numpy>=2.5; python_version >= '3.15'",
+    "pandas; python_version < '3.15'",
+    "pandas>=3.1; python_version >= '3.15'",
     "psutil",
     "rich",
     "scikit-image>=0.25.0",
@@ -43,17 +47,18 @@ dependencies = [
     "pyvista>=0.46.4",
 ]
 readme = "README.md"
-requires-python = ">=3.11,<3.14"
+requires-python = ">=3.11,<3.16"
 
 [project.optional-dependencies]
 extras = [
     "scikit-learn",
-    "openpnm",
+    "openpnm>=3.6.5; python_version < '3.15'",
     "trimesh",
     "pyevtk",
     "numpy-stl",
     "imageio",
-    "nanomesh",
+    # triangle, required by nanomesh, has no Python 3.14+ distributions.
+    "nanomesh; python_version < '3.14'",
     "pywavelets",
     "pandoc>=2.4",
     "meshio",
@@ -211,11 +216,13 @@ test = [
     "pytest-cov",
     "pytest-custom-exit-code",
     "pytest-split",
+    "pywavelets",
 ]
 docs = [
     "mock",
     "myst-nb",
-    "nanomesh",
+    # triangle, required by nanomesh, has no Python 3.14+ distributions.
+    "nanomesh; python_version < '3.14'",
     "nbstripout>=0.8.1",
     "pandoc",
     "pydata-sphinx-theme",
@@ -227,7 +234,7 @@ docs = [
     "sphinx-copybutton",
     "sphinx-design",
     "scikit-learn",
-    "openpnm",
+    "openpnm>=3.6.5; python_version < '3.15'",
     "tensorflow",
     "trimesh",
 ]

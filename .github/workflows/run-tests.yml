@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    name: Python ${{ matrix.python-version }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -17,7 +18,7 @@ jobs:
       fail-fast: false
       max-parallel: 12
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
@@ -33,13 +34,13 @@ jobs:
           cache-suffix: "uv-${{ matrix.python-version }}-${{ matrix.os }}"
 
       - name: Install dependencies
-        run: uv sync --group test --group build --extra extras
+        run: uv sync --locked --group test --group build --extra extras
 
       - name: Build package
         run: uv build
 
       - name: Set matplotlib backend
-        run: echo "MPLBACKEND=Agg" >> $GITHUB_ENV
+        run: echo "MPLBACKEND=Agg" >> "$GITHUB_ENV"
 
       - name: Running tests
         run: uv run pytest --cov=. --cov-report=xml
@@ -52,3 +53,35 @@ jobs:
           files: ./coverage.xml
           flags: unittests
           name: codecov-umbrella
+
+  python-315:
+    name: Python 3.15 / ubuntu-latest (experimental core)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          python-version: "3.15"
+          cache-dependency-glob: "**/pyproject.toml"
+          cache-suffix: "uv-3.15-ubuntu-latest-core"
+
+      # OpenPNM and its h5py dependency are not yet ready for Python 3.15.
+      - name: Install core dependencies
+        run: uv sync --locked --group test --group build
+
+      - name: Build package
+        run: uv build
+
+      - name: Run core tests
+        env:
+          MPLBACKEND: Agg
+        run: >-
+          uv run pytest
+          test/unit/test_edt_config.py
+          test/unit/test_filters.py
+          test/unit/test_generators.py
+          test/unit/test_tools.py
