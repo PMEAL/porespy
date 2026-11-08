@@ -287,6 +287,7 @@ allow_dirty = false
 commit = true
 message = "maint: bump version: {current_version} → {new_version} [skip bump]"
 commit_args = ""
+pre_commit_hooks = ["uv lock", "git add uv.lock"]
 
 [tool.bumpversion.parts.pre_l]
 values = ["dev"]
