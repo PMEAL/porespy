@@ -31,8 +31,10 @@ dependencies = [
     "edt>=3.1.2; python_version >= '3.14'",
     "matplotlib",
     "numba",
-    "numpy",
-    "pandas",
+    "numpy; python_version < '3.15'",
+    "numpy>=2.5; python_version >= '3.15'",
+    "pandas; python_version < '3.15'",
+    "pandas>=3.1; python_version >= '3.15'",
     "psutil",
     "rich",
     "scikit-image>=0.25.0",
@@ -51,6 +53,8 @@ requires-python = ">=3.11,<3.16"
 extras = [
     "scikit-learn",
     "openpnm",
+    # Older OpenPNM releases use np.in1d, removed in NumPy 2.4.
+    "numpy<2.4; python_version < '3.15'",
     "trimesh",
     "pyevtk",
     "numpy-stl",
@@ -232,6 +236,8 @@ docs = [
     "sphinx-design",
     "scikit-learn",
     "openpnm",
+    # Older OpenPNM releases use np.in1d, removed in NumPy 2.4.
+    "numpy<2.4; python_version < '3.15'",
     "tensorflow",
     "trimesh",
 ]
