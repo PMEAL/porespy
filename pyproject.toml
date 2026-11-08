@@ -52,9 +52,7 @@ requires-python = ">=3.11,<3.16"
 [project.optional-dependencies]
 extras = [
     "scikit-learn",
-    "openpnm",
-    # Older OpenPNM releases use np.in1d, removed in NumPy 2.4.
-    "numpy<2.4; python_version < '3.15'",
+    "openpnm>=3.6.5; python_version < '3.15'",
     "trimesh",
     "pyevtk",
     "numpy-stl",
@@ -236,9 +234,7 @@ docs = [
     "sphinx-copybutton",
     "sphinx-design",
     "scikit-learn",
-    "openpnm",
-    # Older OpenPNM releases use np.in1d, removed in NumPy 2.4.
-    "numpy<2.4; python_version < '3.15'",
+    "openpnm>=3.6.5; python_version < '3.15'",
     "tensorflow",
     "trimesh",
 ]
