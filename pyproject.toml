@@ -26,7 +26,9 @@ dependencies = [
     "connected-components-3d",
     "dask",
     "deprecated",
-    "edt<3.1",
+    "edt<3.1; python_version < '3.14'",
+    # Older edt source builds produce incorrect distances on Python 3.14.
+    "edt>=3.1.2; python_version >= '3.14'",
     "matplotlib",
     "numba",
     "numpy",
