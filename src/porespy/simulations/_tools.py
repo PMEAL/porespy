@@ -1,7 +1,7 @@
 from numba import njit
 from porespy.tools import (
-    _get_sphere_indices as _get_flat_indices,
-    _find_sphere_interface as _find_interface,
+    _get_sphere_indices as _get_flat_indices,  # noqa: F401 - re-exported helper
+    _find_sphere_interface as _find_interface,  # noqa: F401 - re-exported helper
     _insert_disks_at_indices_parallel as _insert_disks_at_indices_parallel,
     _insert_disks_at_indices_parallel_direct as _insert_disks_at_indices_parallel_direct,
     _insert_disks_at_indices_parallel_merged as _insert_disks_at_indices_parallel_merged,
