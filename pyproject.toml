@@ -43,7 +43,7 @@ dependencies = [
     "pyvista>=0.46.4",
 ]
 readme = "README.md"
-requires-python = ">=3.11,<3.14"
+requires-python = ">=3.11,<3.16"
 
 [project.optional-dependencies]
 extras = [
@@ -53,7 +53,8 @@ extras = [
     "pyevtk",
     "numpy-stl",
     "imageio",
-    "nanomesh",
+    # triangle, required by nanomesh, has no Python 3.14+ distributions.
+    "nanomesh; python_version < '3.14'",
     "pywavelets",
     "pandoc>=2.4",
     "meshio",
@@ -215,7 +216,8 @@ test = [
 docs = [
     "mock",
     "myst-nb",
-    "nanomesh",
+    # triangle, required by nanomesh, has no Python 3.14+ distributions.
+    "nanomesh; python_version < '3.14'",
     "nbstripout>=0.8.1",
     "pandoc",
     "pydata-sphinx-theme",
