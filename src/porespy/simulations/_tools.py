@@ -1,16 +1,12 @@
-import numpy as np
-from numba import njit, prange
+from numba import njit
 from porespy.tools import (
+    _get_sphere_indices as _get_flat_indices,  # noqa: F401 - re-exported helper
+    _find_sphere_interface as _find_interface,  # noqa: F401 - re-exported helper
     _insert_disks_at_indices_parallel as _insert_disks_at_indices_parallel,
     _insert_disks_at_indices_parallel_direct as _insert_disks_at_indices_parallel_direct,
     _insert_disks_at_indices_parallel_merged as _insert_disks_at_indices_parallel_merged,
     _use_merged_intervals as _use_merged_intervals,
 )
-
-
-def _get_flat_indices(mask):
-    dtype = np.int32 if mask.size <= np.iinfo(np.int32).max else np.int64
-    return np.flatnonzero(mask).astype(dtype, copy=False)
 
 
 @njit
@@ -65,32 +61,3 @@ def _remove_contained_disks(indices, eligible, dt):
                 indices[count] = ind
                 count += 1
     return indices[:count]
-
-
-@njit(parallel=True)
-def _find_interface(mask, interface):  # pragma: no cover
-    """Find foreground voxels touching in-bounds background axially."""
-    if mask.ndim == 2:
-        xlim, ylim = mask.shape
-        for i in prange(xlim):
-            for j in range(ylim):
-                interface[i, j] = mask[i, j] and (
-                    (i > 0 and not mask[i - 1, j])
-                    or (i + 1 < xlim and not mask[i + 1, j])
-                    or (j > 0 and not mask[i, j - 1])
-                    or (j + 1 < ylim and not mask[i, j + 1])
-                )
-    elif mask.ndim == 3:
-        xlim, ylim, zlim = mask.shape
-        for i in prange(xlim):
-            for j in range(ylim):
-                for k in range(zlim):
-                    interface[i, j, k] = mask[i, j, k] and (
-                        (i > 0 and not mask[i - 1, j, k])
-                        or (i + 1 < xlim and not mask[i + 1, j, k])
-                        or (j > 0 and not mask[i, j - 1, k])
-                        or (j + 1 < ylim and not mask[i, j + 1, k])
-                        or (k > 0 and not mask[i, j, k - 1])
-                        or (k + 1 < zlim and not mask[i, j, k + 1])
-                    )
-    return interface

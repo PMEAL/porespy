@@ -40,9 +40,13 @@ jobs:
           cd docs
           PYVISTA_OFF_SCREEN=true \
           PYVISTA_JUPYTER_BACKEND=static \
-          MPLBACKEND=Agg \
+          MPLBACKEND=module://matplotlib_inline.backend_inline \
           xvfb-run -a -s "-screen 0 1024x768x24" \
           uv run make html
+
+      - name: Check notebook plot outputs
+        # A successful notebook execution can still produce no figures with Agg.
+        run: uv run python scripts/check_docs_outputs.py docs/_build/html
 
       - name: Publish the documentation to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

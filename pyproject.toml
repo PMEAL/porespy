@@ -1,6 +1,6 @@
 [project]
 name = "porespy"
-version = "3.2.0"
+version = "3.2.0-dev13"
 description = "A set of tools for analyzing 3D images of porous materials"
 authors = [{ name = "PoreSpy Team", email = "jgostick@gmail.com" }]
 maintainers = [
@@ -26,11 +26,15 @@ dependencies = [
     "connected-components-3d",
     "dask",
     "deprecated",
-    "edt<3.1",
+    "edt<3.1; python_version < '3.14'",
+    # Older edt source builds produce incorrect distances on Python 3.14.
+    "edt>=3.1.2; python_version >= '3.14'",
     "matplotlib",
     "numba",
-    "numpy",
-    "pandas",
+    "numpy; python_version < '3.15'",
+    "numpy>=2.5; python_version >= '3.15'",
+    "pandas; python_version < '3.15'",
+    "pandas>=3.1; python_version >= '3.15'",
     "psutil",
     "rich",
     "scikit-image>=0.25.0",
@@ -43,17 +47,18 @@ dependencies = [
     "pyvista>=0.46.4",
 ]
 readme = "README.md"
-requires-python = ">=3.11,<3.14"
+requires-python = ">=3.11,<3.16"
 
 [project.optional-dependencies]
 extras = [
     "scikit-learn",
-    "openpnm",
+    "openpnm>=3.6.5; python_version < '3.15'",
     "trimesh",
     "pyevtk",
     "numpy-stl",
     "imageio",
-    "nanomesh",
+    # triangle, required by nanomesh, has no Python 3.14+ distributions.
+    "nanomesh; python_version < '3.14'",
     "pywavelets",
     "pandoc>=2.4",
     "meshio",
@@ -211,20 +216,27 @@ test = [
     "pytest-cov",
     "pytest-custom-exit-code",
     "pytest-split",
+    "pywavelets",
 ]
 docs = [
     "mock",
     "myst-nb",
+    # triangle, required by nanomesh, has no Python 3.14+ distributions.
+    "nanomesh; python_version < '3.14'",
     "nbstripout>=0.8.1",
     "pandoc",
     "pydata-sphinx-theme",
+    # v0.4.3 fixes NumPy 2 compatibility but is not yet available on PyPI.
+    "pyfastnoisesimd @ git+https://github.com/robbmcleod/pyfastnoisesimd@40a3e68cadc06ca39ba5c21709e069ab8ae5eee5",
+    "pywavelets",
     "sphinx",
     "sphinx-autoapi",
     "sphinx-copybutton",
     "sphinx-design",
     "scikit-learn",
-    "openpnm",
+    "openpnm>=3.6.5; python_version < '3.15'",
     "tensorflow",
+    "trimesh",
 ]
 interactive = [
     "ipython",
@@ -233,6 +245,10 @@ interactive = [
     "jupyter",
     "jupyterlab_widgets",
 ]
+
+# The upstream legacy build needs NumPy headers in its isolated build environment.
+[tool.uv.extra-build-dependencies]
+pyfastnoisesimd = ["numpy"]
 
 [tool.hatch.metadata]
 allow-direct-references = true
@@ -244,7 +260,7 @@ path = "src/porespy/__version__.py"
 packages = ["src/porespy"]
 
 [tool.bumpversion]
-current_version = "3.2.0"
+current_version = "3.2.0-dev13"
 parse = """(?x)
     (?P<major>0|[1-9]\\d*)\\.
     (?P<minor>0|[1-9]\\d*)\\.
@@ -271,6 +287,7 @@ allow_dirty = false
 commit = true
 message = "maint: bump version: {current_version} → {new_version} [skip bump]"
 commit_args = ""
+pre_commit_hooks = ["uv lock", "git add uv.lock"]
 
 [tool.bumpversion.parts.pre_l]
 values = ["dev"]
