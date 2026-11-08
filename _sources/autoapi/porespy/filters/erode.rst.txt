@@ -17,16 +17,19 @@ porespy.filters.erode
    :type smooth: boolean
    :param method: Controls which method is used. Options are:
 
-                  ========= =============================================================
-                  method    Description
-                  ========= =============================================================
-                  `'dt'`    Uses a distance transform to find all voxels within `r` of
-                            the background, then removes them to affect an erosion
-                  `'conv'`  Uses a FFT based convolution to find all voxels within `r`
-                            of the background (voxels with a value smaller than the sum
-                            of the structuring element), then removes them to affect an
-                            erosion.
-                  ========= =============================================================
+                  ================= =============================================================
+                  method            Description
+                  ================= =============================================================
+                  `'dt'`            Uses a distance transform to find all voxels within `r` of
+                                    the background, then removes them to affect an erosion
+                  `'conv'`          Uses a FFT based convolution to find all voxels within `r`
+                                    of the background (voxels with a value smaller than the sum
+                                    of the structuring element), then removes them to affect an
+                                    erosion.
+                  `'brute_force'`   Draws spheres at the phase interface using optimized
+                                    scan-line insertion. Also accepts 'bf'. Requires a
+                                    nonnegative integer radius and a 2D or 3D image.
+                  ================= =============================================================
    :type method: str
 
    :returns: **erosion** -- An image the same size as `im` with the foreground eroded by the specified

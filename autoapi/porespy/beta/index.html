@@ -390,8 +390,7 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">porespy.beta</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="df_to_tortuosity.html">porespy.beta.df_to_tortuosity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fibers_1D.html">porespy.beta.fibers_1D</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fibers_2D.html">porespy.beta.fibers_2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fibers.html">porespy.beta.fibers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="flux.html">porespy.beta.flux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="get_block_sizes.html">porespy.beta.get_block_sizes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="local_diff.html">porespy.beta.local_diff</a></li>
@@ -741,37 +740,34 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="df_to_tortuosity.html#porespy.beta.df_to_tortuosity" title="porespy.beta.df_to_tortuosity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">df_to_tortuosity</span></code></a>(im, df)</p></td>
 <td><p>Compute the tortuosity of a network populated with diffusive conductance values</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="fibers_1D.html#porespy.beta.fibers_1D" title="porespy.beta.fibers_1D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fibers_1D</span></code></a>(shape, r, n[, overlap])</p></td>
-<td><p>Generates randomly located fibers which are all oriented in z-direction</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="fibers.html#porespy.beta.fibers" title="porespy.beta.fibers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fibers</span></code></a>(shape, r[, n, porosity, phi_max, theta_max, ...])</p></td>
+<td><p>Generate overlapping fibers with spatially uniform random placement.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="fibers_2D.html#porespy.beta.fibers_2D" title="porespy.beta.fibers_2D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fibers_2D</span></code></a>(shape, r[, n, porosity])</p></td>
-<td><p>Generates randomly located fibers which are randomly oriented in the x-y plane</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="flux.html#porespy.beta.flux" title="porespy.beta.flux"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flux</span></code></a>(c, axis[, k])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="flux.html#porespy.beta.flux" title="porespy.beta.flux"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flux</span></code></a>(c, axis[, k])</p></td>
 <td><p>Computes the layer-by-layer diffusive flux in a given direction.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="get_block_sizes.html#porespy.beta.get_block_sizes" title="porespy.beta.get_block_sizes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_block_sizes</span></code></a>(im[, block_size_range])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="get_block_sizes.html#porespy.beta.get_block_sizes" title="porespy.beta.get_block_sizes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_block_sizes</span></code></a>(im[, block_size_range])</p></td>
 <td><p>Finds all viable block sizes between lower and upper limits</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="local_diff.html#porespy.beta.local_diff" title="porespy.beta.local_diff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">local_diff</span></code></a>(vals, im[, strel])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="local_diff.html#porespy.beta.local_diff" title="porespy.beta.local_diff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">local_diff</span></code></a>(vals, im[, strel])</p></td>
 <td><p>Computes the difference pixel and the average of it's neighbors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="polydisperse_cylinders.html#porespy.beta.polydisperse_cylinders" title="porespy.beta.polydisperse_cylinders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">polydisperse_cylinders</span></code></a>(shape, porosity, dist[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="polydisperse_cylinders.html#porespy.beta.polydisperse_cylinders" title="porespy.beta.polydisperse_cylinders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">polydisperse_cylinders</span></code></a>(shape, porosity, dist[, ...])</p></td>
 <td><p>Generates overlapping cylinders with radii from the given size distribution</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pts_to_voronoi.html#porespy.beta.pts_to_voronoi" title="porespy.beta.pts_to_voronoi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pts_to_voronoi</span></code></a>(im[, r, centroids, borders])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pts_to_voronoi.html#porespy.beta.pts_to_voronoi" title="porespy.beta.pts_to_voronoi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pts_to_voronoi</span></code></a>(im[, r, centroids, borders])</p></td>
 <td><p>Compute a Voronoi tessellation from seed points via watershed.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="rev_tortuosity.html#porespy.beta.rev_tortuosity" title="porespy.beta.rev_tortuosity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rev_tortuosity</span></code></a>(im[, block_sizes, use_dask])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="rev_tortuosity.html#porespy.beta.rev_tortuosity" title="porespy.beta.rev_tortuosity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rev_tortuosity</span></code></a>(im[, block_sizes, use_dask])</p></td>
 <td><p>Generates the data for creating an REV plot based on tortuosity.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="tau_from_cmap.html#porespy.beta.tau_from_cmap" title="porespy.beta.tau_from_cmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tau_from_cmap</span></code></a>(c, im, axis)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="tau_from_cmap.html#porespy.beta.tau_from_cmap" title="porespy.beta.tau_from_cmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tau_from_cmap</span></code></a>(c, im, axis)</p></td>
 <td><p>Computes the tortuosity factor from a concentration field.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="tortuosity_bt.html#porespy.beta.tortuosity_bt" title="porespy.beta.tortuosity_bt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tortuosity_bt</span></code></a>(im[, block_size, method, use_dask])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="tortuosity_bt.html#porespy.beta.tortuosity_bt" title="porespy.beta.tortuosity_bt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tortuosity_bt</span></code></a>(im[, block_size, method, use_dask])</p></td>
 <td><p>Computes the tortuosity of an image in all directions</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="vor_to_im.html#porespy.beta.vor_to_im" title="porespy.beta.vor_to_im"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vor_to_im</span></code></a>(vor, im[, centroids])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="vor_to_im.html#porespy.beta.vor_to_im" title="porespy.beta.vor_to_im"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vor_to_im</span></code></a>(vor, im[, centroids])</p></td>
 <td><p>Render a 2-D Voronoi tessellation onto a boolean image.</p></td>
 </tr>
 </tbody>

@@ -928,7 +928,8 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="fractal-noise">
 <h1><code class="docutils literal notranslate"><span class="pre">fractal_noise</span></code><a class="headerlink" href="#fractal-noise" title="Link to this heading">#</a></h1>
-<p>This function wraps the <a class="reference external" href="https://github.com/robbmcleod/PyFastNoiseSIMD">pyfastnoisesimd</a> package. The PoreSpy wrapper offers a slightly simpler experience which is more consistent with the function-based approach found in PoreSpy, scikit-image, and scipy.ndimage. For full control over it’s features you can just use it directly since it is installed with PoreSpy.</p>
+<p>This function wraps the <a class="reference external" href="https://github.com/robbmcleod/PyFastNoiseSIMD">pyfastnoisesimd</a> package. The PoreSpy wrapper offers a slightly simpler experience which is more consistent with the function-based approach found in PoreSpy, scikit-image, and scipy.ndimage. For full control over its features you can use it directly. This optional package is not installed with PoreSpy by default.</p>
+<p>The documentation environment pins the upstream <code class="docutils literal notranslate"><span class="pre">pyfastnoisesimd</span></code> v0.4.3 source release, which supports NumPy 2; the PyPI v0.4.2 release still uses the removed <code class="docutils literal notranslate"><span class="pre">numpy.product</span></code> alias. To run this notebook from a PoreSpy source checkout, install the documentation environment with <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span> <span class="pre">--group</span> <span class="pre">docs</span> <span class="pre">--group</span> <span class="pre">interactive</span></code> and use its Python kernel. Building this dependency requires a C++ compiler; the project configuration supplies NumPy headers in the isolated build environment.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -950,37 +951,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="nn">File ~/work/porespy/porespy/src/porespy/generators/_noise.py:94,</span> in <span class="ni">fractal_noise</span><span class="nt">(shape, porosity, frequency, octaves, gain, mode, seed, cores, uniform)</span>
-<span class="g g-Whitespace">     </span><span class="mi">93</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">---&gt; </span><span class="mi">94</span>     <span class="kn">from</span><span class="w"> </span><span class="nn">pyfastnoisesimd</span><span class="w"> </span><span class="kn">import</span> <span class="n">Noise</span><span class="p">,</span> <span class="n">NoiseType</span><span class="p">,</span> <span class="n">PerturbType</span>
-<span class="g g-Whitespace">     </span><span class="mi">95</span> <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;pyfastnoisesimd&#39;
-
-<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
-
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">3</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">]</span>
-<span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">fractal_noise</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
-
-<span class="nn">File ~/work/porespy/porespy/src/porespy/generators/_noise.py:96,</span> in <span class="ni">fractal_noise</span><span class="nt">(shape, porosity, frequency, octaves, gain, mode, seed, cores, uniform)</span>
-<span class="g g-Whitespace">     </span><span class="mi">94</span>     <span class="kn">from</span><span class="w"> </span><span class="nn">pyfastnoisesimd</span><span class="w"> </span><span class="kn">import</span> <span class="n">Noise</span><span class="p">,</span> <span class="n">NoiseType</span><span class="p">,</span> <span class="n">PerturbType</span>
-<span class="g g-Whitespace">     </span><span class="mi">95</span> <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-<span class="ne">---&gt; </span><span class="mi">96</span>     <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span>
-<span class="g g-Whitespace">     </span><span class="mi">97</span>         <span class="s2">&quot;You need to install `pyfastnoisesimd` using&quot;</span> <span class="s2">&quot; `pip install pyfastnoisesimd`&quot;</span>
-<span class="g g-Whitespace">     </span><span class="mi">98</span>     <span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">99</span> <span class="k">if</span> <span class="n">cores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">100</span>     <span class="n">cores</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">(</span><span class="n">logical</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-<span class="ne">ModuleNotFoundError</span>: You need to install `pyfastnoisesimd` using `pip install pyfastnoisesimd`
-</pre></div>
-</div>
+<img alt="../../../_images/c25fd7ec2b03f746d531d547b91164cc0520657c0666ceeeb5010f3970a9d315.png" src="../../../_images/c25fd7ec2b03f746d531d547b91164cc0520657c0666ceeeb5010f3970a9d315.png" />
 </div>
 </div>
 <section id="cores">
@@ -997,7 +968,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/b7cdb688f597eb1be1001eaa62a845c428576997f4d3342dd87c7389115c64dc.png" src="../../../_images/b7cdb688f597eb1be1001eaa62a845c428576997f4d3342dd87c7389115c64dc.png" />
+<img alt="../../../_images/c3ed5c52205d631eaef50c52b987574e9dba1f3198e2a2f05a1c2056bb77a2cd.png" src="../../../_images/c3ed5c52205d631eaef50c52b987574e9dba1f3198e2a2f05a1c2056bb77a2cd.png" />
 </div>
 </div>
 </section>
@@ -1025,7 +996,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/c12ed2f043fb16c4f2f2b870423ccf07f4bf967fc8e8744c432cbd14d1dcbf7e.png" src="../../../_images/c12ed2f043fb16c4f2f2b870423ccf07f4bf967fc8e8744c432cbd14d1dcbf7e.png" />
+<img alt="../../../_images/21c7786f519a0389c5b62e49c4fbfbaed6b9a51d532124d9aad4385a15d19251.png" src="../../../_images/21c7786f519a0389c5b62e49c4fbfbaed6b9a51d532124d9aad4385a15d19251.png" />
 </div>
 </div>
 </section>
@@ -1051,7 +1022,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/5c089f9d3614da6a9ce9d649ba29125a52ca97d9e022c2ccb1bfba0f181132df.png" src="../../../_images/5c089f9d3614da6a9ce9d649ba29125a52ca97d9e022c2ccb1bfba0f181132df.png" />
+<img alt="../../../_images/8dad212e1cb43668dc57b9cd3a5ac26ef58fd06b81045eeccad1dd2c4242f7f1.png" src="../../../_images/8dad212e1cb43668dc57b9cd3a5ac26ef58fd06b81045eeccad1dd2c4242f7f1.png" />
 </div>
 </div>
 </section>
@@ -1081,7 +1052,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/8793aeed8dd55e78c0a31cb5315d3fea7a4175c067e17c9f3b2b7b65ba1a0674.png" src="../../../_images/8793aeed8dd55e78c0a31cb5315d3fea7a4175c067e17c9f3b2b7b65ba1a0674.png" />
+<img alt="../../../_images/f377c7b2e0d2c9136b79893513f7fde48341c156b67278bb35944312f6f31135.png" src="../../../_images/f377c7b2e0d2c9136b79893513f7fde48341c156b67278bb35944312f6f31135.png" />
 </div>
 </div>
 </section>
@@ -1107,7 +1078,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/eff632255e7f428a1e19021a7fef6f2cf9ed59302545eafa86f9b01a92d785c3.png" src="../../../_images/eff632255e7f428a1e19021a7fef6f2cf9ed59302545eafa86f9b01a92d785c3.png" />
+<img alt="../../../_images/a9783388fa9ad452289082bb83cd14070e1d777c0e27062c04e2df58e508d2b8.png" src="../../../_images/a9783388fa9ad452289082bb83cd14070e1d777c0e27062c04e2df58e508d2b8.png" />
 </div>
 </div>
 </section>
@@ -1145,7 +1116,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/503d20179403c63fed05d564db2b941fe937f45c326a54bc696417dcad9e6b62.png" src="../../../_images/503d20179403c63fed05d564db2b941fe937f45c326a54bc696417dcad9e6b62.png" />
+<img alt="../../../_images/891a57b87e47cf23a7ebe370884fd60a796c9ef87c0494958873abd2de9b21fd.png" src="../../../_images/891a57b87e47cf23a7ebe370884fd60a796c9ef87c0494958873abd2de9b21fd.png" />
 </div>
 </div>
 </section>
@@ -1179,7 +1150,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/6729e3c05130fb35391f577bbce51266c97f61fc73dab63ad6044450aea4a784.png" src="../../../_images/6729e3c05130fb35391f577bbce51266c97f61fc73dab63ad6044450aea4a784.png" />
+<img alt="../../../_images/01742681ed9ef6d26204363abb92d89810a444e6dbe0d089163902b6ca02ba8e.png" src="../../../_images/01742681ed9ef6d26204363abb92d89810a444e6dbe0d089163902b6ca02ba8e.png" />
 </div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">porosity</span></code> can be specified for a specific porosity level. The image is thresholded after being converted into a uniform distribution. In this case, <code class="docutils literal notranslate"><span class="pre">uniform</span></code> does not need to be specified to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
@@ -1206,7 +1177,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/3470b20f6ae97621098c18a6f25abebeee30b7e081afe39ec78db0552af1a1b9.png" src="../../../_images/3470b20f6ae97621098c18a6f25abebeee30b7e081afe39ec78db0552af1a1b9.png" />
+<img alt="../../../_images/15e61d75daa8856c992db2289e4970906b0a269989128e35217f9f66e752b70b.png" src="../../../_images/15e61d75daa8856c992db2289e4970906b0a269989128e35217f9f66e752b70b.png" />
 </div>
 </div>
 </section>

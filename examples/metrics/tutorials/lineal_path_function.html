@@ -947,6 +947,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/b9bd480c6fcb068a4c9a1baca64f6ebf8d00785a5933039cc182975075578a40.png" src="../../../_images/b9bd480c6fcb068a4c9a1baca64f6ebf8d00785a5933039cc182975075578a40.png" />
+</div>
 </div>
 <p>Next apply the <code class="docutils literal notranslate"><span class="pre">distance_transform_lin</span></code> function along the 0 axis.</p>
 <div class="cell docutils container">
@@ -955,6 +958,9 @@
 <span class="n">ps</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">paths</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/8a38a478f4ffb762dbc248c36c5a8c2f3f012bdf5a8b7b307474ee26c68bbc87.png" src="../../../_images/8a38a478f4ffb762dbc248c36c5a8c2f3f012bdf5a8b7b307474ee26c68bbc87.png" />
 </div>
 </div>
 <p>The greyscale values of the above image are worth a comment. They indicated the length of a path that can be drawn from each voxel to the nearest solid voxel, in the specified direction.  Or in terms of Torquato’s definition, each greyscale value represents a random starting point (A) and moving along this line until solid is encountered represents the end of the line (B), providing the path length A <span class="math notranslate nohighlight">\(\rightarrow\)</span> B.  The ‘counter associated with the distance between A and B is then incremented’, which corresponds to the binning the greyscale values in the above image. In other words, the above representation includes ALL possible starting points on each path, so provides the largest possible data set.</p>
@@ -976,6 +982,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/f7ae0d88cc8f490df76179a045823b215f8b848188784b19dbf6215b84dd669f.png" src="../../../_images/f7ae0d88cc8f490df76179a045823b215f8b848188784b19dbf6215b84dd669f.png" />
+</div>
 </div>
 <p>Since the image is anisotropic, the process will yeild a different result in the perpendicular direction, so repeating the above with <code class="docutils literal notranslate"><span class="pre">axis=1</span></code> instead of the default <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>.</p>
 <div class="cell docutils container">
@@ -984,6 +993,9 @@
 <span class="n">ps</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">paths</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/4ba27dabad42ca8922781154e6dd1a3795bab1ffc801a08762e02480c9e2a4ce.png" src="../../../_images/4ba27dabad42ca8922781154e6dd1a3795bab1ffc801a08762e02480c9e2a4ce.png" />
 </div>
 </div>
 <p>Overlaying this result wit the previous one:</p>
@@ -996,9 +1008,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 640x480 with 1 Axes&gt;
-</pre></div>
-</div>
+<img alt="../../../_images/8c0f7e9188f8451d524349f3daa3518db357a7f293fcc634fd9892612dc0699e.png" src="../../../_images/8c0f7e9188f8451d524349f3daa3518db357a7f293fcc634fd9892612dc0699e.png" />
 </div>
 </div>
 <p>The anisotropy of the image is clearly visible with the first axis possessing longer lineal-path values.</p>

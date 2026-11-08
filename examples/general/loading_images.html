@@ -939,6 +939,28 @@
 </div>
 </div>
 </div>
+<section id="example-data">
+<h2>Example data<a class="headerlink" href="#example-data" title="Link to this heading">#</a></h2>
+<p>This tutorial uses the TIFF images included in the <a class="reference external" href="https://github.com/PMEAL/porespy/tree/dev/docs/_static/images">PoreSpy source repository</a>. Clone or download the repository and run this notebook from within that checkout; installing PoreSpy with <code class="docutils literal notranslate"><span class="pre">pip</span></code> alone does not include these example files. The following cell locates the data from either the original notebook folder or the documentation build’s copy. To work with your own images, replace <code class="docutils literal notranslate"><span class="pre">image_dir</span></code> with the path to your image folder.</p>
+<div class="cell tag_image-data-setup docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="c1"># Find the source checkout from either examples/ or docs/examples/.</span>
+<span class="k">for</span> <span class="n">repo_root</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="o">*</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">):</span>
+    <span class="n">image_dir</span> <span class="o">=</span> <span class="n">repo_root</span> <span class="o">/</span> <span class="s2">&quot;docs&quot;</span> <span class="o">/</span> <span class="s2">&quot;_static&quot;</span> <span class="o">/</span> <span class="s2">&quot;images&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">image_dir</span> <span class="o">/</span> <span class="s2">&quot;Sample 1.tif&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="k">break</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+        <span class="s2">&quot;Sample 1.tif was not found. Run this notebook from within a PoreSpy &quot;</span>
+        <span class="s2">&quot;source checkout containing docs/_static/images.&quot;</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 <section id="opening-a-folder-of-2d-tif-images">
 <h2>Opening a Folder of 2D tif Images<a class="headerlink" href="#opening-a-folder-of-2d-tif-images" title="Link to this heading">#</a></h2>
 <section id="using-imagej">
@@ -958,23 +980,35 @@
 </section>
 <section id="directly-in-python">
 <h3>Directly in Python<a class="headerlink" href="#directly-in-python" title="Link to this heading">#</a></h3>
-<p>If you’d rather not get manually involved, then it’s also possible to do this in Python.  The <code class="docutils literal notranslate"><span class="pre">scikit-image</span></code> package comes with a handy funciton for just this purpose.  It only takes a few minutes to get used to how it works:</p>
-<div class="cell docutils container">
+<p>If you’d rather not get manually involved, then it’s also possible to do this in Python.  The <code class="docutils literal notranslate"><span class="pre">scikit-image</span></code> package comes with a handy function for just this purpose.  It only takes a few minutes to get used to how it works:</p>
+<div class="cell tag_load-tiff-sequence docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">seq</span> <span class="o">=</span> <span class="n">imread_collection</span><span class="p">(</span><span class="s2">&quot;../../docs/_static/images/Sample 1/*.tif&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">seq</span> <span class="o">=</span> <span class="n">imread_collection</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">image_dir</span> <span class="o">/</span> <span class="s2">&quot;Sample 1&quot;</span> <span class="o">/</span> <span class="s2">&quot;*.tif&quot;</span><span class="p">))</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">seq</span><span class="o">.</span><span class="n">files</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No TIFF slices found in </span><span class="si">{</span><span class="n">image_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s1">&#39;Sample 1&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>Now let’s inspect the result.  We can see a list of files loaded in the <code class="docutils literal notranslate"><span class="pre">files</span></code> attribute:</p>
+<p>Now let’s inspect the result. The <code class="docutils literal notranslate"><span class="pre">files</span></code> attribute lists the loaded paths; here we display just the filenames:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">seq</span><span class="o">.</span><span class="n">files</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">seq</span><span class="o">.</span><span class="n">files</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;Sample 1 Carbonized raw data0000.tif&#39;,
+ &#39;Sample 1 Carbonized raw data0001.tif&#39;,
+ &#39;Sample 1 Carbonized raw data0002.tif&#39;,
+ &#39;Sample 1 Carbonized raw data0003.tif&#39;,
+ &#39;Sample 1 Carbonized raw data0004.tif&#39;,
+ &#39;Sample 1 Carbonized raw data0005.tif&#39;,
+ &#39;Sample 1 Carbonized raw data0006.tif&#39;,
+ &#39;Sample 1 Carbonized raw data0007.tif&#39;,
+ &#39;Sample 1 Carbonized raw data0008.tif&#39;,
+ &#39;Sample 1 Carbonized raw data0009.tif&#39;,
+ &#39;Sample 1 Carbonized raw data0010.tif&#39;]
 </pre></div>
 </div>
 </div>
@@ -988,28 +1022,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">IndexError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">seq</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
-
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/skimage/io/collection.py:306,</span> in <span class="ni">ImageCollection.__getitem__</span><span class="nt">(self, n)</span>
-<span class="g g-Whitespace">    </span><span class="mi">303</span>     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;slicing must be with an int or slice object&#39;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">305</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">306</span>     <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_imgnum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">307</span>     <span class="n">idx</span> <span class="o">=</span> <span class="n">n</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">309</span>     <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conserve_memory</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/skimage/io/collection.py:361,</span> in <span class="ni">ImageCollection._check_imgnum</span><span class="nt">(self, n)</span>
-<span class="g g-Whitespace">    </span><span class="mi">359</span>     <span class="n">n</span> <span class="o">=</span> <span class="n">n</span> <span class="o">%</span> <span class="n">num</span>
-<span class="g g-Whitespace">    </span><span class="mi">360</span> <span class="k">else</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">361</span>     <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There are only </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2"> images in the collection&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">362</span> <span class="k">return</span> <span class="n">n</span>
-
-<span class="ne">IndexError</span>: There are only 0 images in the collection
-</pre></div>
-</div>
+<img alt="../../_images/707fd3725e6d0334cdfc4ee029d0f9169dccbe82da82ea8218bc8159d1b59baf.png" src="../../_images/707fd3725e6d0334cdfc4ee029d0f9169dccbe82da82ea8218bc8159d1b59baf.png" />
 </div>
 </div>
 <p>We can convert this list into a 3D image as follows:</p>
@@ -1031,7 +1044,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/b104f078c35a4b18de354eef3967858f6427d451cfa200cba4e32594a44a3d3a.png" src="../../_images/b104f078c35a4b18de354eef3967858f6427d451cfa200cba4e32594a44a3d3a.png" />
+<img alt="../../_images/49553679883604d0238803cc294276f67b4f1a0771d08d5f70f754766df2e7b3.png" src="../../_images/49553679883604d0238803cc294276f67b4f1a0771d08d5f70f754766df2e7b3.png" />
 </div>
 </div>
 </section>
@@ -1048,7 +1061,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/3b32cc9da36655f1ad1cc6715f4e8637e36e592315b9f4b46f47e880f4478d8c.png" src="../../_images/3b32cc9da36655f1ad1cc6715f4e8637e36e592315b9f4b46f47e880f4478d8c.png" />
+<img alt="../../_images/c69fedb2d6d146e07c30e020a8a228c745a1923bb51f49c0ef8b9f42d2a1d9b0.png" src="../../_images/c69fedb2d6d146e07c30e020a8a228c745a1923bb51f49c0ef8b9f42d2a1d9b0.png" />
 </div>
 </div>
 <p>From the above histogram we can see that the values span from 22000 to 34000. We can just search for a value which does a decent job of segmenting the solid and void by trial and error:</p>
@@ -1060,7 +1073,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/6072c323fcc121f4fc0462cd5e9993f51d709d1443cf933db50f7e5385105190.png" src="../../_images/6072c323fcc121f4fc0462cd5e9993f51d709d1443cf933db50f7e5385105190.png" />
+<img alt="../../_images/b336d7e4f8ca293f3796f40759f88e053f16efbfb3d4f2063b61d24bcac65b26.png" src="../../_images/b336d7e4f8ca293f3796f40759f88e053f16efbfb3d4f2063b61d24bcac65b26.png" />
 </div>
 </div>
 <p>Because the image is noisy the result is not perfect.  But let’s apply this threshold to the entire image now, then visualize the 3D stack:</p>
@@ -1073,7 +1086,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/98f644ac0c83bf40dfaef1d99b1e4058005478f65ce454e42ed629a4ada78df1.png" src="../../_images/98f644ac0c83bf40dfaef1d99b1e4058005478f65ce454e42ed629a4ada78df1.png" />
+<img alt="../../_images/8143977902a038488c0043fc89c3ee6ac2c97000d99fae7711c965719a9a2fdf.png" src="../../_images/8143977902a038488c0043fc89c3ee6ac2c97000d99fae7711c965719a9a2fdf.png" />
 </div>
 </div>
 </section>
@@ -1082,13 +1095,13 @@
 <p>Assuming that the 2D images have been turned into a 3D image, as described above, it is straightforward to load them:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im2</span> <span class="o">=</span> <span class="n">imageio</span><span class="o">.</span><span class="n">volread</span><span class="p">(</span><span class="s2">&quot;../../docs/_static/images/Sample 1.tif&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im2</span> <span class="o">=</span> <span class="n">imageio</span><span class="o">.</span><span class="n">volread</span><span class="p">(</span><span class="n">image_dir</span> <span class="o">/</span> <span class="s2">&quot;Sample 1.tif&quot;</span><span class="p">)</span>
 <span class="n">ps</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/460cb8ce7bc71d93e93a5e5f8bba0e0a020259662917c70d5ec6b87118ebf9cc.png" src="../../_images/460cb8ce7bc71d93e93a5e5f8bba0e0a020259662917c70d5ec6b87118ebf9cc.png" />
+<img alt="../../_images/6d5627c005e0313de84b0266800e26e696eef5a6a75253bc36a32493c3d1d06f.png" src="../../_images/6d5627c005e0313de84b0266800e26e696eef5a6a75253bc36a32493c3d1d06f.png" />
 </div>
 </div>
 </section>
@@ -1124,6 +1137,7 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-data">Example data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#opening-a-folder-of-2d-tif-images">Opening a Folder of 2D tif Images</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-imagej">Using ImageJ</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#directly-in-python">Directly in Python</a></li>

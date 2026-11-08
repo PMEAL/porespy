@@ -15,7 +15,8 @@ porespy.visualization.sem
    :type axis: int
 
    :returns: **image** -- A 2D greyscale image suitable for use in matplotlib's `imshow`
-             function.
+             function. The remaining two axes keep their input order, so for a
+             ``(X, Y, Z)`` image ``axis=0`` gives a ``(Y, Z)`` view.
    :rtype: ndarray
 
    .. rubric:: Examples

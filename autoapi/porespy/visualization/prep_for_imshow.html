@@ -390,8 +390,7 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../beta/index.html">porespy.beta</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../beta/df_to_tortuosity.html">porespy.beta.df_to_tortuosity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../beta/fibers_1D.html">porespy.beta.fibers_1D</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../beta/fibers_2D.html">porespy.beta.fibers_2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../beta/fibers.html">porespy.beta.fibers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/flux.html">porespy.beta.flux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/get_block_sizes.html">porespy.beta.get_block_sizes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/local_diff.html">porespy.beta.local_diff</a></li>
@@ -743,9 +742,9 @@ by <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplo
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>im</strong> (<em>ndimage</em>) – The image to show. If <code class="docutils literal notranslate"><span class="pre">im</span></code> includes <code class="docutils literal notranslate"><span class="pre">+inf</span></code> or <code class="docutils literal notranslate"><span class="pre">-inf</span></code> values,
-they are converted to 1 above or below the minimum and maximum finite
-values in <code class="docutils literal notranslate"><span class="pre">im</span></code>, respectively.</p></li>
+<li><p><strong>im</strong> (<em>ndimage</em>) – The image to show. Positive infinity (<code class="docutils literal notranslate"><span class="pre">+inf</span></code>) is replaced by
+<code class="docutils literal notranslate"><span class="pre">vmax</span> <span class="pre">+</span> <span class="pre">1</span></code>, and negative infinity (<code class="docutils literal notranslate"><span class="pre">-inf</span></code>) by <code class="docutils literal notranslate"><span class="pre">vmin</span> <span class="pre">-</span> <span class="pre">1</span></code>,
+placing them above and below the colormap range, respectively.</p></li>
 <li><p><strong>mask</strong> (<em>ndimage</em><em>, </em><em>optional</em>) – An image of the porous material with <code class="docutils literal notranslate"><span class="pre">True</span></code> indicating voxels of
 interest. The <code class="docutils literal notranslate"><span class="pre">False</span></code> voxels are excluded from the <code class="docutils literal notranslate"><span class="pre">vmax</span></code> and
 <code class="docutils literal notranslate"><span class="pre">vmin</span></code> calculation.</p></li>

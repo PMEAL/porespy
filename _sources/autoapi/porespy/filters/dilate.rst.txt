@@ -17,15 +17,18 @@ porespy.filters.dilate
    :type smooth: boolean
    :param method: Controls which method is used. Options are:
 
-                  ========= =============================================================
-                  method    Description
-                  ========= =============================================================
-                  `'dt'`    Uses a distance transform to find all voxels within `r` of
-                            the foreground, then adds them to affect a dilation
-                  `'conv'`  Using a FFT based convolution to find all voxels within `r`
-                            of the foreground (voxels with a value larger than 0), then adds
-                            them to affect a dilation.
-                  ========= =============================================================
+                  ================= =============================================================
+                  method            Description
+                  ================= =============================================================
+                  `'dt'`            Uses a distance transform to find all voxels within `r` of
+                                    the foreground, then adds them to affect a dilation
+                  `'conv'`          Using a FFT based convolution to find all voxels within `r`
+                                    of the foreground (voxels with a value larger than 0), then adds
+                                    them to affect a dilation.
+                  `'brute_force'`   Draws spheres at the phase interface using optimized
+                                    scan-line insertion. Also accepts 'bf'. Requires a
+                                    nonnegative integer radius and a 2D or 3D image.
+                  ================= =============================================================
    :type method: str
 
    :returns: **dilation** -- An image the same size as `im` with the foreground eroded by the specified

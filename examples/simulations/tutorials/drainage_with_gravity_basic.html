@@ -952,6 +952,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/e83a6a99be45fc5810cc6be1dcff34601d13afd1f72aa7b7c2ba274315132632.png" src="../../../_images/e83a6a99be45fc5810cc6be1dcff34601d13afd1f72aa7b7c2ba274315132632.png" />
+</div>
 </div>
 <p>First we’ll compute a reference capillary pressure curve with no gravity effects using the <code class="docutils literal notranslate"><span class="pre">drainage</span></code> function. This function requires us to supply an image of capillary pressure values associated with each voxel.  Typicall one would use the Washburn equation:</p>
 <div class="math notranslate nohighlight">
@@ -983,6 +986,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/3ffd1ac87ad5004f6b75ee2c3716b4c55423d42344938f86aa1339663ed419ca.png" src="../../../_images/3ffd1ac87ad5004f6b75ee2c3716b4c55423d42344938f86aa1339663ed419ca.png" />
+</div>
 </div>
 <p>Both of the above images are colored according to the capillary pressure at which a given voxel was invaded. In the right image we have applied a base-10 logarithm to the values to improve visibility.  The format is handy since it contains the entire invasion sequence in a single image.</p>
 <blockquote>
@@ -1001,6 +1007,9 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Non-wetting Phase Saturation&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/5b00f4728fcaf3e7757052f35bd17393bf66724028cec9bbb857fe21014ce026.png" src="../../../_images/5b00f4728fcaf3e7757052f35bd17393bf66724028cec9bbb857fe21014ce026.png" />
 </div>
 </div>
 <p>Now let’s perform the same experiment but including the gravity effects, by setting <code class="docutils literal notranslate"><span class="pre">g</span></code> to earth’s gravity:</p>
@@ -1022,6 +1031,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/51fd178593b602d0adc07b3caa150349630d762f2203c8b8d05acef8a926bb76.png" src="../../../_images/51fd178593b602d0adc07b3caa150349630d762f2203c8b8d05acef8a926bb76.png" />
+</div>
 </div>
 <p>We can see from the colormap that the invasion pattern is different.  Plotting the capillary pressure curve will make the differences more obvious:</p>
 <div class="cell docutils container">
@@ -1037,6 +1049,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/f3a9927e155374bc0d5936d672d4c97d6aabf9ba021ad404b2a4c77141e93946.png" src="../../../_images/f3a9927e155374bc0d5936d672d4c97d6aabf9ba021ad404b2a4c77141e93946.png" />
+</div>
 </div>
 <p>Combining both plots together for a better comparison:</p>
 <div class="cell docutils container">
@@ -1047,6 +1062,9 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Non-wetting Phase Saturation&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/aff5fc3c939b503b1855f8557c17bf57ae8c08d2555048b7c603122df0320e30.png" src="../../../_images/aff5fc3c939b503b1855f8557c17bf57ae8c08d2555048b7c603122df0320e30.png" />
 </div>
 </div>
 <p>The red curve above is shifted to the right with a lower slope.  This is the expected result since the impact of gravity makes it more difficult for the heavy non-wetting fluid to rise up the domain and penetrate into pores. The decreased slope is also expected since pores are invaded more gradually rather than in a larger percolation event.</p>

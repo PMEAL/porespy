@@ -6,7 +6,9 @@
    "metadata": {},
    "source": [
     "# Predicting diffusive size factors of a rock sample\n",
-    "This tutorial demonstrates how to use PoreSpy's `diffusive_size_factor_AI` and `diffusive_size_factor_DNS` functions to examine the application of the AI-based size factor model on a real rock sample. Due to the computational cost of the DNS method, only a subsection of the image is used in this examples. However, the method can be applied similarly on the entir image of the rock sample."
+    "This tutorial demonstrates how to use PoreSpy's `diffusive_size_factor_AI` and `diffusive_size_factor_DNS` functions to examine the application of the AI-based size factor model on a real rock sample. Due to the computational cost of the DNS method, only a subsection of the image is used in this examples. However, the method can be applied similarly on the entir image of the rock sample.\n",
+    "\n",
+    "This is a computationally intensive example. The full AI/DNS comparison also requires TensorFlow, h5py, scikit-learn, OpenPNM, and the pretrained weights downloaded from `PMEAL/sf-model-lib` in the setup cells below. Loading the bundled image does not require downloading the full rock scan.\n"
    ]
   },
   {
@@ -127,19 +129,36 @@
    "id": "91b55604",
    "metadata": {},
    "source": [
-    "As the image of the rock smaple was large, only a subsection of the image is used in this tutorial for rapid demonstration purposes. We saved a subsection of the Leopard rock sample image of size $100^3$ in PoreSpy's `test/fixtures` folder, which is used for this tutorial. However, the steps to download, read, and slice the rock sample image are provided as markdown cells in the next section for reference."
+    "As the image of the rock smaple was large, only a subsection of the image is used in this tutorial for rapid demonstration purposes. We saved a subsection of the Leopard rock sample image of size $100^3$ in PoreSpy's `test/fixtures` folder, which is used for this tutorial. However, the steps to download, read, and slice the rock sample image are provided as markdown cells in the next section for reference.\n",
+    "\n",
+    "Clone or download the [PoreSpy source repository](https://github.com/PMEAL/porespy) and run this notebook from within that checkout. The small image fixture is included under `test/fixtures`; a `pip` installation alone does not include it. The cell below locates the same fixture from the original notebook folder and the documentation build's copy. The full raw-image download described below is optional and is not needed to use this fixture.\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 5,
    "id": "bae3b470",
-   "metadata": {},
+   "metadata": {
+    "tags": [
+     "image-data-setup"
+    ]
+   },
    "outputs": [],
    "source": [
+    "from pathlib import Path\n",
+    "\n",
+    "for repo_root in (Path.cwd(), *Path.cwd().parents):\n",
+    "    sample_path = repo_root / \"test\" / \"fixtures\" / \"image_Leopard_slice100.npy\"\n",
+    "    if sample_path.is_file():\n",
+    "        break\n",
+    "else:\n",
+    "    raise FileNotFoundError(\n",
+    "        \"image_Leopard_slice100.npy was not found. Run this notebook from \"\n",
+    "        \"within a PoreSpy source checkout containing test/fixtures.\"\n",
+    "    )\n",
+    "\n",
     "voxel_size = 2.25e-6\n",
-    "with open(\"../../../test/fixtures/image_Leopard_slice100.npy\", \"rb\") as f:\n",
-    "    im = np.load(f)"
+    "im = np.load(sample_path)"
    ]
   },
   {
@@ -292,7 +311,7 @@
     }
    ],
    "source": [
-    "snow = ps.networks.snow2(im, boundary_width=0, parallelization=None, voxel_size=voxel_size)\n",
+    "snow = ps.networks.snow2(im, boundary_width=0, parallel_kw=None, voxel_size=voxel_size)\n",
     "regions = snow.regions\n",
     "net = snow.network\n",
     "conns = net[\"throat.conns\"]"

@@ -458,7 +458,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/5a0d0c2b932c48d37f5078e3eb08dd72a98dc6bcc607079c7ef92440ac73358a.png" src="../../../_images/5a0d0c2b932c48d37f5078e3eb08dd72a98dc6bcc607079c7ef92440ac73358a.png" />
+<img alt="../../../_images/ee9d9b22a7b121e29536d94eb311b9c8b8e1224b1a5d809e4cd1b6d938522113.png" src="../../../_images/ee9d9b22a7b121e29536d94eb311b9c8b8e1224b1a5d809e4cd1b6d938522113.png" />
 </div>
 </div>
 </section>
@@ -473,30 +473,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="nn">File ~/work/porespy/porespy/src/porespy/io/_stl.py:338,</span> in <span class="ni">to_stl</span><span class="nt">(im, filename, voxel_size, method, fmt, remove_duplicates, tol, close_faces)</span>
-<span class="g g-Whitespace">    </span><span class="mi">337</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">338</span>     <span class="kn">import</span><span class="w"> </span><span class="nn">trimesh</span>
-<span class="g g-Whitespace">    </span><span class="mi">339</span> <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;trimesh&#39;
-
-<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
-
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">mesh</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">to_stl</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;trimesh&#39;</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
-
-<span class="nn">File ~/work/porespy/porespy/src/porespy/io/_stl.py:341,</span> in <span class="ni">to_stl</span><span class="nt">(im, filename, voxel_size, method, fmt, remove_duplicates, tol, close_faces)</span>
-<span class="g g-Whitespace">    </span><span class="mi">339</span>     <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">340</span>         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;trimesh can be installed with pip install trimesh&quot;</span>
-<span class="ne">--&gt; </span><span class="mi">341</span>         <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">342</span>     <span class="n">mesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">faces</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">face_normals</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">343</span> <span class="k">elif</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s1">&#39;open3d&#39;</span><span class="p">:</span>
-
-<span class="ne">ModuleNotFoundError</span>: trimesh can be installed with pip install trimesh
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;trimesh.Trimesh(vertices.shape=(179868, 3), faces.shape=(59956, 3))&gt;
 </pre></div>
 </div>
 </div>
@@ -513,7 +490,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/00d421d9b7ec51ac99eac54374911ad9f17683116967c58368a26707d3dea6bf.png" src="../../../_images/00d421d9b7ec51ac99eac54374911ad9f17683116967c58368a26707d3dea6bf.png" />
+<img alt="../../../_images/e6a07913c5bf8fb8a7be85eda7e2cd831ab05bcb0c5698ea94491a3eaf260b93.png" src="../../../_images/e6a07913c5bf8fb8a7be85eda7e2cd831ab05bcb0c5698ea94491a3eaf260b93.png" />
 </div>
 </div>
 </section>
@@ -538,6 +515,11 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Closed area: 256.0; open area: 64.0
+</pre></div>
+</div>
+</div>
 </div>
 <p>The flag also works with <code class="docutils literal notranslate"><span class="pre">method='marching-cubes'</span></code>. Coordinates follow the image axis order, multiplied by <code class="docutils literal notranslate"><span class="pre">voxel_size</span></code>. Direct meshes place voxel corners at integer coordinates from 0 to the image shape. Marching cubes preserves its historical padding offset: original voxel samples are at coordinates 1 through the image shape. Open marching-cubes meshes end at those outermost samples, half a voxel inward from the closed caps. Switching the flag preserves internal surface positions.</p>
 <p>The methods have different discretizations: for this image, the marching-cubes interface is at coordinate 4.5 along the first axis and spans 7 × 7 between the outermost samples, while the direct interface is at coordinate 4 and spans 8 × 8. Their areas need not agree.</p>
@@ -550,6 +532,11 @@
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Open marching-cubes area: </span><span class="si">{</span><span class="n">open_mc</span><span class="o">.</span><span class="n">area</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">open_mc</span><span class="o">.</span><span class="n">area</span><span class="p">,</span> <span class="mf">49.0</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">open_mc</span><span class="o">.</span><span class="n">points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="mf">4.5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Open marching-cubes area: 49.0
 </pre></div>
 </div>
 </div>
@@ -569,17 +556,17 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PolyData (0x300af6320)
-  N Cells:    56084
-  N Points:   168252
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PolyData (0x7f8e2c1ab160)
+  N Cells:    60024
+  N Points:   180072
   N Strips:   0
   X Bounds:   5.000e-01, 5.050e+01
   Y Bounds:   5.000e-01, 5.050e+01
   Z Bounds:   5.000e-01, 5.050e+01
   N Arrays:   0
-PolyData (0x300a92b00)
-  N Cells:    56084
-  N Points:   28064
+PolyData (0x7f8e4182f760)
+  N Cells:    60024
+  N Points:   29992
   N Strips:   0
   X Bounds:   5.000e-01, 5.050e+01
   Y Bounds:   5.000e-01, 5.050e+01

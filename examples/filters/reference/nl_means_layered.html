@@ -956,6 +956,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/7ce825a0c8c6c88cd02bd391a60c10b2562c668ec46953317181b7892407495a.png" src="../../../_images/7ce825a0c8c6c88cd02bd391a60c10b2562c668ec46953317181b7892407495a.png" />
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -970,47 +973,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/skimage/restoration/_denoise.py:1102,</span> in <span class="ni">estimate_sigma</span><span class="nt">(image, average_sigmas, channel_axis)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1101</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">-&gt; </span><span class="mi">1102</span>     <span class="kn">import</span><span class="w"> </span><span class="nn">pywt</span>
-<span class="g g-Whitespace">   </span><span class="mi">1103</span> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;pywt&#39;
-
-<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
-
-<span class="ne">ImportError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">filtered_im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">filtered_im</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
-
-<span class="nn">File ~/work/porespy/porespy/src/porespy/filters/_nlmeans.py:75,</span> in <span class="ni">nl_means_layered</span><span class="nt">(im, cores, axis, patch_size, patch_distance, h)</span>
-<span class="g g-Whitespace">     </span><span class="mi">73</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">rescale_intensity</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">in_range</span><span class="o">=</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">p98</span><span class="p">))</span>
-<span class="g g-Whitespace">     </span><span class="mi">74</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">/</span> <span class="n">temp</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-<span class="ne">---&gt; </span><span class="mi">75</span> <span class="n">sigma_est</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">estimate_sigma</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">]))</span>
-<span class="g g-Whitespace">     </span><span class="mi">77</span> <span class="n">kw</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="n">temp</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">78</span>       <span class="s1">&#39;patch_size&#39;</span><span class="p">:</span> <span class="n">patch_size</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">79</span>       <span class="s1">&#39;patch_distance&#39;</span><span class="p">:</span> <span class="n">patch_distance</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">80</span>       <span class="s1">&#39;h&#39;</span><span class="p">:</span> <span class="n">h</span> <span class="o">*</span> <span class="n">sigma_est</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">81</span>       <span class="s1">&#39;fast_mode&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
-<span class="g g-Whitespace">     </span><span class="mi">83</span> <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/skimage/restoration/_denoise.py:1104,</span> in <span class="ni">estimate_sigma</span><span class="nt">(image, average_sigmas, channel_axis)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1102</span>     <span class="kn">import</span><span class="w"> </span><span class="nn">pywt</span>
-<span class="g g-Whitespace">   </span><span class="mi">1103</span> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-<span class="ne">-&gt; </span><span class="mi">1104</span>     <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1105</span>         <span class="s1">&#39;PyWavelets is not installed. Please ensure it is installed in &#39;</span>
-<span class="g g-Whitespace">   </span><span class="mi">1106</span>         <span class="s1">&#39;order to use this function.&#39;</span>
-<span class="g g-Whitespace">   </span><span class="mi">1107</span>     <span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1109</span> <span class="k">if</span> <span class="n">channel_axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<span class="g g-Whitespace">   </span><span class="mi">1110</span>     <span class="n">channel_axis</span> <span class="o">=</span> <span class="n">channel_axis</span> <span class="o">%</span> <span class="n">image</span><span class="o">.</span><span class="n">ndim</span>
-
-<span class="ne">ImportError</span>: PyWavelets is not installed. Please ensure it is installed in order to use this function.
-</pre></div>
-</div>
+<img alt="../../../_images/2fb9dc4ac64a1a199ae2b97697009b0830c294548f295bebe41f8488321e0d69.png" src="../../../_images/2fb9dc4ac64a1a199ae2b97697009b0830c294548f295bebe41f8488321e0d69.png" />
 </div>
 </div>
 </section>
@@ -1027,8 +990,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/e09062b2d0475cee6020f9492c8df55a5e8b47086621a30c0405e2046ab5d61c.png"><img alt="../../../_images/e09062b2d0475cee6020f9492c8df55a5e8b47086621a30c0405e2046ab5d61c.png" src="../../../_images/e09062b2d0475cee6020f9492c8df55a5e8b47086621a30c0405e2046ab5d61c.png" style="width: 583px; height: 583px;" />
-</a>
+<img alt="../../../_images/1417e7831d62558263ac2c3a7631056a94beed2d5b08912331a0d3cdd55a3d5c.png" src="../../../_images/1417e7831d62558263ac2c3a7631056a94beed2d5b08912331a0d3cdd55a3d5c.png" />
 </div>
 </div>
 </section>
@@ -1053,8 +1015,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/123966366662eb41af5f4eae1fc7d79683e5ec2d230563068edbdd9249af4bdd.png"><img alt="../../../_images/123966366662eb41af5f4eae1fc7d79683e5ec2d230563068edbdd9249af4bdd.png" src="../../../_images/123966366662eb41af5f4eae1fc7d79683e5ec2d230563068edbdd9249af4bdd.png" style="width: 1484px; height: 372px;" />
-</a>
+<img alt="../../../_images/8ab4a2f52197baeaa2b5ab4f2c07978e3eb5e49cd4bc01d7a071cb6fe84ba45a.png" src="../../../_images/8ab4a2f52197baeaa2b5ab4f2c07978e3eb5e49cd4bc01d7a071cb6fe84ba45a.png" />
 </div>
 </div>
 </section>
@@ -1079,8 +1040,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/f4f184ad0c3ac1b3f71133821474cf17b1f29fecc5937bdd6906f795d635bd2c.png"><img alt="../../../_images/f4f184ad0c3ac1b3f71133821474cf17b1f29fecc5937bdd6906f795d635bd2c.png" src="../../../_images/f4f184ad0c3ac1b3f71133821474cf17b1f29fecc5937bdd6906f795d635bd2c.png" style="width: 1484px; height: 372px;" />
-</a>
+<img alt="../../../_images/f538061db79155f255a0f01ec9778e8390abad33673892b445da1637698e4097.png" src="../../../_images/f538061db79155f255a0f01ec9778e8390abad33673892b445da1637698e4097.png" />
 </div>
 </div>
 </section>
@@ -1105,8 +1065,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/3865d3c09eab58fd0b1301a1353db30ad73c8f91142fa9711f318aedd237d0ff.png"><img alt="../../../_images/3865d3c09eab58fd0b1301a1353db30ad73c8f91142fa9711f318aedd237d0ff.png" src="../../../_images/3865d3c09eab58fd0b1301a1353db30ad73c8f91142fa9711f318aedd237d0ff.png" style="width: 1484px; height: 372px;" />
-</a>
+<img alt="../../../_images/1e8d6285871f09880d7184db5f64ba4a2e0ce1100102928008519bcffbc001bd.png" src="../../../_images/1e8d6285871f09880d7184db5f64ba4a2e0ce1100102928008519bcffbc001bd.png" />
 </div>
 </div>
 </section>
@@ -1132,8 +1091,7 @@ smoother image, at the expense of blurring features. For a Gaussian noise of sta
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../../_images/b5e0ff2ee6c0f2b4ff0638bee038366c622fea6950cdf4506ef5c9c44b2fd9e9.png"><img alt="../../../_images/b5e0ff2ee6c0f2b4ff0638bee038366c622fea6950cdf4506ef5c9c44b2fd9e9.png" src="../../../_images/b5e0ff2ee6c0f2b4ff0638bee038366c622fea6950cdf4506ef5c9c44b2fd9e9.png" style="width: 1484px; height: 372px;" />
-</a>
+<img alt="../../../_images/64299d2143503bc8fd4cf515503910519e7cbadbfa317e73d81ca0acad0ebd9b.png" src="../../../_images/64299d2143503bc8fd4cf515503910519e7cbadbfa317e73d81ca0acad0ebd9b.png" />
 </div>
 </div>
 </section>

@@ -1,0 +1,56 @@
+porespy.beta.fibers
+===================
+
+.. py:function:: porespy.beta.fibers(shape, r, n=None, porosity=None, phi_max=90, theta_max=90, maxiter=10, seed=None)
+
+   Generate overlapping fibers with spatially uniform random placement.
+
+   :param shape: Image dimensions in [Nx, Ny, Nz] order.
+   :type shape: sequence of three ints
+   :param r: Positive fiber radius in voxels.
+   :type r: float
+   :param n: Number of candidate lines to sample. Some lines miss the image.
+             Specify exactly one of ``n`` and ``porosity``.
+   :type n: int, optional
+   :param porosity: Target void fraction, strictly between zero and one. The achieved
+                    porosity is approximate because fibers overlap and are voxelized.
+   :type porosity: float, optional
+   :param phi_max: Maximum elevation above or below the XY plane, in degrees, from 0 to
+                   90. Zero confines fiber axes to XY planes. Elevation is sampled
+                   uniformly in its sine, rather than uniformly in angle.
+   :type phi_max: float
+   :param theta_max: Maximum in-plane rotation away from the X direction, in degrees,
+                     from 0 to 90. Zero confines axes to the XZ plane. Both angular limits
+                     set to zero give X-aligned fibers; both set to 90 give isotropic axes.
+   :type theta_max: float
+   :param maxiter: Maximum number of batches used to approach a target porosity. Stops
+                   when the void fraction is within 0.01 of the target or below it.
+   :type maxiter: int
+   :param seed: Seed for NumPy's global random generator. If omitted, the current
+                global state is used, as in the other fiber generators.
+   :type seed: int, optional
+
+   :returns: **im** -- Boolean image with True indicating void and False indicating fibers.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   For each direction, line offsets are sampled uniformly in a perpendicular
+   disk enclosing the image and its radius padding. Sampling disk radius
+   proportional to the square root of a uniform variate gives uniform area
+   density. Lines are allowed to miss the image, avoiding the position and
+   direction bias of repeatedly sampling until a line intersects it.
+
+   Lines extend beyond the padded image, are rasterized, and are thickened
+   with a distance transform. The output therefore has voxel discretization
+   error, especially for small radii. Finite samples need not have exactly
+   uniform density or exactly isotropic orientation.
+
+   .. rubric:: Examples
+
+   >>> from porespy.beta import fibers
+   >>> im = fibers([50, 50, 50], r=2, n=100, seed=0)
+   >>> mat = fibers([50, 50, 50], r=2, n=100, phi_max=0, seed=0)
+   >>> aligned = fibers([50, 50, 50], r=2, n=100,
+   ...                  phi_max=0, theta_max=0, seed=0)
+

@@ -940,6 +940,28 @@
 </div>
 </div>
 </div>
+</section>
+<section id="example-data">
+<h2>Example data<a class="headerlink" href="#example-data" title="Link to this heading">#</a></h2>
+<p>This tutorial uses the TIFF images included in the <a class="reference external" href="https://github.com/PMEAL/porespy/tree/dev/docs/_static/images">PoreSpy source repository</a>. Clone or download the repository and run this notebook from within that checkout; installing PoreSpy with <code class="docutils literal notranslate"><span class="pre">pip</span></code> alone does not include these example files. The following cell locates the data from either the original notebook folder or the documentation build’s copy. To work with your own images, replace <code class="docutils literal notranslate"><span class="pre">image_dir</span></code> with the path to your image folder.</p>
+<div class="cell tag_image-data-setup docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="c1"># Find the source checkout from either examples/ or docs/examples/.</span>
+<span class="k">for</span> <span class="n">repo_root</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="o">*</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">):</span>
+    <span class="n">image_dir</span> <span class="o">=</span> <span class="n">repo_root</span> <span class="o">/</span> <span class="s2">&quot;docs&quot;</span> <span class="o">/</span> <span class="s2">&quot;_static&quot;</span> <span class="o">/</span> <span class="s2">&quot;images&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">image_dir</span> <span class="o">/</span> <span class="s2">&quot;Sample 1.tif&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="k">break</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+        <span class="s2">&quot;Sample 1.tif was not found. Run this notebook from within a PoreSpy &quot;</span>
+        <span class="s2">&quot;source checkout containing docs/_static/images.&quot;</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
 <p>Let’s generate a fake image and add some noise that is ‘easy’ to deal with:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -951,6 +973,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../_images/2db391f99dcddd9bacc534da1a1e8f32aeaba1940390da4a743f3bd9e8fb594f.png" src="../../_images/2db391f99dcddd9bacc534da1a1e8f32aeaba1940390da4a743f3bd9e8fb594f.png" />
+</div>
 </div>
 <p>The above image now contains some noise in each phase, which is more realistic, though as we will see it not close to reality.  Let’s look at a histogram of this image:</p>
 <div class="cell docutils container">
@@ -960,6 +985,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../_images/07c953814e56ed1fccf8921c2941147926c4285ec31f25029a97a5bf1fd17805.png" src="../../_images/07c953814e56ed1fccf8921c2941147926c4285ec31f25029a97a5bf1fd17805.png" />
+</div>
 </div>
 <p>We can see above that all pixels with a value less than 0.5 belong to the dark phase, while the other pixels belong to the light phase.  A simple global threshold can reproduce the original image perfectly:</p>
 <div class="cell docutils container">
@@ -968,6 +996,9 @@
 <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">new_im</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/2d4dd52655215280f4b637b37b79d83904209cc84c6aec91bb7567a7d5f4446d.png" src="../../_images/2d4dd52655215280f4b637b37b79d83904209cc84c6aec91bb7567a7d5f4446d.png" />
 </div>
 </div>
 <p>Now let’s look at a more realistic noise distribution, though still artificially generated:</p>
@@ -981,6 +1012,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../_images/6d0ae93ff038b19f274d1f8bbfe13923f6942cc64dba4cc184050a96a9152ae5.png" src="../../_images/6d0ae93ff038b19f274d1f8bbfe13923f6942cc64dba4cc184050a96a9152ae5.png" />
+</div>
 </div>
 <p>Now we can see that the noise is much less separated, and in fact the tails of the distributions just touch each other in the middle.  Let’s see how the simple threshold we used above would work now:</p>
 <div class="cell docutils container">
@@ -989,6 +1023,9 @@
 <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">new_im</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/3a8fea15c5eed3ca0037a6db0a56cd68628b42d9341661f8f3b28206e8dff86f.png" src="../../_images/3a8fea15c5eed3ca0037a6db0a56cd68628b42d9341661f8f3b28206e8dff86f.png" />
 </div>
 </div>
 <p>Now there are a few pixels in the dark phase which have been identified as bright and vice-versa. Let’s take this further but putting more extreme, but more realistic noise:</p>
@@ -1003,11 +1040,14 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../_images/e18132632e235bc2851fe4af59ec598d9ae041b75d8181ad7f0cef6a378c3f0b.png" src="../../_images/e18132632e235bc2851fe4af59ec598d9ae041b75d8181ad7f0cef6a378c3f0b.png" />
 </div>
-<p>In the above case our eyes can differentiate the light and dark phases pretty well, but the histogram is fully merged into one, and the global threshold produces a very problematic result. Just to show this is not an exageration, below is an actual slice of a tomogram taken of an electrospun flow-battery electrode:</p>
+</div>
+<p>In the above case our eyes can differentiate the light and dark phases pretty well, but the histogram is fully merged into one, and the global threshold produces a very problematic result. Just to show this is not an exaggeration, below is an actual slice of a tomogram taken of an electrospun flow-battery electrode:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="n">imageio</span><span class="o">.</span><span class="n">volread</span><span class="p">(</span><span class="s2">&quot;../../docs/_static/images/Sample 1.tif&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="n">imageio</span><span class="o">.</span><span class="n">volread</span><span class="p">(</span><span class="n">image_dir</span> <span class="o">/</span> <span class="s2">&quot;Sample 1.tif&quot;</span><span class="p">)</span>
 <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
@@ -1017,53 +1057,14 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">im</span> <span class="o">=</span> <span class="n">imageio</span><span class="o">.</span><span class="n">volread</span><span class="p">(</span><span class="s2">&quot;../../docs/_static/images/Sample 1.tif&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/imageio/v2.py:522,</span> in <span class="ni">volread</span><span class="nt">(uri, format, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">520</span> <span class="n">imopen_args</span> <span class="o">=</span> <span class="n">decypher_format_arg</span><span class="p">(</span><span class="nb">format</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">521</span> <span class="n">imopen_args</span><span class="p">[</span><span class="s2">&quot;legacy_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="ne">--&gt; </span><span class="mi">522</span> <span class="k">with</span> <span class="n">imopen</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="s2">&quot;rv&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">imopen_args</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">523</span>     <span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/imageio/core/imopen.py:113,</span> in <span class="ni">imopen</span><span class="nt">(uri, io_mode, plugin, extension, format_hint, legacy_mode, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">111</span>     <span class="n">request</span><span class="o">.</span><span class="n">format_hint</span> <span class="o">=</span> <span class="n">format_hint</span>
-<span class="g g-Whitespace">    </span><span class="mi">112</span> <span class="k">else</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">113</span>     <span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">io_mode</span><span class="p">,</span> <span class="n">format_hint</span><span class="o">=</span><span class="n">format_hint</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">115</span> <span class="n">source</span> <span class="o">=</span> <span class="s2">&quot;&lt;bytes&gt;&quot;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span> <span class="k">else</span> <span class="n">uri</span>
-<span class="g g-Whitespace">    </span><span class="mi">117</span> <span class="c1"># fast-path based on plugin</span>
-<span class="g g-Whitespace">    </span><span class="mi">118</span> <span class="c1"># (except in legacy mode)</span>
-
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/imageio/core/request.py:250,</span> in <span class="ni">Request.__init__</span><span class="nt">(self, uri, mode, extension, format_hint, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">247</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Request.Mode: </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">249</span> <span class="c1"># Parse what was given</span>
-<span class="ne">--&gt; </span><span class="mi">250</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">252</span> <span class="c1"># Set extension</span>
-<span class="g g-Whitespace">    </span><span class="mi">253</span> <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-
-<span class="nn">File ~/work/porespy/porespy/.venv/lib/python3.13/site-packages/imageio/core/request.py:410,</span> in <span class="ni">Request._parse_uri</span><span class="nt">(self, uri)</span>
-<span class="g g-Whitespace">    </span><span class="mi">407</span> <span class="k">if</span> <span class="n">is_read_request</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">408</span>     <span class="c1"># Reading: check that the file exists (but is allowed a dir)</span>
-<span class="g g-Whitespace">    </span><span class="mi">409</span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">410</span>         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;No such file: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">fn</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">411</span> <span class="k">else</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">412</span>     <span class="c1"># Writing: check that the directory to write to does exist</span>
-<span class="g g-Whitespace">    </span><span class="mi">413</span>     <span class="n">dn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
-
-<span class="ne">FileNotFoundError</span>: No such file: &#39;/home/runner/work/porespy/porespy/docs/docs/_static/images/Sample 1.tif&#39;
-</pre></div>
+<img alt="../../_images/472b3841ab27cf5f22aa0b074f387cfc72140e9910be0f4bc57d2f08fdc3cd54.png" src="../../_images/472b3841ab27cf5f22aa0b074f387cfc72140e9910be0f4bc57d2f08fdc3cd54.png" />
 </div>
 </div>
-</div>
-<p>In the above montage we can see the same effect as the previous artificial case…noisey but usable image, a single histogram, and a segmented image with a lot of falsely labeled pixels.  In the following sections we will explore how to fix this.</p>
+<p>In the above montage we can see the same effect as the previous artificial case…noisy but usable image, a single histogram, and a segmented image with a lot of falsely labeled pixels.  In the following sections we will explore how to fix this.</p>
 </section>
 <section id="noise-filtering">
 <h2>Noise Filtering<a class="headerlink" href="#noise-filtering" title="Link to this heading">#</a></h2>
-<p>The simplest way to describe the noise above is that some pixels which we know lie in the dark region have intensity values brighter than some pixels which we know lie in the bright regions, and vice-versa.  This leads to a false labeling of pixels when a threshold is applied.  The reason that our eyes can still see dark and light regions, depsite the noise, is that the <em>majority</em> of pixels in the dark region are darker than the bright regions, and vice-versa.  Our eyes can do some sort of averaging on the data to discard or correct for the spurious intensity pixels.</p>
+<p>The simplest way to describe the noise above is that some pixels which we know lie in the dark region have intensity values brighter than some pixels which we know lie in the bright regions, and vice-versa.  This leads to a false labeling of pixels when a threshold is applied.  The reason that our eyes can still see dark and light regions, despite the noise, is that the <em>majority</em> of pixels in the dark region are darker than the bright regions, and vice-versa.  Our eyes can do some sort of averaging on the data to discard or correct for the spurious intensity pixels.</p>
 <blockquote>
 <div><p>We just need to find a way to get the computer to recognize this!</p>
 </div></blockquote>
@@ -1074,7 +1075,7 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spim</span>
 
-<span class="n">im</span> <span class="o">=</span> <span class="n">imageio</span><span class="o">.</span><span class="n">volread</span><span class="p">(</span><span class="s2">&quot;../../docs/_static/images/Sample 1.tif&quot;</span><span class="p">)</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">imageio</span><span class="o">.</span><span class="n">volread</span><span class="p">(</span><span class="n">image_dir</span> <span class="o">/</span> <span class="s2">&quot;Sample 1.tif&quot;</span><span class="p">)</span>
 <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
 <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
 <span class="n">im1</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">uniform_filter</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -1092,7 +1093,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7947c5efa7c45dab584ec283aacf4da6eda01aa07c466024c8bca44251f0c340.png" src="../../_images/7947c5efa7c45dab584ec283aacf4da6eda01aa07c466024c8bca44251f0c340.png" />
+<img alt="../../_images/a1e4f24e4d1b86d56e7bed9ea252e1bac0432acc7198c55b1b012088f36026df.png" src="../../_images/a1e4f24e4d1b86d56e7bed9ea252e1bac0432acc7198c55b1b012088f36026df.png" />
 </div>
 </div>
 <p>The above results are not too bad, but as noted in the title of this subsection, these filters do not preserve edges.  Consider the following artificial case:</p>
@@ -1110,7 +1111,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/07432ba28ec36164b4bcf06c225713570ac7e9c57d77ad3c7a472b6e553bb708.png" src="../../_images/07432ba28ec36164b4bcf06c225713570ac7e9c57d77ad3c7a472b6e553bb708.png" />
+<img alt="../../_images/4756cc6ed4f43afa310541d7bcb1fe7f515a30214e8e2d758e0a1ad07283fb8d.png" src="../../_images/4756cc6ed4f43afa310541d7bcb1fe7f515a30214e8e2d758e0a1ad07283fb8d.png" />
 </div>
 </div>
 <p>In the bottom row above it can be seen that the original image is not recovered upon applying the threshold. The reason for this is that the filters merged information from the entire neighborhood without regard for whether those values were high or low (other than the usual weighting). This means that edges are blurred and some information is lost.  Although these filters can do a passable job if the noise is not too bad, in the next section we will look at some fancier filters for this job.</p>
@@ -1122,7 +1123,7 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">skimage.restoration</span><span class="w"> </span><span class="kn">import</span> <span class="n">estimate_sigma</span><span class="p">,</span> <span class="n">non_local_means</span>
 
-<span class="n">im</span> <span class="o">=</span> <span class="n">imageio</span><span class="o">.</span><span class="n">volread</span><span class="p">(</span><span class="s2">&quot;../../docs/_static/images/Sample 1.tif&quot;</span><span class="p">)</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">imageio</span><span class="o">.</span><span class="n">volread</span><span class="p">(</span><span class="n">image_dir</span> <span class="o">/</span> <span class="s2">&quot;Sample 1.tif&quot;</span><span class="p">)</span>
 <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
 <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
 <span class="n">im1</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">median_filter</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -1141,7 +1142,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/d769f797d328e1b078435f3f72f5f4eb9636d22ec1d5e3adcff84a62f1bcad6a.png" src="../../_images/d769f797d328e1b078435f3f72f5f4eb9636d22ec1d5e3adcff84a62f1bcad6a.png" />
+<img alt="../../_images/a1d0adad203655c786632bd7d8a3f1906b886bdbba15171533aaeba334436faf.png" src="../../_images/a1d0adad203655c786632bd7d8a3f1906b886bdbba15171533aaeba334436faf.png" />
 </div>
 </div>
 <p>In the above montage the middle image shows the median filter and the edges are visibly less blurred than the gaussian and uniform filters used in the previous section.  The result after threshold is also better.  The right column above shows the non-local means filter and the result is clearly superior.  This was done without even attempting to optimize the various adjustable parameters, which will be explored below.</p>
@@ -1155,13 +1156,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/4c922c6d1bf7d7108fc3290d714e09b2be183991603d521e11ed1a0c15a21934.png" src="../../_images/4c922c6d1bf7d7108fc3290d714e09b2be183991603d521e11ed1a0c15a21934.png" />
+<img alt="../../_images/c1a5292b23a79d4278091c366fb2b9b095535636947dd5710dcd74819ec50741.png" src="../../_images/c1a5292b23a79d4278091c366fb2b9b095535636947dd5710dcd74819ec50741.png" />
 </div>
 </div>
 <p>The three histograms above show the distribution of pixel values before filtering, after the median filter, and after the non-local means filter.  The long tail on the righthand side of the non-local means histogram is bright pixels which have now been separated from the dark ones..thought the two histograms will overlap quite a bit.  Note that the solid volume fraction of the material is quite low so there are not a lot of bright pixels, hence the histogram for the bright pixels is not very tall.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="n">imageio</span><span class="o">.</span><span class="n">volread</span><span class="p">(</span><span class="s2">&quot;../../docs/_static/images/Sample 1.tif&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="n">imageio</span><span class="o">.</span><span class="n">volread</span><span class="p">(</span><span class="n">image_dir</span> <span class="o">/</span> <span class="s2">&quot;Sample 1.tif&quot;</span><span class="p">)</span>
 <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
 <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
 <span class="n">s</span> <span class="o">=</span> <span class="n">estimate_sigma</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
@@ -1201,7 +1202,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ced342bf8cb93d6437079850965cc9b2f0b456174353e05da093614bb66b32ef.png" src="../../_images/ced342bf8cb93d6437079850965cc9b2f0b456174353e05da093614bb66b32ef.png" />
+<img alt="../../_images/9229fd76be7cb540e42db8442bc2d2871b834c74b2b50377874dc1186e7d18dd.png" src="../../_images/9229fd76be7cb540e42db8442bc2d2871b834c74b2b50377874dc1186e7d18dd.png" />
 </div>
 </div>
 <p>The rightmost figure above is probably the most smooth in terms of noise removal and shows the cleanest segmentation, though only barely better.</p>
@@ -1237,6 +1238,7 @@
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-noise-problem">The Noise Problem</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-data">Example data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#noise-filtering">Noise Filtering</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#non-edge-preserving-filters">Non-Edge Preserving Filters</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#edge-preserving-filters">Edge Preserving Filters</a></li>

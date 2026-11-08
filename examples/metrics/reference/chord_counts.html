@@ -951,6 +951,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/3bf89e7902399af2acd764425b1c8818b726b72220f8f81bbc021f2241889e99.png" src="../../../_images/3bf89e7902399af2acd764425b1c8818b726b72220f8f81bbc021f2241889e99.png" />
+</div>
 </div>
 <p>Now the test image is ready to be passed to <code class="docutils literal notranslate"><span class="pre">chord_counts</span></code>. The method returns a 1D array. Each element in the array corresponds to the length of each chord. A histogram of the chord length array can be plotted:</p>
 <div class="cell docutils container">
@@ -963,6 +966,13 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:1175: FutureWarning: `RegionProperties.filled_area` is deprecated starting in version 0.26 and will be removed in version 2.0. Use `RegionProperties.area_filled` instead. 
+  chord_lens = np.array([i.filled_area for i in props], dtype=int)
+</pre></div>
+</div>
+<img alt="../../../_images/a62740bfee77193a4c9700e67c7779e4bc38309e61ff1369f0df0c65a6229014.png" src="../../../_images/a62740bfee77193a4c9700e67c7779e4bc38309e61ff1369f0df0c65a6229014.png" />
+</div>
 </div>
 <p>An alternative to the histogram, we can use <code class="docutils literal notranslate"><span class="pre">numpy.bincount</span></code> that gives the number of chords of each length and can be plotted using <code class="docutils literal notranslate"><span class="pre">plt.plot</span></code>. The resulting plot is similar to the histogram plot with a high number of bins:</p>
 <div class="cell docutils container">
@@ -973,6 +983,9 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;the number of chords of each length&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/558e91e011968b7891e758fc5bba249c4ef846efc379bdb5393b83580f957293.png" src="../../../_images/558e91e011968b7891e758fc5bba249c4ef846efc379bdb5393b83580f957293.png" />
 </div>
 </div>
 <div class="cell docutils container">

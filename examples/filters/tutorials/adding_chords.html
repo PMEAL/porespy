@@ -961,6 +961,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/4d4661b14ae8b796e47f94a0fdf0a0e4b895ce35f94dc074c10fa7a4edcfdf02.png" src="../../../_images/4d4661b14ae8b796e47f94a0fdf0a0e4b895ce35f94dc074c10fa7a4edcfdf02.png" />
+</div>
 </div>
 <p>Determining chord-length distributions requires first adding chords to the image, which is done using the <code class="docutils literal notranslate"><span class="pre">apply_chords</span></code> function.  The following code applies chords to the image in the x-direction (along <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>), then applies them in the y-direction (<code class="docutils literal notranslate"><span class="pre">axis=1</span></code>).  The two images are then plotted using <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>.</p>
 <div class="cell docutils container">
@@ -974,6 +977,9 @@
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/0b02a0a5d5aff8ef6fd3c8d494f04a795a6488222b9ef1fa4f8e6b0b4b3fc9d4.png" src="../../../_images/0b02a0a5d5aff8ef6fd3c8d494f04a795a6488222b9ef1fa4f8e6b0b4b3fc9d4.png" />
 </div>
 </div>
 <p>Note that none of the chords touch the edge of the image.  These chords are trimmed by default since they are artificially shorter than they should be and would skew the results.  This behavior is optional and these chords can be kept by setting <code class="docutils literal notranslate"><span class="pre">trim_edges=False</span></code>.</p>
@@ -990,12 +996,21 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/8fc7bb75d836c8162a19f36d5cb8d1ec157b1a4e3f71a3dc2f050c16c31242e1.png" src="../../../_images/8fc7bb75d836c8162a19f36d5cb8d1ec157b1a4e3f71a3dc2f050c16c31242e1.png" />
+</div>
 </div>
 <p>Although the above images are useful for quick visualization, they are not quantitative.  To get quantitative chord length distributions, pass the chord image(s) to the <code class="docutils literal notranslate"><span class="pre">chord_length_distribution</span></code> functions in the <code class="docutils literal notranslate"><span class="pre">metrics</span></code> submodule:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data_x</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">chord_length_distribution</span><span class="p">(</span><span class="n">crds_x</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
 <span class="n">data_y</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">chord_length_distribution</span><span class="p">(</span><span class="n">crds_y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:1175: FutureWarning: `RegionProperties.filled_area` is deprecated starting in version 0.26 and will be removed in version 2.0. Use `RegionProperties.area_filled` instead. 
+  chord_lens = np.array([i.filled_area for i in props], dtype=int)
 </pre></div>
 </div>
 </div>
@@ -1009,7 +1024,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-Results of chord_length_distribution generated at Wed Oct 21 03:07:46 2026
+Results of chord_length_distribution generated at Sun Nov  8 04:26:40 2026
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 L                         Array of size (25,)
 pdf                       Array of size (25,)
@@ -1038,6 +1053,9 @@ bin_widths                Array of size (25,)
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/307aa30a64fcb9b87e9806fa5dc9ecc68630b7b1232ef248bb0b50dea9cc3136.png" src="../../../_images/307aa30a64fcb9b87e9806fa5dc9ecc68630b7b1232ef248bb0b50dea9cc3136.png" />
+</div>
 </div>
 <p>The key point to see here is that the blue bars are for the y-direction, which was the elongated direction, and as expected they show a tendency toward longer chords.</p>
 </section>
@@ -1052,6 +1070,9 @@ bin_widths                Array of size (25,)
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/07a8c3ac4c67dc59aca9de40491db83fb928addf2b1825c07b6edbaff40b4f9b.png" src="../../../_images/07a8c3ac4c67dc59aca9de40491db83fb928addf2b1825c07b6edbaff40b4f9b.png" />
+</div>
 </div>
 <p>As above, we must apply chords to the image then pass the chord image to the <code class="docutils literal notranslate"><span class="pre">chord_length_distribution</span></code> function:</p>
 <div class="cell docutils container">
@@ -1063,6 +1084,9 @@ bin_widths                Array of size (25,)
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/49407521e78f5a7a3dcfb5bb28b3ccf29fa5e1da3335050ef953cba2976875e7.png" src="../../../_images/49407521e78f5a7a3dcfb5bb28b3ccf29fa5e1da3335050ef953cba2976875e7.png" />
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1073,6 +1097,13 @@ bin_widths                Array of size (25,)
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Frequency&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/src/porespy/metrics/_funcs.py:1175: FutureWarning: `RegionProperties.filled_area` is deprecated starting in version 0.26 and will be removed in version 2.0. Use `RegionProperties.area_filled` instead. 
+  chord_lens = np.array([i.filled_area for i in props], dtype=int)
+</pre></div>
+</div>
+<img alt="../../../_images/9883c4110e64954ae930e3fbfd44866d9314802b65abe1b45ec00e3eafc9ae86.png" src="../../../_images/9883c4110e64954ae930e3fbfd44866d9314802b65abe1b45ec00e3eafc9ae86.png" />
 </div>
 </div>
 </section>

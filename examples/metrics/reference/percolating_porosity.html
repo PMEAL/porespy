@@ -928,7 +928,7 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="percolating-porosity">
 <h1><code class="docutils literal notranslate"><span class="pre">percolating_porosity</span></code><a class="headerlink" href="#percolating-porosity" title="Link to this heading">#</a></h1>
-<p>This function computes the fraction of the void space which percolates along a given axis or between specified inlets and outlets.</p>
+<p>This function computes the fraction of the entire image occupied by void space which percolates along a given axis or between specified inlets and outlets. The number of percolating void voxels is divided by the total number of voxels in the image, including solid voxels.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ps</span>
@@ -958,6 +958,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/ceb9f2fbe38bc310b48d80404e741bdea69c648cafbf7fd678d4ed99b8e66520.png" src="../../../_images/ceb9f2fbe38bc310b48d80404e741bdea69c648cafbf7fd678d4ed99b8e66520.png" />
+</div>
 </div>
 </section>
 <section id="axis-vs-inlets-and-outlets">
@@ -971,6 +974,9 @@
 <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/9b8eb7113e04308c37c68dbf154efad002ba826c27f0ac6a275234acffef8a6a.png" src="../../../_images/9b8eb7113e04308c37c68dbf154efad002ba826c27f0ac6a275234acffef8a6a.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -991,7 +997,7 @@
 </section>
 <section id="conn">
 <h2><code class="docutils literal notranslate"><span class="pre">conn</span></code><a class="headerlink" href="#conn" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">conn</span></code> argument can be set to <code class="docutils literal notranslate"><span class="pre">min</span></code> or <code class="docutils literal notranslate"><span class="pre">max</span></code> and controls how pixels must be connected when looking for percolation.  For <code class="docutils literal notranslate"><span class="pre">min</span></code> this means 4 and 8 neighbors in 2D and 3D respectively, while <code class="docutils literal notranslate"><span class="pre">max</span></code> means 8 and 26 for 3D.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">conn</span></code> argument can be set to <code class="docutils literal notranslate"><span class="pre">min</span></code> or <code class="docutils literal notranslate"><span class="pre">max</span></code> and controls how pixels must be connected when looking for percolation.  For <code class="docutils literal notranslate"><span class="pre">min</span></code> this means 4 neighbors in 2D and 6 in 3D, while <code class="docutils literal notranslate"><span class="pre">max</span></code> means 8 neighbors in 2D and 26 in 3D.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">([</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="n">porosity</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
@@ -1000,6 +1006,9 @@
 <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/a8ebefe8cb709fa6547981c616ff2c013f3832e0fa03ff0fe2e8da6809444911.png" src="../../../_images/a8ebefe8cb709fa6547981c616ff2c013f3832e0fa03ff0fe2e8da6809444911.png" />
 </div>
 </div>
 <p>The above image has a cluster on the left side which is only connected to the percolating cluster via corners, so the percolating porosity will differ depending on the <code class="docutils literal notranslate"><span class="pre">conn</span></code> argument.</p>

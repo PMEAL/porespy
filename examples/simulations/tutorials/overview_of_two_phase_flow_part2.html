@@ -962,6 +962,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/13b36a30de7005fe52847ba7fc10434619a011f994186e6fe0f334cc68b79eec.png" src="../../../_images/13b36a30de7005fe52847ba7fc10434619a011f994186e6fe0f334cc68b79eec.png" />
+</div>
 </div>
 </section>
 <section id="pressure-based-imbibition">
@@ -1001,6 +1004,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/7f72de9adfba9434c83da243e7a8b09b4befa4fe5261bc515df7e0e8af859557.png" src="../../../_images/7f72de9adfba9434c83da243e7a8b09b4befa4fe5261bc515df7e0e8af859557.png" />
+</div>
 </div>
 </section>
 <section id="obtaining-specific-fluid-configurations">
@@ -1025,6 +1031,7 @@
  0.99903042 0.99913716 0.99935065 0.99951966 0.99966198 0.99983989]
 </pre></div>
 </div>
+<img alt="../../../_images/0cd1bea46d491549dfafc79e8be573fbc174b163a4839466f2b7fd8d3066bafe.png" src="../../../_images/0cd1bea46d491549dfafc79e8be573fbc174b163a4839466f2b7fd8d3066bafe.png" />
 </div>
 </div>
 <p>There is one very important <em>gotcha</em> to be aware of here.  It is not advisable to use an arbitrary value of saturation when applying the threshold. This is will (almost) never give the actual saturation requested. This is because the simulation occurs in discrete steps, so the saturation jumps between values of <code class="docutils literal notranslate"><span class="pre">S</span></code>. Instead it is recommended to find the unique values of <code class="docutils literal notranslate"><span class="pre">Snwp</span></code> in <code class="docutils literal notranslate"><span class="pre">im_snwp</span></code> and use those to perform the threshold, as we done above.  This will ensure that the result image will have the expected saturation.</p>
@@ -1077,6 +1084,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/722d1740351de2a2deec0ec0f3ee369d04ce1ee7afeeb06f30da6f7f1514e111.png" src="../../../_images/722d1740351de2a2deec0ec0f3ee369d04ce1ee7afeeb06f30da6f7f1514e111.png" />
+</div>
 </div>
 <p>The above process is laborious, so PoreSpy offers a function to accomplish the same thing:</p>
 <div class="cell docutils container">
@@ -1094,6 +1104,9 @@
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">]);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/6ef57196642de2d94f443e1d5655d100f7f25ec83dc9b2ac34251d9073b2d60c.png" src="../../../_images/6ef57196642de2d94f443e1d5655d100f7f25ec83dc9b2ac34251d9073b2d60c.png" />
 </div>
 </div>
 </section>
@@ -1139,6 +1152,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/cc6bb01f0f4a182eb0f432adbf0590cab20c6145fa02e36b0da5ea9dd0161073.png" src="../../../_images/cc6bb01f0f4a182eb0f432adbf0590cab20c6145fa02e36b0da5ea9dd0161073.png" />
+</div>
 </div>
 </section>
 <section id="incorporating-trapping-and-residual-phase-in-imbibition">
@@ -1171,6 +1187,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/0205ab8495854d8692f70af1a23a4d337352844b1992ce7510be345cbee039ac.png" src="../../../_images/0205ab8495854d8692f70af1a23a4d337352844b1992ce7510be345cbee039ac.png" />
+</div>
 </div>
 <p>In the sequence map the trapped voxels are indicated by <code class="docutils literal notranslate"><span class="pre">-1</span></code>, which is also the case for the saturation map.  This allows for wetting phase configurations to be generated using thresholding (i.e. <code class="docutils literal notranslate"><span class="pre">Swp</span> <span class="pre">=</span> <span class="pre">im_snwp</span> <span class="pre">&gt;</span> <span class="pre">p</span></code>). In the capillary pressure map the trapped non-wetting phase is indicated by <code class="docutils literal notranslate"><span class="pre">-inf</span></code>, which is physically consistent with the fact that these voxels would be filled with non-wetting phase at all pressures.</p>
 <p>As usual generating a capillary pressure is done by applying the necessary thresholds to the capillary pressure map.  Using the built-in PoreSpy function yields:</p>
@@ -1196,6 +1215,9 @@
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">]);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/0c9b9b02f5bafb600940bd2bc622e3552be180d49867dfdc23a9b07f204b9412.png" src="../../../_images/0c9b9b02f5bafb600940bd2bc622e3552be180d49867dfdc23a9b07f204b9412.png" />
 </div>
 </div>
 </section>
@@ -1230,6 +1252,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/4a6ee446573e7bf05fabb3917405cdab53a7b91ea9a7342c03348314c472e24f.png" src="../../../_images/4a6ee446573e7bf05fabb3917405cdab53a7b91ea9a7342c03348314c472e24f.png" />
+</div>
 </div>
 <p>These results contain both residual wetting phase and trapped non-wetting phase. In the sequence map the residual wetting phase is labelled with <code class="docutils literal notranslate"><span class="pre">0</span></code> since it is invaded before the first step, and the trapped non-wetting phase is labelled with <code class="docutils literal notranslate"><span class="pre">-1</span></code>.  In the saturation map the trapped non-wetting phase is also labelled with <code class="docutils literal notranslate"><span class="pre">-1</span></code>, while the residual wetting phase has a value <code class="docutils literal notranslate"><span class="pre">1-Swpr</span></code>. This is consistent with the fact that the non-wetting phase saturation never reached <code class="docutils literal notranslate"><span class="pre">1.0</span></code>. Lastly, the capillary pressure map has <code class="docutils literal notranslate"><span class="pre">-inf</span></code> for trapped non-wetting phase and <code class="docutils literal notranslate"><span class="pre">+inf</span></code> for residual wetting phase. This represents the fact that not all wetting phase is displaced at <code class="docutils literal notranslate"><span class="pre">+inf</span></code> (i.e. it becomes residual wetting phase) and not all non-wetting phase is displaced even at <code class="docutils literal notranslate"><span class="pre">-inf</span></code> hence it becomes trapped.</p>
 <p>Plotting the capillary pressure curve shows plateaus at both <code class="docutils literal notranslate"><span class="pre">Snwp</span> <span class="pre">&lt;</span> <span class="pre">1.0</span></code> and <code class="docutils literal notranslate"><span class="pre">Snwp</span> <span class="pre">&gt;</span> <span class="pre">0.0</span></code>:</p>
@@ -1256,6 +1281,9 @@
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">]);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/a5f971edd575d08186d8a55f9659faeb543342e4ed7a1f17538be8c2285af2b5.png" src="../../../_images/a5f971edd575d08186d8a55f9659faeb543342e4ed7a1f17538be8c2285af2b5.png" />
 </div>
 </div>
 <p>When calling <code class="docutils literal notranslate"><span class="pre">pc_map_to_pc_curve</span></code> above, the <code class="docutils literal notranslate"><span class="pre">pc_min</span></code> and <code class="docutils literal notranslate"><span class="pre">pc_max</span></code> arguments were given. This tells the function to clip the range of capillary pressures between these two values.  This is useful for replacing the <code class="docutils literal notranslate"><span class="pre">-inf</span></code> and <code class="docutils literal notranslate"><span class="pre">+inf</span></code> values with finite value which facilitate plotting (<code class="docutils literal notranslate"><span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">100</span></code> Pa in this case).</p>

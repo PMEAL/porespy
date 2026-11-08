@@ -964,6 +964,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/13b36a30de7005fe52847ba7fc10434619a011f994186e6fe0f334cc68b79eec.png" src="../../../_images/13b36a30de7005fe52847ba7fc10434619a011f994186e6fe0f334cc68b79eec.png" />
+</div>
 </div>
 </section>
 <section id="pressure-based-drainage">
@@ -1012,6 +1015,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/71480dc581abb0755133334407869dd5ee89f2929ad356324f2af692416f1192.png" src="../../../_images/71480dc581abb0755133334407869dd5ee89f2929ad356324f2af692416f1192.png" />
+</div>
 </div>
 </section>
 <section id="run-drainage-simulation">
@@ -1033,7 +1039,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-Results of drainage generated at Wed Oct 21 03:06:56 2026
+Results of drainage generated at Sun Nov  8 04:26:31 2026
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 im_snwp                   Array of size (400, 400)
 im_seq                    Array of size (400, 400)
@@ -1063,6 +1069,9 @@ snwp                      Array of size (10,)
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/c245f947edff78e8e4d7ee36c481ddb6db473bf20a73e3884ac0aff265deb67f.png" src="../../../_images/c245f947edff78e8e4d7ee36c481ddb6db473bf20a73e3884ac0aff265deb67f.png" />
+</div>
 </div>
 </section>
 <section id="obtaining-fluid-configurations-from-displacement-maps">
@@ -1077,6 +1086,9 @@ snwp                      Array of size (10,)
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">((</span><span class="n">drn1</span><span class="o">.</span><span class="n">im_seq</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">)</span><span class="o">/</span><span class="n">im</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/ecf92b9bb556fda09392faabfd1e4c632603ff121f232ca9b847fa6766d256ae.png" src="../../../_images/ecf92b9bb556fda09392faabfd1e4c632603ff121f232ca9b847fa6766d256ae.png" />
 </div>
 </div>
 <blockquote>
@@ -1133,6 +1145,9 @@ snwp                      Array of size (10,)
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/82114f51afd8428c4d5f3889785c206405612f1fbb316c605ddbc6f6e72f4248.png" src="../../../_images/82114f51afd8428c4d5f3889785c206405612f1fbb316c605ddbc6f6e72f4248.png" />
+</div>
 </div>
 <p>When converting capillary pressure maps to capillary pressure curves the start and stop points of the curves must be considered carefully.  This is especially true when trapping and residual phases are present, as will be discussed below, but is also necessary when considering the basic case above.  The curve on the left graph starts around <code class="docutils literal notranslate"><span class="pre">(Pc,</span> <span class="pre">satn)</span> <span class="pre">=</span> <span class="pre">7,</span> <span class="pre">0.025)</span></code>, which occurs because the lowest capillary pressure present in the capillary pressure map is <code class="docutils literal notranslate"><span class="pre">9</span> <span class="pre">Pa</span></code>.  The number of voxels invaded at this pressure represents a saturation of <code class="docutils literal notranslate"><span class="pre">0.025</span></code>. This implies that some residual non-wetting phase was present in the image prior to performing the simulation, but this is not the case.  This can be remedied by adding a point at <code class="docutils literal notranslate"><span class="pre">satn</span> <span class="pre">=</span> <span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">Pc</span> <span class="pre">=</span> <span class="pre">7</span> <span class="pre">Pa</span></code>, which is illustrated by the green segment in the right plot.</p>
 <p>PoreSpy includes a function to compute the <code class="docutils literal notranslate"><span class="pre">(Pc,</span> <span class="pre">Snwp)</span></code> values of the capillary curve from the capillary map: <code class="docutils literal notranslate"><span class="pre">porespy.metrics.pc_map_to_pc_curve</span></code>. This saves us the trouble having to create the plot as demonstrated above.</p>
@@ -1159,6 +1174,9 @@ snwp                      Array of size (10,)
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">]);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/26b4bd14d88ca869fe09c0ba54a751705b4fca21b9e74104f105b35bc1c3f8dc.png" src="../../../_images/26b4bd14d88ca869fe09c0ba54a751705b4fca21b9e74104f105b35bc1c3f8dc.png" />
 </div>
 </div>
 </section>
@@ -1191,6 +1209,9 @@ snwp                      Array of size (10,)
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Capillary Pressure Map&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/c26687badae891dddc6b47a4ba93dcbfa177d321c7261d72d4cb67be808ea398.png" src="../../../_images/c26687badae891dddc6b47a4ba93dcbfa177d321c7261d72d4cb67be808ea398.png" />
 </div>
 </div>
 <p>In the above figures the trapped defending (wetting) phase can be seen. In the sequence and saturation maps, trapped voxels are indicated by <code class="docutils literal notranslate"><span class="pre">-1</span></code>.  This is makes sense since <code class="docutils literal notranslate"><span class="pre">-1</span></code> is not a valid value for either of these figures.  It also happens to work well when visualizing since these voxels we be noticeably darker. In the case of the capillary pressure map, <code class="docutils literal notranslate"><span class="pre">-1</span></code> is not a good option since this is a valid capillary pressure.  Instead trapped voxels are indicated by <code class="docutils literal notranslate"><span class="pre">+inf</span></code>, which physically means that these voxels were not invaded by non-wetting fluid ant <em>any</em> pressure.</p>
@@ -1234,6 +1255,9 @@ snwp                      Array of size (10,)
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/b8baa8fc4646f088441a7979b25b87caf2500a5db0c7836ab78e040777d28488.png" src="../../../_images/b8baa8fc4646f088441a7979b25b87caf2500a5db0c7836ab78e040777d28488.png" />
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1246,6 +1270,9 @@ snwp                      Array of size (10,)
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Capillary Pressure Map&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/c26687badae891dddc6b47a4ba93dcbfa177d321c7261d72d4cb67be808ea398.png" src="../../../_images/c26687badae891dddc6b47a4ba93dcbfa177d321c7261d72d4cb67be808ea398.png" />
 </div>
 </div>
 <p>Note that we could have used the <code class="docutils literal notranslate"><span class="pre">pc_map_to_pc_curve</span></code> function PoreSpy to accomplish the same plot:</p>
@@ -1273,6 +1300,9 @@ snwp                      Array of size (10,)
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/b8baa8fc4646f088441a7979b25b87caf2500a5db0c7836ab78e040777d28488.png" src="../../../_images/b8baa8fc4646f088441a7979b25b87caf2500a5db0c7836ab78e040777d28488.png" />
+</div>
 </div>
 </section>
 <section id="incorporating-residual-non-wetting-phase-in-drainage">
@@ -1287,6 +1317,9 @@ snwp                      Array of size (10,)
 <span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">residual</span><span class="o">/</span><span class="n">im</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/b5b5cc3394ade627df3d39c3acaa9b867fdbe32052b69f5ef3ae4cf723180c8a.png" src="../../../_images/b5b5cc3394ade627df3d39c3acaa9b867fdbe32052b69f5ef3ae4cf723180c8a.png" />
 </div>
 </div>
 <p>Now we can run the <code class="docutils literal notranslate"><span class="pre">drainage</span></code> function including the residual phase:</p>
@@ -1314,6 +1347,9 @@ snwp                      Array of size (10,)
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Capillary Pressure Map&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/f5ef6c2cca5f34648fc5d29ac648fe8b0f22d6f442fb7643ca5163fa3601425f.png" src="../../../_images/f5ef6c2cca5f34648fc5d29ac648fe8b0f22d6f442fb7643ca5163fa3601425f.png" />
 </div>
 </div>
 <p>Here we can see the resultant displacement maps including residual.</p>
@@ -1357,6 +1393,9 @@ snwp                      Array of size (10,)
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/055fe5cf15cc3d42b60093e75240a437de3bf6241f51e45fc17c3f48abe5d007.png" src="../../../_images/055fe5cf15cc3d42b60093e75240a437de3bf6241f51e45fc17c3f48abe5d007.png" />
+</div>
 </div>
 <p>And as with the previous cases, this is all taken care of by the <code class="docutils literal notranslate"><span class="pre">pc_map_to_pc_curve</span></code> function:</p>
 <div class="cell docutils container">
@@ -1381,6 +1420,9 @@ snwp                      Array of size (10,)
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">]);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/21738e46265c0ce8c8848d1853ccc0df170e3d746771be29648e1bc2100c323a.png" src="../../../_images/21738e46265c0ce8c8848d1853ccc0df170e3d746771be29648e1bc2100c323a.png" />
 </div>
 </div>
 </section>
@@ -1447,6 +1489,9 @@ snwp                      Array of size (10,)
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/bd1104d223d306d6eba3004b8d844c9ccec83e146ad2fc3dba621259e1b53ac1.png" src="../../../_images/bd1104d223d306d6eba3004b8d844c9ccec83e146ad2fc3dba621259e1b53ac1.png" />
 </div>
 </div>
 <p>The table below summarizes the conventions for how trapped and residual phase are noted in each of the different displacement maps.  Also provided in the table are the code snippets required to obtain a specific fluid configuration.</p>

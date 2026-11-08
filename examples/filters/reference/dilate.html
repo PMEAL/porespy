@@ -950,7 +950,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Signature (im: numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[~_ScalarT]], r: int, dt: numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[~_ScalarT]] = None, method: str = &#39;dt&#39;, smooth: bool = True)&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Signature (im: NDArray, r: int, dt: NDArray = None, method: str = &#39;dt&#39;, smooth: bool = True)&gt;
 </pre></div>
 </div>
 </div>
@@ -973,6 +973,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/3a11aa8ea1de10025e0513aba04fbe6d3854c85367ee80f22aeda3fda7113906.png" src="../../../_images/3a11aa8ea1de10025e0513aba04fbe6d3854c85367ee80f22aeda3fda7113906.png" />
+</div>
 </div>
 </section>
 <section id="r">
@@ -989,25 +992,37 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/7be76ecd305e6c447655c157440342494def02139ccc76391d656ea6aaaa85f9.png" src="../../../_images/7be76ecd305e6c447655c157440342494def02139ccc76391d656ea6aaaa85f9.png" />
+</div>
 </div>
 </section>
 <section id="method">
 <h2><code class="docutils literal notranslate"><span class="pre">method</span></code><a class="headerlink" href="#method" title="Link to this heading">#</a></h2>
-<p>Two equivalent implementations are available. <code class="docutils literal notranslate"><span class="pre">'dt'</span></code> (default) finds all voxels within <code class="docutils literal notranslate"><span class="pre">r</span></code> of the foreground using the distance transform of the <em>background</em>; <code class="docutils literal notranslate"><span class="pre">'conv'</span></code> finds them by FFT-based convolution against a round structuring element. Results are equivalent.</p>
+<p>Three implementations are available:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">'dt'</span></code> (default) uses the distance transform of the <em>background</em> to add voxels within <code class="docutils literal notranslate"><span class="pre">r</span></code> of the foreground.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'conv'</span></code> uses FFT-based convolution with a round structuring element.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'brute_force'</span></code> (alias <code class="docutils literal notranslate"><span class="pre">'bf'</span></code>) draws disks or spheres centered on foreground interface voxels to expand the foreground. It uses the shared optimized sphere-drawing routines without computing a distance transform.</p></li>
+</ul>
+<p>The brute-force method supports 2D and 3D images and requires a nonnegative integer radius. It respects the <code class="docutils literal notranslate"><span class="pre">smooth</span></code> setting, and the <code class="docutils literal notranslate"><span class="pre">dt</span></code> argument is only used by the distance-transform method.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dil_dt</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">dilate</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dt&#39;</span><span class="p">)</span>
 <span class="n">dil_conv</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">dilate</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;conv&#39;</span><span class="p">)</span>
+<span class="n">dil_bf</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">dilate</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;brute_force&#39;</span><span class="p">)</span>
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dil_dt</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;method = &#39;dt&#39;&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dil_conv</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;method = &#39;conv&#39;&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">method</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="p">[</span><span class="n">dil_dt</span><span class="p">,</span> <span class="n">dil_conv</span><span class="p">,</span> <span class="n">dil_bf</span><span class="p">],</span>
+                                <span class="p">[</span><span class="s1">&#39;dt&#39;</span><span class="p">,</span> <span class="s1">&#39;conv&#39;</span><span class="p">,</span> <span class="s1">&#39;brute_force&#39;</span><span class="p">]):</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;method = &#39;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/d6703fac332067842b0c43e25168558639614f894b9b8c3671270d4a31f93860.png" src="../../../_images/d6703fac332067842b0c43e25168558639614f894b9b8c3671270d4a31f93860.png" />
 </div>
 </div>
 </section>
@@ -1028,6 +1043,9 @@
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/1b6f7fc65afc5e06d2ca85cf4708f11285bbbf539d719e74781888304b63a6df.png" src="../../../_images/1b6f7fc65afc5e06d2ca85cf4708f11285bbbf539d719e74781888304b63a6df.png" />
 </div>
 </div>
 </section>

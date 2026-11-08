@@ -390,8 +390,7 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../beta/index.html">porespy.beta</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../beta/df_to_tortuosity.html">porespy.beta.df_to_tortuosity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../beta/fibers_1D.html">porespy.beta.fibers_1D</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../beta/fibers_2D.html">porespy.beta.fibers_2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../beta/fibers.html">porespy.beta.fibers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/flux.html">porespy.beta.flux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/get_block_sizes.html">porespy.beta.get_block_sizes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../beta/local_diff.html">porespy.beta.local_diff</a></li>
@@ -751,7 +750,8 @@ True</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>image</strong> – A 2D greyscale image suitable for use in matplotlib’s <cite>imshow</cite>
-function.</p>
+function. The remaining two axes keep their input order, so for a
+<code class="docutils literal notranslate"><span class="pre">(X,</span> <span class="pre">Y,</span> <span class="pre">Z)</span></code> image <code class="docutils literal notranslate"><span class="pre">axis=0</span></code> gives a <code class="docutils literal notranslate"><span class="pre">(Y,</span> <span class="pre">Z)</span></code> view.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>

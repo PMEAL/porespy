@@ -947,6 +947,9 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/e5be0a7bdf204f2db6664837b670023858fb6e251fbc68ea9db9c410d4485b0f.png" src="../../../_images/e5be0a7bdf204f2db6664837b670023858fb6e251fbc68ea9db9c410d4485b0f.png" />
+</div>
 </div>
 <p>We need to label each sphere so they are recognized as individual regions:</p>
 <div class="cell docutils container">
@@ -958,6 +961,9 @@
 <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/7dad5492b3371c50106e3f5e4e483b67a9d5165f3c79b2a5dec4aa506be4acf1.png" src="../../../_images/7dad5492b3371c50106e3f5e4e483b67a9d5165f3c79b2a5dec4aa506be4acf1.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -975,24 +981,22 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f306ff1f770&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f306fa4fb10&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f307000e5d0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f306fa703e0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f306fa70180&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f306fa583b0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f306fa38af0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f306fa388d0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f307017a550&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f30e8cc5550&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f306fa29220&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f306fa29040&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f306fdf52b0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f306fdf4f30&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f30700ee680&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f306fa03a10&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f306fa02150&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f306fa037d0&gt;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;RegionPropertiesPS: label=1, bbox=(4, 57, 56, 25, 78, 77)&gt;,
+ &lt;RegionPropertiesPS: label=2, bbox=(8, 32, 42, 29, 53, 63)&gt;,
+ &lt;RegionPropertiesPS: label=3, bbox=(11, 1, 41, 32, 22, 62)&gt;,
+ &lt;RegionPropertiesPS: label=4, bbox=(12, 54, 6, 33, 75, 27)&gt;,
+ &lt;RegionPropertiesPS: label=5, bbox=(14, 18, 12, 35, 39, 33)&gt;,
+ &lt;RegionPropertiesPS: label=6, bbox=(21, 54, 30, 42, 75, 51)&gt;,
+ &lt;RegionPropertiesPS: label=7, bbox=(27, 45, 55, 48, 66, 76)&gt;,
+ &lt;RegionPropertiesPS: label=8, bbox=(30, 19, 40, 51, 40, 61)&gt;,
+ &lt;RegionPropertiesPS: label=9, bbox=(34, 30, 1, 55, 51, 22)&gt;,
+ &lt;RegionPropertiesPS: label=10, bbox=(37, 1, 58, 58, 22, 79)&gt;,
+ &lt;RegionPropertiesPS: label=11, bbox=(41, 4, 15, 62, 25, 36)&gt;,
+ &lt;RegionPropertiesPS: label=12, bbox=(46, 49, 30, 67, 70, 51)&gt;,
+ &lt;RegionPropertiesPS: label=13, bbox=(51, 48, 5, 72, 69, 26)&gt;,
+ &lt;RegionPropertiesPS: label=14, bbox=(54, 55, 53, 75, 76, 74)&gt;,
+ &lt;RegionPropertiesPS: label=15, bbox=(56, 20, 44, 77, 41, 65)&gt;,
+ &lt;RegionPropertiesPS: label=16, bbox=(58, 22, 5, 79, 43, 26)&gt;]
 </pre></div>
 </div>
 </div>
@@ -1038,6 +1042,7 @@ inertia_tensor_eigvals
 inscribed_sphere
 intensity_max
 intensity_mean
+intensity_median
 intensity_min
 intensity_std
 label
@@ -1114,6 +1119,9 @@ volume
 <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/65eb80fbcf523f695cbffc8ac29e169aab0d88032ad0a8dc6965ce8991000ef0.png" src="../../../_images/65eb80fbcf523f695cbffc8ac29e169aab0d88032ad0a8dc6965ce8991000ef0.png" />
 </div>
 </div>
 </section>
