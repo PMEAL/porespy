@@ -561,7 +561,7 @@ dependencies = [
     { name = "filelock" },
     { name = "humanize" },
     { name = "packaging" },
-    { name = "patchelf", marker = "(platform_machine == 'aarch64' and sys_platform == 'darwin') or (platform_machine == 'arm64' and sys_platform == 'darwin') or (platform_machine == 'x86_64' and sys_platform == 'darwin') or (platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'arm64' and sys_platform == 'linux') or (platform_machine == 'x86_64' and sys_platform == 'linux')" },
+    { name = "patchelf", marker = "(platform_machine == 'aarch64' or platform_machine == 'arm64' or platform_machine == 'x86_64') and (sys_platform == 'darwin' or sys_platform == 'linux')" },
     { name = "platformdirs" },
     { name = "pyelftools" },
     { name = "wheel" },
@@ -3208,7 +3208,7 @@ dependencies = [
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12' and python_full_version < '3.15'" },
     { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" } },
     { name = "pyamg" },
-    { name = "pypardiso", marker = "(platform_machine == 'AMD64' and sys_platform != 'darwin') or (platform_machine == 'x86_64' and sys_platform != 'darwin')" },
+    { name = "pypardiso", marker = "(platform_machine == 'AMD64' or platform_machine == 'x86_64') and sys_platform != 'darwin'" },
     { name = "rich" },
     { name = "scikit-image" },
     { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12' or python_full_version >= '3.15'" },
@@ -3703,7 +3703,7 @@ wheels = [
 
 [[package]]
 name = "porespy"
-version = "3.3.0.dev6"
+version = "3.3.0.dev7"
 source = { editable = "." }
 dependencies = [
     { name = "connected-components-3d" },
