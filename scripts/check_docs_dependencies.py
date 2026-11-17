@@ -1,4 +1,4 @@
-"""Build the examples that exercise optional documentation dependencies.
+"""Build examples that exercise documentation dependencies and execution limits.
 
 Run with the docs and interactive dependency groups installed. Saved notebook
 outputs are cleared, and execution errors fail the build. The smoke build uses
@@ -16,6 +16,9 @@ import tempfile
 from check_docs_outputs import NotebookImages
 
 EXAMPLES = {
+    "generators/tutorials/cylinders": 3,
+    "networks/reference/diffusive_size_factor_AI": 2,
+    "simulations/tutorials/drainage_with_gravity_advanced": 10,
     "generators/reference/cylindrical_pillars_mesh": 4,
     "generators/reference/fractal_noise": 9,
     "filters/reference/nl_means_layered": 7,
