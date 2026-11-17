@@ -1,7 +1,7 @@
 """Check known plot-bearing pages before publishing the documentation.
 
-These notebooks exercise automatic inline display and explicit display(fig).
-Count images inside notebook outputs, excluding logos and clipboard icons.
+These notebooks exercise inline display and previously interrupted examples.
+Reject tracebacks and count output images, excluding logos and clipboard icons.
 This is a rendering smoke check, not validation of every scientific example.
 """
 
@@ -14,6 +14,9 @@ from urllib.parse import unquote, urlsplit
 EXPECTED_PLOTS = {
     "examples/general/getting_started.html": 5,
     "examples/simulations/tutorials/overview_of_two_phase_flow_part3.html": 8,
+    "examples/generators/tutorials/cylinders.html": 3,
+    "examples/networks/reference/diffusive_size_factor_AI.html": 2,
+    "examples/simulations/tutorials/drainage_with_gravity_advanced.html": 10,
 }
 
 
@@ -22,11 +25,14 @@ class NotebookImages(HTMLParser):
         super().__init__()
         self.divs = []
         self.sources = []
+        self.tracebacks = 0
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
         if tag == "div":
             self.divs.append("cell_output" in attrs.get("class", "").split())
+            if any(self.divs) and "traceback" in attrs.get("class", "").split():
+                self.tracebacks += 1
         elif tag == "img" and any(self.divs):
             self.sources.append(attrs.get("src", ""))
 
@@ -44,6 +50,8 @@ def check_outputs(build_dir):
             continue
         parser = NotebookImages()
         parser.feed(page.read_text(encoding="utf-8"))
+        if parser.tracebacks:
+            errors.append(f"{relative}: found {parser.tracebacks} notebook tracebacks")
         if len(parser.sources) < expected:
             errors.append(
                 f"{relative}: expected at least {expected} plots, found {len(parser.sources)}"
@@ -61,4 +69,4 @@ if __name__ == "__main__":
     errors = check_outputs(Path(sys.argv[1]))
     if errors:
         sys.exit("Notebook plot check failed:\n" + "\n".join(errors))
-    print("Notebook plot outputs and their image files are present.")
+    print("Notebook outputs contain expected plots, local image files, and no tracebacks.")

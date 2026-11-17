@@ -10,10 +10,15 @@ SCRIPT = Path(__file__).resolve().parents[2] / "scripts/check_docs_outputs.py"
 PAGES = {
     "examples/general/getting_started.html": 5,
     "examples/simulations/tutorials/overview_of_two_phase_flow_part3.html": 8,
+    "examples/generators/tutorials/cylinders.html": 3,
+    "examples/networks/reference/diffusive_size_factor_AI.html": 2,
+    "examples/simulations/tutorials/drainage_with_gravity_advanced.html": 10,
 }
 
 
-@pytest.mark.parametrize("failure", [None, "no_outputs", "partial", "asset", "page"])
+@pytest.mark.parametrize(
+    "failure", [None, "no_outputs", "partial", "asset", "page", "traceback"]
+)
 def test_notebook_plot_publication_check(tmp_path, failure):
     for relative, count in PAGES.items():
         page = tmp_path / relative
@@ -30,6 +35,14 @@ def test_notebook_plot_publication_check(tmp_path, failure):
                     '<img src="plot.png"></div></div>'
                 )
         page.write_text(html, encoding="utf-8")
+    if failure == "traceback":
+        # A failure after the final plot must still block publication.
+        with page.open("a", encoding="utf-8") as stream:
+            stream.write(
+                '<div class="cell_output docutils container">'
+                '<div class="output traceback highlight-ipythontb notranslate">'
+                'KeyboardInterrupt</div></div>'
+            )
     if failure == "asset":
         (page.parent / "plot.png").unlink()
     if failure == "page":
