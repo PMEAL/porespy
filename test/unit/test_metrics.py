@@ -1,4 +1,5 @@
 import os
+from itertools import product
 from pathlib import Path
 
 import numpy as np
@@ -13,6 +14,78 @@ from porespy.tools import get_edt
 
 edt = get_edt()
 ps.settings.tqdm["disable"] = True
+
+
+def _direct_two_point_correlation(im, edges):
+    # Count valid voxel pairs for each signed displacement independently.
+    sums = np.zeros(len(edges) - 1)
+    counts = np.zeros_like(sums)
+    for lag in product(*(range(1 - n, n) for n in im.shape)):
+        radius = np.sqrt(sum(d**2 for d in lag))
+        index = np.searchsorted(edges, radius, side="right") - 1
+        if not 0 <= index < len(sums):
+            continue
+        a = im[tuple(slice(max(0, -d), min(n, n - d)) for d, n in zip(lag, im.shape))]
+        b = im[tuple(slice(max(0, d), min(n, n + d)) for d, n in zip(lag, im.shape))]
+        sums[index] += np.count_nonzero(a & b) / a.size
+        counts[index] += 1
+    return sums / np.maximum(counts, 1)
+
+
+@pytest.mark.parametrize("shape", [(5, 8), (4, 5, 11), (1, 4, 7)])
+@pytest.mark.parametrize("bins", [np.int64(2), [0, 0.5, 1, np.sqrt(2), 2.4, 5, 20]])
+def test_tpcf_fft_matches_direct_counts(shape, bins):
+    rng = np.random.default_rng(654)
+    im = rng.random(shape) < 0.4
+    im.flat[0] = im.flat[-1] = True
+    result = ps.metrics.two_point_correlation(im, voxel_size=0.25, bins=bins)
+    edges = result.bin_edges / 0.25
+    if not isinstance(bins, np.integer):
+        assert_allclose(edges, bins)
+    expected = _direct_two_point_correlation(im, edges)
+    assert_allclose(result.probability_scaled, expected, atol=1e-14)
+    assert_allclose(result.probability, expected / im.mean(), atol=1e-14)
+    assert_allclose(result.pdf, expected, atol=1e-14)
+    assert_allclose(result.distance, (edges[1:] + edges[:-1]) * 0.125)
+
+
+def test_tpcf_fft_phase_indicator_and_empty_phase():
+    labels = np.array([[1, 2, 2], [0, 1, 0], [2, 0, 1]])
+    bins = [0, 1, 1.25, 1.4, 2, 3]
+    result = ps.metrics.two_point_correlation(labels, bins=bins)
+    expected = _direct_two_point_correlation(labels == 1, bins)
+    assert_allclose(result.probability_scaled, expected)
+    assert result.probability_scaled[0] == 1 / 3
+    assert result.probability_scaled[2] == 0  # No displacement in this bin.
+    empty = ps.metrics.two_point_correlation(labels == 3, bins=bins)
+    assert np.all(empty.probability_scaled == 0)
+    assert np.all(np.isnan(empty.probability))
+
+
+def test_tpcf_fft_does_not_wrap_pairs():
+    im = np.array([[True, False, False, False, True]])
+    bins = [0, 1, 2, 4, 5, 6]
+    result = ps.metrics.two_point_correlation(im, bins=bins)
+    assert_allclose(result.probability_scaled, [0.4, 0, 0, 1, 0])
+
+
+@pytest.mark.parametrize(
+    ("shape", "bins"),
+    [((5, 8), 10), ((4, 5, 11), [0, 1, np.sqrt(2), 3, 5, 20])],
+)
+def test_tpcf_fft_cupy_matches_direct_counts(shape, bins):
+    cp = pytest.importorskip("cupy")
+    if not cp.cuda.is_available():
+        pytest.skip("CUDA device unavailable")
+    im = np.random.default_rng(654).random(shape) < 0.4
+    from_host = ps.metrics.two_point_correlation(im, bins=bins, backend="cupy")
+    device_bins = bins if isinstance(bins, int) else cp.asarray(bins)
+    from_device = ps.metrics.two_point_correlation(cp.asarray(im), bins=device_bins)
+    expected = _direct_two_point_correlation(im, from_host.bin_edges)
+    for result in (from_host, from_device):
+        assert isinstance(result.probability_scaled, np.ndarray)
+        assert_allclose(result.bin_edges, from_host.bin_edges)
+        assert_allclose(result.probability_scaled, expected, atol=1e-14)
 
 
 class MetricsTest:
@@ -84,8 +157,8 @@ class MetricsTest:
         phi2 = ps.metrics.porosity(im=self.im2D_big)
         assert np.sqrt((np.mean(tpcf_fft_2.probability[-5:]) - phi2) ** 2) < t
         # Must raise error if 1D image is supplied
-        with pytest.raises(Exception):
-            _ = ps._metrics.two_point_correlation(np.random.rand(10))
+        with pytest.raises(ValueError, match="2D or 3D"):
+            ps.metrics.two_point_correlation(np.random.rand(10))
 
     def test_tpcf_fft_3d(self):
         tpcf_fft = ps.metrics.two_point_correlation(self.im3D)

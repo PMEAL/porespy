@@ -1,12 +1,12 @@
 import inspect
 import logging
+from math import ceil
 
 import numpy as np
 import numpy.typing as npt
 import scipy.spatial as sptl
 import scipy.stats as spst
 from deprecated import deprecated
-from numba import njit
 from scipy import fft as sp_ft
 from skimage.measure import regionprops
 from skimage.morphology import skeletonize
@@ -933,152 +933,119 @@ def two_point_correlation_bf(im, spacing=10):
     return tpcf
 
 
-def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
-    r"""
-    Helper functions to calculate the radial profile of the autocorrelation
+def _radial_autocorrelation(im, edges, xp, fft, fft_options, bin_size):
+    # Retain only shifts that can fall below the final edge. Padding an axis
+    # of length n to n + max_lag keeps wrapped pairs out of those shifts.
+    max_lag = ceil(min(edges[-1], max(im.shape))) - 1
+    limits = [min(n - 1, max_lag) for n in im.shape]
+    if not any(limits):
+        phi = xp.count_nonzero(im) / im.size
+        radial = xp.zeros(edges.size - 1, dtype=xp.float64)
+        if edges[0] == 0:
+            radial[0] = phi
+        return radial, phi
 
-    Masks the image in radial segments from the center and averages the values
-    The distance values are normalized and 100 bins are used as default.
+    padded_shape = tuple(
+        sp_ft.next_fast_len(n + lag, real=True) for n, lag in zip(im.shape, limits)
+    )
+    spectrum = fft.rfftn(im.astype(xp.float64), s=padded_shape, **fft_options)
+    imag_squared = xp.square(spectrum.imag)
+    xp.square(spectrum.real, out=spectrum.real)
+    spectrum.real += imag_squared
+    spectrum.imag.fill(0)
+    del imag_squared
+    autocorr = fft.irfftn(spectrum, s=padded_shape, **fft_options)
+    del spectrum
+    # The inverse transform gives integer pair counts for a binary phase.
+    # Rounding removes transform noise, including at lags with zero pairs.
+    phi = xp.rint(autocorr[(0,) * im.ndim]) / im.size
 
-    Parameters
-    ----------
-    autocorr : ndarray
-        The image of autocorrelation produced by FFT
-    r_max : int or float
-        The maximum radius in pixels to sum the image over
-    bins : ndarray
-        The edges of the bins to use in summing the radii, ** must be in voxels
-    pf : float
-        the phase fraction (porosity) of the image, used for scaling the
-        normalized autocorrelation down to match the two-point correlation
-        definition as given by Torquato
-    voxel_size : scalar
-        The size of a voxel side in preferred units.  The default is 1, so the
-        user can apply the scaling to the returned results after the fact.
+    # Autocorrelation satisfies C(-h) = C(h) for reversal of the whole
+    # vector. Keep the signed shifts along every axis except the first.
+    axes = [xp.arange(-m, m + 1) for m in limits]
+    axes[0] = xp.arange(limits[0] + 1)
+    indices = xp.ix_(*(lags % n for lags, n in zip(axes, padded_shape)))
+    pairs = autocorr[indices]
+    del autocorr
+    xp.rint(pairs, out=pairs)
+    lags = xp.ix_(*axes)
+    for n, axis in zip(im.shape, lags):
+        pairs /= n - xp.abs(axis)
+    pairs[1:] *= 2
 
-    Returns
-    -------
-    result : tpcf
-
-
-    """
-    # Use floor-division so that even and odd shapes both put the zero-lag
-    # voxel exactly on a grid point — `np.round(N/2)` would land at index
-    # `N//2 + 1` for odd `N`, leaving the lag-0 peak at distance √2 from
-    # the assumed centre.
-    if len(autocorr.shape) == 2:
-        centre = np.array(autocorr.shape).reshape([2, 1, 1]) // 2
-        inds = np.indices(autocorr.shape) - centre
-        dt = np.sqrt(inds[0] ** 2 + inds[1] ** 2)
-    elif len(autocorr.shape) == 3:
-        centre = np.array(autocorr.shape).reshape([3, 1, 1, 1]) // 2
-        inds = np.indices(autocorr.shape) - centre
-        dt = np.sqrt(inds[0] ** 2 + inds[1] ** 2 + inds[2] ** 2)
+    radius = xp.sqrt(sum(axis**2 for axis in lags))
+    if bin_size is None:
+        # Bin 0 collects lags below the first edge. The last bin collects
+        # lags at or beyond the final edge. Discard both after accumulation.
+        labels = xp.searchsorted(xp.asarray(edges), radius, side="right")
     else:
-        raise Exception("Image dimensions must be 2 or 3")
-    if np.max(bins) > np.max(dt):
-        msg = (
-            "Bins specified distances exceeding maximum radial distance for"
-            " image size. Radial distance cannot exceed distance from center"
-            " of image to corner."
-        )
-        raise Exception(msg)
-
-    bin_size = bins[1:] - bins[:-1]
-    radial_sum = _get_radial_sum(dt, bins, bin_size, autocorr)
-    # `autocorr` is an unbiased S2 estimate, so its zero-lag value equals the
-    # phase fraction `pf` and that is what scales the result to S2(r)/pf. The
-    # unbiased estimator can spike above `pf` at large lags where the overlap
-    # count is tiny, so we deliberately do not use `np.max(autocorr)`.
-    norm_autoc_radial = radial_sum / pf
-    h = [norm_autoc_radial, bins]
-    h = _parse_histogram(h, voxel_size=1)
-    tpcf = Results()
-    tpcf.distance = h.bin_centers * voxel_size
-    tpcf.bin_centers = h.bin_centers * voxel_size
-    tpcf.bin_edges = h.bin_edges * voxel_size
-    tpcf.bin_widths = h.bin_widths * voxel_size
-    tpcf.probability = norm_autoc_radial
-    tpcf.probability_scaled = norm_autoc_radial * pf
-    tpcf.pdf = h.pdf * pf
-    tpcf.relfreq = h.relfreq
-    return tpcf
+        labels = xp.floor(radius / bin_size).astype(xp.intp) + 1
+        xp.minimum(labels, edges.size, out=labels)
+    del radius
+    sums = xp.bincount(labels.ravel(), weights=pairs.ravel(), minlength=edges.size + 1)
+    counts = 2 * xp.bincount(labels.ravel(), minlength=edges.size + 1)
+    counts -= xp.bincount(labels[0].ravel(), minlength=edges.size + 1)
+    return sums[1:-1] / xp.maximum(counts[1:-1], 1), phi
 
 
-@njit(parallel=False)  # pragma: no cover
-def _get_radial_sum(dt, bins, bin_size, autocorr):
-    # Bin i covers `[bins[i], bins[i+1])`, matching the bin-centre labelling
-    # used by `_parse_histogram`. The first bin includes the zero-lag voxel,
-    # so the result at distance ≈ 0 reports S2(0).
-    radial_sum = np.zeros_like(bins[:-1], dtype=np.float64)
-    flat_dt = np.ravel(dt)
-    flat_autocorr = np.ravel(autocorr).astype(np.float64)
-    for i in range(len(bins) - 1):
-        mask = (flat_dt >= bins[i]) & (flat_dt < bins[i + 1])
-        n = np.sum(mask)
-        if n > 0:
-            radial_sum[i] = np.sum(flat_autocorr[mask]) / n
-    return radial_sum
-
-
-def two_point_correlation(im, voxel_size=1, bins=100):
+def two_point_correlation(im, voxel_size=1, bins=100, *, backend=None):
     r"""
-    Calculate the two-point correlation function using Fourier transforms
+    Calculate the radial two-point correlation function using Fourier transforms.
 
     Parameters
     ----------
-    im : ndarray
-        The image of the void space on which the 2-point correlation is
-        desired, in which the phase of interest is labelled as True
+    im : array_like
+        A 2D or 3D phase indicator. Values equal to 1 (or True) indicate the
+        phase of interest. A CUDA array selects the CuPy backend by default.
     voxel_size : scalar
-        The size of a voxel side in preferred units.  The default is 1, so
-        the user can apply the scaling to the returned results after the
-        fact.
-    bins : scalar or array_like
-        Either an array of bin sizes to use, or the number of bins that
-        should be automatically generated that span the data range. The
-        maximum value of the bins, if passed as an array, cannot exceed
-        the distance from the center of the image to the corner.
+        The size of a voxel side in preferred units. This scales the
+        returned distances and bin edges.
+    bins : int or array_like
+        A positive target number of bins, or explicit, strictly increasing
+        bin edges in voxel units. Automatic bins are at least one voxel wide
+        and extend to approximately half the shortest image dimension. Each
+        bin includes its left edge and excludes its right edge, including
+        the final bin.
+    backend : {None, 'scipy', 'cupy'}
+        FFT backend. By default, use SciPy for host arrays and CuPy for CUDA
+        arrays. With ``backend='cupy'``, host arrays are copied to the GPU.
+        CuPy is an optional dependency. The returned arrays are NumPy arrays
+        with either backend.
 
     Returns
     -------
-    result : tpcf
-        A dataclass-like object with following named attributes:
+    result : Results
+        A custom object with the following attributes:
 
-        =========================== =================================================
-        Attribute                   Description
-        =========================== =================================================
-        *distance*                  The distance between two points, equivalent to
-                                    bin_centers
-        *bin_centers*               The center point of each bin. See distance
-        *bin_edges*                 Locations of bin divisions, including 1 more
-                                    value than the number of bins
-        *bin_widths*                Useful for passing to the ``width`` argument of
-                                    ``matplotlib.pyplot.bar``
-        *probability_normalized*    The probability that two points of the stated
-                                    separation distance are within the same phase
-                                    normalized to 1 at r = 0
-        *probability*               The probability that two points of the stated
-                                    separation distance are within the same phase
-                                    scaled to the phase fraction at r = 0
-        *pdf*                       Same as probability
-        =========================== =================================================
-
+        ===================== =====================================================
+        Attribute             Description
+        ===================== =====================================================
+        *distance*            Bin centers, in the units of voxel_size
+        *bin_centers*         Same as distance
+        *bin_edges*           Edges of the distance bins
+        *bin_widths*          Widths of the distance bins
+        *probability*         Radial average of S2 divided by the phase fraction
+        *probability_scaled*  Radial average of S2
+        *pdf*                 Same as probability_scaled
+        *relfreq*             Probability multiplied by bin width in voxels
+        ===================== =====================================================
 
     Notes
     -----
-    The fourier transform approach utilizes the fact that the
-    autocorrelation function is the inverse FT of the power spectrum
-    density. For background read the Scipy fftpack docs and for a good
-    explanation `see this thesis
-    <https://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf>`_.
+    For each displacement vector, S2 is the fraction of valid voxel pairs
+    for which both voxels lie in the selected phase. Zero-padding prevents
+    wraparound for the requested lags. The number of valid pairs for a
+    displacement is the product of the overlap lengths along each axis.
+    Each radial bin averages these fractions with equal weight per
+    displacement vector. For a statistically homogeneous image this
+    estimates the shell average of the two-point probability.
 
-    The image is zero-padded to twice its size along each axis before the
-    forward transform so that the resulting autocorrelation is the proper
-    non-periodic correlation rather than the periodic one. Each lag is then
-    normalized by the number of voxel pairs that contributed to it, which
-    yields an unbiased estimate of $S_2(r)$ that averages over all radial
-    directions.
+    At zero lag S2 equals the phase fraction. A bin reports this value
+    exactly if it contains zero lag alone, for example with edges [0, 1].
+    In a finite image, an edge-corrected S2 value can exceed the global
+    phase fraction when pairs in a shell sample a phase-rich region.
+    Empty bins are returned as zero. When the phase is absent, S2 is zero
+    and the normalized probability and relfreq are NaN.
 
     Examples
     --------
@@ -1087,32 +1054,65 @@ def two_point_correlation(im, voxel_size=1, bins=100):
     to view online example.
 
     """
-    cpus = settings.ncores
-    pf = porosity(im)
-    shape = np.array(im.shape)
-    if isinstance(bins, int):
-        r_max = int(np.min(shape) // 2)
-        bin_size = max(1, int(np.ceil(r_max / bins)))
-        bins = np.arange(0, r_max + bin_size, bin_size)
-    # Zero-pad to twice the size along each axis so the periodic FFT
-    # correlation matches the non-periodic correlation on the original image.
-    padded_shape = tuple(2 * s for s in shape)
-    im_float = np.asarray(im, dtype=np.float64)
-    with sp_ft.set_workers(cpus):
-        F = sp_ft.rfftn(im_float, s=padded_shape)
-        autoc = sp_ft.irfftn(np.abs(F) ** 2, s=padded_shape)
-        # Number of overlapping voxel pairs at each lag, for unbiased S2(r)
-        ones = np.ones_like(im_float)
-        G = sp_ft.rfftn(ones, s=padded_shape)
-        overlap = sp_ft.irfftn(np.abs(G) ** 2, s=padded_shape)
-    s2 = autoc / np.maximum(overlap, 1)
-    # Restrict to lags |r_i| < N_i so we drop the noisy edge of the unbiased
-    # estimator (where overlap → 0) and centre the array on the zero-lag peak.
-    s2 = sp_ft.fftshift(s2)
-    centre = tuple(s // 2 for s in padded_shape)
-    valid = tuple(slice(c - (n - 1), c + n) for c, n in zip(centre, shape))
-    s2 = s2[valid]
-    tpcf = _radial_profile(s2, bins, pf=pf, voxel_size=voxel_size)
+    is_cuda = hasattr(im, "__cuda_array_interface__")
+    if backend is None:
+        backend = "cupy" if is_cuda else "scipy"
+    if backend == "cupy":
+        import cupy as xp
+
+        fft = xp.fft
+        fft_options = {}
+    elif backend == "scipy":
+        if is_cuda:
+            raise ValueError("Use the CuPy backend for CUDA arrays")
+        xp = np
+        fft = sp_ft
+        fft_options = {"workers": settings.ncores}
+    else:
+        raise ValueError("backend must be None, 'scipy', or 'cupy'")
+
+    im = xp.asarray(im)
+    if im.ndim not in (2, 3) or im.size == 0:
+        raise ValueError("im must be a nonempty 2D or 3D array")
+    if im.dtype != xp.bool_:
+        im = im == 1
+
+    bin_size = None
+    if isinstance(bins, (int, np.integer)):
+        bins = int(bins)
+        if bins <= 0:
+            raise ValueError("bins must be positive")
+        r_max = max(1, min(im.shape) // 2)
+        bin_size = (r_max + bins - 1) // bins
+        edges = np.arange(0, r_max + bin_size, bin_size)
+    else:
+        if backend == "cupy" and hasattr(bins, "__cuda_array_interface__"):
+            bins = xp.asnumpy(bins)
+        edges = np.asarray(bins, dtype=float)
+        if (
+            edges.ndim != 1
+            or edges.size < 2
+            or not np.all(np.isfinite(edges))
+            or edges[0] < 0
+            or np.any(edges[1:] <= edges[:-1])
+        ):
+            raise ValueError("bin edges must be finite, nonnegative, and increasing")
+
+    scaled, phi = _radial_autocorrelation(im, edges, xp, fft, fft_options, bin_size)
+    if backend == "cupy":
+        scaled = xp.asnumpy(scaled)
+    phi = float(phi)
+    normalized = scaled / phi if phi > 0 else np.full_like(scaled, np.nan)
+    h = _parse_histogram((normalized, edges), voxel_size=voxel_size)
+    tpcf = Results()
+    tpcf.distance = h.bin_centers.copy()
+    tpcf.bin_centers = h.bin_centers
+    tpcf.bin_edges = h.bin_edges
+    tpcf.bin_widths = h.bin_widths
+    tpcf.probability = normalized
+    tpcf.probability_scaled = scaled
+    tpcf.pdf = scaled.copy()
+    tpcf.relfreq = h.relfreq
     return tpcf
 
 
