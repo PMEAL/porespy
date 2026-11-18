@@ -480,7 +480,7 @@ def ibip(
     min_size: int = 0,
 ):
     r"""
-    Simulates non-wetting fluid injection on an image using the IBIP algorithm [3]_
+    Simulates non-wetting fluid injection on an image using the IBIP algorithm
 
     Parameters
     ----------
@@ -533,6 +533,8 @@ def ibip(
 
     Notes
     -----
+    The IBIP algorithm is described in [3]_.
+
     This function is slower and is less capable than ``qbip``, which returns
     identical results, so it is recommended to use that instead.
 
@@ -756,7 +758,7 @@ def injection(
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/reference/injection.html>`__
+    <https://porespy.org/examples/simulations/reference/injection.html>`__
     to view an online example.
 
     """

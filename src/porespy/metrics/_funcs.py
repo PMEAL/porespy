@@ -92,10 +92,10 @@ def porosity_by_type(im, conn='min'):
         `surface`   The fraction of the image which are pores only the surfaces
         ==========  ================================================================
 
-            Examples
+    Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/reference/porosity_by_type.html>`_
+    <https://porespy.org/examples/metrics/reference/porosity_by_type.html>`__
     to view online example.
     """
     Vb = np.sum((im == 1) + (im == 0), dtype=np.float64)
@@ -594,7 +594,7 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/reference/radial_density.html>`__
+    <https://porespy.org/examples/metrics/reference/radial_density_distribution.html>`__
     to view online example.
 
     """
@@ -674,7 +674,7 @@ def lineal_path_distribution(im, bins=10, voxel_size=1, log=False):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/reference/linearl_path_distribution.html>`__
+    <https://porespy.org/examples/metrics/reference/lineal_path_distribution.html>`__
     to view online example.
 
     """
@@ -1166,7 +1166,7 @@ def chord_counts(im):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/reference/metrics/chord_counts.html>`__
+    <https://porespy.org/examples/metrics/reference/chord_counts.html>`__
     to view online example.
 
     """

@@ -251,12 +251,6 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     (2) If max_dim is not provided, the method calculates it such that the
     further increasing it doesn't change porosity by much.
 
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/networks/reference/generator_voxel_image.html>`__
-    to view online example.
-
     """
     logger.info("Generating voxel image from pore network")
     # If max_dim is provided, generate voxel image using max_dim

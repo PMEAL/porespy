@@ -117,7 +117,7 @@ def prop_to_image(regionprops, shape, prop):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/reference/prop_to_image.html>`__
+    <https://porespy.org/examples/metrics/tutorials/regionprops_3d.html>`__
     to view online example.
 
     """
