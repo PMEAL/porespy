@@ -148,12 +148,6 @@ def tile_tpms(im, n, mode='periodic'):
         Tiled boolean array. Its shape along each axis is
         ``im.shape[i] * n[i]``.
 
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/generators/reference/tile_tpms.html>`__
-    to view online example.
-
     """
     if np.isscalar(n):
         n = (n,) * im.ndim

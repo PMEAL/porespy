@@ -503,12 +503,6 @@ def satn_to_time(satn, im, flow_rate, voxel_size=1.0, mode='drainage'):
     voxels (already-invaded at $t=0$) end up at a small positive time equal to
     the time it would take to inject the residual volume.
 
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/filters/reference/satn_to_time.html>`__
-    to view online example.
-
     """
     if not (mode.startswith('dr') or mode.startswith('im')):
         raise Exception(f"Unrecognized mode {mode!r}")

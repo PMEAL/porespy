@@ -68,12 +68,6 @@ def ps_disk(r, smooth=True):
     disk : ndarray
         A 2D numpy bool array of the structring element
 
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/tools/reference/ps_disk.html>`__
-    to view online example.
-
     """
     disk = ps_round(r=r, ndim=2, smooth=smooth)
     return disk
@@ -95,12 +89,6 @@ def ps_ball(r, smooth=True):
     -------
     ball : ndarray
         A 3D numpy array of the structuring element
-
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/tools/reference/ps_ball.html>`__
-    to view online example.
 
     """
     ball = ps_round(r=r, ndim=3, smooth=smooth)
@@ -125,12 +113,6 @@ def ps_round(r, ndim, smooth=True):
     -------
     strel : ndarray
         A 3D numpy array of the structuring element
-
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/tools/reference/ps_round.html>`__
-    to view online example.
 
     """
     rad = int(np.ceil(r))
@@ -159,12 +141,6 @@ def ps_rect(w, ndim):
     -------
     strel : ndarray
         A numpy array of the structuring element
-
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/tools/reference/ps_rect.html>`__
-    to view online example.
 
     """
     return footprint_rectangle((w,) * ndim)

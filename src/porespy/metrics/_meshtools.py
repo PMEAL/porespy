@@ -58,7 +58,7 @@ def region_volumes(regions, method='marching_cubes', voxel_size=(1, 1, 1)):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/reference/mesh_volumes.html>`__
+    <https://porespy.org/examples/metrics/reference/region_volumes.html>`__
     to view online example.
 
     """
