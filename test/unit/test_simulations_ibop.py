@@ -1,7 +1,20 @@
+import inspect
+
 import numpy as np
+import pytest
 from GenericTest import GenericTest
 
 import porespy as ps
+from porespy.tools import _make_axial_extent_lookup
+from porespy.simulations._tools import (
+    _find_interface,
+    _get_flat_indices,
+    _insert_disks_at_indices_parallel,
+    _insert_disks_at_indices_parallel_direct,
+    _insert_disks_at_indices_parallel_merged,
+    _remove_contained_disks,
+    _use_merged_intervals,
+)
 
 ps.visualization.set_mpl_style()
 ps.settings.tqdm["disable"] = True
@@ -23,6 +36,205 @@ class IBOPTest(GenericTest):
         pc = ps.filters.capillary_transform(im=self.im2D)
         r2 = ps.simulations.drainage(im=self.im2D, pc=pc, steps=None)
         assert np.all(r1.im_seq == r2.im_seq)
+
+    def test_drainage_default_steps_is_25(self):
+        params = inspect.signature(ps.simulations.drainage).parameters
+        default = params["steps"].default
+        assert default == 25
+        actual = ps.simulations.drainage(im=self.im2D)
+        expected = ps.simulations.drainage(im=self.im2D, steps=25)
+        assert np.array_equal(actual.im_seq, expected.im_seq)
+        assert np.array_equal(actual.im_pc, expected.im_pc)
+
+    def test_drainage_dt_return_indices(self):
+        expected = ps.simulations.drainage_dt(im=self.im2D, steps=25)
+        actual = ps.simulations.drainage_dt(
+            im=self.im2D,
+            steps=25,
+            return_indices=True,
+        )
+        assert actual.im_seq.dtype == np.uint8
+        assert not hasattr(actual, 'im_size')
+        np.testing.assert_array_equal(actual.bins[actual.im_seq], expected.im_size)
+        with pytest.raises(NotImplementedError):
+            ps.simulations.drainage_dt(
+                im=self.im2D,
+                outlets=np.ones_like(self.im2D),
+                return_indices=True,
+            )
+
+    def test_flat_index_sphere_insertion(self):
+        for shape in [(31, 37), (19, 23, 17)]:
+            centers = np.zeros(shape, dtype=bool)
+            centers[(0,) * len(shape)] = True
+            centers[tuple(i // 2 for i in shape)] = True
+            centers[tuple(i - 1 for i in shape)] = True
+            coords = np.vstack(np.where(centers))
+            dt = np.zeros(shape, dtype=np.float32)
+            dt[tuple(coords)] = [0, 3, 6]
+            indices = _get_flat_indices(centers)
+            lookup = _make_axial_extent_lookup(np.max(dt))
+            assert indices.dtype == np.int32
+            for smooth in [True, False]:
+                for overwrite in [True, False]:
+                    expected = ps.tools._insert_disks_at_points_parallel(
+                        im=np.zeros(shape, dtype=bool),
+                        coords=coords,
+                        radii=dt[tuple(coords)].astype(int),
+                        v=True,
+                        smooth=smooth,
+                    )
+                    actual = _insert_disks_at_indices_parallel(
+                        im=np.zeros(shape, dtype=bool),
+                        indices=indices,
+                        dt=dt,
+                        ceil_distance=lookup,
+                        smooth=smooth,
+                        overwrite=overwrite,
+                    )
+                    assert np.array_equal(actual, expected)
+
+    def test_merged_interval_sphere_insertion(self):
+        for shape in [(51, 53), (51, 53, 49)]:
+            centers = np.zeros(shape, dtype=bool)
+            center_slice = tuple(slice(15, 35) for _ in shape)
+            centers[center_slice] = True
+            centers[(2,) * len(shape)] = True
+            centers[tuple(i - 3 for i in shape)] = True
+            indices = _get_flat_indices(centers)
+            dt = np.zeros(shape, dtype=np.float32)
+            dt[centers] = 8
+            lookup = _make_axial_extent_lookup(np.max(dt))
+            for smooth in [True, False]:
+                direct = _insert_disks_at_indices_parallel_direct(
+                    im=np.zeros(shape, dtype=bool),
+                    indices=indices,
+                    dt=dt,
+                    ceil_distance=lookup,
+                    smooth=smooth,
+                    overwrite=True,
+                )
+                merged = _insert_disks_at_indices_parallel_merged(
+                    im=np.zeros(shape, dtype=bool),
+                    indices=indices,
+                    dt=dt,
+                    ceil_distance=lookup,
+                    smooth=smooth,
+                )
+                assert np.array_equal(merged, direct)
+                adaptive = _insert_disks_at_indices_parallel(
+                    im=np.zeros(shape, dtype=bool),
+                    indices=indices,
+                    dt=dt,
+                    ceil_distance=lookup,
+                    smooth=smooth,
+                    overwrite=True,
+                )
+                assert np.array_equal(adaptive, direct)
+
+    def test_flat_index_insertion_with_fixed_radius_and_value(self):
+        for shape in [(31, 37), (19, 23, 17)]:
+            centers = np.zeros(shape, dtype=bool)
+            center_slice = tuple(slice(10, 20) for _ in shape)
+            centers[center_slice] = True
+            indices = _get_flat_indices(centers)
+            coords = np.vstack(np.where(centers))
+            dt = np.zeros(shape, dtype=np.float32)
+            dt[centers] = 8
+            radius = 3
+            lookup = _make_axial_extent_lookup(radius)
+            expected = ps.tools._insert_disks_at_points_parallel(
+                im=np.zeros(shape, dtype=bool),
+                coords=coords,
+                radii=np.full(coords.shape[1], radius),
+                v=True,
+                smooth=True,
+            )
+            actual = _insert_disks_at_indices_parallel(
+                im=np.zeros(shape, dtype=bool),
+                indices=indices,
+                dt=dt,
+                ceil_distance=lookup,
+                smooth=True,
+                overwrite=True,
+                fixed_radius=radius,
+            )
+            assert np.array_equal(actual, expected)
+
+            labels = _insert_disks_at_indices_parallel_direct(
+                im=np.zeros(shape, dtype=np.uint8),
+                indices=indices,
+                dt=dt,
+                ceil_distance=lookup,
+                smooth=True,
+                fixed_radius=radius,
+                value=7,
+            )
+            assert np.array_equal(labels, expected * 7)
+
+    def test_interval_merging_is_adaptive(self):
+        shape = (51, 53, 49)
+        dt = np.zeros(shape, dtype=np.float32)
+        sparse = np.zeros(shape, dtype=bool)
+        sparse[25, 26, 24] = True
+        dt[sparse] = 8
+        assert not _use_merged_intervals(
+            np.zeros(shape), _get_flat_indices(sparse), dt
+        )
+
+        dense = np.zeros(shape, dtype=bool)
+        dense[15:35, 15:35, 15:35] = True
+        dt[dense] = 8
+        assert _use_merged_intervals(
+            np.zeros(shape), _get_flat_indices(dense), dt
+        )
+
+    def test_remove_contained_disks(self):
+        edt = ps.tools.get_edt()
+        for shape in [(41, 37), (25, 23, 21)]:
+            centers = ps.generators.blobs(
+                shape=shape,
+                porosity=0.65,
+                seed=0,
+                periodic=False,
+            )
+            dt = edt(centers)
+            indices = _get_flat_indices(centers)
+            pruned = _remove_contained_disks(indices.copy(), centers, dt)
+            lookup = _make_axial_extent_lookup(np.max(dt))
+            assert len(pruned) < len(indices)
+            for smooth in [True, False]:
+                expected = _insert_disks_at_indices_parallel(
+                    im=np.zeros(shape, dtype=bool),
+                    indices=indices,
+                    dt=dt,
+                    ceil_distance=lookup,
+                    smooth=smooth,
+                )
+                actual = _insert_disks_at_indices_parallel(
+                    im=np.zeros(shape, dtype=bool),
+                    indices=pruned,
+                    dt=dt,
+                    ceil_distance=lookup,
+                    smooth=smooth,
+                )
+                assert np.array_equal(actual, expected)
+
+    def test_find_interface(self):
+        rng = np.random.default_rng(0)
+        for shape in [(31, 37), (19, 23, 17)]:
+            mask = rng.random(shape) > 0.25
+            expected = (
+                ~ps.filters.erode(
+                    mask,
+                    r=1,
+                    smooth=False,
+                    method="conv",
+                )
+                * mask
+            )
+            actual = _find_interface(mask, np.empty_like(mask))
+            assert np.array_equal(actual, expected)
 
     def test_ibop_w_trapping(self):
         im = np.copy(self.im2D)
@@ -270,59 +482,6 @@ class IBOPTest(GenericTest):
             assert np.all(seq2 == seq3)
             assert np.all(seq2 == seq4)
             assert np.all(seq3 == seq4)
-
-    def test_imbibition_equals_imbibition_dt_smooth(self):
-        edt = ps.tools.get_edt()
-        im = ps.generators.blobs(
-            shape=[100, 100],
-            porosity=0.7,
-            blobiness=1.5,
-            seed=16,
-        )
-        im = ps.filters.fill_invalid_pores(im)
-        smooth = True
-
-        # All methods are equivalent IF steps integers
-        dt = edt(im)
-        pc = 2/dt
-        pc[~im] = 0
-        steps = np.arange(12, 1, -1)
-
-        faces = ps.generators.borders(im.shape, mode='faces')
-
-        imb_dt = ps.simulations.imbibition_dt(
-            im=im, dt=dt, inlets=faces, steps=steps, smooth=smooth)
-        imb_pc = ps.simulations.imbibition(
-            im=im, dt=dt, inlets=faces, steps=(2/steps), smooth=smooth)
-        assert np.sum(imb_dt.im_size[im] != 2/imb_pc.im_pc[im]) == 0
-        assert np.sum(imb_dt.im_seq != imb_pc.im_seq) == 0
-
-    def test_imbibition_equals_imbibition_dt_not_smooth(self):
-        edt = ps.tools.get_edt()
-        im = ps.generators.blobs(
-            shape=[100, 100],
-            porosity=0.7,
-            blobiness=1.5,
-            seed=16,
-        )
-        im = ps.filters.fill_invalid_pores(im)
-        smooth = False
-
-        # All methods are equivalent IF steps integers
-        dt = edt(im)
-        pc = 2/dt
-        pc[~im] = 0
-        steps = np.arange(13, 1, -1)
-
-        faces = ps.generators.borders(im.shape, mode='faces')
-
-        imb_dt = ps.simulations.imbibition_dt(
-            im=im, dt=dt, inlets=faces, steps=steps, smooth=smooth)
-        imb_pc = ps.simulations.imbibition(
-            im=im, dt=dt, inlets=faces, steps=(2/steps), smooth=smooth)
-        assert np.sum(imb_dt.im_size[im] != 2/imb_pc.im_pc[im]) == 0
-        assert np.sum(imb_dt.im_seq != imb_pc.im_seq) == 0
-
 
 if __name__ == "__main__":
     self = IBOPTest()

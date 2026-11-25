@@ -31,6 +31,7 @@ from porespy.tools import (
     ps_round,
     settings,
 )
+from porespy.tools._label import _label_components
 
 tqdm = get_tqdm()
 edt = get_edt()
@@ -402,12 +403,12 @@ def find_throat_junctions(im, sk, juncs, throats, dt=None, l_max=7, mode="fast m
     """
     # Parse input args
     if dt is None:
-        dt = edt(im, parallel=16)
+        dt = edt(im)
     strel = ps_rect(3, ndim=juncs.ndim)
     if juncs.dtype == bool:
-        juncs = spim.label(juncs > 0, structure=strel)[0]
+        juncs = _label_components(juncs > 0, conn="max")[0]
     if throats.dtype == bool:
-        throats = spim.label(throats > 0, structure=strel)[0]
+        throats = _label_components(throats > 0, conn="max")[0]
     if mode == "maximum filter":
         # reduce clusters to pore centers
         ct = juncs_to_pore_centers(juncs, dt)
@@ -463,9 +464,9 @@ def find_throat_junctions(im, sk, juncs, throats, dt=None, l_max=7, mode="fast m
             for d in hits:
                 new_juncs[sx] += dist == d
         # label new_juncs
-        new_juncs = spim.label(new_juncs, structure=strel)[0]
+        new_juncs = _label_components(new_juncs, conn="max")[0]
     # Remove peaks from original throat image and re-label
-    new_throats = spim.label(throats * (new_juncs == 0), structure=strel)[0]
+    new_throats = _label_components(throats * (new_juncs == 0), conn="max")[0]
     # increment new_juncs by labels in original pores
     new_juncs[new_juncs > 0] += juncs.max()
     results = Results()
@@ -497,7 +498,7 @@ def merge_nearby_juncs(sk, juncs, dt=3):
         the labelled clusters of connected voxels.
     """
     strel = ps_rect(3, sk.ndim)
-    labels = spim.label(sk * ~juncs, structure=strel)[0]
+    labels = _label_components(sk * ~juncs, conn="max")[0]
     sizes = region_size(labels)
     # Add voxels from skeleton to junctions if they are too close to each other
     if isinstance(dt, (int, float)):  # If dt is a scalar, use hard threshold
@@ -538,7 +539,7 @@ def juncs_to_pore_centers(juncs, dt):
     # cubic structuring element, full connectivity
     strel = ps_rect(3, ndim=juncs.ndim)
     if juncs.dtype == bool:
-        juncs = spim.label(juncs > 0, structure=strel)[0]
+        juncs = _label_components(juncs > 0, conn="max")[0]
     # initialize reduced juncs
     reduced_juncs = np.zeros_like(juncs, dtype=int)
     # find position of maximums by labelled cluster
@@ -597,9 +598,9 @@ def junctions_to_network(sk, juncs, throats, dt, throat_area, voxel_size=1):
     # Parse input args
     strel = ps_rect(3, ndim=juncs.ndim)
     if juncs.dtype == bool:
-        juncs = spim.label(juncs > 0, structure=strel)[0]
+        juncs = _label_components(juncs > 0, conn="max")[0]
     if throats.dtype == bool:
-        throats = spim.label(throats > 0, structure=strel)[0]
+        throats = _label_components(throats > 0, conn="max")[0]
     # max filter on dt for finding inscribed throat diameter
     # this is important since skeleton is off of peaks in dt map
     b = ps_disk(2) if sk.ndim == 2 else ps_ball(2)
@@ -610,6 +611,11 @@ def junctions_to_network(sk, juncs, throats, dt, throat_area, voxel_size=1):
     # initialize throat conns and radius
     Nt = len(slices)
     t_conns = np.zeros((Nt, 2), dtype=int)
+    # `valid` flags throats with exactly two adjacent junctions. Parallel
+    # skeletonization can leave isolated single-voxel fragments behind (no
+    # junctions in their neighborhood); these aren't real throats and would
+    # otherwise crash the `t_conns[throat, :] = Pn_l` assignment.
+    valid = np.ones(Nt, dtype=bool)
     # initialize diameters
     t_length = np.zeros((Nt), dtype=float)
     t_max_diameter = np.zeros((Nt), dtype=float)
@@ -636,6 +642,9 @@ def junctions_to_network(sk, juncs, throats, dt, throat_area, voxel_size=1):
         # throat conns
         throat_im_dilated = throat_im_dilated * sub_juncs
         Pn_l = np.unique(throat_im_dilated)[1:] - 1
+        if len(Pn_l) != 2:
+            valid[throat] = False
+            continue
         t_conns[throat, :] = Pn_l
         # throat diameter
         throat_dt = throat_im * sub_dt
@@ -657,6 +666,22 @@ def junctions_to_network(sk, juncs, throats, dt, throat_area, voxel_size=1):
             t_equ_diameter[throat] = 2 * np.sqrt(A / np.pi)  # assume circle
         # throat length
         t_length[throat] = len(throat_dt[throat_dt != 0])
+    # Drop throats without exactly two adjacent junctions (isolated fragments)
+    if not valid.all():
+        n_dropped = int((~valid).sum())
+        logger.warning(
+            f"Dropped {n_dropped} skeleton fragment(s) without two adjacent junctions"
+        )
+        t_conns = t_conns[valid]
+        t_length = t_length[valid]
+        t_max_diameter = t_max_diameter[valid]
+        t_min_diameter = t_min_diameter[valid]
+        t_avg_diameter = t_avg_diameter[valid]
+        t_int_diameter = t_int_diameter[valid]
+        t_ins_diameter = t_ins_diameter[valid]
+        t_area = t_area[valid]
+        if throat_area is not None:
+            t_equ_diameter = t_equ_diameter[valid]
     # find pore coords
     Np = juncs.max()
     ct = juncs_to_pore_centers(juncs, dt)  # pore centres!
@@ -691,6 +716,8 @@ def junctions_to_network(sk, juncs, throats, dt, throat_area, voxel_size=1):
     net["pore.inscribed_diameter"] = p_diameter * voxel_size
     net["pore.equivalent_diameter"] = p_diameter_equivalent * voxel_size
     net["pore.index"] = np.arange(0, Np)
+    net["param.voxel_size"] = np.asarray(voxel_size)
+    net["param.ndim"] = np.asarray(sk.ndim)
     return net
 
 
@@ -815,7 +842,7 @@ def partition_skeleton(sk, juncs, dt):
         the labelled clusters of connected voxels.
     """
     strel = ps_rect(3, sk.ndim)
-    labels = spim.label(sk * ~juncs, structure=strel)[0]
+    labels = _label_components(sk * ~juncs, conn="max")[0]
     sizes = region_size(labels)
     # Add voxels from skeleton to junctions if they are too close to each other
     if isinstance(dt, (int, float)):  # If dt is a scalar, use hard threshold
@@ -827,15 +854,16 @@ def partition_skeleton(sk, juncs, dt):
         dists = flood_func(dt, np.amin, labels=labels) / (sk.ndim) ** 0.5
         juncs += (sizes <= dists) * (labels > 0)
     # Label the surviving pieces of skeleton as throats
-    throats = spim.label(sk * ~juncs, structure=strel)[0]
-    pores = spim.label(juncs, structure=strel)[0]
+    throats = _label_components(sk * ~juncs, conn="max")[0]
+    pores = _label_components(juncs, conn="max")[0]
     return pores, throats
 
 
 def sk_to_network(pores, throats, dt):
     # Find conns
     dil = spim.binary_dilation(pores > 0, structure=ps_rect(w=3, ndim=pores.ndim))
-    pores = flood_func(pores, np.amax, spim.label(dil)[0]).astype(int)
+    labels = _label_components(dil, conn="min")[0]
+    pores = flood_func(pores, np.amax, labels).astype(int)
     joints = (throats > 0) * (pores > 0)
     pts = np.where(joints)
     P1 = np.inf * np.ones(pts[0].size)
@@ -886,7 +914,7 @@ def _check_skeleton_health(sk):
         detected a warning is triggered.
     """
     sk = np.pad(sk, 1)  # pad by 1 void voxel to avoid false warning
-    _, N = spim.label(input=~sk.astype("bool"))
+    _, N = _label_components(im=~sk.astype("bool"), conn="min")
     N_shells = N - 1
     if N_shells > 0:
         logger.warning(
@@ -925,7 +953,7 @@ def _get_normal(sk, throats):
     # label throats if not already labelled
     strel = ps_rect(3, ndim=sk.ndim)
     if throats.dtype == bool:
-        throats = spim.label(throats > 0, structure=strel)[0]
+        throats = _label_components(throats > 0, conn="max")[0]
     n_throat_nodes = np.sum(throats > 0)
     # find neighbour voxels on sk
     neighbour_coords = np.zeros((n_throat_nodes, 2, sk.ndim))
@@ -1297,7 +1325,7 @@ def get_throat_area(
     # label throats if not already labelled
     strel = ps_rect(3, ndim=im.ndim)
     if throats.dtype == bool:
-        throats = spim.label(throats > 0, structure=strel)[0]
+        throats = _label_components(throats > 0, conn="max")[0]
     # get normals
     normals, coords = _get_normal(sk, throats)
     # perform walk

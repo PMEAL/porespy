@@ -1,5 +1,6 @@
 import logging
 import operator
+import warnings
 from typing import Literal
 
 import dask
@@ -11,6 +12,7 @@ from skimage.segmentation import clear_border
 
 from porespy.tools import (
     _check_for_singleton_axes,
+    extend_slice,
     get_edt,
     get_slices_grid,
     get_strel,
@@ -19,6 +21,7 @@ from porespy.tools import (
     settings,
     unpad,
 )
+from porespy.tools._label import _label_components
 
 __all__ = [
     "apply_chords",
@@ -292,8 +295,8 @@ def flood(
         and 0's elsewhere.
     labels : array_like
         An array containing labels identifying each individual region to be
-        flooded. If not provided then `scipy.ndimage.label` is applied to
-        `im > 0`.
+        flooded. If not provided then connected-component labeling is applied
+        to `im > 0`.
     mode : string
         Specifies how to determine the value to flood each region. Options
         taken from the `scipy.ndimage.measurements` function include:
@@ -367,7 +370,7 @@ def flood_func(
         `amax`, `sum`, `mean`, `median`, etc.
     labels : ndarray
         An array containing labels identifying each individual region to be
-        flooded. If not provided then `scipy.ndimage.label` is applied to
+        flooded. If not provided then connected-component labeling is applied to
         `im > 0`.
 
     Returns
@@ -398,7 +401,7 @@ def flood_func(
 
     """
     if labels is None:
-        labels = spim.label(im > 0)[0]
+        labels = _label_components(im=im > 0, conn="min")[0]
     slices = spim.find_objects(labels)
     flooded = np.zeros_like(im, dtype=float)
     for i, s in enumerate(slices):
@@ -463,7 +466,7 @@ def region_size(
     ----------
     im : ndarray
         Either a boolean image wtih `True` indicating the features of
-        interest, in which case `scipy.ndimage.label` will be applied to
+        interest, in which case connected-component labeling will be applied to
         find regions, or a greyscale image with integer values indicating
         regions.
     conn : str
@@ -495,9 +498,8 @@ def region_size(
     to view online example.
 
     """
-    se = strel[im.ndim][conn].copy()
     if im.dtype == bool:
-        im = spim.label(im, structure=se)[0]
+        im = _label_components(im=im, conn=conn)[0]
     counts = np.bincount(im.flatten())
     counts[0] = 0
     return counts[im]
@@ -520,7 +522,8 @@ def apply_chords(
     spacing : int
         Separation between chords.  The default is 1 voxel.  This can be
         decreased to 0, meaning that the chords all touch each other,
-        which automatically sets to the `label` argument to `True`.
+        which automatically sets the `label` argument to `True`. The option
+        ``spacing=0`` is deprecated and will be removed in a future release.
     axis : int (default = 0)
         The axis along which the chords are drawn.
     trim_edges : bool (default = `True`)
@@ -553,24 +556,41 @@ def apply_chords(
     if spacing < 0:
         raise Exception("Spacing cannot be less than 0")
     if spacing == 0:
+        warnings.warn(
+            "spacing=0 is deprecated and will be removed in a future release; "
+            "use spacing>=1 instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         label = True
     result = np.zeros(im.shape, dtype=int)  # Will receive chords at end
     slxyz = [slice(None, None, spacing * (axis != i) + 1) for i in [0, 1, 2]]
     slices = tuple(slxyz[: im.ndim])
-    s = [[0, 1, 0], [0, 1, 0], [0, 1, 0]]  # Straight-line structuring element
-    if im.ndim == 3:  # Make structuring element 3D if necessary
-        s = np.pad(
-            np.atleast_3d(s),
-            pad_width=((0, 0), (0, 0), (1, 1)),
-            mode="constant",
-            constant_values=0,
-        )
-    im = im[slices]
-    s = np.swapaxes(s, 0, axis)
-    chords = spim.label(im, structure=s)[0]
-    if trim_edges:  # Label on border chords will be set to 0
-        chords = clear_border(chords)
-    result[slices] = chords  # Place chords into empty image created at top
+    if spacing == 0:
+        s = [[0, 1, 0], [0, 1, 0], [0, 1, 0]]
+        if im.ndim == 3:
+            s = np.pad(
+                np.atleast_3d(s),
+                pad_width=((0, 0), (0, 0), (1, 1)),
+                mode="constant",
+                constant_values=0,
+            )
+        s = np.swapaxes(s, 0, axis)
+        chords = spim.label(im, structure=s)[0]
+        if trim_edges:
+            chords = clear_border(chords)
+        result[slices] = chords
+    else:
+        # A one-voxel gap lets full connectivity distinguish neighboring chords.
+        result[slices] = im[slices]
+        chords = _label_components(result, conn="max")[0]
+        if trim_edges:
+            # Preserve the historical treatment of the sampled image boundaries.
+            chords = clear_border(chords[slices])
+            result.fill(0)
+            result[slices] = chords
+        else:
+            result = chords
     if label is False:  # Remove label if not requested
         result = result > 0
     return result
@@ -608,8 +628,7 @@ def apply_chords_3D(
     Notes
     -----
     The chords are separated by a spacing of at least 1 voxel so that
-    tools that search for connected components, such as
-    `scipy.ndimage.label` can detect individual chords.
+    connected-component labeling can detect individual chords.
 
     See Also
     --------
@@ -633,7 +652,8 @@ def apply_chords_3D(
     ch[2 :: 4 + 2 * spacing, 2 :: 4 + 2 * spacing, :] = 3  # Z-direction
     chords = ch * im
     if trim_edges:
-        temp = clear_border(spim.label(chords > 0)[0]) > 0
+        labels = _label_components(im=chords > 0, conn="max")[0]
+        temp = clear_border(labels) > 0
         chords = temp * chords
     return chords
 
@@ -643,7 +663,7 @@ def _get_axial_shifts(ndim=2, conn="min"):
     Helper function to generate the axial shifts that will be performed on
     the image to identify bordering pixels/voxels
     """
-    neighbors = strel[ndim][conn]
+    neighbors = strel[ndim][conn].copy()
     if ndim == 2:
         neighbors[1, 1] = 0
         x, y = np.where(neighbors)
@@ -793,27 +813,25 @@ def prune_branches(
     if branch_points is None:
         branch_points = spim.convolve(skel * 1.0, weights=cube) > 3
         branch_points = branch_points * skel
-    # Store original branch points before dilating
-    pts_orig = branch_points
     # Find arcs of skeleton by deleting branch points
     arcs = skel * (~branch_points)
     # Label arcs
-    arc_labels = spim.label(arcs, structure=cube)[0]
-    # Dilate branch points so they overlap with the arcs
-    branch_points = spim.binary_dilation(branch_points, structure=cube)
-    pts_labels = spim.label(branch_points, structure=cube)[0]
+    arc_labels = _label_components(im=arcs, conn="max")[0]
+    # Label junctions before dilation can merge nearby branch points.
+    pts_labels = _label_components(im=branch_points, conn="max")[0]
     # Now scan through each arc to see if it's connected to two branch points
     slices = spim.find_objects(arc_labels)
-    label_num = 0
-    for s in slices:
-        label_num += 1
-        # Find branch point labels the overlap current arc
-        hits = pts_labels[s] * (arc_labels[s] == label_num)
-        # If image contains 2 branch points, then it's not a tail.
-        if len(np.unique(hits)) == 3:
-            im_result[s] += arc_labels[s] == label_num
+    for label_num, s in enumerate(slices, start=1):
+        s = extend_slice(s, shape=skel.shape, pad=1)
+        arc = arc_labels[s] == label_num
+        # Dilate each arc instead, retaining every adjacent junction label
+        # even when a single arc voxel touches both ends of a short connection.
+        neighbors = spim.binary_dilation(arc, structure=cube)
+        hits = np.unique(pts_labels[s][neighbors])
+        if np.count_nonzero(hits) >= 2:
+            im_result[s] |= arc
     # Add missing branch points back to arc image to make complete skeleton
-    im_result += skel * pts_orig
+    im_result += skel * branch_points
     if iterations > 1:
         iterations -= 1
         im_temp = np.copy(im_result)

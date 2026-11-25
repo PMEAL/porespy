@@ -1,16 +1,15 @@
 import inspect
 import logging
+from math import ceil
 
 import numpy as np
 import numpy.typing as npt
-import scipy.ndimage as spim
 import scipy.spatial as sptl
 import scipy.stats as spst
 from deprecated import deprecated
-from numba import njit
 from scipy import fft as sp_ft
 from skimage.measure import regionprops
-from skimage.morphology import ball, disk, skeletonize, footprint_rectangle
+from skimage.morphology import skeletonize
 
 from porespy.generators import faces
 from porespy.filters import (
@@ -27,6 +26,7 @@ from porespy.tools import (
     get_tqdm,
     settings,
 )
+from porespy.tools._label import _label_components
 
 
 __all__ = [
@@ -63,12 +63,6 @@ __all__ = [
 edt = get_edt()
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
-strel = {
-    2: {"min": disk(1), "max": footprint_rectangle((3, 3))},
-    3: {"min": ball(1), "max": footprint_rectangle((3, 3, 3))}
-}
-
-
 def porosity_by_type(im, conn='min'):
     r"""
     Computes different types of porosity in an image including total, closed, and
@@ -98,10 +92,10 @@ def porosity_by_type(im, conn='min'):
         `surface`   The fraction of the image which are pores only the surfaces
         ==========  ================================================================
 
-            Examples
+    Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/reference/porosity_by_type.html>`_
+    <https://porespy.org/examples/metrics/reference/porosity_by_type.html>`__
     to view online example.
     """
     Vb = np.sum((im == 1) + (im == 0), dtype=np.float64)
@@ -168,7 +162,7 @@ def is_percolating(im, axis=None, inlets=None, outlets=None, conn='min'):
             ans.append(is_percolating(im, axis=ax, conn=conn))
         return ans
 
-    labels, N = spim.label(im, structure=strel[im.ndim][conn])
+    labels, N = _label_components(im=im, conn=conn)
     a = np.unique(labels[inlets])
     a = a[a > 0]
     b = np.unique(labels[outlets])
@@ -293,11 +287,10 @@ def percolating_porosity(im, axis=0, inlets=None, outlets=None, conn="min"):
     <https://porespy.org/examples/metrics/reference/percolating_porosity.html>`_
     to view online example.
     """
-    se = strel[im.ndim][conn]
     if (inlets is None) and (outlets is None):
         inlets = faces(im.shape, inlet=axis)
         outlets = faces(im.shape, outlet=axis)
-    labels, N = spim.label(im, structure=se)
+    labels, N = _label_components(im=im, conn=conn)
     a = np.unique(labels[inlets])
     a = a[a > 0]
     b = np.unique(labels[outlets])
@@ -405,8 +398,9 @@ def porosity(im, mask=None, fill_closed=False, fill_surface=False):
         A flag to indicate if closed pores (not connected to any image boundary)
         should be filled or not before computing the porosity.
     fill_surface : bool (default = `False`)
-        A flag to indicate if surface pores connected only to one surface should be
-        filled or not before computing the porosity.
+        A flag to indicate if non-spanning pores with exactly one connected
+        boundary opening should be filled before computing the porosity. An
+        opening may wrap around an edge or corner; separate openings are retained.
 
     Returns
     -------
@@ -447,7 +441,7 @@ def porosity(im, mask=None, fill_closed=False, fill_surface=False):
     return e
 
 
-def porosity_profile(im, axis=0, span=1, mode="tile"):
+def porosity_profile(im, axis=0, span=1, mode="tile", voxel_size=None):
     r"""
     Computes the porosity profile along the specified axis
 
@@ -473,6 +467,10 @@ def porosity_profile(im, axis=0, span=1, mode="tile"):
                  provides more data points but is slower.
         ======== ==============================================================
 
+    voxel_size : scalar, optional
+        If given, the returned ``position`` values are scaled by this factor.
+        If ``None`` (default), positions are returned in voxel units.
+
     Returns
     -------
     results : dataclass
@@ -484,7 +482,7 @@ def porosity_profile(im, axis=0, span=1, mode="tile"):
         position      The position along the given axis at which porosity
                       values are computed, corresponding to the middle of each
                       slice, whether the mode was `'tile'` or `'slide'`.
-                      The units are in voxels.
+                      The units are in voxels unless ``voxel_size`` is given.
         porosity      The local porosity value at each position.
         ============= =========================================================
 
@@ -510,6 +508,8 @@ def porosity_profile(im, axis=0, span=1, mode="tile"):
         denom = ((im[s] == 1) + (im[s] == 0)).sum(dtype=np.float64)
         eps[i] = num / denom
         z[i] = (s[axis].start + s[axis].stop) / 2
+    if voxel_size is not None:
+        z = z * voxel_size
     results = Results()
     results.position = z
     results.porosity = eps
@@ -594,7 +594,7 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/reference/radial_density.html>`__
+    <https://porespy.org/examples/metrics/reference/radial_density_distribution.html>`__
     to view online example.
 
     """
@@ -674,7 +674,7 @@ def lineal_path_distribution(im, bins=10, voxel_size=1, log=False):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/reference/linearl_path_distribution.html>`__
+    <https://porespy.org/examples/metrics/reference/lineal_path_distribution.html>`__
     to view online example.
 
     """
@@ -709,7 +709,7 @@ def chord_length_distribution(
     im : ndarray
         An image with chords drawn in the pore space, as produced by
         ``apply_chords`` or ``apply_chords_3d``.  ``im`` can be either boolean,
-        in which case each chord will be identified using ``scipy.ndimage.label``,
+        in which case each chord will be identified by connected-component labeling,
         or numerical values in case it is assumed that chords have already been
         identified and labeled. In both cases, the size of each chord will be
         computed as the number of voxels belonging to each labelled region.
@@ -933,137 +933,119 @@ def two_point_correlation_bf(im, spacing=10):
     return tpcf
 
 
-def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
-    r"""
-    Helper functions to calculate the radial profile of the autocorrelation
+def _radial_autocorrelation(im, edges, xp, fft, fft_options, bin_size):
+    # Retain only shifts that can fall below the final edge. Padding an axis
+    # of length n to n + max_lag keeps wrapped pairs out of those shifts.
+    max_lag = ceil(min(edges[-1], max(im.shape))) - 1
+    limits = [min(n - 1, max_lag) for n in im.shape]
+    if not any(limits):
+        phi = xp.count_nonzero(im) / im.size
+        radial = xp.zeros(edges.size - 1, dtype=xp.float64)
+        if edges[0] == 0:
+            radial[0] = phi
+        return radial, phi
 
-    Masks the image in radial segments from the center and averages the values
-    The distance values are normalized and 100 bins are used as default.
+    padded_shape = tuple(
+        sp_ft.next_fast_len(n + lag, real=True) for n, lag in zip(im.shape, limits)
+    )
+    spectrum = fft.rfftn(im.astype(xp.float64), s=padded_shape, **fft_options)
+    imag_squared = xp.square(spectrum.imag)
+    xp.square(spectrum.real, out=spectrum.real)
+    spectrum.real += imag_squared
+    spectrum.imag.fill(0)
+    del imag_squared
+    autocorr = fft.irfftn(spectrum, s=padded_shape, **fft_options)
+    del spectrum
+    # The inverse transform gives integer pair counts for a binary phase.
+    # Rounding removes transform noise, including at lags with zero pairs.
+    phi = xp.rint(autocorr[(0,) * im.ndim]) / im.size
 
-    Parameters
-    ----------
-    autocorr : ndarray
-        The image of autocorrelation produced by FFT
-    r_max : int or float
-        The maximum radius in pixels to sum the image over
-    bins : ndarray
-        The edges of the bins to use in summing the radii, ** must be in voxels
-    pf : float
-        the phase fraction (porosity) of the image, used for scaling the
-        normalized autocorrelation down to match the two-point correlation
-        definition as given by Torquato
-    voxel_size : scalar
-        The size of a voxel side in preferred units.  The default is 1, so the
-        user can apply the scaling to the returned results after the fact.
+    # Autocorrelation satisfies C(-h) = C(h) for reversal of the whole
+    # vector. Keep the signed shifts along every axis except the first.
+    axes = [xp.arange(-m, m + 1) for m in limits]
+    axes[0] = xp.arange(limits[0] + 1)
+    indices = xp.ix_(*(lags % n for lags, n in zip(axes, padded_shape)))
+    pairs = autocorr[indices]
+    del autocorr
+    xp.rint(pairs, out=pairs)
+    lags = xp.ix_(*axes)
+    for n, axis in zip(im.shape, lags):
+        pairs /= n - xp.abs(axis)
+    pairs[1:] *= 2
 
-    Returns
-    -------
-    result : tpcf
-
-
-    """
-    if len(autocorr.shape) == 2:
-        adj = np.reshape(autocorr.shape, [2, 1, 1])
-        # use np.round otherwise with odd image sizes, the mask generated can
-        # be zero, resulting in Div/0 error
-        inds = np.indices(autocorr.shape) - np.round(adj / 2)
-        dt = np.sqrt(inds[0] ** 2 + inds[1] ** 2)
-    elif len(autocorr.shape) == 3:
-        adj = np.reshape(autocorr.shape, [3, 1, 1, 1])
-        # use np.round otherwise with odd image sizes, the mask generated can
-        # be zero, resulting in Div/0 error
-        inds = np.indices(autocorr.shape) - np.round(adj / 2)
-        dt = np.sqrt(inds[0] ** 2 + inds[1] ** 2 + inds[2] ** 2)
+    radius = xp.sqrt(sum(axis**2 for axis in lags))
+    if bin_size is None:
+        # Bin 0 collects lags below the first edge. The last bin collects
+        # lags at or beyond the final edge. Discard both after accumulation.
+        labels = xp.searchsorted(xp.asarray(edges), radius, side="right")
     else:
-        raise Exception("Image dimensions must be 2 or 3")
-    if np.max(bins) > np.max(dt):
-        msg = (
-            "Bins specified distances exceeding maximum radial distance for"
-            " image size. Radial distance cannot exceed distance from center"
-            " of image to corner."
-        )
-        raise Exception(msg)
-
-    bin_size = bins[1:] - bins[:-1]
-    radial_sum = _get_radial_sum(dt, bins, bin_size, autocorr)
-    # Return normalized bin and radially summed autoc
-    norm_autoc_radial = radial_sum / np.max(autocorr)
-    h = [norm_autoc_radial, bins]
-    h = _parse_histogram(h, voxel_size=1)
-    tpcf = Results()
-    tpcf.distance = h.bin_centers * voxel_size
-    tpcf.bin_centers = h.bin_centers * voxel_size
-    tpcf.bin_edges = h.bin_edges * voxel_size
-    tpcf.bin_widths = h.bin_widths * voxel_size
-    tpcf.probability = norm_autoc_radial
-    tpcf.probability_scaled = norm_autoc_radial * pf
-    tpcf.pdf = h.pdf * pf
-    tpcf.relfreq = h.relfreq
-    return tpcf
+        labels = xp.floor(radius / bin_size).astype(xp.intp) + 1
+        xp.minimum(labels, edges.size, out=labels)
+    del radius
+    sums = xp.bincount(labels.ravel(), weights=pairs.ravel(), minlength=edges.size + 1)
+    counts = 2 * xp.bincount(labels.ravel(), minlength=edges.size + 1)
+    counts -= xp.bincount(labels[0].ravel(), minlength=edges.size + 1)
+    return sums[1:-1] / xp.maximum(counts[1:-1], 1), phi
 
 
-@njit(parallel=False)  # pragma: no cover
-def _get_radial_sum(dt, bins, bin_size, autocorr):
-    radial_sum = np.zeros_like(bins[:-1], dtype=np.float64)
-    for i, r in enumerate(bins[:-1]):
-        mask = (dt <= r) * (dt > (r - bin_size[i]))
-        radial_sum[i] = np.sum(np.ravel(autocorr)[np.ravel(mask)], dtype=np.int64) / np.sum(
-            mask, dtype=np.int64
-        )
-    return radial_sum
-
-
-def two_point_correlation(im, voxel_size=1, bins=100):
+def two_point_correlation(im, voxel_size=1, bins=100, *, backend=None):
     r"""
-    Calculate the two-point correlation function using Fourier transforms
+    Calculate the radial two-point correlation function using Fourier transforms.
 
     Parameters
     ----------
-    im : ndarray
-        The image of the void space on which the 2-point correlation is
-        desired, in which the phase of interest is labelled as True
+    im : array_like
+        A 2D or 3D phase indicator. Values equal to 1 (or True) indicate the
+        phase of interest. A CUDA array selects the CuPy backend by default.
     voxel_size : scalar
-        The size of a voxel side in preferred units.  The default is 1, so
-        the user can apply the scaling to the returned results after the
-        fact.
-    bins : scalar or array_like
-        Either an array of bin sizes to use, or the number of bins that
-        should be automatically generated that span the data range. The
-        maximum value of the bins, if passed as an array, cannot exceed
-        the distance from the center of the image to the corner.
+        The size of a voxel side in preferred units. This scales the
+        returned distances and bin edges.
+    bins : int or array_like
+        A positive target number of bins, or explicit, strictly increasing
+        bin edges in voxel units. Automatic bins are at least one voxel wide
+        and extend to approximately half the shortest image dimension. Each
+        bin includes its left edge and excludes its right edge, including
+        the final bin.
+    backend : {None, 'scipy', 'cupy'}
+        FFT backend. By default, use SciPy for host arrays and CuPy for CUDA
+        arrays. With ``backend='cupy'``, host arrays are copied to the GPU.
+        CuPy is an optional dependency. The returned arrays are NumPy arrays
+        with either backend.
 
     Returns
     -------
-    result : tpcf
-        A dataclass-like object with following named attributes:
+    result : Results
+        A custom object with the following attributes:
 
-        =========================== =================================================
-        Attribute                   Description
-        =========================== =================================================
-        *distance*                  The distance between two points, equivalent to
-                                    bin_centers
-        *bin_centers*               The center point of each bin. See distance
-        *bin_edges*                 Locations of bin divisions, including 1 more
-                                    value than the number of bins
-        *bin_widths*                Useful for passing to the ``width`` argument of
-                                    ``matplotlib.pyplot.bar``
-        *probability_normalized*    The probability that two points of the stated
-                                    separation distance are within the same phase
-                                    normalized to 1 at r = 0
-        *probability*               The probability that two points of the stated
-                                    separation distance are within the same phase
-                                    scaled to the phase fraction at r = 0
-        *pdf*                       Same as probability
-        =========================== =================================================
-
+        ===================== =====================================================
+        Attribute             Description
+        ===================== =====================================================
+        *distance*            Bin centers, in the units of voxel_size
+        *bin_centers*         Same as distance
+        *bin_edges*           Edges of the distance bins
+        *bin_widths*          Widths of the distance bins
+        *probability*         Radial average of S2 divided by the phase fraction
+        *probability_scaled*  Radial average of S2
+        *pdf*                 Same as probability_scaled
+        *relfreq*             Probability multiplied by bin width in voxels
+        ===================== =====================================================
 
     Notes
     -----
-    The fourier transform approach utilizes the fact that the
-    autocorrelation function is the inverse FT of the power spectrum
-    density. For background read the Scipy fftpack docs and for a good
-    explanation `see this thesis
-    <https://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf>`_.
+    For each displacement vector, S2 is the fraction of valid voxel pairs
+    for which both voxels lie in the selected phase. Zero-padding prevents
+    wraparound for the requested lags. The number of valid pairs for a
+    displacement is the product of the overlap lengths along each axis.
+    Each radial bin averages these fractions with equal weight per
+    displacement vector. For a statistically homogeneous image this
+    estimates the shell average of the two-point probability.
+
+    At zero lag S2 equals the phase fraction. A bin reports this value
+    exactly if it contains zero lag alone, for example with edges [0, 1].
+    In a finite image, an edge-corrected S2 value can exceed the global
+    phase fraction when pairs in a shell sample a phase-rich region.
+    Empty bins are returned as zero. When the phase is absent, S2 is zero
+    and the normalized probability and relfreq are NaN.
 
     Examples
     --------
@@ -1072,26 +1054,65 @@ def two_point_correlation(im, voxel_size=1, bins=100):
     to view online example.
 
     """
-    # Get the number of CPUs available to parallel process Fourier transforms
-    cpus = settings.ncores
-    # Get the phase fraction of the image
-    pf = porosity(im)
-    if isinstance(bins, int):
-        # Calculate half lengths of the image
-        r_max = (np.ceil(np.min(np.shape(im))) / 2).astype(int)
-        # Get the bin-size - ensures it will be at least 1
-        bin_size = int(np.ceil(r_max / bins))
-        # Calculate the bin divisions, equivalent to bin_edges
-        bins = np.arange(0, r_max + bin_size, bin_size)
-    # set the number of parallel processors to use:
-    with sp_ft.set_workers(cpus):
-        # Fourier Transform and shift image
-        F = sp_ft.ifftshift(sp_ft.rfftn(sp_ft.fftshift(im)))
-        # Compute Power Spectrum
-        P = np.absolute(F**2)
-        # Auto-correlation is inverse of Power Spectrum
-        autoc = np.absolute(sp_ft.ifftshift(sp_ft.irfftn(sp_ft.fftshift(P))))
-    tpcf = _radial_profile(autoc, bins, pf=pf, voxel_size=voxel_size)
+    is_cuda = hasattr(im, "__cuda_array_interface__")
+    if backend is None:
+        backend = "cupy" if is_cuda else "scipy"
+    if backend == "cupy":
+        import cupy as xp
+
+        fft = xp.fft
+        fft_options = {}
+    elif backend == "scipy":
+        if is_cuda:
+            raise ValueError("Use the CuPy backend for CUDA arrays")
+        xp = np
+        fft = sp_ft
+        fft_options = {"workers": settings.ncores}
+    else:
+        raise ValueError("backend must be None, 'scipy', or 'cupy'")
+
+    im = xp.asarray(im)
+    if im.ndim not in (2, 3) or im.size == 0:
+        raise ValueError("im must be a nonempty 2D or 3D array")
+    if im.dtype != xp.bool_:
+        im = im == 1
+
+    bin_size = None
+    if isinstance(bins, (int, np.integer)):
+        bins = int(bins)
+        if bins <= 0:
+            raise ValueError("bins must be positive")
+        r_max = max(1, min(im.shape) // 2)
+        bin_size = (r_max + bins - 1) // bins
+        edges = np.arange(0, r_max + bin_size, bin_size)
+    else:
+        if backend == "cupy" and hasattr(bins, "__cuda_array_interface__"):
+            bins = xp.asnumpy(bins)
+        edges = np.asarray(bins, dtype=float)
+        if (
+            edges.ndim != 1
+            or edges.size < 2
+            or not np.all(np.isfinite(edges))
+            or edges[0] < 0
+            or np.any(edges[1:] <= edges[:-1])
+        ):
+            raise ValueError("bin edges must be finite, nonnegative, and increasing")
+
+    scaled, phi = _radial_autocorrelation(im, edges, xp, fft, fft_options, bin_size)
+    if backend == "cupy":
+        scaled = xp.asnumpy(scaled)
+    phi = float(phi)
+    normalized = scaled / phi if phi > 0 else np.full_like(scaled, np.nan)
+    h = _parse_histogram((normalized, edges), voxel_size=voxel_size)
+    tpcf = Results()
+    tpcf.distance = h.bin_centers.copy()
+    tpcf.bin_centers = h.bin_centers
+    tpcf.bin_edges = h.bin_edges
+    tpcf.bin_widths = h.bin_widths
+    tpcf.probability = normalized
+    tpcf.probability_scaled = scaled
+    tpcf.pdf = scaled.copy()
+    tpcf.relfreq = h.relfreq
     return tpcf
 
 
@@ -1145,11 +1166,11 @@ def chord_counts(im):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/reference/metrics/chord_counts.html>`__
+    <https://porespy.org/examples/metrics/reference/chord_counts.html>`__
     to view online example.
 
     """
-    labels, N = spim.label(im > 0)
+    labels, N = _label_components(im > 0, conn="min")
     props = regionprops(labels)
     chord_lens = np.array([i.filled_area for i in props], dtype=int)
     return chord_lens
@@ -1297,7 +1318,10 @@ def pc_map_to_pc_curve(
         Minimum and maximum values to clip the capillary pressures. This is useful
         if the minimum or maximum capillary pressure values are -/+ infinity, which
         means they do not show up when plotting.  Using `pc_min=1` and `pc_max=1e6`
-        for instance, will make plateaus render when plotting.
+        for instance, will make plateaus render when plotting. If a bound lies
+        outside the curve's pressure range, a constant-saturation plateau is added
+        at that bound. Lower bounds extend the start of drainage curves and the
+        end of imbibition curves; upper bounds extend the opposite end.
 
     Returns
     -------
@@ -1317,6 +1341,11 @@ def pc_map_to_pc_curve(
     To use this function with the results of `porosimetry` or `ibip` the sizes map
     must be converted to a capillary pressure map first.  `drainage` and `invasion`
     both return capillary pressure maps which can be passed directly as `pc`.
+
+    Clipping preserves event order and all saturation values. Events clipped to
+    the same pressure are retained, including those with different saturations
+    that form a vertical step. No padding is added for a bound already represented
+    in the clipped curve. Nonmonotone injection histories retain their order.
 
     Examples
     --------
@@ -1379,14 +1408,22 @@ def pc_map_to_pc_curve(
                 snwp = np.hstack((snwp, snwp[-1]))
 
     # Apply clipping to Pc values
-    if pc_min or pc_max:
+    if pc_min is not None or pc_max is not None:
         pcs = np.clip(pcs, a_min=pc_min, a_max=pc_max)
-        if pc_min and pcs.min() > pc_min:
-            pcs = np.hstack((pc_min, pcs))
-            snwp = np.hstack((snwp[0], snwp))
-        if pc_max and pcs.min() < pc_max:
-            pcs = np.hstack((pcs, pc_max))
-            snwp = np.hstack((snwp, snwp[-1]))
+        if pc_min is not None and pcs.min() > pc_min:
+            if mode.startswith("dr"):
+                pcs = np.hstack((pc_min, pcs))
+                snwp = np.hstack((snwp[0], snwp))
+            else:
+                pcs = np.hstack((pcs, pc_min))
+                snwp = np.hstack((snwp, snwp[-1]))
+        if pc_max is not None and pcs.max() < pc_max:
+            if mode.startswith("dr"):
+                pcs = np.hstack((pcs, pc_max))
+                snwp = np.hstack((snwp, snwp[-1]))
+            else:
+                pcs = np.hstack((pc_max, pcs))
+                snwp = np.hstack((snwp[0], snwp))
 
     results = Results()
     results.pc = pcs
@@ -1394,7 +1431,8 @@ def pc_map_to_pc_curve(
     return results
 
 
-def satn_profile(satn, s=None, im=None, axis=0, span=10, mode="tile"):
+def satn_profile(satn, s=None, im=None, axis=0, span=10, mode="tile",
+                 voxel_size=None):
     r"""
     Computes a saturation profile from an image of fluid invasion
 
@@ -1430,6 +1468,10 @@ def satn_profile(satn, s=None, im=None, axis=0, span=10, mode="tile"):
                  provides more data points but is slower.
         ======== ==============================================================
 
+    voxel_size : scalar, optional
+        If given, the returned ``position`` values are scaled by this factor.
+        If ``None`` (default), positions are returned in voxel units.
+
     Returns
     -------
     results : dataclass
@@ -1439,7 +1481,8 @@ def satn_profile(satn, s=None, im=None, axis=0, span=10, mode="tile"):
         Attribute     Description
         ============= =========================================================
         position      The position along the given axis at which saturation
-                      values are computed.  The units are in voxels.
+                      values are computed.  The units are in voxels unless
+                      ``voxel_size`` is given.
         saturation    The local saturation value at each position.
         ============= =========================================================
 
@@ -1472,6 +1515,8 @@ def satn_profile(satn, s=None, im=None, axis=0, span=10, mode="tile"):
         y[i] = nwp.sum(dtype=np.int64) / void.sum(dtype=np.int64)
         z[i] = (slab[axis].start + slab[axis].stop) / 2
 
+    if voxel_size is not None:
+        z = z * voxel_size
     results = Results()
     results.position = z
     results.saturation = y

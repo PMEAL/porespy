@@ -4,8 +4,9 @@ import numpy as np
 if __name__ == "__main__":
     from copy import copy
     import porespy as ps
-    from edt import edt
     import matplotlib.pyplot as plt
+
+    edt = ps.tools.get_edt()
 
     ps.visualization.set_mpl_style()
     cm = copy(plt.cm.plasma)

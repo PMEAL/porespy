@@ -1,4 +1,5 @@
 import os
+from itertools import product
 from pathlib import Path
 
 import numpy as np
@@ -13,6 +14,78 @@ from porespy.tools import get_edt
 
 edt = get_edt()
 ps.settings.tqdm["disable"] = True
+
+
+def _direct_two_point_correlation(im, edges):
+    # Count valid voxel pairs for each signed displacement independently.
+    sums = np.zeros(len(edges) - 1)
+    counts = np.zeros_like(sums)
+    for lag in product(*(range(1 - n, n) for n in im.shape)):
+        radius = np.sqrt(sum(d**2 for d in lag))
+        index = np.searchsorted(edges, radius, side="right") - 1
+        if not 0 <= index < len(sums):
+            continue
+        a = im[tuple(slice(max(0, -d), min(n, n - d)) for d, n in zip(lag, im.shape))]
+        b = im[tuple(slice(max(0, d), min(n, n + d)) for d, n in zip(lag, im.shape))]
+        sums[index] += np.count_nonzero(a & b) / a.size
+        counts[index] += 1
+    return sums / np.maximum(counts, 1)
+
+
+@pytest.mark.parametrize("shape", [(5, 8), (4, 5, 11), (1, 4, 7)])
+@pytest.mark.parametrize("bins", [np.int64(2), [0, 0.5, 1, np.sqrt(2), 2.4, 5, 20]])
+def test_tpcf_fft_matches_direct_counts(shape, bins):
+    rng = np.random.default_rng(654)
+    im = rng.random(shape) < 0.4
+    im.flat[0] = im.flat[-1] = True
+    result = ps.metrics.two_point_correlation(im, voxel_size=0.25, bins=bins)
+    edges = result.bin_edges / 0.25
+    if not isinstance(bins, np.integer):
+        assert_allclose(edges, bins)
+    expected = _direct_two_point_correlation(im, edges)
+    assert_allclose(result.probability_scaled, expected, atol=1e-14)
+    assert_allclose(result.probability, expected / im.mean(), atol=1e-14)
+    assert_allclose(result.pdf, expected, atol=1e-14)
+    assert_allclose(result.distance, (edges[1:] + edges[:-1]) * 0.125)
+
+
+def test_tpcf_fft_phase_indicator_and_empty_phase():
+    labels = np.array([[1, 2, 2], [0, 1, 0], [2, 0, 1]])
+    bins = [0, 1, 1.25, 1.4, 2, 3]
+    result = ps.metrics.two_point_correlation(labels, bins=bins)
+    expected = _direct_two_point_correlation(labels == 1, bins)
+    assert_allclose(result.probability_scaled, expected)
+    assert result.probability_scaled[0] == 1 / 3
+    assert result.probability_scaled[2] == 0  # No displacement in this bin.
+    empty = ps.metrics.two_point_correlation(labels == 3, bins=bins)
+    assert np.all(empty.probability_scaled == 0)
+    assert np.all(np.isnan(empty.probability))
+
+
+def test_tpcf_fft_does_not_wrap_pairs():
+    im = np.array([[True, False, False, False, True]])
+    bins = [0, 1, 2, 4, 5, 6]
+    result = ps.metrics.two_point_correlation(im, bins=bins)
+    assert_allclose(result.probability_scaled, [0.4, 0, 0, 1, 0])
+
+
+@pytest.mark.parametrize(
+    ("shape", "bins"),
+    [((5, 8), 10), ((4, 5, 11), [0, 1, np.sqrt(2), 3, 5, 20])],
+)
+def test_tpcf_fft_cupy_matches_direct_counts(shape, bins):
+    cp = pytest.importorskip("cupy")
+    if not cp.cuda.is_available():
+        pytest.skip("CUDA device unavailable")
+    im = np.random.default_rng(654).random(shape) < 0.4
+    from_host = ps.metrics.two_point_correlation(im, bins=bins, backend="cupy")
+    device_bins = bins if isinstance(bins, int) else cp.asarray(bins)
+    from_device = ps.metrics.two_point_correlation(cp.asarray(im), bins=device_bins)
+    expected = _direct_two_point_correlation(im, from_host.bin_edges)
+    for result in (from_host, from_device):
+        assert isinstance(result.probability_scaled, np.ndarray)
+        assert_allclose(result.bin_edges, from_host.bin_edges)
+        assert_allclose(result.probability_scaled, expected, atol=1e-14)
 
 
 class MetricsTest:
@@ -45,11 +118,34 @@ class MetricsTest:
         phi = ps.metrics.porosity(im)
         assert np.allclose(phi, 0.6)
         phi = ps.metrics.porosity(im, fill_surface=True, fill_closed=False)
-        assert np.allclose(phi, 0.3963111111111111)
+        # 2,741 voxels have one connected boundary opening. The 15,591
+        # nonpercolating voxels with separate openings must remain pore space.
+        assert np.allclose(phi, (54000 - 2741) / 90000)
         phi = ps.metrics.porosity(im, fill_surface=False, fill_closed=True)
         assert np.allclose(phi, 0.5996222222222222)
         phi = ps.metrics.porosity(im, fill_surface=True, fill_closed=True)
-        assert np.allclose(phi, 0.39593333333333336)
+        assert np.allclose(phi, (54000 - 2741 - 34) / 90000)
+
+    @pytest.mark.parametrize("ndim", [2, 3])
+    @pytest.mark.parametrize("fill_surface", [False, True])
+    @pytest.mark.parametrize("fill_closed", [False, True])
+    def test_porosity_filling_known_pore_components(self, ndim, fill_surface, fill_closed):
+        plane = np.zeros((30, 30), dtype=bool)
+        plane[:3, :3] = True  # One corner opening: 9 surface voxels.
+        plane[10:12, 10:12] = True  # Closed pore: 4 voxels.
+        plane[:7, 20] = plane[6, :21] = True  # Adjacent-face tunnel: 27 voxels.
+        plane[20:, 5] = plane[20:, 15] = plane[20, 5:16] = True  # Same-face tunnel: 29.
+        plane[:, 27] = True  # Opposite-face spanning pore: 30 voxels.
+        im = plane
+        if ndim == 3:
+            im = np.zeros((30, 30, 5), dtype=bool)
+            im[:, :, 2] = plane
+        original = im.copy()
+        assert im.sum() == 99
+        expected = (99 - 9 * fill_surface - 4 * fill_closed) / im.size
+        phi = ps.metrics.porosity(im, fill_surface=fill_surface, fill_closed=fill_closed)
+        assert_allclose(phi, expected)
+        assert np.array_equal(im, original)
 
     def test_tpcf_fft_2d(self):
         tpcf_fft_1 = ps.metrics.two_point_correlation(self.im2D)
@@ -61,8 +157,8 @@ class MetricsTest:
         phi2 = ps.metrics.porosity(im=self.im2D_big)
         assert np.sqrt((np.mean(tpcf_fft_2.probability[-5:]) - phi2) ** 2) < t
         # Must raise error if 1D image is supplied
-        with pytest.raises(Exception):
-            _ = ps._metrics.two_point_correlation(np.random.rand(10))
+        with pytest.raises(ValueError, match="2D or 3D"):
+            ps.metrics.two_point_correlation(np.random.rand(10))
 
     def test_tpcf_fft_3d(self):
         tpcf_fft = ps.metrics.two_point_correlation(self.im3D)
@@ -71,12 +167,35 @@ class MetricsTest:
         assert np.sqrt((np.mean(tpcf_fft.probability[-5:]) - phi1) ** 2) < t
 
     def test_tpcf_fft_3d_scaled(self):
-        tpcf = ps.metrics.two_point_correlation(im=self.im3D)
-        phi1 = ps.metrics.porosity(im=self.im3D)
+        # Lattice images have an oscillatory TPC that doesn't actually decay to
+        # phi**2 at finite r, so use a non-periodic blob image to check the
+        # asymptote.
+        im = ps.generators.blobs(shape=[80, 80, 80], porosity=0.5, seed=0)
+        tpcf = ps.metrics.two_point_correlation(im=im)
+        phi1 = ps.metrics.porosity(im=im)
         # The first value at r = 0 should be equal to porosity
         assert np.abs(tpcf.probability_scaled[0] - phi1) < 0.01
         # The function should decay to phi**2
         assert np.abs(np.mean(tpcf.probability_scaled[-5:] - phi1**2)) < 0.01
+
+    def test_tpcf_fft_averages_over_all_orthants(self):
+        # Regression test for #966. The FFT TPC must average S2(r, theta) over
+        # all radial directions. If it summed only one orthant, the result on
+        # an anisotropic image would change under axis flips. The radial
+        # average is invariant under flips, so the curve must too.
+        im = ps.generators.blobs(
+            shape=[200, 200], porosity=0.5, blobiness=[4, 1], seed=0)
+        tpcf_orig = ps.metrics.two_point_correlation(im, bins=30)
+        tpcf_flip0 = ps.metrics.two_point_correlation(im[::-1], bins=30)
+        tpcf_flip1 = ps.metrics.two_point_correlation(im[:, ::-1], bins=30)
+        np.testing.assert_allclose(
+            tpcf_orig.probability, tpcf_flip0.probability, atol=1e-10)
+        np.testing.assert_allclose(
+            tpcf_orig.probability, tpcf_flip1.probability, atol=1e-10)
+        # And the asymptote must hit phi (so probability_scaled hits phi**2),
+        # which the pre-fix periodic-FFT version missed on this image.
+        phi = im.mean()
+        assert abs(tpcf_orig.probability[-5:].mean() - phi) < 0.02
 
     def test_pore_size_distribution(self):
         mip = ps.filters.porosimetry(self.im3D)
@@ -122,6 +241,13 @@ class MetricsTest:
         ps.metrics.porosity_profile(self.im2D, axis=1)
         with pytest.raises(Exception):
             ps.metrics.porosity_profile(self.im2D, axis=2)
+
+    def test_porosity_profile_voxel_size(self):
+        im = ps.generators.lattice_spheres(shape=[200, 200], r=15, spacing=38)
+        p_vox = ps.metrics.porosity_profile(im, axis=0)
+        p_phys = ps.metrics.porosity_profile(im, axis=0, voxel_size=2.5e-6)
+        assert_allclose(p_phys.position, p_vox.position * 2.5e-6)
+        assert_allclose(p_phys.porosity, p_vox.porosity)
 
     def test_linear_density(self):
         im = ps.filters.distance_transform_lin(self.im2D, axis=0, mode="both")
@@ -311,6 +437,16 @@ class MetricsTest:
         # assert len(prof1.saturation) == 80
         assert prof1.saturation[31] == 1 / 30
         assert prof1.saturation[48] == 0.6
+
+    def test_satn_profile_voxel_size(self):
+        satn = np.tile(np.atleast_2d(np.linspace(1, 0.01, 100)), (100, 1))
+        satn[:25, :] = 0
+        satn[-25:, :] = -1
+        p_vox = ps.metrics.satn_profile(satn=satn, s=0.5, axis=1, span=1)
+        p_phys = ps.metrics.satn_profile(
+            satn=satn, s=0.5, axis=1, span=1, voxel_size=2.5e-6)
+        assert_allclose(p_phys.position, p_vox.position * 2.5e-6)
+        assert_allclose(p_phys.saturation, p_vox.saturation)
 
     def test_satn_profile_threshold(self):
         satn = np.tile(np.atleast_2d(np.linspace(1, 0.01, 100)), (100, 1))

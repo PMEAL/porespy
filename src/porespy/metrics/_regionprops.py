@@ -117,7 +117,7 @@ def prop_to_image(regionprops, shape, prop):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/reference/prop_to_image.html>`__
+    <https://porespy.org/examples/metrics/tutorials/regionprops_3d.html>`__
     to view online example.
 
     """
@@ -162,10 +162,13 @@ def regionprops_3D(im):
             region
 
         'volume'
-            Volume of the region in number of voxels.
+            Volume of the region. This is an alias for skimage's ``area``
+            property, which returns ``num_pixels * voxel_volume`` (i.e. the
+            voxel count when ``spacing`` is left at its default of 1).
 
         'bbox_volume'
-            Volume of the bounding box that contains the region.
+            Volume of the bounding box that contains the region, expressed
+            as a voxel count.
 
         'border'
             The edges of the region, found as the locations where the distance

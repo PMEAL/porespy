@@ -15,10 +15,10 @@ from porespy.tools import (
     extend_slice,
     get_edt,
     get_tqdm,
-    ps_rect,
     ps_round,
     settings,
 )
+from porespy.tools._label import _label_components
 
 from ._funcs import chunked_func
 
@@ -64,8 +64,8 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None):
     peaks : ndarray, optional
         Optionally, it is possible to supply an array containing peaks, which
         are used as markers in the watershed segmentation. If a boolean array
-        is received (``True`` indicating peaks), then ``scipy.ndimage.label``
-        with cubic connectivity is used to label them. If an integer array is
+        is received (``True`` indicating peaks), then connected-component labeling
+        with cubic connectivity is used. If an integer array is
         received then it is assumed the peaks have already been labelled.
         This allows for comparison of peak finding algorithms for instance.
         If this argument is provided, then ``r_max`` and ``sigma`` are ignored
@@ -128,12 +128,20 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None):
             dt_blurred = np.copy(dt)
         peaks = find_peaks(dt=dt_blurred, r_max=r_max)
 
-        logger.debug(f"Initial number of peaks: {spim.label(peaks)[1]}")
+        logger.debug(
+            f"Initial number of peaks: {_label_components(peaks, conn='min')[1]}"
+        )
         peaks = trim_saddle_points(peaks=peaks, dt=dt)
-        logger.debug(f"Peaks after trimming saddle points: {spim.label(peaks)[1]}")
+        logger.debug(
+            "Peaks after trimming saddle points: "
+            f"{_label_components(peaks, conn='min')[1]}"
+        )
         peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
-        logger.debug(f"Peaks after trimming nearby points: {spim.label(peaks)[1]}")
-    peaks, N = spim.label(peaks > 0, structure=ps_rect(3, im.ndim))
+        logger.debug(
+            "Peaks after trimming nearby points: "
+            f"{_label_components(peaks, conn='min')[1]}"
+        )
+    peaks, N = _label_components(peaks > 0, conn="max")
     regions = watershed(image=-dt, markers=peaks)
     tup = Results()
     tup.im = im
@@ -162,8 +170,8 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, peaks=None):
     peaks : ndarray, optional
         Optionally, it is possible to supply an array containing peaks, which
         are used as markers in the watershed segmentation. Must be a boolean
-        array with ``True`` indicating peaks; ``scipy.ndimage.label``
-        with cubic connectivity is used to label them. If this argument is
+        array with ``True`` indicating peaks; connected-component labeling
+        with cubic connectivity is used. If this argument is
         provided then ``r_max`` and ``sigma`` are ignored, since these are
         specfically used in the peak finding process.
 
@@ -377,8 +385,7 @@ def reduce_peaks(peaks):
     to view online example.
 
     """
-    strel = footprint_rectangle((3,) * peaks.ndim)
-    markers, N = spim.label(input=peaks, structure=strel)
+    markers, N = _label_components(im=peaks, conn="max")
     inds = spim.center_of_mass(
         input=peaks, labels=markers, index=np.arange(1, N + 1)
     )
@@ -426,7 +433,7 @@ def trim_saddle_points(peaks, dt, maxiter=20):
     """
     new_peaks = np.zeros_like(peaks, dtype=bool)
     strel = footprint_rectangle((3,) * dt.ndim)
-    labels, N = spim.label(peaks > 0)
+    labels, N = _label_components(im=peaks > 0, conn="min")
     slices = spim.find_objects(labels)
     desc = inspect.currentframe().f_code.co_name  # Get current func name
     for i, s in tqdm(enumerate(slices), desc=desc, **settings.tqdm):
@@ -498,7 +505,7 @@ def trim_saddle_points_legacy(peaks, dt, maxiter=10):
     """
     new_peaks = np.zeros_like(peaks, dtype=bool)
     strel = footprint_rectangle((3,) * dt.ndim)
-    labels, N = spim.label(peaks > 0)
+    labels, N = _label_components(im=peaks > 0, conn="min")
     slices = spim.find_objects(labels)
     desc = inspect.currentframe().f_code.co_name  # Get current func name
     for i, s in tqdm(enumerate(slices), desc=desc, **settings.tqdm):
@@ -577,8 +584,7 @@ def trim_nearby_peaks(peaks, dt, f=1):
     to view online example.
 
     """
-    strel = footprint_rectangle((3,) * dt.ndim)
-    labels, N = spim.label(peaks > 0, structure=strel)
+    labels, N = _label_components(peaks > 0, conn="max")
     crds = spim.center_of_mass(peaks > 0, labels=labels, index=np.arange(1, N + 1))
     try:
         crds = np.vstack(crds).astype(int)  # Convert to numpy array of ints
@@ -1118,7 +1124,7 @@ def _snow_chunked(dt, r_max=5, sigma=0.4):
     peaks = trim_saddle_points(peaks=peaks, dt=dt)
     if len(peaks) > 0:
         peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
-        peaks, N = spim.label(peaks > 0)
+        peaks, N = _label_components(peaks > 0, conn="min")
         regions = watershed(image=-dt, markers=peaks)
     else:
         regions = np.ones_like(dt2)

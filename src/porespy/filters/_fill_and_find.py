@@ -3,13 +3,10 @@ from typing import Literal
 
 import numpy as np
 import numpy.typing as npt
-import scipy.ndimage as spim
 from skimage.segmentation import clear_border
 
-from porespy.tools import (
-    get_edt,
-    get_strel,
-)
+from porespy.tools import get_edt
+from porespy.tools._label import _isin_labels, _label_components
 
 __all__ = [
     "find_closed_pores",
@@ -28,7 +25,6 @@ __all__ = [
 
 edt = get_edt()
 logger = logging.getLogger(__name__)
-strel = get_strel()
 
 
 def trim_disconnected_voxels(
@@ -74,10 +70,6 @@ def trim_disconnected_voxels(
 
     """
     im = im.copy()
-    if isinstance(inlets, tuple):
-        temp = np.copy(inlets)
-        inlets = np.zeros_like(im, dtype=bool)
-        inlets[temp] = True
     disconnected = find_disconnected_voxels(im=im, inlets=inlets, conn=conn)
     im[disconnected] = False
     return im
@@ -125,15 +117,17 @@ def find_disconnected_voxels(
     <https://porespy.org/examples/filters/reference/find_disconnected_voxels.html>`__
     to view online example.
     """
-    se = strel[im.ndim][conn].copy()
-    labels, N = spim.label(input=im, structure=se)
+    labels, N = _label_components(im=im, conn=conn)
     if inlets is None:
         holes = clear_border(labels=labels) > 0
     else:
-        keep = np.unique(labels * inlets)
-        keep = keep[keep > 0]
-        holes = np.isin(labels, keep, invert=True)
-    holes = holes * im
+        if isinstance(inlets, tuple):
+            inlet_labels = labels[inlets]
+        else:
+            inlet_labels = labels[np.asarray(inlets, dtype=bool)]
+        keep = np.unique(inlet_labels)
+        holes = _isin_labels(labels=labels, hits=keep, N=N, invert=True)
+    np.logical_and(holes, im, out=holes)
     return holes
 
 
@@ -168,11 +162,11 @@ def find_closed_pores(
     """
     from porespy.generators import borders
 
-    se = strel[im.ndim][conn].copy()
-    labels, N = spim.label(input=im, structure=se)
+    labels, N = _label_components(im=im, conn=conn)
     mask = borders(im.shape, mode="faces")
     hits = np.unique(labels[mask])
-    closed = np.isin(labels, hits, invert=True)
+    closed = _isin_labels(labels, hits, N, invert=True)
+    np.logical_and(closed, im, out=closed)
     return closed
 
 
@@ -222,13 +216,28 @@ def fill_closed_pores(
     return im
 
 
+def _nonpercolating_labels(labels, N, axis):
+    """Return positive labels that do not span any of the requested axes."""
+    if axis is None:
+        axis = range(labels.ndim)
+    elif isinstance(axis, int):
+        axis = [axis]
+    keep = np.ones(N + 1, dtype=bool)
+    keep[0] = False
+    for ax in axis:
+        faces = np.swapaxes(labels, 0, ax)
+        spanning = np.intersect1d(np.unique(faces[0]), np.unique(faces[-1]))
+        keep[spanning] = False
+    return np.flatnonzero(keep)
+
+
 def find_surface_pores(
     im: npt.NDArray,
     axis: int = None,
     conn: Literal["max", "min"] = "min",
 ):
     r"""
-    Finds surface pores that do not span the domain
+    Finds pores with one connected opening on the image boundary
 
     Parameters
     ----------
@@ -249,29 +258,34 @@ def find_surface_pores(
         A array containing boolean values indicating voxels which belong to surface
         pores.
 
+    Notes
+    -----
+    A surface pore has exactly one connected component when restricted to the
+    exterior faces of the image, and does not span opposite faces along any of
+    the requested axes. The same connectivity is used in the full image and on
+    its boundary. This allows a single opening to wrap around an edge or corner.
+    A tunnel with separate openings is not a surface pore, even if its openings
+    lie on adjacent faces or on the same face. Closed pores are also excluded.
+
+    All exterior faces are used to count openings. The ``axis`` argument only
+    controls which directions are checked for spanning paths.
+
     Examples
     --------
     `Click here
     <https://porespy.org/examples/filters/reference/find_surface_pores.html>`__
     to view online example.
     """
-    if axis is None:
-        axis = range(im.ndim)
-    elif isinstance(axis, int):
-        axis = [axis]
-    se = strel[im.ndim][conn].copy()
-    labels, N = spim.label(input=im, structure=se)
-    keep = set()
-    for ax in axis:
-        labels = np.swapaxes(labels, 0, ax)
-        s1 = set(np.unique(labels[0, ...]))
-        s2 = set(np.unique(labels[-1, ...]))
-        tmp = s1.intersection(s2)
-        keep.update(tmp)
-        labels = np.swapaxes(labels, 0, ax)
-    closed = find_closed_pores(im, conn=conn)
-    surface = np.isin(labels, list(keep), invert=True) * ~closed
-    return surface
+    from porespy.generators import borders
+
+    labels, N = _label_components(im=im, conn=conn)
+    boundary = borders(im.shape, mode="faces") & im
+    openings, _ = _label_components(im=boundary, conn=conn)
+    pairs = np.unique(np.column_stack((labels[boundary], openings[boundary])), axis=0)
+    counts = np.bincount(pairs[:, 0].astype(np.intp), minlength=N + 1)
+    candidates = _nonpercolating_labels(labels, N, axis)
+    hits = candidates[counts[candidates] == 1]
+    return _isin_labels(labels, hits, N)
 
 
 def fill_surface_pores(
@@ -280,7 +294,7 @@ def fill_surface_pores(
     conn: Literal["max", "min"] = "min",
 ):
     r"""
-    Fill surface pores
+    Fill pores with one connected boundary opening that do not span the domain
 
     Parameters
     ----------
@@ -298,7 +312,8 @@ def fill_surface_pores(
     Returns
     -------
     im : ndarray
-        A copy of `im` with surface pores set to `False`.
+        The supplied `im` array, modified in place with surface pores set to
+        `False`. Pass `im.copy()` to preserve the original image.
 
     Examples
     --------
@@ -335,8 +350,15 @@ def find_invalid_pores(
     Returns
     -------
     invalid : ndarray
-        A array containing `1` indicated closed pores and `2` indicating surface
-        pores.
+        An array containing `1` indicating closed pores and `2` indicating
+        surface-connected nonpercolating pores, including tunnels with multiple
+        boundary openings. Solid voxels and percolating pores are `0`.
+
+    Notes
+    -----
+    Unlike `find_surface_pores`, this function includes nonpercolating clusters
+    with multiple boundary openings, so `fill_invalid_pores` removes all pores
+    that do not span the domain along the requested axes.
 
     Examples
     --------
@@ -345,7 +367,9 @@ def find_invalid_pores(
     to view online example.
     """
     closed = find_closed_pores(im=im, conn=conn)
-    surface = find_surface_pores(im=im, axis=axis, conn=conn)
+    labels, N = _label_components(im=im, conn=conn)
+    nonpercolating = _isin_labels(labels, _nonpercolating_labels(labels, N, axis), N)
+    surface = nonpercolating & ~closed
     invalid = closed.astype(int) + 2 * surface.astype(int)
     return invalid
 
@@ -379,8 +403,7 @@ def fill_invalid_pores(
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/reference/fill_invalid_pores.html>`_
-    <https://porespy.org/examples/filters/reference/fill_closed_pores.html>`__
+    <https://porespy.org/examples/filters/reference/fill_invalid_pores.html>`__
     to view online example.
     """
     im = im.copy()
@@ -543,10 +566,9 @@ def trim_nonpercolating_paths(
 
         inlets = faces(im.shape, inlet=axis)
         outlets = faces(im.shape, outlet=axis)
-    se = strel[im.ndim][conn].copy()
-    labels = spim.label(im, structure=se)[0]
-    IN = np.unique(labels * inlets)
-    OUT = np.unique(labels * outlets)
+    labels, N = _label_components(im=im, conn=conn)
+    IN = np.unique(labels[np.asarray(inlets, dtype=bool)])
+    OUT = np.unique(labels[np.asarray(outlets, dtype=bool)])
     hits = np.array(list(set(IN).intersection(set(OUT))))
-    new_im = np.isin(labels, hits[hits > 0])
+    new_im = _isin_labels(labels=labels, hits=hits[hits > 0], N=N)
     return new_im

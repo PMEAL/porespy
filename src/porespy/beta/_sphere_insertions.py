@@ -1,12 +1,18 @@
 import numpy as np
-from edt import edt
 
-from porespy.tools import _insert_disk_at_points, _insert_disk_at_points_parallel
+from porespy.tools import (
+    _insert_disk_at_points,
+    _insert_disk_at_points_parallel,
+    get_edt,
+)
 
 __all__ = [
     'optimized_sphere_insertion_serial',
     'optimized_sphere_insertion_parallel',
 ]
+
+
+edt = get_edt()
 
 
 def optimized_sphere_insertion_serial(im, r, dt=None):

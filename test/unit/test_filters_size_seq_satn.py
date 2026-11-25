@@ -296,6 +296,59 @@ class SeqTest():
         nsteps = np.size(np.unique(sq))
         assert nsteps == nsizes
 
+    def _injection_seq(self):
+        # Reusable small-image invasion fixture for satn_to_time tests.
+        im = np.ones([8, 8], dtype=bool)
+        im[0, :] = False
+        im[-1, :] = False
+        pc = ps.filters.capillary_transform(im)
+        inlets = ps.generators.faces(im.shape, inlet=1)
+        return im, ps.simulations.injection(im, pc, inlets=inlets).im_seq
+
+    def test_satn_to_time_drainage(self):
+        im, seq = self._injection_seq()
+        satn = ps.filters.seq_to_satn(seq=seq, im=im, mode='drainage')
+        flow_rate = 4.0
+        t = ps.filters.satn_to_time(satn, im, flow_rate=flow_rate, mode='drainage')
+        # t = satn * V_void / flow_rate, voxel_size = 1
+        np.testing.assert_allclose(t[im], satn[im] * im.sum() / flow_rate)
+        # Solid stays at 0
+        assert np.all(t[~im] == 0)
+
+    def test_satn_to_time_imbibition_matches_drainage(self):
+        # Per-voxel time of invasion shouldn't depend on which saturation
+        # convention you ran the conversion through.
+        im, seq = self._injection_seq()
+        satn_dr = ps.filters.seq_to_satn(seq=seq, im=im, mode='drainage')
+        satn_imb = ps.filters.seq_to_satn(seq=seq, im=im, mode='imbibition')
+        t_dr = ps.filters.satn_to_time(satn_dr, im, flow_rate=4.0, mode='drainage')
+        t_imb = ps.filters.satn_to_time(satn_imb, im, flow_rate=4.0, mode='imbibition')
+        np.testing.assert_allclose(t_dr[im], t_imb[im])
+
+    def test_satn_to_time_voxel_size_scaling(self):
+        # V_void scales as voxel_size**ndim, so doubling vx doubles t in 1D,
+        # quadruples in 2D, etc.
+        im, seq = self._injection_seq()
+        satn = ps.filters.seq_to_satn(seq=seq, im=im, mode='drainage')
+        t1 = ps.filters.satn_to_time(satn, im, flow_rate=1.0, voxel_size=1.0)
+        t2 = ps.filters.satn_to_time(satn, im, flow_rate=1.0, voxel_size=2.0)
+        np.testing.assert_allclose(t2[im], t1[im] * 2 ** im.ndim)
+
+    def test_satn_to_time_trapped_voxels(self):
+        im, seq = self._injection_seq()
+        seq = seq.copy()
+        seq[seq >= 5] = -1  # Trap the last two columns
+        satn = ps.filters.seq_to_satn(seq=seq, im=im, mode='drainage')
+        t = ps.filters.satn_to_time(satn, im, flow_rate=1.0)
+        assert np.all(t[seq == -1] == -1)
+        assert np.all(t[(seq != -1) & im] >= 0)
+
+    def test_satn_to_time_unknown_mode_raises(self):
+        im = np.ones([4, 4], dtype=bool)
+        satn = np.full_like(im, 0.5, dtype=float)
+        with np.testing.assert_raises(Exception):
+            ps.filters.satn_to_time(satn, im, flow_rate=1.0, mode='nonsense')
+
 
 if __name__ == '__main__':
     t = SeqTest()

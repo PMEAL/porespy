@@ -79,6 +79,15 @@ class FilterTest():
         with pytest.raises(Exception):
             ps.filters.apply_chords(im=self.im, spacing=-1)
 
+    def test_apply_chords_with_zero_spacing(self):
+        im = np.ones((9, 9), dtype=bool)
+        with pytest.warns(DeprecationWarning, match="spacing=0 is deprecated"):
+            chords = ps.filters.apply_chords(
+                im=im, spacing=0, axis=0, trim_edges=False, label=True
+            )
+        assert np.all(chords > 0)
+        assert np.unique(chords).size == 9
+
     def test_apply_chords_without_trimming(self):
         c = ps.filters.apply_chords(im=self.im, trim_edges=False)
         assert c.sum() == 125043
@@ -121,6 +130,39 @@ class FilterTest():
     def test_find_disconnected_voxels_3d_conn6(self):
         h = ps.filters.find_disconnected_voxels(self.im, conn='min')
         assert np.sum(h) == 202
+
+    @pytest.mark.parametrize(
+        "shape, conn",
+        [
+            ((31, 29), "min"),
+            ((31, 29), "max"),
+            ((17, 19, 21), "min"),
+            ((17, 19, 21), "max"),
+        ],
+    )
+    def test_find_disconnected_voxels_matches_scipy(self, shape, conn):
+        rng = np.random.default_rng(0)
+        im = rng.random(shape) > 0.6
+        inlets = np.zeros(shape, dtype=bool)
+        inlets[0, ...] = True
+        structure = ps.tools.get_strel()[len(shape)][conn]
+        labels, _ = spim.label(im, structure=structure)
+        keep = np.unique(labels[inlets])
+        expected = np.isin(labels, keep[keep > 0], invert=True) * im
+
+        actual = ps.filters.find_disconnected_voxels(
+            im=im,
+            inlets=inlets,
+            conn=conn,
+        )
+        assert np.array_equal(actual, expected)
+
+        actual_from_indices = ps.filters.find_disconnected_voxels(
+            im=im,
+            inlets=np.where(inlets),
+            conn=conn,
+        )
+        assert np.array_equal(actual_from_indices, expected)
 
     def test_trim_nonpercolating_paths_2d_axis0(self):
         np.random.seed(0)
@@ -287,12 +329,80 @@ class FilterTest():
         assert max1 > max2
 
     def test_local_thickness(self):
-        lt = ps.filters.local_thickness(self.im, method='dt')
-        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
-        lt = ps.filters.local_thickness(self.im, method='imj')
-        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
-        lt = ps.filters.local_thickness(self.im, method='conv')
-        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
+        reference = ps.filters.local_thickness(self.im, method='dt')
+        assert reference.max() == int(self.im_dt.max())
+        for method in ['bf', 'conv']:
+            actual = ps.filters.local_thickness(self.im, method=method)
+            assert np.array_equal(actual, reference)
+
+    def test_local_thickness_bf_mask(self):
+        im = self.im[:, :, 50]
+        dt = edt(im)
+        mask = np.zeros_like(im, dtype=bool)
+        center = np.unravel_index(np.argmax(dt), dt.shape)
+        mask[center] = True
+        lt = ps.filters.local_thickness(im, dt=dt, method='bf', mask=mask)
+        assert lt[center] == int(dt[center])
+        assert np.count_nonzero(lt) < np.count_nonzero(im)
+
+    def test_local_thickness_methods_use_integer_radii(self):
+        im = self.im[:, :, 50]
+        dt = edt(im)
+        sizes = [4, 2, 1]
+        reference = ps.filters.local_thickness(
+            im, dt=dt, method='dt', sizes=sizes)
+        for method in ['bf', 'conv']:
+            actual = ps.filters.local_thickness(
+                im, dt=dt, method=method, sizes=sizes)
+            assert np.array_equal(actual, reference)
+        with pytest.raises(ValueError, match='positive integer radii'):
+            ps.filters.local_thickness(im, dt=dt, sizes=[2.5])
+        with pytest.raises(TypeError, match='None, a positive integer'):
+            ps.filters.local_thickness(im, dt=dt, sizes=2.5)
+        with pytest.raises(ValueError, match='positive integer'):
+            ps.filters.local_thickness(im, dt=dt, sizes=0)
+
+    def test_local_thickness_integer_sizes_selects_even_radii(self):
+        im = self.im[:, :, 50]
+        dt = edt(im)
+        n = 3
+        radii = np.unique(
+            np.linspace(1, int(np.floor(dt[im].max())), num=n, dtype=int)
+        )[::-1]
+        for method in ['bf', 'dt', 'conv']:
+            expected = ps.filters.local_thickness(
+                im,
+                dt=dt,
+                method=method,
+                sizes=radii,
+            )
+            actual = ps.filters.local_thickness(
+                im,
+                dt=dt,
+                method=method,
+                sizes=n,
+            )
+            np.testing.assert_array_equal(actual, expected)
+
+        values, indices = ps.filters.local_thickness(
+            im,
+            dt=dt,
+            sizes=n,
+            return_indices=True,
+        )
+        np.testing.assert_array_equal(values, np.concatenate(([0], radii)))
+        np.testing.assert_array_equal(values[indices], expected)
+
+    def test_local_thickness_legacy(self):
+        im = self.im[:, :, 50]
+        dt = edt(im)
+        lt = ps.filters.local_thickness(im, dt=dt, method='legacy')
+        expected = np.logspace(np.log10(dt.max()), 0, num=25)
+        labels = np.unique(lt)
+        assert np.all(np.isin(labels, np.concatenate(([0], expected))))
+        assert np.any((labels > 0) & (labels != np.floor(labels)))
+        lt = ps.filters.local_thickness(im, dt=dt, method='legacy', sizes=3)
+        assert np.unique(lt).size <= 4
 
     def test_local_thickness_known_sizes(self):
         im = np.zeros(shape=[300, 300])
@@ -300,6 +410,43 @@ class FilterTest():
         im = ps.generators.random_spheres(im=im, r=10)
         lt = ps.filters.local_thickness(im, sizes=[20, 10])
         assert np.all(np.unique(lt) == [0, 10, 20])
+
+    def test_local_thickness_return_indices(self):
+        im = self.im[:, :, 50]
+        dt = edt(im)
+        for method in ['bf', 'dt', 'conv', 'legacy']:
+            expected = ps.filters.local_thickness(im, dt=dt, method=method)
+            sizes, indices = ps.filters.local_thickness(
+                im,
+                dt=dt,
+                method=method,
+                return_indices=True,
+            )
+            assert indices.dtype == np.uint8
+            np.testing.assert_array_equal(sizes[indices], expected)
+
+    def test_local_thickness_return_indices_uses_uint16(self):
+        im = self.im[:, :, 50]
+        sizes, indices = ps.filters.local_thickness(
+            im,
+            sizes=np.arange(300, 0, -1),
+            return_indices=True,
+        )
+        assert len(sizes) == 301
+        assert indices.dtype == np.uint16
+
+    def test_porosimetry_return_indices(self):
+        im = self.im[:, :, 50]
+        expected = ps.filters.porosimetry(im, method='dt')
+        sizes, indices = ps.filters.porosimetry(
+            im,
+            method='dt',
+            return_indices=True,
+        )
+        assert indices.dtype == np.uint8
+        np.testing.assert_array_equal(sizes[indices], expected)
+        with pytest.raises(NotImplementedError):
+            ps.filters.porosimetry(im, method='conv', return_indices=True)
 
     def test_morphology_fft_dilate_2d(self):
         im = self.im[:, :, 50]
@@ -770,6 +917,37 @@ class FilterTest():
         mask = ps.filters.find_trapped_clusters(
             im=im, seq=imb.im_seq, outlets=faces, method='queue')
         assert np.sum(mask[faces]) == 0
+
+    def test_find_trapped_clusters_warns_when_invasion_misses_outlets(
+        self, caplog
+    ):
+        import logging
+        im = ps.generators.blobs(
+            shape=[100, 100], porosity=0.6, seed=3, periodic=False)
+        im = ps.filters.fill_closed_pores(im)
+        inlets = ps.generators.faces(im.shape, inlet=0)
+        outlets = ps.generators.faces(im.shape, outlet=0)
+        # Use few steps so invasion stops before reaching the far face
+        pc = ps.filters.capillary_transform(
+            im=im, sigma=0.072, theta=180, voxel_size=1e-5)
+        steps = np.arange(pc[im].min(), pc[im].max()/5, 25)
+        inv = ps.simulations.drainage(im=im, pc=pc, inlets=inlets, steps=steps)
+        msg = "Invasion did not reach outlets"
+        for method in ("labels", "queue"):
+            caplog.clear()
+            with caplog.at_level(logging.WARNING, logger="porespy.filters"):
+                _ = ps.filters.find_trapped_clusters(
+                    im=im, seq=inv.im_seq, outlets=outlets, method=method)
+            assert any(msg in rec.message for rec in caplog.records)
+        # Sanity check: no warning when invasion does reach outlets
+        steps_full = np.arange(pc[im].min(), pc[im].max()*2, 25)
+        inv = ps.simulations.drainage(
+            im=im, pc=pc, inlets=inlets, steps=steps_full)
+        caplog.clear()
+        with caplog.at_level(logging.WARNING, logger="porespy.filters"):
+            _ = ps.filters.find_trapped_clusters(
+                im=im, seq=inv.im_seq, outlets=outlets, method="labels")
+        assert not any(msg in rec.message for rec in caplog.records)
 
 
 if __name__ == '__main__':
