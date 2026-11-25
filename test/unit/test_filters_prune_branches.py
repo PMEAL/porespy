@@ -72,6 +72,8 @@ def test_prune_branches_preserves_backbone_over_repeated_pruning(ndim, iteration
     if ndim == 3:
         skel = np.pad(skel[..., None], ((0, 0), (0, 0), (2, 2)))
 
+    # Finding phase borders must leave the shared neighborhood intact for pruning.
+    ps.filters.nphase_border(skel.astype(np.uint8), conn="max")
     result = ps.filters.prune_branches(skel, iterations=iterations)
 
     np.testing.assert_array_equal(result, skel)

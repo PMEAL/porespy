@@ -663,7 +663,7 @@ def _get_axial_shifts(ndim=2, conn="min"):
     Helper function to generate the axial shifts that will be performed on
     the image to identify bordering pixels/voxels
     """
-    neighbors = strel[ndim][conn]
+    neighbors = strel[ndim][conn].copy()
     if ndim == 2:
         neighbors[1, 1] = 0
         x, y = np.where(neighbors)
