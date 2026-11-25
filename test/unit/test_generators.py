@@ -545,32 +545,155 @@ class GeneratorTest():
                            'R': [5.0, 8.0, 17.5, 4.0]})
         im = ps.generators.spheres_from_coords(df)
         assert im.ndim == 2
+        assert im.shape == (59, 69)
         # Accepts numpy arrays
-        im = ps.generators.spheres_from_coords(np.array(df))
-        assert im.ndim == 2
+        im_arr = ps.generators.spheres_from_coords(np.array(df))
+        assert np.array_equal(im, im_arr)
         # Accepts pure dicts
-        im = ps.generators.spheres_from_coords(df.to_dict(orient='list'))
-        assert im.ndim == 2
-        df = pd.DataFrame({'X': [10, 20, 40, 40],
-                           'Y': [0, 0, 0, 0],
-                           'Z': [10, 30, 50, 10],
-                           'R': [5.0, 8.0, 17.5, 4.0]})
-        im = ps.generators.spheres_from_coords(df)
-        assert im.ndim == 2
-        # Is 2D if other axis is all 0's
+        im_dct = ps.generators.spheres_from_coords(df.to_dict(orient='list'))
+        assert np.array_equal(im, im_dct)
+        # Accepts 2D dict without Z column
+        im_2d = ps.generators.spheres_from_coords(
+            {'X': [10, 20, 40, 40], 'Y': [10, 30, 50, 10], 'R': [5.0, 8.0, 17.5, 4.0]}
+        )
+        assert np.array_equal(im, im_2d)
+        # Is 2D if Y axis is all 0's
+        df_y0 = pd.DataFrame({'X': [10, 20, 40, 40],
+                              'Y': [0, 0, 0, 0],
+                              'Z': [10, 30, 50, 10],
+                              'R': [5.0, 8.0, 17.5, 4.0]})
+        im_y0 = ps.generators.spheres_from_coords(df_y0)
+        assert im_y0.ndim == 2
+        assert np.array_equal(im, im_y0)
+        # Is 3D
+        df_3d = pd.DataFrame({'X': [10, 20, 40, 40],
+                              'Y': [10, 30, 50, 10],
+                              'Z': [10, 20, 30, 40],
+                              'R': [5.0, 8.0, 17.5, 4.0]})
+        im_3d = ps.generators.spheres_from_coords(df_3d)
+        assert im_3d.ndim == 3
+        assert im_3d.shape == (59, 69, 49)
+
+    def test_spheres_from_coords_preserves_coordinates(self):
         df = pd.DataFrame({'X': [10, 20, 40, 40],
                            'Y': [10, 30, 50, 10],
                            'Z': [0, 0, 0, 0],
                            'R': [5.0, 8.0, 17.5, 4.0]})
-        im = ps.generators.spheres_from_coords(df)
+        # Contained, smooth=False: sphere 0 stays centered at (10, 10) with r=5
+        im = ps.generators.spheres_from_coords(df, mode='contained', smooth=False)
+        assert im.shape == (59, 69)
+        assert not np.any(im[:5, :])
+        assert not np.any(im[:, :5])
+        assert im[5, 10] and im[15, 10] and im[10, 5] and im[10, 15]
+        assert not im[4, 10] and not im[16, 10]
+        assert im[-1, 50] and im[40, -1]
+
+        # Contained, smooth=True: effective radius is r - 1
+        im_sm = ps.generators.spheres_from_coords(df, mode='contained', smooth=True)
+        assert im_sm.shape == (58, 68)
+        assert not np.any(im_sm[:6, :])
+        assert not np.any(im_sm[:, :6])
+        assert im_sm[6, 10] and im_sm[14, 10] and im_sm[10, 6] and im_sm[10, 14]
+        assert not im_sm[5, 10] and not im_sm[15, 10]
+        assert im_sm[-1, 50] and im_sm[40, -1]
+
+        # Extended: spans [0, max_coord] and preserves sphere 0 at (10, 10)
+        im_ext = ps.generators.spheres_from_coords(df, mode='extended', smooth=False)
+        assert im_ext.shape == (41, 51)
+        assert not np.any(im_ext[:5, :])
+        assert not np.any(im_ext[:, :5])
+        assert im_ext[5, 10] and im_ext[15, 10] and im_ext[10, 5] and im_ext[10, 15]
+
+    def test_spheres_from_coords_shifting_only_when_needed(self):
+        # X extends below 0 (2 - 5 = -3), Y does not (10 - 5 = 5)
+        df = pd.DataFrame({'X': [2, 20],
+                           'Y': [10, 30],
+                           'Z': [0, 0],
+                           'R': [5, 4]})
+        # Contained shifts X by +3, leaves Y untouched
+        im_c = ps.generators.spheres_from_coords(df, mode='contained', smooth=False)
+        assert im_c.shape == (28, 35)
+        assert im_c[0, 10] and im_c[10, 10]  # sphere 0 moved to x=5, y=10
+        assert not np.any(im_c[:, :5])
+
+        # Extended does not shift either axis; sphere 0 is clipped at x=0
+        im_e = ps.generators.spheres_from_coords(df, mode='extended', smooth=False)
+        assert im_e.shape == (21, 31)
+        assert im_e[0, 10] and im_e[7, 10] and not im_e[8, 10]
+        assert not np.any(im_e[:, :5])
+
+        # Negative coordinates shift cleanly in both modes
+        df_neg = pd.DataFrame({'X': [-10, 10],
+                               'Y': [-5, 15],
+                               'Z': [-2, 8],
+                               'R': [3, 3]})
+        df_orig = df_neg.copy()
+        im_nc = ps.generators.spheres_from_coords(df_neg, mode='contained', smooth=False)
+        assert im_nc.shape == (27, 27, 17)
+        assert im_nc[0, 3, 3] and im_nc[6, 3, 3]
+        assert im_nc[26, 23, 13]
+        im_ne = ps.generators.spheres_from_coords(df_neg, mode='extended', smooth=False)
+        assert im_ne.shape == (21, 21, 11)
+        assert im_ne[0, 0, 0] and im_ne[20, 20, 10]
+        # Caller's DataFrame must not be mutated
+        pd.testing.assert_frame_equal(df_neg, df_orig)
+
+    def test_spheres_from_coords_explicit_shape(self):
+        df = pd.DataFrame({'X': [10, 40],
+                           'Y': [10, 50],
+                           'Z': [0, 0],
+                           'R': [5, 10]})
+        # Exact 2D shape larger than spheres
+        im = ps.generators.spheres_from_coords(df, shape=(60, 70), smooth=False)
+        assert im.shape == (60, 70)
+        assert im[5, 10] and im[15, 10] and im[40, 60]
+        assert not np.any(im[51:, :])
+
+        # Exact 2D shape smaller than spheres clips without shifting
+        im_small = ps.generators.spheres_from_coords(df, shape=(25, 25), smooth=False)
+        assert im_small.shape == (25, 25)
+        assert im_small[5, 10] and im_small[15, 10]
+
+        # Negative coordinates with explicit shape are clipped, not shifted
+        df_neg = {'X': [-2], 'Y': [10], 'Z': [0], 'R': [5]}
+        im_neg = ps.generators.spheres_from_coords(df_neg, shape=(20, 20), smooth=False)
+        assert im_neg.shape == (20, 20)
+        assert im_neg[0, 10] and im_neg[3, 10] and not im_neg[4, 10]
+
+        # Explicit 3D shape keeps 3D even when Z is all zeros
+        im_3d = ps.generators.spheres_from_coords(df, shape=(50, 60, 10), smooth=False)
+        assert im_3d.shape == (50, 60, 10)
+        assert im_3d[10, 10, 0] and im_3d[10, 10, 5] and not im_3d[10, 10, 6]
+
+        # Empty input with explicit shape returns empty image
+        df_empty = {'X': [], 'Y': [], 'Z': [], 'R': []}
+        im_empty = ps.generators.spheres_from_coords(df_empty, shape=(15, 20))
+        assert im_empty.shape == (15, 20)
+        assert not np.any(im_empty)
+
+    def test_spheres_from_coords_validation_and_immutability(self):
+        dct = {'X': [-5, 5], 'Y': [0, 10], 'Z': [0, 0]}
+        dct_before = {k: list(v) for k, v in dct.items()}
+        im = ps.generators.spheres_from_coords(dct)
         assert im.ndim == 2
-        # Is 3D
-        df = pd.DataFrame({'X': [10, 20, 40, 40],
-                           'Y': [10, 30, 50, 10],
-                           'Z': [10, 20, 30, 40],
-                           'R': [5.0, 8.0, 17.5, 4.0]})
-        im = ps.generators.spheres_from_coords(df)
-        assert im.ndim == 3
+        assert dct == dct_before  # dict not mutated, 'R' not added in-place
+
+        with pytest.raises(ValueError, match="Unrecognized mode"):
+            ps.generators.spheres_from_coords(dct, mode='invalid')
+
+        with pytest.raises(ValueError, match="non-negative"):
+            ps.generators.spheres_from_coords(
+                {'X': [10], 'Y': [10], 'Z': [0], 'R': [-2]}
+            )
+
+        with pytest.raises(ValueError, match="2D shape"):
+            ps.generators.spheres_from_coords(
+                {'X': [10], 'Y': [10], 'Z': [10], 'R': [3]},
+                shape=(30, 30),
+            )
+
+        with pytest.raises(ValueError, match="empty"):
+            ps.generators.spheres_from_coords({'X': [], 'Y': [], 'Z': [], 'R': []})
 
     # def test_polydisperse_cylinders(self):
     #     import scipy.stats as spst
