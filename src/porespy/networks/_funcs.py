@@ -163,7 +163,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     # Transform points to satisfy origin at (0, 0, 0)
     xyz0 = xyz.min(axis=0) - delta
     xyz += -xyz0
-    res = (xyz.ptp(axis=0).max() + 2 * delta) / max_dim
+    res = (np.ptp(xyz, axis=0).max() + 2 * delta) / max_dim
     shape = np.rint((xyz.max(axis=0) + delta) / res).astype(int) + 2 * extra_clearance
 
     # Transforming from real coords to matrix coords
@@ -250,6 +250,12 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
 
     (2) If max_dim is not provided, the method calculates it such that the
     further increasing it doesn't change porosity by much.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/networks/reference/generate_voxel_image.html>`__
+    to view online example.
 
     """
     logger.info("Generating voxel image from pore network")

@@ -15,6 +15,7 @@ The examples are categorized into the following categories:
    general/index
    generators/index
    filters/index
+   io/index
    metrics/index
    networks/index
    simulations/index
@@ -73,6 +74,19 @@ Filters
          :glob:
 
          ../examples/filters/reference/*
+
+IO
+--
+
+.. tab-set::
+
+   .. tab-item:: Reference
+
+      .. toctree::
+         :maxdepth: 1
+         :glob:
+
+         ../examples/io/reference/*
 
 Metrics
 -------

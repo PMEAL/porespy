@@ -876,6 +876,12 @@ def find_outer_region(im, r=None):
     entire rectangular image, such as cylindrical cores or samples with non-
     parallel faces.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/tools/reference/find_outer_region.html>`__
+    to view online example.
+
     """
     # PEP8 frowns upon importing within the calling function, but as per this
     # stackoverflow answer: https://stackoverflow.com/a/129810, there are solid
@@ -1297,6 +1303,12 @@ def in_hull(points, hull):
     result : 1D-array
         A 1D-array Boolean array of length *N* indicating whether or not the
         given points in ``points`` lies within the provided ``hull``.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/tools/reference/in_hull.html>`__
+    to view online example.
 
     """
     from scipy.spatial import ConvexHull, Delaunay
