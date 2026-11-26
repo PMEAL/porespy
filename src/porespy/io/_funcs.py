@@ -36,6 +36,12 @@ def dict_to_vtk(data, filename, voxel_size=1, origin=(0, 0, 0)):
     -----
     Outputs a vtk, vtp or vti file that can opened in ParaView
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/io/reference/dict_to_vtk.html>`__
+    to view online example.
+
     """
     try:
         from pyevtk.hl import imageToVTK
@@ -78,6 +84,12 @@ def to_vtk(im, filename, divide=False, downsample=False, voxel_size=1, vox=False
     Notes
     -----
     Outputs a vtk, vtp or vti file that can opened in paraview
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/io/reference/to_vtk.html>`__
+    to view online example.
 
     """
     try:
@@ -142,6 +154,12 @@ def to_palabos(im, filename, solid=0):
     File produced contains 3 values: 2 = Solid, 1 = Interface, 0 = Pore
     Palabos will run the simulation applying the specified pressure drop from
     x = 0 to x = -1.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/io/reference/to_palabos.html>`__
+    to view online example.
 
     """
     # Create binary image for fluid and solid phases
