@@ -199,6 +199,16 @@ class ExportTest():
         assert os.stat('vtk_func_test.vti').st_size == 8433
         os.remove('vtk_func_test.vti')
 
+    def test_to_vtk_divide(self, tmp_path):
+        im = ps.generators.blobs(shape=[20, 20, 20], periodic=False, seed=0)
+        fname = str(tmp_path / 'vtk_divided')
+        ps.io.to_vtk(im, filename=fname, divide=True)
+        g1 = pv.read(f'{fname}_1.vti')
+        g2 = pv.read(f'{fname}_2.vti')
+        assert g1.dimensions == (21, 21, 11)
+        assert g2.dimensions == (21, 21, 11)
+        assert g2.origin == (0.0, 0.0, 10.0)
+
     def test_dict_to_vtk(self):
         im = ps.generators.blobs(shape=[20, 20, 20], periodic=False,)
         ps.io.dict_to_vtk({'im': im}, filename="dictvtk")
