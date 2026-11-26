@@ -12,6 +12,7 @@ from skimage.segmentation import clear_border
 
 from porespy.tools import (
     _check_for_singleton_axes,
+    extend_slice,
     get_edt,
     get_slices_grid,
     get_strel,
@@ -662,7 +663,7 @@ def _get_axial_shifts(ndim=2, conn="min"):
     Helper function to generate the axial shifts that will be performed on
     the image to identify bordering pixels/voxels
     """
-    neighbors = strel[ndim][conn]
+    neighbors = strel[ndim][conn].copy()
     if ndim == 2:
         neighbors[1, 1] = 0
         x, y = np.where(neighbors)
@@ -812,27 +813,25 @@ def prune_branches(
     if branch_points is None:
         branch_points = spim.convolve(skel * 1.0, weights=cube) > 3
         branch_points = branch_points * skel
-    # Store original branch points before dilating
-    pts_orig = branch_points
     # Find arcs of skeleton by deleting branch points
     arcs = skel * (~branch_points)
     # Label arcs
     arc_labels = _label_components(im=arcs, conn="max")[0]
-    # Dilate branch points so they overlap with the arcs
-    branch_points = spim.binary_dilation(branch_points, structure=cube)
+    # Label junctions before dilation can merge nearby branch points.
     pts_labels = _label_components(im=branch_points, conn="max")[0]
     # Now scan through each arc to see if it's connected to two branch points
     slices = spim.find_objects(arc_labels)
-    label_num = 0
-    for s in slices:
-        label_num += 1
-        # Find branch point labels the overlap current arc
-        hits = pts_labels[s] * (arc_labels[s] == label_num)
-        # If image contains 2 branch points, then it's not a tail.
-        if len(np.unique(hits)) == 3:
-            im_result[s] += arc_labels[s] == label_num
+    for label_num, s in enumerate(slices, start=1):
+        s = extend_slice(s, shape=skel.shape, pad=1)
+        arc = arc_labels[s] == label_num
+        # Dilate each arc instead, retaining every adjacent junction label
+        # even when a single arc voxel touches both ends of a short connection.
+        neighbors = spim.binary_dilation(arc, structure=cube)
+        hits = np.unique(pts_labels[s][neighbors])
+        if np.count_nonzero(hits) >= 2:
+            im_result[s] |= arc
     # Add missing branch points back to arc image to make complete skeleton
-    im_result += skel * pts_orig
+    im_result += skel * branch_points
     if iterations > 1:
         iterations -= 1
         im_temp = np.copy(im_result)

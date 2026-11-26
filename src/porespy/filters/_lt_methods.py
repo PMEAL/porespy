@@ -415,7 +415,7 @@ def local_thickness_bf(
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/reference/local_thickness_bf.html>`__
+    <https://porespy.org/examples/filters/reference/local_thickness.html>`__
     to view online example.
 
     """
@@ -520,7 +520,7 @@ def local_thickness_conv(
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/reference/local_thickness_conv.html>`__
+    <https://porespy.org/examples/filters/reference/local_thickness.html>`__
     to view online example.
 
     """
@@ -586,7 +586,7 @@ def local_thickness_dt(
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/reference/local_thickness_dt.html>`__
+    <https://porespy.org/examples/filters/reference/local_thickness.html>`__
     to view online example.
 
     """

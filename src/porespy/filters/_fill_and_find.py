@@ -312,7 +312,8 @@ def fill_surface_pores(
     Returns
     -------
     im : ndarray
-        A copy of `im` with surface pores set to `False`.
+        The supplied `im` array, modified in place with surface pores set to
+        `False`. Pass `im.copy()` to preserve the original image.
 
     Examples
     --------
