@@ -23,7 +23,8 @@ complex scripts or macros to accomplish tasks of specific use to porous
 media. Porespy includes predefined functions to accomplish many of these
 routine analyses rapidly and conveniently.
 
-.. note::
+.. admonition:: Run PoreSpy Analysis in the Cloud with PoreStore
+   :class: tip
 
     Prefer a browser-based workflow with no local installation or solver
     setup? `PoreStore <https://porestore.com/>`_ offers volumetric 3D image
