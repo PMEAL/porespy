@@ -408,10 +408,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/generators/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -508,7 +505,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/metrics/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -663,10 +660,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -754,7 +748,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/reference/bond_number.html"><code class="docutils literal notranslate"><span class="pre">bond_number</span></code></a></li>
@@ -931,7 +925,7 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="snow-partitioning">
 <h1><code class="docutils literal notranslate"><span class="pre">snow_partitioning</span></code><a class="headerlink" href="#snow-partitioning" title="Link to this heading">#</a></h1>
-<p>This filter applies the <code class="docutils literal notranslate"><span class="pre">snow</span></code> algorithm to produce a watershed segmentation using the rules outlined in our paper in <a class="reference external" href="https://doi.org/10.1103/PhysRevE.96.023307">Physical Review E</a>.  Namely, apply a gaussian blur before finding peaks, removing peaks that lie on saddle points, and removing peaks that are closer to another peak than to solid.  The output of this function can be passed to <code class="docutils literal notranslate"><span class="pre">porespy.network.regions_to_networks</span></code> to obain an extracted network for use in OpenPNM. Note that <code class="docutils literal notranslate"><span class="pre">ps.networks.snow2</span></code> combines all these steps into a single function, returning all the itermediate images as well as the network.  Note that the <code class="docutils literal notranslate"><span class="pre">2</span></code> indicates a modified version from the one presented in <code class="docutils literal notranslate"><span class="pre">PRE</span></code>.  The new version is less aggressive when trimming saddle points, so results in a higher number of pores.</p>
+<p>This filter applies the <code class="docutils literal notranslate"><span class="pre">snow</span></code> algorithm to produce a watershed segmentation using the rules outlined in our paper in <a class="reference external" href="https://doi.org/10.1103/PhysRevE.96.023307">Physical Review E</a>.  Namely, apply a gaussian blur before finding peaks, removing peaks that lie on saddle points, and removing peaks that are closer to another peak than to solid.  The output of this function can be passed to <code class="docutils literal notranslate"><span class="pre">porespy.networks.regions_to_network</span></code> to obtain an extracted network for use in OpenPNM. Note that <code class="docutils literal notranslate"><span class="pre">ps.networks.snow2</span></code> combines all these steps into a single function, returning all the intermediate images as well as the network.  Note that the <code class="docutils literal notranslate"><span class="pre">2</span></code> indicates a modified version from the one presented in <code class="docutils literal notranslate"><span class="pre">PRE</span></code>.  The new version is less aggressive when trimming saddle points, so results in a higher number of pores.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ps</span>
@@ -964,7 +958,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-Results of snow_partitioning generated at Sun Nov  8 04:25:28 2026
+Results of snow_partitioning generated at Thu Nov 26 04:16:22 2026
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 im                        Array of size (200, 200)
 dt                        Array of size (200, 200)
@@ -1015,7 +1009,7 @@ regions                   Array of size (200, 200)
 <img alt="../../../_images/261a0a6adcbc6155f806224066abad2da00dd3e6bca4f368bacd5af7c649aa07.png" src="../../../_images/261a0a6adcbc6155f806224066abad2da00dd3e6bca4f368bacd5af7c649aa07.png" />
 </div>
 </div>
-<p>As can be seen above, a higher value of <code class="docutils literal notranslate"><span class="pre">sigma</span></code> results in several peaks being missed or skipped.  This may or may not be desireable.</p>
+<p>As can be seen above, a higher value of <code class="docutils literal notranslate"><span class="pre">sigma</span></code> results in several peaks being missed or skipped.  This may or may not be desirable.</p>
 </section>
 <section id="r-max">
 <h2><code class="docutils literal notranslate"><span class="pre">r_max</span></code><a class="headerlink" href="#r-max" title="Link to this heading">#</a></h2>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>shape &#8212; PoreSpy  documentation</title>
+    <title>conical_capillary &#8212; PoreSpy  documentation</title>
   
   
   
@@ -405,10 +405,7 @@
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="../../../_examples/generators/reference.html">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l3 current active"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l3 current active"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -505,7 +502,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/metrics/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -660,10 +657,7 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l1 current active"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -751,7 +745,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/reference/bond_number.html"><code class="docutils literal notranslate"><span class="pre">bond_number</span></code></a></li>
@@ -909,7 +903,7 @@
     
     <li class="breadcrumb-item"><a href="../../../_examples/generators/reference.html" class="nav-link">Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="docutils literal notranslate"><span class="pre">shape</span></code></span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></span></li>
   </ul>
 </nav>
 </div>
@@ -937,8 +931,10 @@
 </div>
 </div>
 </div>
+<section class="tex2jax_ignore mathjax_ignore" id="conical-capillary">
+<h1><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code><a class="headerlink" href="#conical-capillary" title="Link to this heading">#</a></h1>
 <section id="shape">
-<h1><code class="docutils literal notranslate"><span class="pre">shape</span></code><a class="headerlink" href="#shape" title="Link to this heading">#</a></h1>
+<h2><code class="docutils literal notranslate"><span class="pre">shape</span></code><a class="headerlink" href="#shape" title="Link to this heading">#</a></h2>
 <p>The image can be 2D or 3D.  The main purpose of this little function is to generate 2D images for visualization, but 3D may also be useful for other studies.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -974,7 +970,7 @@
 </div>
 </section>
 <section id="r">
-<h1><code class="docutils literal notranslate"><span class="pre">r</span></code><a class="headerlink" href="#r" title="Link to this heading">#</a></h1>
+<h2><code class="docutils literal notranslate"><span class="pre">r</span></code><a class="headerlink" href="#r" title="Link to this heading">#</a></h2>
 <p>This controls the radius of the left and right sides of the cone. If an <code class="docutils literal notranslate"><span class="pre">int</span></code> is provided then a straight tube is created.  The left side can be bigger than the right as well.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -998,7 +994,7 @@
 </div>
 </section>
 <section id="axis">
-<h1><code class="docutils literal notranslate"><span class="pre">axis</span></code><a class="headerlink" href="#axis" title="Link to this heading">#</a></h1>
+<h2><code class="docutils literal notranslate"><span class="pre">axis</span></code><a class="headerlink" href="#axis" title="Link to this heading">#</a></h2>
 <p>The direction along which the cone should be oriented.  The default is 0, meaning it is along the x-axis:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1019,7 +1015,7 @@
 </div>
 </section>
 <section id="notes">
-<h1>Notes<a class="headerlink" href="#notes" title="Link to this heading">#</a></h1>
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading">#</a></h2>
 <p>It is possible to join two images together to create a converging-diverging arrangement. Using <code class="docutils literal notranslate"><span class="pre">numpy.concatenate</span></code> works well as long as the orientation of the cones (i.e. <code class="docutils literal notranslate"><span class="pre">axis</span></code>) is the same as the axis along which the concatenation is applied:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1055,6 +1051,7 @@
 </div>
 </div>
 </section>
+</section>
 
 
                 </article>
@@ -1079,12 +1076,11 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#r"><code class="docutils literal notranslate"><span class="pre">r</span></code></a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#axis"><code class="docutils literal notranslate"><span class="pre">axis</span></code></a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#notes">Notes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shape"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#r"><code class="docutils literal notranslate"><span class="pre">r</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#axis"><code class="docutils literal notranslate"><span class="pre">axis</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notes">Notes</a></li>
 </ul>
-
   </nav></div>
 
 </div></div>

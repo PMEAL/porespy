@@ -6,7 +6,7 @@
    "metadata": {},
    "source": [
     "# `snow_partitioning`\n",
-    "This filter applies the ``snow`` algorithm to produce a watershed segmentation using the rules outlined in our paper in [Physical Review E](https://doi.org/10.1103/PhysRevE.96.023307).  Namely, apply a gaussian blur before finding peaks, removing peaks that lie on saddle points, and removing peaks that are closer to another peak than to solid.  The output of this function can be passed to ``porespy.network.regions_to_networks`` to obain an extracted network for use in OpenPNM. Note that ``ps.networks.snow2`` combines all these steps into a single function, returning all the itermediate images as well as the network.  Note that the ``2`` indicates a modified version from the one presented in ``PRE``.  The new version is less aggressive when trimming saddle points, so results in a higher number of pores."
+    "This filter applies the ``snow`` algorithm to produce a watershed segmentation using the rules outlined in our paper in [Physical Review E](https://doi.org/10.1103/PhysRevE.96.023307).  Namely, apply a gaussian blur before finding peaks, removing peaks that lie on saddle points, and removing peaks that are closer to another peak than to solid.  The output of this function can be passed to ``porespy.networks.regions_to_network`` to obtain an extracted network for use in OpenPNM. Note that ``ps.networks.snow2`` combines all these steps into a single function, returning all the intermediate images as well as the network.  Note that the ``2`` indicates a modified version from the one presented in ``PRE``.  The new version is less aggressive when trimming saddle points, so results in a higher number of pores."
    ]
   },
   {
@@ -194,7 +194,7 @@
    "id": "35a20b2e",
    "metadata": {},
    "source": [
-    "As can be seen above, a higher value of ``sigma`` results in several peaks being missed or skipped.  This may or may not be desireable."
+    "As can be seen above, a higher value of ``sigma`` results in several peaks being missed or skipped.  This may or may not be desirable."
    ]
   },
   {

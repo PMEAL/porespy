@@ -405,10 +405,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/generators/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -505,7 +502,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/metrics/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -660,10 +657,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -751,7 +745,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/reference/bond_number.html"><code class="docutils literal notranslate"><span class="pre">bond_number</span></code></a></li>
@@ -1014,7 +1008,8 @@
 </section>
 <section id="surface-pores">
 <h2>Surface Pores<a class="headerlink" href="#surface-pores" title="Link to this heading">#</a></h2>
-<p>Surface pores pose <em>almost</em> the same numerical problem as closed pores. The difference is that pores on a surface where boundary conditions are specified are acceptable, but those on the other surfaces are effectively closed. Even pores which are numerically tolerable are still not desirable however, because they do not contribute to transport, hence their inclusion in simulations may skew results. PoreSpy allows for the identification and filling of surface pores:</p>
+<p>Surface pores are void clusters with exactly one connected opening on the image boundary that do not span opposite faces along any of the requested axes. An opening can wrap around an edge or corner. Clusters with separate openings, even on the same or adjacent faces, are not surface pores. The same <code class="docutils literal notranslate"><span class="pre">conn</span></code> setting is used for connectivity inside the image and on its boundary.</p>
+<p>Depending on the boundary conditions, surface pores can be isolated from the transport path of interest. PoreSpy allows for their identification and filling:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">([</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="n">blobiness</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">porosity</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -1040,7 +1035,7 @@
 <img alt="../../../_images/96d1af3030964c3e845ee32899328c26a17eb6d66adb41cfd224a2ebebea0b57.png" src="../../../_images/96d1af3030964c3e845ee32899328c26a17eb6d66adb41cfd224a2ebebea0b57.png" />
 </div>
 </div>
-<p>PoreSpy offers functions to find or fill both closed and surface pores called <code class="docutils literal notranslate"><span class="pre">find_invalid_pores</span></code> and <code class="docutils literal notranslate"><span class="pre">fill_invalid_pores</span></code>. The <code class="docutils literal notranslate"><span class="pre">find_invalid_pores</span></code> function returns an image with <code class="docutils literal notranslate"><span class="pre">1</span></code> indicating closed pores and <code class="docutils literal notranslate"><span class="pre">2</span></code> indicating surface pores.</p>
+<p>PoreSpy also offers <code class="docutils literal notranslate"><span class="pre">find_invalid_pores</span></code> and <code class="docutils literal notranslate"><span class="pre">fill_invalid_pores</span></code> to identify or remove all clusters that do not span opposite faces along any of the requested axes. This includes closed pores and surface-connected clusters with one or multiple boundary openings. The <code class="docutils literal notranslate"><span class="pre">find_invalid_pores</span></code> function returns <code class="docutils literal notranslate"><span class="pre">1</span></code> for closed pores and <code class="docutils literal notranslate"><span class="pre">2</span></code> for surface-connected nonpercolating pores; solid voxels and percolating pores are <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">([</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="n">blobiness</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">porosity</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -1097,7 +1092,7 @@
 </section>
 <section id="non-percolating-paths">
 <h2>Non-Percolating Paths<a class="headerlink" href="#non-percolating-paths" title="Link to this heading">#</a></h2>
-<p>Surface pores are defined</p>
+<p>Removing surface pores alone does not remove every nonpercolating cluster: a cluster with multiple boundary openings may still fail to connect the desired inlet and outlet. Use <code class="docutils literal notranslate"><span class="pre">trim_nonpercolating_paths</span></code> to retain only clusters connecting both opposite faces along a chosen axis. In the 2D plots below, <code class="docutils literal notranslate"><span class="pre">axis=0</span></code> selects top-to-bottom paths and <code class="docutils literal notranslate"><span class="pre">axis=1</span></code> selects left-to-right paths.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">([</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="n">blobiness</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">porosity</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>

@@ -408,10 +408,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/generators/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -508,7 +505,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/metrics/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -663,10 +660,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -754,7 +748,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/reference/bond_number.html"><code class="docutils literal notranslate"><span class="pre">bond_number</span></code></a></li>
@@ -931,7 +925,7 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="adding-boundary-pores">
 <h1>Adding boundary pores<a class="headerlink" href="#adding-boundary-pores" title="Link to this heading">#</a></h1>
-<p>In this example we will illustrate how boundary pores are added during the network extraction phase.  We will use the individual steps of the SNOW algorithm (i.e. <code class="docutils literal notranslate"><span class="pre">porespy.filters.snow_partioning</span></code>), rather than use the pre-packaged <code class="docutils literal notranslate"><span class="pre">porespy.networks.snow</span></code> function.</p>
+<p>In this example we will illustrate how boundary pores are added during the network extraction phase.  We will use the individual steps of the SNOW algorithm (i.e. <code class="docutils literal notranslate"><span class="pre">porespy.filters.snow_partitioning</span></code>), rather than use the pre-packaged <code class="docutils literal notranslate"><span class="pre">porespy.networks.snow2</span></code> function.</p>
 <section id="import-packages">
 <h2>Import packages<a class="headerlink" href="#import-packages" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
@@ -995,7 +989,7 @@
 <ul class="simple">
 <li><p>Boundary regions that touch each other are separated by a small solid obstacle indicated by black.  This is to prevent boundary pores from becoming connected to each other when the network extraction function is applied (<code class="docutils literal notranslate"><span class="pre">regions_to_network</span></code>).</p></li>
 <li><p>Corners are also converted to solid obstacles.  This is for the same reason as above, but also because it’s not clear which internal pores these corners should be connected to.</p></li>
-<li><p>A thickness of 3 voxels was chosen since this was necessary for the <code class="docutils literal notranslate"><span class="pre">marching_cubes</span></code> surface area calculation.  It is also a good idea for the pore centroid to be padded by 1-voxel on each side. This 3-voxel dimension can pose problems during the network extraction stage since most of the physical dimensions will be meaningless.  Consequently care must be taken to ensure that these boundary pores are treated correctly. In many cases it may be preferrable to forego the them entirely and just apply boundary conditions on real pores lying on the domain surface.</p></li>
+<li><p>A thickness of 3 voxels was chosen since this was necessary for the <code class="docutils literal notranslate"><span class="pre">marching_cubes</span></code> surface area calculation.  It is also a good idea for the pore centroid to be padded by 1-voxel on each side. This 3-voxel dimension can pose problems during the network extraction stage since most of the physical dimensions will be meaningless.  Consequently care must be taken to ensure that these boundary pores are treated correctly. In many cases it may be preferable to forego them entirely and just apply boundary conditions on real pores lying on the domain surface.</p></li>
 </ul>
 <p>Passing this image into the <code class="docutils literal notranslate"><span class="pre">regions_to_network</span></code> function will treat each region as an actual pore:</p>
 <div class="cell docutils container">

@@ -408,10 +408,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/generators/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -508,7 +505,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="../../../_examples/metrics/reference.html">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -663,10 +660,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -754,7 +748,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="bond_number.html"><code class="docutils literal notranslate"><span class="pre">bond_number</span></code></a></li>
@@ -931,7 +925,7 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="region-interface-areas">
 <h1><code class="docutils literal notranslate"><span class="pre">region_interface_areas</span></code><a class="headerlink" href="#region-interface-areas" title="Link to this heading">#</a></h1>
-<p>Calculate the interfacial area between all pairs of adjecent regions in a labeled image.</p>
+<p>Calculate the interfacial area between all pairs of adjacent regions in a labeled image.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -967,7 +961,7 @@
 </section>
 <section id="areas">
 <h2><code class="docutils literal notranslate"><span class="pre">areas</span></code><a class="headerlink" href="#areas" title="Link to this heading">#</a></h2>
-<p>A list containing the areas of each regions, as determined by <code class="docutils literal notranslate"><span class="pre">region_surface_area</span></code>.  Note that the region number and list index are offset by 1, such that the area for region 1 is stored in <code class="docutils literal notranslate"><span class="pre">areas[0]</span></code>. We must first calculate the areas of the regions in the test image, then given the regions and areas, we can calculate the interface areas of each neighbouring region. The <code class="docutils literal notranslate"><span class="pre">region_interface_areas</span></code> method returns a costum object containing the regions connections and interface area of each connection.</p>
+<p>A list containing the areas of each regions, as determined by <code class="docutils literal notranslate"><span class="pre">region_surface_area</span></code>.  Note that the region number and list index are offset by 1, such that the area for region 1 is stored in <code class="docutils literal notranslate"><span class="pre">areas[0]</span></code>. We must first calculate the areas of the regions in the test image, then given the regions and areas, we can calculate the interface areas of each neighbouring region. The <code class="docutils literal notranslate"><span class="pre">region_interface_areas</span></code> method returns a custom object containing the regions connections and interface area of each connection.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">areas</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">region_surface_areas</span><span class="p">(</span><span class="n">regions</span><span class="o">=</span><span class="n">regions</span><span class="p">)</span>
@@ -1010,7 +1004,7 @@
 <section id="strel">
 <h2><code class="docutils literal notranslate"><span class="pre">strel</span></code><a class="headerlink" href="#strel" title="Link to this heading">#</a></h2>
 <p>By default the structuring element used to blur the region is a spherical element (or disk) with radius 1. This structuring element is used in the <code class="docutils literal notranslate"><span class="pre">mesh_region</span></code> method, which is called within the <code class="docutils literal notranslate"><span class="pre">region_interface_areas</span></code> function. The blur is
-perfomed using a simple convolution filter. The point is to create a greyscale region to allow the marching cubes algorithm (meshing algorithm) some freedom to conform the mesh to the surface.  As the size of <code class="docutils literal notranslate"><span class="pre">strel</span></code> increases the region will become increasingly blurred and inaccurate.</p>
+performed using a simple convolution filter. The point is to create a greyscale region to allow the marching cubes algorithm (meshing algorithm) some freedom to conform the mesh to the surface.  As the size of <code class="docutils literal notranslate"><span class="pre">strel</span></code> increases the region will become increasingly blurred and inaccurate.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">voxel_size</span> <span class="o">=</span> <span class="mf">1e-1</span>

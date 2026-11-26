@@ -407,10 +407,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/generators/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -507,7 +504,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/metrics/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -662,10 +659,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -753,7 +747,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/reference/bond_number.html"><code class="docutils literal notranslate"><span class="pre">bond_number</span></code></a></li>
@@ -1292,15 +1286,34 @@
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
 <p>In conclusion, the <code class="docutils literal notranslate"><span class="pre">imbibition</span></code> algorithm in PoreSpy’s <code class="docutils literal notranslate"><span class="pre">simulations</span></code> module can be used to model the invasion of wetting phase into a porous domain, including the effects of trapping by <code class="docutils literal notranslate"><span class="pre">outlets</span></code> and the presence of residual wetting phase by specifying <code class="docutils literal notranslate"><span class="pre">residual</span></code>. Access limitations can be applied by specifying <code class="docutils literal notranslate"><span class="pre">inlets</span></code> or wetting phase can be allowed to appear anywhere within the domain by omitted <code class="docutils literal notranslate"><span class="pre">inlets</span></code>.</p>
 <p>The function returns a <code class="docutils literal notranslate"><span class="pre">Results</span></code> object which is <code class="docutils literal notranslate"><span class="pre">dataclass-like</span></code> object which has several displacement maps as attributes.  The displacement maps contain the entire history of the invasion sequence so that any given fluid configuration can be obtained using an appropriate threshold.  The following table outlines the values used in each displacement map to indicate the trapped and residual fluid, along with a code snippet to generate a given configuration from each.</p>
-<p>+——————-+————–+—————–+—————————————–+
-| Displacement Map  | Trapped NWP  | Residual WP     | Code to Generate <span class="math notranslate nohighlight">\(S_{wp}\)</span> Configuration |
-+===================+==============+=================+=========================================+
-| Pc Map            | <span class="math notranslate nohighlight">\(-inf\)</span>       | <span class="math notranslate nohighlight">\(+inf\)</span>          | <code class="docutils literal notranslate"><span class="pre">(im_pc</span> <span class="pre">&gt;</span> <span class="pre">Pc)</span> <span class="pre">*</span> <span class="pre">im</span></code>                     |
-+——————-+————–+—————–+—————————————–+
-| Sequence Map      | -1           | 0               | <code class="docutils literal notranslate"><span class="pre">(im_seq</span> <span class="pre">&lt;</span> <span class="pre">N)</span> <span class="pre">*</span> <span class="pre">(im_seq</span> <span class="pre">&gt;=</span> <span class="pre">0)</span></code>          |
-+——————-+————–+—————–+—————————————–+
-| Saturation Map    | -1           | <span class="math notranslate nohighlight">\(1 - S_{wp,r}\)</span>  | <code class="docutils literal notranslate"><span class="pre">(im_snwp</span> <span class="pre">&gt;</span> <span class="pre">s)</span></code>                         |
-+——————-+————–+—————–+—————————————–+</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Displacement Map</p></th>
+<th class="head"><p>Trapped NWP</p></th>
+<th class="head"><p>Residual WP</p></th>
+<th class="head"><p>Code to Generate the WP Configuration</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Pc Map</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-inf</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">+inf</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(im_pc</span> <span class="pre">&gt;=</span> <span class="pre">Pc)</span> <span class="pre">&amp;</span> <span class="pre">im</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Sequence Map</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(im_seq</span> <span class="pre">&lt;=</span> <span class="pre">N)</span> <span class="pre">&amp;</span> <span class="pre">(im_seq</span> <span class="pre">&gt;=</span> <span class="pre">0)</span> <span class="pre">&amp;</span> <span class="pre">im</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Saturation Map</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-1</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(1 - S_{wp,r}\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(im_snwp</span> <span class="pre">&gt;=</span> <span class="pre">s)</span> <span class="pre">&amp;</span> <span class="pre">(im_snwp</span> <span class="pre">&gt;=</span> <span class="pre">0)</span> <span class="pre">&amp;</span> <span class="pre">im</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Here <code class="docutils literal notranslate"><span class="pre">im</span></code> is the boolean void-space mask, <code class="docutils literal notranslate"><span class="pre">N</span></code> is a completed invasion step, <code class="docutils literal notranslate"><span class="pre">Pc</span></code> is a finite applied capillary pressure, and <code class="docutils literal notranslate"><span class="pre">s</span></code> is a non-wetting saturation reached at a completed step. Although the masks select wetting phase, <code class="docutils literal notranslate"><span class="pre">im_snwp</span></code> records the non-wetting saturation, which decreases during imbibition. The inclusive thresholds include voxels invaded at that step, including wetting voxels with <code class="docutils literal notranslate"><span class="pre">im_snwp</span> <span class="pre">=</span> <span class="pre">0</span></code> at complete imbibition. Masking with <code class="docutils literal notranslate"><span class="pre">im</span></code> excludes solids, and the nonnegative checks exclude trapped voxels. <span class="math notranslate nohighlight">\(S_{wp,r}\)</span> is the initial residual wetting saturation.</p>
 </section>
 </section>
 

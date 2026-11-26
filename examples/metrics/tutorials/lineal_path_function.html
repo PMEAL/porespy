@@ -403,10 +403,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/generators/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -503,7 +500,7 @@
 <li class="toctree-l3"><a class="reference internal" href="computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">The lineal path function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/metrics/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -658,10 +655,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -749,7 +743,7 @@
 <li class="toctree-l1"><a class="reference internal" href="computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">The lineal path function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../reference/bond_number.html"><code class="docutils literal notranslate"><span class="pre">bond_number</span></code></a></li>
@@ -926,7 +920,7 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="the-lineal-path-function">
 <h1>The lineal path function<a class="headerlink" href="#the-lineal-path-function" title="Link to this heading">#</a></h1>
-<p>In the original version of the lineal path function described by Torquato, he proposes to insert lines of arbitrary length and orientation into the image, then count the fraction of these lines that lie wholly within a single phase. If the media is isotropic then it is not strictly necessary to use random orientations, since the length of the valid lines will be the same in all direction. On the other hand, if the material is anisotropic, then orientation does matter. Or, flipping this concept around, it becomes possible to detect anisotropy in an image by measuring the lineal-path function along a single direction, then repeating for perpedicular directions.  Anisotropy is thus revealed by the disparity in the lineal-path results.</p>
+<p>In the original version of the lineal path function described by Torquato, he proposes to insert lines of arbitrary length and orientation into the image, then count the fraction of these lines that lie wholly within a single phase. If the media is isotropic then it is not strictly necessary to use random orientations, since the length of the valid lines will be the same in all direction. On the other hand, if the material is anisotropic, then orientation does matter. Or, flipping this concept around, it becomes possible to detect anisotropy in an image by measuring the lineal-path function along a single direction, then repeating for perpendicular directions.  Anisotropy is thus revealed by the disparity in the lineal-path results.</p>
 <p>PoreSpy favors this latter approach, and computes the lineal-path function along a single axis. PoreSpy includes the <code class="docutils literal notranslate"><span class="pre">distance_transform_lin</span></code> function which can compute a version of the distance transform that is limited to the linear distance along the specified axis.  Applying this function to an image creates the input data for the lineal path function, which then computes the cumulative distribution function of the values in the image.  The following example outlines the steps to compute the lineal-path function in two perpendicular directions for an anisotropic image.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -948,7 +942,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/b9bd480c6fcb068a4c9a1baca64f6ebf8d00785a5933039cc182975075578a40.png" src="../../../_images/b9bd480c6fcb068a4c9a1baca64f6ebf8d00785a5933039cc182975075578a40.png" />
+<img alt="../../../_images/3a657220e947e9502beb7fb0f78111c574cf5833e237939a621831fecc60535b.png" src="../../../_images/3a657220e947e9502beb7fb0f78111c574cf5833e237939a621831fecc60535b.png" />
 </div>
 </div>
 <p>Next apply the <code class="docutils literal notranslate"><span class="pre">distance_transform_lin</span></code> function along the 0 axis.</p>
@@ -960,7 +954,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/8a38a478f4ffb762dbc248c36c5a8c2f3f012bdf5a8b7b307474ee26c68bbc87.png" src="../../../_images/8a38a478f4ffb762dbc248c36c5a8c2f3f012bdf5a8b7b307474ee26c68bbc87.png" />
+<img alt="../../../_images/856ccd7f6e67245313c624a17aeac112adc15efa6e0670dc5c377670db822510.png" src="../../../_images/856ccd7f6e67245313c624a17aeac112adc15efa6e0670dc5c377670db822510.png" />
 </div>
 </div>
 <p>The greyscale values of the above image are worth a comment. They indicated the length of a path that can be drawn from each voxel to the nearest solid voxel, in the specified direction.  Or in terms of Torquato’s definition, each greyscale value represents a random starting point (A) and moving along this line until solid is encountered represents the end of the line (B), providing the path length A <span class="math notranslate nohighlight">\(\rightarrow\)</span> B.  The ‘counter associated with the distance between A and B is then incremented’, which corresponds to the binning the greyscale values in the above image. In other words, the above representation includes ALL possible starting points on each path, so provides the largest possible data set.</p>
@@ -983,10 +977,10 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/f7ae0d88cc8f490df76179a045823b215f8b848188784b19dbf6215b84dd669f.png" src="../../../_images/f7ae0d88cc8f490df76179a045823b215f8b848188784b19dbf6215b84dd669f.png" />
+<img alt="../../../_images/b6a290bcf1b201542e1a1cd6193e5ba4e70ce86513353fbe54ebca609e99ceca.png" src="../../../_images/b6a290bcf1b201542e1a1cd6193e5ba4e70ce86513353fbe54ebca609e99ceca.png" />
 </div>
 </div>
-<p>Since the image is anisotropic, the process will yeild a different result in the perpendicular direction, so repeating the above with <code class="docutils literal notranslate"><span class="pre">axis=1</span></code> instead of the default <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>.</p>
+<p>Since the image is anisotropic, the process will yield a different result in the perpendicular direction, so repeating the above with <code class="docutils literal notranslate"><span class="pre">axis=1</span></code> instead of the default <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">paths</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">distance_transform_lin</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -995,10 +989,10 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/4ba27dabad42ca8922781154e6dd1a3795bab1ffc801a08762e02480c9e2a4ce.png" src="../../../_images/4ba27dabad42ca8922781154e6dd1a3795bab1ffc801a08762e02480c9e2a4ce.png" />
+<img alt="../../../_images/bab58650b521ab884aa1440f21e29d9c756da66680a8bd40659094b9a8761101.png" src="../../../_images/bab58650b521ab884aa1440f21e29d9c756da66680a8bd40659094b9a8761101.png" />
 </div>
 </div>
-<p>Overlaying this result wit the previous one:</p>
+<p>Overlaying this result with the previous one:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lpf</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">lineal_path_distribution</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
@@ -1008,7 +1002,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/8c0f7e9188f8451d524349f3daa3518db357a7f293fcc634fd9892612dc0699e.png" src="../../../_images/8c0f7e9188f8451d524349f3daa3518db357a7f293fcc634fd9892612dc0699e.png" />
+<img alt="../../../_images/c183ffac9a0cde5624e756b4f4988b28fc4c84cb31bd79b05707ec590c2f370e.png" src="../../../_images/c183ffac9a0cde5624e756b4f4988b28fc4c84cb31bd79b05707ec590c2f370e.png" />
 </div>
 </div>
 <p>The anisotropy of the image is clearly visible with the first axis possessing longer lineal-path values.</p>

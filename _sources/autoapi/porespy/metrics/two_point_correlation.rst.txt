@@ -1,59 +1,60 @@
 porespy.metrics.two_point_correlation
 =====================================
 
-.. py:function:: porespy.metrics.two_point_correlation(im, voxel_size=1, bins=100)
+.. py:function:: porespy.metrics.two_point_correlation(im, voxel_size=1, bins=100, *, backend=None)
 
-   Calculate the two-point correlation function using Fourier transforms
+   Calculate the radial two-point correlation function using Fourier transforms.
 
-   :param im: The image of the void space on which the 2-point correlation is
-              desired, in which the phase of interest is labelled as True
-   :type im: ndarray
-   :param voxel_size: The size of a voxel side in preferred units.  The default is 1, so
-                      the user can apply the scaling to the returned results after the
-                      fact.
+   :param im: A 2D or 3D phase indicator. Values equal to 1 (or True) indicate the
+              phase of interest. A CUDA array selects the CuPy backend by default.
+   :type im: array_like
+   :param voxel_size: The size of a voxel side in preferred units. This scales the
+                      returned distances and bin edges.
    :type voxel_size: scalar
-   :param bins: Either an array of bin sizes to use, or the number of bins that
-                should be automatically generated that span the data range. The
-                maximum value of the bins, if passed as an array, cannot exceed
-                the distance from the center of the image to the corner.
-   :type bins: scalar or array_like
+   :param bins: A positive target number of bins, or explicit, strictly increasing
+                bin edges in voxel units. Automatic bins are at least one voxel wide
+                and extend to approximately half the shortest image dimension. Each
+                bin includes its left edge and excludes its right edge, including
+                the final bin.
+   :type bins: int or array_like
+   :param backend: FFT backend. By default, use SciPy for host arrays and CuPy for CUDA
+                   arrays. With ``backend='cupy'``, host arrays are copied to the GPU.
+                   CuPy is an optional dependency. The returned arrays are NumPy arrays
+                   with either backend.
+   :type backend: {None, 'scipy', 'cupy'}
 
-   :returns: **result** -- A dataclass-like object with following named attributes:
+   :returns: **result** -- A custom object with the following attributes:
 
-             =========================== =================================================
-             Attribute                   Description
-             =========================== =================================================
-             *distance*                  The distance between two points, equivalent to
-                                         bin_centers
-             *bin_centers*               The center point of each bin. See distance
-             *bin_edges*                 Locations of bin divisions, including 1 more
-                                         value than the number of bins
-             *bin_widths*                Useful for passing to the ``width`` argument of
-                                         ``matplotlib.pyplot.bar``
-             *probability_normalized*    The probability that two points of the stated
-                                         separation distance are within the same phase
-                                         normalized to 1 at r = 0
-             *probability*               The probability that two points of the stated
-                                         separation distance are within the same phase
-                                         scaled to the phase fraction at r = 0
-             *pdf*                       Same as probability
-             =========================== =================================================
-   :rtype: tpcf
+             ===================== =====================================================
+             Attribute             Description
+             ===================== =====================================================
+             *distance*            Bin centers, in the units of voxel_size
+             *bin_centers*         Same as distance
+             *bin_edges*           Edges of the distance bins
+             *bin_widths*          Widths of the distance bins
+             *probability*         Radial average of S2 divided by the phase fraction
+             *probability_scaled*  Radial average of S2
+             *pdf*                 Same as probability_scaled
+             *relfreq*             Probability multiplied by bin width in voxels
+             ===================== =====================================================
+   :rtype: Results
 
    .. rubric:: Notes
 
-   The fourier transform approach utilizes the fact that the
-   autocorrelation function is the inverse FT of the power spectrum
-   density. For background read the Scipy fftpack docs and for a good
-   explanation `see this thesis
-   <https://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf>`_.
+   For each displacement vector, S2 is the fraction of valid voxel pairs
+   for which both voxels lie in the selected phase. Zero-padding prevents
+   wraparound for the requested lags. The number of valid pairs for a
+   displacement is the product of the overlap lengths along each axis.
+   Each radial bin averages these fractions with equal weight per
+   displacement vector. For a statistically homogeneous image this
+   estimates the shell average of the two-point probability.
 
-   The image is zero-padded to twice its size along each axis before the
-   forward transform so that the resulting autocorrelation is the proper
-   non-periodic correlation rather than the periodic one. Each lag is then
-   normalized by the number of voxel pairs that contributed to it, which
-   yields an unbiased estimate of $S_2(r)$ that averages over all radial
-   directions.
+   At zero lag S2 equals the phase fraction. A bin reports this value
+   exactly if it contains zero lag alone, for example with edges [0, 1].
+   In a finite image, an edge-corrected S2 value can exceed the global
+   phase fraction when pairs in a shell sample a phase-rich region.
+   Empty bins are returned as zero. When the phase is absent, S2 is zero
+   and the normalized probability and relfreq are NaN.
 
    .. rubric:: Examples
 

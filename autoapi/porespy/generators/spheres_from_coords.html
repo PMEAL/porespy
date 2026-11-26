@@ -570,6 +570,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_conv.html">porespy.simulations.drainage_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt.html">porespy.simulations.drainage_dt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt_conv.html">porespy.simulations.drainage_dt_conv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/hg_porosimetry.html">porespy.simulations.hg_porosimetry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/ibip.html">porespy.simulations.ibip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition.html">porespy.simulations.imbibition</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_bf.html">porespy.simulations.imbibition_bf</a></li>
@@ -736,18 +737,17 @@
 <h1>porespy.generators.spheres_from_coords<a class="headerlink" href="#porespy-generators-spheres-from-coords" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.generators.spheres_from_coords">
-<span class="sig-prename descclassname"><span class="pre">porespy.generators.</span></span><span class="sig-name descname"><span class="pre">spheres_from_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'contained'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#porespy.generators.spheres_from_coords" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">porespy.generators.</span></span><span class="sig-name descname"><span class="pre">spheres_from_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'contained'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#porespy.generators.spheres_from_coords" title="Link to this definition">#</a></dt>
 <dd><p>Generates a sphere packing given a list of centers and radii</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>df</strong> (<em>DataFrame</em><em> or </em><em>dict</em>) – The X, Y, Z center coordinates, and radius R of each sphere in the packing
+<li><p><strong>df</strong> (<em>DataFrame</em><em>, </em><em>dict</em><em>, or </em><em>ndarray</em>) – The X, Y, Z center coordinates, and radius R of each sphere in the packing
 should be stored in their own column or key. The units should be in voxels.
 See <code class="docutils literal notranslate"><span class="pre">Notes</span></code> for more detail on how this should be formatted. If one of
-the dimensions has all 0’s then a 2D image is generated.</p></li>
-<li><p><strong>smooth</strong> (<em>bool</em>) – Indicates if spheres should be smooth or have the single pixel bump on
-each face.</p></li>
-<li><p><strong>mode</strong> (<em>str</em>) – <p>How edges are handled. Options are:</p>
+the dimensions has all 0’s (and a 3D <code class="docutils literal notranslate"><span class="pre">shape</span></code> is not explicitly given),
+then a 2D image is generated.</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – <p>How edges are handled when <code class="docutils literal notranslate"><span class="pre">shape</span></code> is not specified. Options are:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>mode</p></th>
@@ -756,26 +756,35 @@ each face.</p></li>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>’contained’</p></td>
-<td><p>(default) All spheres are fully contained within the image,
-meaning the image is padded beyond extents of the given
-coordinates by the maximum radius of the given sphere radii
-to ensure they all fit.</p></td>
+<td><p>(default) All spheres are fully contained within the image.
+Coordinates are preserved as long as all spheres fit within
+non-negative indices; if any sphere extends below 0 along an
+axis, that axis is shifted by the minimum amount required so
+no sphere is clipped.</p></td>
 </tr>
 <tr class="row-odd"><td><p>’extended’</p></td>
-<td><p>Spheres extend beyond the edge of the image. In this mode
-the image is only as large enough to hold the given coordinates
-so the spheres may extend beyond the image boundary.</p></td>
+<td><p>Spheres may extend beyond the edges of the image. The image
+spans from 0 up to the maximum coordinate along each axis
+(inclusive). Coordinates are preserved as long as they are
+non-negative; if any coordinate is negative along an axis,
+that axis is shifted so the minimum coordinate sits at 0.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<p>Ignored if <code class="docutils literal notranslate"><span class="pre">shape</span></code> is provided.</p>
 </p></li>
+<li><p><strong>smooth</strong> (<em>bool</em>) – Indicates if spheres should be smooth or have the single pixel bump on
+each face.</p></li>
+<li><p><strong>shape</strong> (<em>array_like</em><em>, </em><em>optional</em>) – The exact shape of the output image. If provided, spheres are inserted
+directly at the given coordinates with no shifting or cropping, and any
+portions extending outside <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">shape)</span></code> are clipped. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
+(default), the image shape is inferred from <code class="docutils literal notranslate"><span class="pre">df</span></code> according to <code class="docutils literal notranslate"><span class="pre">mode</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>spheres</strong> – A numpy ndarray of <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating the spheres and
-<code class="docutils literal notranslate"><span class="pre">False</span></code> elsewhere. The size of the returned image will be large enough
-to fit all the spheres plus the radius of the largest sphere.</p>
+<code class="docutils literal notranslate"><span class="pre">False</span></code> elsewhere.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
@@ -832,7 +841,12 @@ to view online example.</p>
 </pre></div>
 </div>
 <p>Note that in all cases if the radius is not given that it is assumed to be
-a single pixel</p>
+a single pixel.</p>
+<p>Coordinates are preserved whenever possible rather than cropped to a tight
+bounding box. If your input coordinates have a large positive offset and you
+want a tightly cropped image, shift the coordinates beforehand (e.g.,
+<code class="docutils literal notranslate"><span class="pre">df['X']</span> <span class="pre">-=</span> <span class="pre">df['X'].min()</span></code>) or crop the result with
+<code class="docutils literal notranslate"><span class="pre">im[ps.tools.find_bbox(im)]</span></code>.</p>
 </dd></dl>
 
 </section>

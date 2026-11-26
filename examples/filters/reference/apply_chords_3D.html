@@ -405,10 +405,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/generators/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -505,7 +502,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/metrics/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -660,10 +657,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -751,7 +745,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/reference/bond_number.html"><code class="docutils literal notranslate"><span class="pre">bond_number</span></code></a></li>
@@ -928,7 +922,7 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="apply-chords-3d">
 <h1><code class="docutils literal notranslate"><span class="pre">apply_chords_3D</span></code><a class="headerlink" href="#apply-chords-3d" title="Link to this heading">#</a></h1>
-<p>Adds chords to the void space in all three principle directions.  The chords are seprated by 1 voxel plus the provided spacing.  Chords in the X, Y and Z directions are labelled 1, 2 and 3 resepctively.</p>
+<p>Adds chords to the void space in all three principal directions.  The chords are separated by 1 voxel plus the provided spacing.  Chords in the X, Y and Z directions are labelled 1, 2 and 3 respectively.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -958,7 +952,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/4341a1ab2759ef0936c9bbcd3b524f791e3047e48b488ec63a9b185f52ef7ae8.png" src="../../../_images/4341a1ab2759ef0936c9bbcd3b524f791e3047e48b488ec63a9b185f52ef7ae8.png" />
+<img alt="../../../_images/9fed1f8591821486b0fceed823e402aa4eb356c07ac11a71d9859864cb5d5975.png" src="../../../_images/9fed1f8591821486b0fceed823e402aa4eb356c07ac11a71d9859864cb5d5975.png" />
 </div>
 </div>
 <p>The chords in each direction are given different integer values so they can isolated by thresholding.</p>
@@ -971,13 +965,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/f3e77d825e553e4bb49129baec6f5e47555c3e8fdf4a41c7c6b23424f32d52b6.png" src="../../../_images/f3e77d825e553e4bb49129baec6f5e47555c3e8fdf4a41c7c6b23424f32d52b6.png" />
+<img alt="../../../_images/0e3a3df11f922fd638c6efe5ea4bf4c25b590b1f3402b2e597ee7359cf367211.png" src="../../../_images/0e3a3df11f922fd638c6efe5ea4bf4c25b590b1f3402b2e597ee7359cf367211.png" />
 </div>
 </div>
 </section>
 <section id="spacing">
 <h2><code class="docutils literal notranslate"><span class="pre">spacing</span></code><a class="headerlink" href="#spacing" title="Link to this heading">#</a></h2>
-<p>By default the chords are drown with a spacing of 1 voxel between each orientation to provide the maximum number of chords. This can be adjusted to create few chords if the image is very large if needed.</p>
+<p>By default the chords are drawn with a spacing of 1 voxel between each orientation to provide the maximum number of chords. This can be adjusted to create few chords if the image is very large if needed.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c1</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">apply_chords_3D</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -992,7 +986,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/2107f221dab9c8a673e7bfdaf918295f9bf3f21d2e1699cb1aad9d01138d172c.png" src="../../../_images/2107f221dab9c8a673e7bfdaf918295f9bf3f21d2e1699cb1aad9d01138d172c.png" />
+<img alt="../../../_images/a374a9ab923c4a8622a85386c992ae08826fa9f6a204d664902521a7aaf4145f.png" src="../../../_images/a374a9ab923c4a8622a85386c992ae08826fa9f6a204d664902521a7aaf4145f.png" />
 </div>
 </div>
 </section>
@@ -1014,7 +1008,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/40ea4f90543e1c9e4b5f0d1bb67a12c57820f0b901fe3f79f020c5ad9aa533b7.png" src="../../../_images/40ea4f90543e1c9e4b5f0d1bb67a12c57820f0b901fe3f79f020c5ad9aa533b7.png" />
+<img alt="../../../_images/3908c0c7f07c136d0b27b183fa555175104a5b55c9db6c815e35e605b9d10baa.png" src="../../../_images/3908c0c7f07c136d0b27b183fa555175104a5b55c9db6c815e35e605b9d10baa.png" />
 </div>
 </div>
 </section>

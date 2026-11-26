@@ -49,8 +49,11 @@ nbclient.exceptions.CellTimeoutError: A cell timed out while it was being execut
 The message was: Cell execution timed out.
 Here is a preview of the cell contents:
 -------------------
-predicted_ai = ps.networks.diffusive_size_factor_AI(
-    regions, model=model, g_train=g_train, throat_conns=conns, voxel_size=voxel_size
+startTime = time.time()
+predicted_dns = ps.networks.diffusive_size_factor_DNS(
+    regions, throat_conns=conns, voxel_size=voxel_size
 )
+executionTime_dns = time.time() - startTime
+print("Execution time in seconds: " + str(executionTime_dns))
 -------------------
 

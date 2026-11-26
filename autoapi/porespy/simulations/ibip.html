@@ -54,7 +54,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="porespy.simulations.imbibition" href="imbibition.html" />
-    <link rel="prev" title="porespy.simulations.drainage_dt_conv" href="drainage_dt_conv.html" />
+    <link rel="prev" title="porespy.simulations.hg_porosimetry" href="hg_porosimetry.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -570,6 +570,7 @@
 <li class="toctree-l2"><a class="reference internal" href="drainage_conv.html">porespy.simulations.drainage_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="drainage_dt.html">porespy.simulations.drainage_dt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="drainage_dt_conv.html">porespy.simulations.drainage_dt_conv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hg_porosimetry.html">porespy.simulations.hg_porosimetry</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">porespy.simulations.ibip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imbibition.html">porespy.simulations.imbibition</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imbibition_bf.html">porespy.simulations.imbibition_bf</a></li>
@@ -737,7 +738,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.simulations.ibip">
 <span class="sig-prename descclassname"><span class="pre">porespy.simulations.</span></span><span class="sig-name descname"><span class="pre">ibip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_sizes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'min'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#porespy.simulations.ibip" title="Link to this definition">#</a></dt>
-<dd><p>Simulates non-wetting fluid injection on an image using the IBIP algorithm <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a></p>
+<dd><p>Simulates non-wetting fluid injection on an image using the IBIP algorithm</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -792,8 +793,8 @@ that first overlapped it.</p></td>
 </div>
 <p class="rubric">References</p>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id2" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">3</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="id1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">3</a><span class="fn-bracket">]</span></span>
 <p>Gostick JT, Misaghian N, Yang J, Boek ES. Simulating volume-controlled
 invasion of a non-wetting fluid in volumetric images using basic image
 processing tools. Computers &amp; Geosciences. 158(1), 104978 (2022).
@@ -801,6 +802,7 @@ processing tools. Computers &amp; Geosciences. 158(1), 104978 (2022).
 </aside>
 </aside>
 <p class="rubric">Notes</p>
+<p>The IBIP algorithm is described in <a class="footnote-reference brackets" href="#id1" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
 <p>This function is slower and is less capable than <code class="docutils literal notranslate"><span class="pre">qbip</span></code>, which returns
 identical results, so it is recommended to use that instead.</p>
 </dd></dl>

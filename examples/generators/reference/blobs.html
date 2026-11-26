@@ -405,10 +405,7 @@
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="../../../_examples/generators/reference.html">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3 current active"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l3"><a class="reference internal" href="conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -505,7 +502,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/metrics/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -660,10 +657,7 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l1"><a class="reference internal" href="conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -751,7 +745,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/reference/bond_number.html"><code class="docutils literal notranslate"><span class="pre">bond_number</span></code></a></li>
@@ -928,7 +922,7 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="blobs">
 <h1><code class="docutils literal notranslate"><span class="pre">blobs</span></code><a class="headerlink" href="#blobs" title="Link to this heading">#</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">blobs</span></code> is a simple function to generate a test image.  It works by generating random noise, applying a guassian blur, renormalizing the result back to a uniform distribution, then thresholding the result to produce a binary image.</p>
+<p><code class="docutils literal notranslate"><span class="pre">blobs</span></code> is a simple function to generate a test image.  It works by generating random noise, applying a Gaussian blur, renormalizing the result back to a uniform distribution, then thresholding the result to produce a binary image.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -954,7 +948,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/c5124710b5acfc380b031cfd1013b8eb5d6a87ddb6253d7952a1f4ee0179efa7.png" src="../../../_images/c5124710b5acfc380b031cfd1013b8eb5d6a87ddb6253d7952a1f4ee0179efa7.png" />
+<img alt="../../../_images/5e143e3dd0bfb088cb993c181365f56cc8025bad8c57e89f0e5b6907fa604eb7.png" src="../../../_images/5e143e3dd0bfb088cb993c181365f56cc8025bad8c57e89f0e5b6907fa604eb7.png" />
 </div>
 </div>
 </section>
@@ -972,10 +966,10 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/b86f19e6dd2a0ce5fea830cd394f73068f65c5c0b9b70fb5f6be51814ffb4b92.png" src="../../../_images/b86f19e6dd2a0ce5fea830cd394f73068f65c5c0b9b70fb5f6be51814ffb4b92.png" />
+<img alt="../../../_images/61a1613213ae7b7cbcfbeb8bd394e1e79bdf4adeea3a67e0ef06008f6656aca1.png" src="../../../_images/61a1613213ae7b7cbcfbeb8bd394e1e79bdf4adeea3a67e0ef06008f6656aca1.png" />
 </div>
 </div>
-<p>Specifying <code class="docutils literal notranslate"><span class="pre">porosity=None</span></code> will return a greyscale image which can then be thresholded to get a boolean image.  The greyscale value are adjusted to a unifrom distribution:</p>
+<p>Specifying <code class="docutils literal notranslate"><span class="pre">porosity=None</span></code> will return a greyscale image which can then be thresholded to get a boolean image.  The greyscale value are adjusted to a uniform distribution:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span> <span class="n">porosity</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -989,7 +983,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/23d6a917773b4befe51a24b8bd6c2535708c99c0d9eb5439a559d2a9ae162979.png" src="../../../_images/23d6a917773b4befe51a24b8bd6c2535708c99c0d9eb5439a559d2a9ae162979.png" />
+<img alt="../../../_images/fa859d64827632da6f36119e4cd8aace1a19582f0e99e168c47359d793007bbf.png" src="../../../_images/fa859d64827632da6f36119e4cd8aace1a19582f0e99e168c47359d793007bbf.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1006,7 +1000,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/2b464e44ddc58bc9f0ca6f9f5ae8710769b593aa58f082c520662b83f6358b25.png" src="../../../_images/2b464e44ddc58bc9f0ca6f9f5ae8710769b593aa58f082c520662b83f6358b25.png" />
+<img alt="../../../_images/1813ad4046fa63b897d67d1077d97e629787a1d92f99a85fdb881f99ec0a11b3.png" src="../../../_images/1813ad4046fa63b897d67d1077d97e629787a1d92f99a85fdb881f99ec0a11b3.png" />
 </div>
 </div>
 </section>
@@ -1028,7 +1022,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/a21e7599f7d876f740ddb5c61d384c1710fc51c8e79a8e0f3fba0046d872d1e1.png" src="../../../_images/a21e7599f7d876f740ddb5c61d384c1710fc51c8e79a8e0f3fba0046d872d1e1.png" />
+<img alt="../../../_images/279afa79a04dd9d1567db1113b54480ce5f2dc676b5c28282549251c1bd84954.png" src="../../../_images/279afa79a04dd9d1567db1113b54480ce5f2dc676b5c28282549251c1bd84954.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1046,7 +1040,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/6ef8a50f0777459ef3e306eacfdc891c8c3052bbcf7123e163f1e562d9b94cf7.png" src="../../../_images/6ef8a50f0777459ef3e306eacfdc891c8c3052bbcf7123e163f1e562d9b94cf7.png" />
+<img alt="../../../_images/6543c35e4c70789abbf9df1912b75746c9349b88e01879c5ff67fb2f9d828f79.png" src="../../../_images/6543c35e4c70789abbf9df1912b75746c9349b88e01879c5ff67fb2f9d828f79.png" />
 </div>
 </div>
 </section>

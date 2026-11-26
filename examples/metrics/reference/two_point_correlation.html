@@ -49,6 +49,8 @@
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=30646c52"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/metrics/reference/two_point_correlation';</script>
     <script src="../../../_static/js/custom.js?v=8f029c3b"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -405,10 +407,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/generators/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -505,7 +504,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="../../../_examples/metrics/reference.html">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -660,10 +659,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -751,7 +747,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="bond_number.html"><code class="docutils literal notranslate"><span class="pre">bond_number</span></code></a></li>
@@ -928,7 +924,7 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="two-point-correlation">
 <h1><code class="docutils literal notranslate"><span class="pre">two_point_correlation</span></code><a class="headerlink" href="#two-point-correlation" title="Link to this heading">#</a></h1>
-<p>Calculates the two-point correlation function using Fourier transforms.</p>
+<p>The two-point correlation function <span class="math notranslate nohighlight">\(S_2(r)\)</span> describes the probability that two points separated by a distance <span class="math notranslate nohighlight">\(r\)</span> both lie in the phase of interest. At each displacement, the FFT counts pairs whose endpoints both lie in the selected phase. The function divides by the number of pairs contained within the image at that displacement, then averages the fractions in each distance bin with equal weight per displacement.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -942,7 +938,7 @@
 </div>
 <section id="im">
 <h2><code class="docutils literal notranslate"><span class="pre">im</span></code><a class="headerlink" href="#im" title="Link to this heading">#</a></h2>
-<p>The input binary image of the porous material with void space voxels labeled with 1(True) and solid phase labeled with 0(False).</p>
+<p>The input is a binary image with <code class="docutils literal notranslate"><span class="pre">True</span></code> (1) in the phase of interest and <code class="docutils literal notranslate"><span class="pre">False</span></code> (0) elsewhere. Here, the phase of interest is the void space.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
@@ -958,22 +954,36 @@
 <img alt="../../../_images/408499e3f1a90c0be3bb72c4c63390433768ff20dbfd461647fe53edfe3fc08b.png" src="../../../_images/408499e3f1a90c0be3bb72c4c63390433768ff20dbfd461647fe53edfe3fc08b.png" />
 </div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">two_point_correlation</span></code> returns a custom object containing the <code class="docutils literal notranslate"><span class="pre">distance</span></code> and <code class="docutils literal notranslate"><span class="pre">probability</span></code> data. We can then plot the two point correlation function:</p>
+</section>
+<section id="interpreting-the-result">
+<h2>Interpreting the result<a class="headerlink" href="#interpreting-the-result" title="Link to this heading">#</a></h2>
+<p>The example plots <code class="docutils literal notranslate"><span class="pre">probability_scaled</span></code>, which gives <span class="math notranslate nohighlight">\(S_2(r)\)</span>. The <code class="docutils literal notranslate"><span class="pre">probability</span></code> field gives <span class="math notranslate nohighlight">\(S_2(r)/\phi\)</span>, where <span class="math notranslate nohighlight">\(\phi\)</span> is the phase fraction. The first bin in this example spans <span class="math notranslate nohighlight">\([0, 1)\)</span> voxels and contains only zero lag, so its value is <span class="math notranslate nohighlight">\(S_2(0)=\phi\)</span> even though it is plotted at the bin center of 0.5 voxels. At separations where the two phase indicators are effectively independent, <span class="math notranslate nohighlight">\(S_2(r)\)</span> approaches <span class="math notranslate nohighlight">\(\phi^2\)</span>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">two_point_correlation</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="n">phi</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">distance</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">probability</span><span class="p">,</span> <span class="s2">&quot;r.&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;distance&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;two point correlation function&quot;</span><span class="p">);</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">distance</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">probability_scaled</span><span class="p">,</span> <span class="s2">&quot;r.&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">phi</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;0.5&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\phi^2$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Separation $r$ [voxels]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$S_2(r)$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/2f21b14ad2ef263291d15597b269aa38251521686591e68da70c81fac07bb364.png" src="../../../_images/2f21b14ad2ef263291d15597b269aa38251521686591e68da70c81fac07bb364.png" />
+<img alt="../../../_images/ba9553d1ab613021ca6cbcf1ec4c77babb447ac4de454bb3566494423551d7d4.png" src="../../../_images/ba9553d1ab613021ca6cbcf1ec4c77babb447ac4de454bb3566494423551d7d4.png" />
 </div>
 </div>
+</section>
+<section id="gpu-execution">
+<h2>GPU execution<a class="headerlink" href="#gpu-execution" title="Link to this heading">#</a></h2>
+<p>With CuPy installed on a CUDA system, use the same function to compute the correlation on the GPU.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">two_point_correlation</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;cupy&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Passing a CuPy array as <code class="docutils literal notranslate"><span class="pre">im</span></code> selects the GPU automatically. The result fields are NumPy arrays, so the same plotting code works with either backend.</p>
 </section>
 </section>
 
@@ -1001,6 +1011,8 @@
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im"><code class="docutils literal notranslate"><span class="pre">im</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpreting-the-result">Interpreting the result</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gpu-execution">GPU execution</a></li>
 </ul>
   </nav></div>
 

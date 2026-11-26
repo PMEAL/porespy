@@ -53,7 +53,7 @@
     <script src="../../../_static/js/custom.js?v=8f029c3b"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Using regionprops_3d to analyze properties of each pore" href="regionprops_3d.html" />
+    <link rel="next" title="Using regionprops_3D to analyze properties of each pore" href="regionprops_3d.html" />
     <link rel="prev" title="The lineal path function" href="lineal_path_function.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -401,10 +401,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/generators/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -501,7 +498,7 @@
 <li class="toctree-l3"><a class="reference internal" href="computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/metrics/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -656,10 +653,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -747,7 +741,7 @@
 <li class="toctree-l1"><a class="reference internal" href="computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../reference/bond_number.html"><code class="docutils literal notranslate"><span class="pre">bond_number</span></code></a></li>
@@ -925,7 +919,7 @@
   <section class="tex2jax_ignore mathjax_ignore" id="obtaining-the-porosity-profile-along-each-principle-axis">
 <h1>Obtaining the porosity profile along each principle axis<a class="headerlink" href="#obtaining-the-porosity-profile-along-each-principle-axis" title="Link to this heading">#</a></h1>
 <p>This example illustrates how to use the <code class="docutils literal notranslate"><span class="pre">porosity_profile</span></code> function to study the distribution of porosity in a sample.</p>
-<p>Start by importing the usual packages, and setting the matplotlib style to something more reasonble:</p>
+<p>Start by importing the usual packages, and setting the matplotlib style to something more reasonable:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -947,7 +941,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/a79204e17829eab5cfecdbba29fecf2edbbe55eb27b4c00e570f829c29109b22.png" src="../../../_images/a79204e17829eab5cfecdbba29fecf2edbbe55eb27b4c00e570f829c29109b22.png" />
+<img alt="../../../_images/995a3cda1bd3781dfd03dd3932d555b3a418c68744e776327b63705cabf595a6.png" src="../../../_images/995a3cda1bd3781dfd03dd3932d555b3a418c68744e776327b63705cabf595a6.png" />
 </div>
 </div>
 <p>All results in PoreSpy are reported in voxels, so it is up to the user to scale these values to the physical size of each voxel.  Here we’ll assume that each voxel corresponds to 5.9 microns.</p>
@@ -983,7 +977,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/9682aa5e6279fc29ae232698b49573e4ce21fdb38f08f2307ce68445f1506991.png" src="../../../_images/9682aa5e6279fc29ae232698b49573e4ce21fdb38f08f2307ce68445f1506991.png" />
+<img alt="../../../_images/36b27a8b22599d8b753f5e516fa30bcb7207c3f7f5a358a67c8e94329dc90dac.png" src="../../../_images/36b27a8b22599d8b753f5e516fa30bcb7207c3f7f5a358a67c8e94329dc90dac.png" />
 </div>
 </div>
 <p>Note how each line ends at a different position on the x-axis.  This is caused by the fact that image had different total length in each direction.  We can also do the plots with each axis normalized by their total length:</p>
@@ -1019,7 +1013,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/e7a0387e30b6cc2dc059c9da127dd3d9646a7217ff05d653f8346139464222c7.png" src="../../../_images/e7a0387e30b6cc2dc059c9da127dd3d9646a7217ff05d653f8346139464222c7.png" />
+<img alt="../../../_images/9c72c73ea993d24b6ec5af9c6c740dd8e2c2033dabb07ad57b33dcf4c2d160c2.png" src="../../../_images/9c72c73ea993d24b6ec5af9c6c740dd8e2c2033dabb07ad57b33dcf4c2d160c2.png" />
 </div>
 </div>
 </section>

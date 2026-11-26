@@ -16,7 +16,8 @@ porespy.filters.fill_surface_pores
                 considered connected.
    :type conn: str
 
-   :returns: **im** -- A copy of `im` with surface pores set to `False`.
+   :returns: **im** -- The supplied `im` array, modified in place with surface pores set to
+             `False`. Pass `im.copy()` to preserve the original image.
    :rtype: ndarray
 
    .. rubric:: Examples

@@ -405,10 +405,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/generators/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -505,7 +502,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/metrics/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -660,10 +657,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -751,7 +745,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/reference/bond_number.html"><code class="docutils literal notranslate"><span class="pre">bond_number</span></code></a></li>
@@ -928,8 +922,8 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="snow2">
 <h1><code class="docutils literal notranslate"><span class="pre">snow2</span></code><a class="headerlink" href="#snow2" title="Link to this heading">#</a></h1>
-<p>The SNOW algorithm uses a standard marker-based watershed segementation function to identify pores. The key to the SNOW algorithm is in how the markers are identified. Finding peaks in the distance transform which truly correspond to pore centers requires several careful steps. Each of these steps can be done manually, but the <code class="docutils literal notranslate"><span class="pre">snow2</span></code> function was created to combine them all in a single function for ease of use.</p>
-<p>In addition to the original SNOW algorithm, <code class="docutils literal notranslate"><span class="pre">snow2</span></code> also incorporates a few new developements such as <a class="reference external" href="https://doi.org/10.1016/j.compchemeng.2018.12.025">multiphase extractions</a> and <a class="reference external" href="https://doi.org/10.1016/j.advwatres.2020.103734">parallelized processing</a>.  The new <code class="docutils literal notranslate"><span class="pre">snow2</span></code> function also handles boundaries better, and returns a different set of geometrical properties.  For instance it no longer returns ‘pore.diameter’, which was an opinionated choice that was not appropriate for every case. Instead it returns several different diameters, like ‘pore.equivalent_diameter’ and ‘pore.inscribed_diameter’, and the user must decide which of these they wish to declare as the offical ‘pore.diameter’.</p>
+<p>The SNOW algorithm uses a standard marker-based watershed segmentation function to identify pores. The key to the SNOW algorithm is in how the markers are identified. Finding peaks in the distance transform which truly correspond to pore centers requires several careful steps. Each of these steps can be done manually, but the <code class="docutils literal notranslate"><span class="pre">snow2</span></code> function was created to combine them all in a single function for ease of use.</p>
+<p>In addition to the original SNOW algorithm, <code class="docutils literal notranslate"><span class="pre">snow2</span></code> also incorporates a few new developments such as <a class="reference external" href="https://doi.org/10.1016/j.compchemeng.2018.12.025">multiphase extractions</a> and <a class="reference external" href="https://doi.org/10.1016/j.advwatres.2020.103734">parallelized processing</a>.  The new <code class="docutils literal notranslate"><span class="pre">snow2</span></code> function also handles boundaries better, and returns a different set of geometrical properties.  For instance it no longer returns ‘pore.diameter’, which was an opinionated choice that was not appropriate for every case. Instead it returns several different diameters, like ‘pore.equivalent_diameter’ and ‘pore.inscribed_diameter’, and the user must decide which of these they wish to declare as the official ‘pore.diameter’.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">snow2</span></code> function has quite a few arguments, which will be explored and explained in this example.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -952,13 +946,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/ce6b5a161c6a87d62eee75e72523d09e54a85c858e6cfd436c9eea70c88914ef.png" src="../../../_images/ce6b5a161c6a87d62eee75e72523d09e54a85c858e6cfd436c9eea70c88914ef.png" />
+<img alt="../../../_images/18ee5540977f9ec2c4a66b63daa2e7715e77ee3c07f3778808cc9986d9204ec7.png" src="../../../_images/18ee5540977f9ec2c4a66b63daa2e7715e77ee3c07f3778808cc9986d9204ec7.png" />
 </div>
 </div>
 <section id="phases">
 <h2><code class="docutils literal notranslate"><span class="pre">phases</span></code><a class="headerlink" href="#phases" title="Link to this heading">#</a></h2>
-<p>One of the main features of <code class="docutils literal notranslate"><span class="pre">snow2</span></code> is the ability to extract networks from multiple phases simultaneously, and have them be interconnected.  This is quite useful for modeling electrochemial devices for instance, since transport occurs in the solid and void phases simultaneously, and the processes are coupled. For a powerful example, see <a class="reference external" href="https://doi.org/10.1149/1945-7111/ac120c">Khan et al.</a> where the transient discharage of a Li-ion battery was modelled using PNMs. Li-ion batteries contain 3 distinct phases: liquid electrolyte, solid active material, and carbonaceous binder.</p>
-<p>Note that <code class="docutils literal notranslate"><span class="pre">snow2</span></code> does not <em>need</em> to operate on mulitphase phases, only that it <em>can</em> if needed.  It accomplishes this flexibility by ignoring all 0’s in the input images, and treating all voxels with values of 1, 2, 3, etc. as distinct phases. Therefore supplying an image of 0’s and 1’s will result in a standard single phase extraction, while supplying an image of 1’s and 2’s will create a dual phase network.</p>
+<p>One of the main features of <code class="docutils literal notranslate"><span class="pre">snow2</span></code> is the ability to extract networks from multiple phases simultaneously, and have them be interconnected.  This is quite useful for modeling electrochemical devices for instance, since transport occurs in the solid and void phases simultaneously, and the processes are coupled. For a powerful example, see <a class="reference external" href="https://doi.org/10.1149/1945-7111/ac120c">Khan et al.</a> where the transient discharge of a Li-ion battery was modelled using PNMs. Li-ion batteries contain 3 distinct phases: liquid electrolyte, solid active material, and carbonaceous binder.</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">snow2</span></code> does not <em>need</em> to operate on multiphase phases, only that it <em>can</em> if needed.  It accomplishes this flexibility by ignoring all 0’s in the input images, and treating all voxels with values of 1, 2, 3, etc. as distinct phases. Therefore supplying an image of 0’s and 1’s will result in a standard single phase extraction, while supplying an image of 1’s and 2’s will create a dual phase network.</p>
 <p>A few additional notes:</p>
 <ul class="simple">
 <li><p>It should also be mentioned that the image can contain 0’s as well as values (ie. 1, 2, 3), so can have multiple phases <em>and</em> have some regions ignored</p></li>
@@ -995,7 +989,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/dddc579ce7106d01d157af0f65e32780fc3ccb44f03f3e0c60c50a10204365fe.png" src="../../../_images/dddc579ce7106d01d157af0f65e32780fc3ccb44f03f3e0c60c50a10204365fe.png" />
+<img alt="../../../_images/aa275ea1c11cc4fc5a389b2aedd0446fd858efcc6966d94862350ec9d93d4ea9.png" src="../../../_images/aa275ea1c11cc4fc5a389b2aedd0446fd858efcc6966d94862350ec9d93d4ea9.png" />
 </div>
 </div>
 <p>On the left we can see that the spherical particles are all purple, which indicates 0, because they have not been labelled by the function.  On the right the particles each have a unique greyscale value because they have been labelled as distinct regions.</p>
@@ -1018,7 +1012,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/42494846573e90cb8c598db9f2996c72b1e49b1b21305a45f998659d5a036f14.png" src="../../../_images/42494846573e90cb8c598db9f2996c72b1e49b1b21305a45f998659d5a036f14.png" />
+<img alt="../../../_images/c3bc3dd391f77d11061ee97ab2ccb5b868f50aabe5e325bc54f912d89b1282e4.png" src="../../../_images/c3bc3dd391f77d11061ee97ab2ccb5b868f50aabe5e325bc54f912d89b1282e4.png" />
 </div>
 </div>
 <p>The image needed to be rotated so that the x and y directions lined up with the OpenPNM network.  The agreement between the image and network is pretty good.  Clearly the the red pore centers lie within each labelled regions and the black throat connections follow the topology quite well.</p>
@@ -1041,7 +1035,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/43b37cada39978f3555eed6013b172d0835a23ae158c88cbb249bfb85eef4753.png" src="../../../_images/43b37cada39978f3555eed6013b172d0835a23ae158c88cbb249bfb85eef4753.png" />
+<img alt="../../../_images/fee2cee24dbab118cd947b6a41521056045cc09283928d151fe8f85942132421.png" src="../../../_images/fee2cee24dbab118cd947b6a41521056045cc09283928d151fe8f85942132421.png" />
 </div>
 </div>
 <p>The above shows the additional network comprised of the solids (although they don’t actually connect in this 2D example) as well as the void-solid connections.  We can improve this plot by coloring the different types of pores and throats differently.  If we print <code class="docutils literal notranslate"><span class="pre">pn2</span></code> we can see that <code class="docutils literal notranslate"><span class="pre">snow2</span></code> has created some labels for us, by assuming phase names of “phase1” and “phase2”.</p>
@@ -1053,41 +1047,41 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Network at 0x7f4deaacd630&gt;
+net : &lt;openpnm.network.Network at 0x75c302f1ff70&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  throat.conns                                                    499 / 499
-  3  pore.coords                                                     177 / 177
-  4  pore.region_label                                               177 / 177
-  5  pore.phase                                                      177 / 177
-  6  throat.phases                                                   499 / 499
-  7  pore.region_volume                                              177 / 177
-  8  pore.equivalent_diameter                                        177 / 177
-  9  pore.local_peak                                                 177 / 177
- 10  pore.global_peak                                                177 / 177
- 11  pore.geometric_centroid                                         177 / 177
- 12  throat.global_peak                                              499 / 499
- 13  pore.inscribed_diameter                                         177 / 177
- 14  pore.extended_diameter                                          177 / 177
- 15  throat.inscribed_diameter                                       499 / 499
- 16  throat.total_length                                             499 / 499
- 17  throat.direct_length                                            499 / 499
- 18  throat.perimeter                                                499 / 499
- 19  pore.volume                                                     177 / 177
- 20  pore.surface_area                                               177 / 177
- 21  throat.cross_sectional_area                                     499 / 499
- 22  throat.equivalent_diameter                                      499 / 499
+  2  throat.conns                                                    506 / 506
+  3  pore.coords                                                     179 / 179
+  4  pore.region_label                                               179 / 179
+  5  pore.phase                                                      179 / 179
+  6  throat.phases                                                   506 / 506
+  7  pore.region_volume                                              179 / 179
+  8  pore.equivalent_diameter                                        179 / 179
+  9  pore.local_peak                                                 179 / 179
+ 10  pore.global_peak                                                179 / 179
+ 11  pore.geometric_centroid                                         179 / 179
+ 12  throat.global_peak                                              506 / 506
+ 13  pore.inscribed_diameter                                         179 / 179
+ 14  pore.extended_diameter                                          179 / 179
+ 15  throat.inscribed_diameter                                       506 / 506
+ 16  throat.total_length                                             506 / 506
+ 17  throat.direct_length                                            506 / 506
+ 18  throat.perimeter                                                506 / 506
+ 19  pore.volume                                                     179 / 179
+ 20  pore.surface_area                                               179 / 179
+ 21  throat.cross_sectional_area                                     506 / 506
+ 22  throat.equivalent_diameter                                      506 / 506
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.all                                                              177
-  3  throat.all                                                            499
-  4  pore.phase1                                                            75
-  5  throat.phase1_phase2                                                  323
+  2  pore.all                                                              179
+  3  throat.all                                                            506
+  4  pore.phase1                                                            77
+  5  throat.phase1_phase2                                                  328
   6  pore.phase2                                                           102
-  7  throat.phase2_phase1                                                  323
-  8  throat.phase2_phase2                                                  176
+  7  throat.phase2_phase1                                                  328
+  8  throat.phase2_phase2                                                  178
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -1112,14 +1106,14 @@ net : &lt;openpnm.network.Network at 0x7f4deaacd630&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/417253dc373057b62d1969c1ce7f11afcc0197d8b60d25e9ba69fb78e4269e3a.png" src="../../../_images/417253dc373057b62d1969c1ce7f11afcc0197d8b60d25e9ba69fb78e4269e3a.png" />
+<img alt="../../../_images/fe2d0e3e8781ea3df81f1a2a6c3ab9c6c64617f7680b2e474ad8edbc7a54fd9f.png" src="../../../_images/fe2d0e3e8781ea3df81f1a2a6c3ab9c6c64617f7680b2e474ad8edbc7a54fd9f.png" />
 </div>
 </div>
 <p>Now can see the particles are indicated by a green marker, the void pores by a red marker, the solid-void interconnections are in grey, and the void-void throats are black.</p>
 </section>
 <section id="phase-alias">
 <h2><code class="docutils literal notranslate"><span class="pre">phase_alias</span></code><a class="headerlink" href="#phase-alias" title="Link to this heading">#</a></h2>
-<p>In the previous section the default phase names created by <code class="docutils literal notranslate"><span class="pre">snow2</span></code> were the uncreative “phase1” and “phase2”. The <code class="docutils literal notranslate"><span class="pre">snow2</span></code> function allows for these to be given more desriptive names.  This is done by supplying a dictionary with the voxels value as the key and the desired phase name as the value.</p>
+<p>In the previous section the default phase names created by <code class="docutils literal notranslate"><span class="pre">snow2</span></code> were the uncreative “phase1” and “phase2”. The <code class="docutils literal notranslate"><span class="pre">snow2</span></code> function allows for these to be given more descriptive names.  This is done by supplying a dictionary with the voxels value as the key and the desired phase name as the value.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net3</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">snow2</span><span class="p">(</span>
@@ -1138,41 +1132,41 @@ net : &lt;openpnm.network.Network at 0x7f4deaacd630&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Network at 0x7f4dea5f5180&gt;
+net : &lt;openpnm.network.Network at 0x75c302cffe80&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  throat.conns                                                    499 / 499
-  3  pore.coords                                                     177 / 177
-  4  pore.region_label                                               177 / 177
-  5  pore.phase                                                      177 / 177
-  6  throat.phases                                                   499 / 499
-  7  pore.region_volume                                              177 / 177
-  8  pore.equivalent_diameter                                        177 / 177
-  9  pore.local_peak                                                 177 / 177
- 10  pore.global_peak                                                177 / 177
- 11  pore.geometric_centroid                                         177 / 177
- 12  throat.global_peak                                              499 / 499
- 13  pore.inscribed_diameter                                         177 / 177
- 14  pore.extended_diameter                                          177 / 177
- 15  throat.inscribed_diameter                                       499 / 499
- 16  throat.total_length                                             499 / 499
- 17  throat.direct_length                                            499 / 499
- 18  throat.perimeter                                                499 / 499
- 19  pore.volume                                                     177 / 177
- 20  pore.surface_area                                               177 / 177
- 21  throat.cross_sectional_area                                     499 / 499
- 22  throat.equivalent_diameter                                      499 / 499
+  2  throat.conns                                                    506 / 506
+  3  pore.coords                                                     179 / 179
+  4  pore.region_label                                               179 / 179
+  5  pore.phase                                                      179 / 179
+  6  throat.phases                                                   506 / 506
+  7  pore.region_volume                                              179 / 179
+  8  pore.equivalent_diameter                                        179 / 179
+  9  pore.local_peak                                                 179 / 179
+ 10  pore.global_peak                                                179 / 179
+ 11  pore.geometric_centroid                                         179 / 179
+ 12  throat.global_peak                                              506 / 506
+ 13  pore.inscribed_diameter                                         179 / 179
+ 14  pore.extended_diameter                                          179 / 179
+ 15  throat.inscribed_diameter                                       506 / 506
+ 16  throat.total_length                                             506 / 506
+ 17  throat.direct_length                                            506 / 506
+ 18  throat.perimeter                                                506 / 506
+ 19  pore.volume                                                     179 / 179
+ 20  pore.surface_area                                               179 / 179
+ 21  throat.cross_sectional_area                                     506 / 506
+ 22  throat.equivalent_diameter                                      506 / 506
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.all                                                              177
-  3  throat.all                                                            499
-  4  pore.solid                                                             75
-  5  throat.solid_void                                                     323
+  2  pore.all                                                              179
+  3  throat.all                                                            506
+  4  pore.solid                                                             77
+  5  throat.solid_void                                                     328
   6  pore.void                                                             102
-  7  throat.void_solid                                                     323
-  8  throat.void_void                                                      176
+  7  throat.void_solid                                                     328
+  8  throat.void_void                                                      178
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -1182,9 +1176,9 @@ net : &lt;openpnm.network.Network at 0x7f4dea5f5180&gt;
 </section>
 <section id="boundary-width">
 <h2><code class="docutils literal notranslate"><span class="pre">boundary_width</span></code><a class="headerlink" href="#boundary-width" title="Link to this heading">#</a></h2>
-<p>Adding pores (or more generally nodes) on the boundaries of images is helpful when conducting transport simulations. Without boundary pores then boundary condtions must be applied to internal pores which are (a) hard to identify clearly and (b) make it impossible to know the exact length of the domain.</p>
+<p>Adding pores (or more generally nodes) on the boundaries of images is helpful when conducting transport simulations. Without boundary pores then boundary conditions must be applied to internal pores which are (a) hard to identify clearly and (b) make it impossible to know the exact length of the domain.</p>
 <blockquote>
-<div><p>Note that boundary nodes are not physical and thus their sizes are ficticious.  This can cause problems when computing the transport conductance for these nodes, so care must be taken.</p>
+<div><p>Note that boundary nodes are not physical and thus their sizes are fictitious.  This can cause problems when computing the transport conductance for these nodes, so care must be taken.</p>
 </div></blockquote>
 <p>The <code class="docutils literal notranslate"><span class="pre">boundary_width</span></code> argument was designed to work analogously to the <code class="docutils literal notranslate"><span class="pre">numpy.pad</span></code> function.  You can specify different paddings along each axis and also along each face.  For instance, here are some options (for a 2D image):</p>
 <ul class="simple">
@@ -1203,7 +1197,7 @@ net : &lt;openpnm.network.Network at 0x7f4dea5f5180&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/1e153d260cfdd8184fcddf11414ae099860c41ede00b994f535aa62621d9873a.png" src="../../../_images/1e153d260cfdd8184fcddf11414ae099860c41ede00b994f535aa62621d9873a.png" />
+<img alt="../../../_images/b36771b22a0cd112a6d3004af881d6abfbaadf4c8ffd5faffb18bf7904bbdf3f.png" src="../../../_images/b36771b22a0cd112a6d3004af881d6abfbaadf4c8ffd5faffb18bf7904bbdf3f.png" />
 </div>
 </div>
 <p>A few things to note:</p>
@@ -1228,7 +1222,7 @@ net : &lt;openpnm.network.Network at 0x7f4dea5f5180&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/ea9e7d71e0ad470133a0b2e11a81d88cd297509cb78b455e5935aa681211574d.png" src="../../../_images/ea9e7d71e0ad470133a0b2e11a81d88cd297509cb78b455e5935aa681211574d.png" />
+<img alt="../../../_images/1fad8da5e6072de076190b9eeff98b0ae6555a351c8635e1a107fd47a45b75b8.png" src="../../../_images/1fad8da5e6072de076190b9eeff98b0ae6555a351c8635e1a107fd47a45b75b8.png" />
 </div>
 </div>
 </section>
@@ -1243,7 +1237,7 @@ net : &lt;openpnm.network.Network at 0x7f4dea5f5180&gt;
 <section id="sigma-and-r-max">
 <h2><code class="docutils literal notranslate"><span class="pre">sigma</span></code> and <code class="docutils literal notranslate"><span class="pre">r_max</span></code><a class="headerlink" href="#sigma-and-r-max" title="Link to this heading">#</a></h2>
 <p>These values are passed on to the <code class="docutils literal notranslate"><span class="pre">gaussian_blur</span></code> and <code class="docutils literal notranslate"><span class="pre">find_peaks</span></code> functions.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">gaussian_blur</span></code> is applied to the distance transfrom, which as discussed in the <a class="reference external" href="https://doi.org/10.1103/PhysRevE.96.023307">original snow paper</a> is a very effective way to reduce the number of incorrect peaks that are found in the subsequent steps.  A value of <code class="docutils literal notranslate"><span class="pre">sigma=0.4</span></code> is the default.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">gaussian_blur</span></code> is applied to the distance transform, which as discussed in the <a class="reference external" href="https://doi.org/10.1103/PhysRevE.96.023307">original snow paper</a> is a very effective way to reduce the number of incorrect peaks that are found in the subsequent steps.  A value of <code class="docutils literal notranslate"><span class="pre">sigma=0.4</span></code> is the default.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">find_peaks</span></code> function applies a maximum filter to the distance transform, which replaces each voxel with the maximum it finds with the specified neighborhood.  It then looks for voxels that are the same between the filtered image and the original distance transform.  Only voxels that are local maximas will be the same between the images.</p>
 <p>The following code block illustrates the impact of applying the <code class="docutils literal notranslate"><span class="pre">gaussian_blur</span></code> filter on finding peaks.</p>
 <div class="cell docutils container">
@@ -1273,7 +1267,7 @@ net : &lt;openpnm.network.Network at 0x7f4dea5f5180&gt;
 </section>
 <section id="peaks">
 <h2><code class="docutils literal notranslate"><span class="pre">peaks</span></code><a class="headerlink" href="#peaks" title="Link to this heading">#</a></h2>
-<p>Because finding correct peaks is such an important part marker-based watershed segmentationa, and therefore of <code class="docutils literal notranslate"><span class="pre">snow2</span></code>, it is possible to supply custom peaks found using any desired process. Obviously, if this is provided then <code class="docutils literal notranslate"><span class="pre">sigma</span></code> and <code class="docutils literal notranslate"><span class="pre">r_max</span></code> are ignored.</p>
+<p>Because finding correct peaks is such an important part marker-based watershed segmentation, and therefore of <code class="docutils literal notranslate"><span class="pre">snow2</span></code>, it is possible to supply custom peaks found using any desired process. Obviously, if this is provided then <code class="docutils literal notranslate"><span class="pre">sigma</span></code> and <code class="docutils literal notranslate"><span class="pre">r_max</span></code> are ignored.</p>
 <p>Let’s use the two sets of peaks found above:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1301,15 +1295,15 @@ net : &lt;openpnm.network.Network at 0x7f4dea5f5180&gt;
 </section>
 <section id="parallelization">
 <h2><code class="docutils literal notranslate"><span class="pre">parallelization</span></code><a class="headerlink" href="#parallelization" title="Link to this heading">#</a></h2>
-<p>The watershed function was identified as the bottleneck of the entire process, especially as images grew in size. Parallelization of the watershed function had not be throughly investigated in the literature, so <a class="reference external" href="https://doi.org/10.1016/j.advwatres.2020.103734">Khan et al</a> developed a basic protocol for dividing the image into chunks and processing each in parallel. The main challenge with this approach was ensuring sufficient overlap was allowed to prevent any artifacts, while not being overly conservative since large overlaps undermine the speedup obtained by parallelization. The parallelization if accomplished by <a class="reference external" href="https://www.dask.org/">dask</a> which makes it trivial to dispatch duplicate jobs to different cores.</p>
+<p>The watershed function was identified as the bottleneck of the entire process, especially as images grew in size. Parallelization of the watershed function had not be thoroughly investigated in the literature, so <a class="reference external" href="https://doi.org/10.1016/j.advwatres.2020.103734">Khan et al</a> developed a basic protocol for dividing the image into chunks and processing each in parallel. The main challenge with this approach was ensuring sufficient overlap was allowed to prevent any artifacts, while not being overly conservative since large overlaps undermine the speedup obtained by parallelization. The parallelization if accomplished by <a class="reference external" href="https://www.dask.org/">dask</a> which makes it trivial to dispatch duplicate jobs to different cores.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">snow2</span></code> function can optionally parallelize the watershed step. It calls <code class="docutils literal notranslate"><span class="pre">porespy.filters.snow_partitioning_parallel</span></code> behind the scenes, but this function requires several arguments.  Instead of complicating the <code class="docutils literal notranslate"><span class="pre">snow2</span></code> function signature, we instead chose to accept a <code class="docutils literal notranslate"><span class="pre">dict</span></code> of arguments and values which are then passed on.  These are:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">divs</span></code>: The number of chunks to divide the image into.  A value of 2 means the image is divided in hald along each axis, for a total of 8 chunks in a 3D image.  It’s possible to specify a different number of divisions in each direction, like <code class="docutils literal notranslate"><span class="pre">divs=[2,</span> <span class="pre">2,</span> <span class="pre">1]</span></code>.  This could be useful if the image to be processed is very narrow in one direction, such as a piece of fibrous electrode.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">overlap</span></code>: This controls the amount of overlap between each chunk in voxels. Specifying <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) means that the algorithm finds the overlap automatically. Khan el al found that using the maximum of the distance tranform was suitable.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">divs</span></code>: The number of chunks to divide the image into.  A value of 2 means the image is divided in half along each axis, for a total of 8 chunks in a 3D image.  It’s possible to specify a different number of divisions in each direction, like <code class="docutils literal notranslate"><span class="pre">divs=[2,</span> <span class="pre">2,</span> <span class="pre">1]</span></code>.  This could be useful if the image to be processed is very narrow in one direction, such as a piece of fibrous electrode.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">overlap</span></code>: This controls the amount of overlap between each chunk in voxels. Specifying <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) means that the algorithm finds the overlap automatically. Khan el al found that using the maximum of the distance transform was suitable.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cores</span></code>: This controls the number of cores to use when processing the chunks. If not provided then all cores will be used. This may be problematic on computers without a large amount of RAM since each process will consume some RAM.  In these cases in may be beneficial to set cores to a small number and simply wait longer for the result.</p></li>
 </ul>
 <p>If <code class="docutils literal notranslate"><span class="pre">parallel_kw=None</span></code> then no parallelization is applied, while if <code class="docutils literal notranslate"><span class="pre">parallel_kw={}</span></code> then the default arguments of the <code class="docutils literal notranslate"><span class="pre">snow_partitioning_parallel</span></code> function are used.</p>
-<p>In the following code block, the parallelization option is demonstrated with an <code class="docutils literal notranslate"><span class="pre">overlap</span></code> that is too small, resulting in a noticable artifacts in the center sectionof the watershed segmentation, where the divsions were located. For comparison, the same image is processed with the default overlap.</p>
+<p>In the following code block, the parallelization option is demonstrated with an <code class="docutils literal notranslate"><span class="pre">overlap</span></code> that is too small, resulting in a noticeable artifacts in the center section of the watershed segmentation, where the divisions were located. For comparison, the same image is processed with the default overlap.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -1322,7 +1316,7 @@ net : &lt;openpnm.network.Network at 0x7f4dea5f5180&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[04:21:06] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Disabling paralelization as overlap exceeds than chunk size.                      <a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_snow2.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py#271" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">271</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[04:11:46] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Disabling paralelization as overlap exceeds than chunk size.                      <a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_snow2.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py#271" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">271</span></a>
 </pre>
 </div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Disabling paralelization as overlap exceeds than chunk size.                      <a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_snow2.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/porespy/porespy/src/porespy/networks/_snow2.py#271" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">271</span></a>
 </pre>

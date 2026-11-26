@@ -3,7 +3,7 @@ porespy.simulations.ibip
 
 .. py:function:: porespy.simulations.ibip(im: numpy.typing.NDArray, inlets: numpy.typing.NDArray = None, outlets: numpy.typing.NDArray = None, dt: numpy.typing.NDArray = None, maxiter: int = 10000, return_sizes: bool = True, conn: str = 'min', min_size: int = 0)
 
-   Simulates non-wetting fluid injection on an image using the IBIP algorithm [3]_
+   Simulates non-wetting fluid injection on an image using the IBIP algorithm
 
    :param im: Boolean array with ``True`` values indicating void voxels
    :type im: ND-array
@@ -48,6 +48,8 @@ porespy.simulations.ibip
       `Link. <https://doi.org/10.1016/j.cageo.2021.104978>`__
 
    .. rubric:: Notes
+
+   The IBIP algorithm is described in [3]_.
 
    This function is slower and is less capable than ``qbip``, which returns
    identical results, so it is recommended to use that instead.

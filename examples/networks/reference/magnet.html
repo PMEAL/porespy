@@ -405,10 +405,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/generators/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -505,7 +502,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/metrics/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -660,10 +657,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -751,7 +745,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/reference/bond_number.html"><code class="docutils literal notranslate"><span class="pre">bond_number</span></code></a></li>
@@ -981,8 +975,8 @@
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="sk">
 <h1><code class="docutils literal notranslate"><span class="pre">sk</span></code><a class="headerlink" href="#sk" title="Link to this heading">#</a></h1>
-<p>In some cases, the user may already have a reliable skeleton from other image processing packages such as imagej. In those cases, we provide the option for the user to pass in their own skeleton for network extraction to avoid the computational expense of calculating it a second time. If provided, the skeleton will undergo a check for hallow shells using the <code class="docutils literal notranslate"><span class="pre">ps.networks._magnet._check_skeleton_health</span></code> function.</p>
-<p>By default, <code class="docutils literal notranslate"><span class="pre">magnet</span></code> will compute it’s own skeleton as a wrapper aroung sci-kit image’s <code class="docutils literal notranslate"><span class="pre">skeletonize</span></code> function. Here we show the skeleton that is calculated using sci-kit image’s skeletonize function.</p>
+<p>In some cases, the user may already have a reliable skeleton from other image processing packages such as imagej. In those cases, we provide the option for the user to pass in their own skeleton for network extraction to avoid the computational expense of calculating it a second time. If provided, the skeleton will undergo a check for hollow shells using the <code class="docutils literal notranslate"><span class="pre">ps.networks._magnet._check_skeleton_health</span></code> function.</p>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">magnet</span></code> will compute it’s own skeleton as a wrapper around sci-kit image’s <code class="docutils literal notranslate"><span class="pre">skeletonize</span></code> function. Here we show the skeleton that is calculated using sci-kit image’s skeletonize function.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sk</span> <span class="o">=</span> <span class="n">ski</span><span class="o">.</span><span class="n">morphology</span><span class="o">.</span><span class="n">skeletonize</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
@@ -1022,7 +1016,7 @@
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="surface">
 <h1><code class="docutils literal notranslate"><span class="pre">surface</span></code><a class="headerlink" href="#surface" title="Link to this heading">#</a></h1>
-<p>When taking the skeleton of an image in 3D, it is possible for the skeleton to form shells around “floating solids”. Floating solids are common in artifically generated images but can also be caused by improper segmentation of real images of porous media. Therefore, it is important to remove floating solids prior to taking the skeleton. <code class="docutils literal notranslate"><span class="pre">magnet</span></code> removes floating solids from the passed image automatically using the <code class="docutils literal notranslate"><span class="pre">ps.filters.trim_floating_sold</span></code> function. While the skeleton does not form shells around floating solids attached to the edge of an image, the <code class="docutils literal notranslate"><span class="pre">surface</span></code> option is used to control whether or not these floating solids are also removed. Keep in mind that removing floating solids from the surface of the image will further alter the original image, effecting skeletonization and therefore the resulting network extraction, in particular the network at the image boundaries! The default option for removing <code class="docutils literal notranslate"><span class="pre">surface</span></code> floating solids is False.</p>
+<p>When taking the skeleton of an image in 3D, it is possible for the skeleton to form shells around “floating solids”. Floating solids are common in artificially generated images but can also be caused by improper segmentation of real images of porous media. Therefore, it is important to remove floating solids prior to taking the skeleton. <code class="docutils literal notranslate"><span class="pre">magnet</span></code> removes floating solids from the passed image automatically using the <code class="docutils literal notranslate"><span class="pre">ps.filters.trim_floating_solid</span></code> function. While the skeleton does not form shells around floating solids attached to the edge of an image, the <code class="docutils literal notranslate"><span class="pre">surface</span></code> option is used to control whether or not these floating solids are also removed. Keep in mind that removing floating solids from the surface of the image will further alter the original image, effecting skeletonization and therefore the resulting network extraction, in particular the network at the image boundaries! The default option for removing <code class="docutils literal notranslate"><span class="pre">surface</span></code> floating solids is False.</p>
 <p>*This option is strictly used for 3D images and therefore, we do not demonstrate on our 2D example here.</p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="s">
@@ -1065,7 +1059,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/ad207dad4ac034f94017d7d38781b7e653be8e3d97bccd4b0e13f7c5ac268af8.png" src="../../../_images/ad207dad4ac034f94017d7d38781b7e653be8e3d97bccd4b0e13f7c5ac268af8.png" />
+<img alt="../../../_images/2d5e686d0218da4cbb7ce5cd0191889574be22d1f94ce735e7f052b38187ecef.png" src="../../../_images/2d5e686d0218da4cbb7ce5cd0191889574be22d1f94ce735e7f052b38187ecef.png" />
 </div>
 </div>
 </section>
@@ -1100,14 +1094,14 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/1124737d3c2b060fe70b80992fbb3b8c091cc81ef13397fc97cb9ca2e2c5520c.png" src="../../../_images/1124737d3c2b060fe70b80992fbb3b8c091cc81ef13397fc97cb9ca2e2c5520c.png" />
+<img alt="../../../_images/7253d140ee6860ce4725b8de99576670743a6fcf232df0b17955276546b653e2.png" src="../../../_images/7253d140ee6860ce4725b8de99576670743a6fcf232df0b17955276546b653e2.png" />
 </div>
 </div>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="throat-area">
 <h1><code class="docutils literal notranslate"><span class="pre">throat_area</span></code><a class="headerlink" href="#throat-area" title="Link to this heading">#</a></h1>
-<p>This argument controls whether or not to calculate the throat area. By default, <code class="docutils literal notranslate"><span class="pre">magnet</span></code> does not calculate the throat area because it is computationally expensive. However, it may be essential in order to obtain accurate geometric properties. If you want to calculate the throat area, set this argument to <code class="docutils literal notranslate"><span class="pre">True</span></code>. This involves passing some additonal arguments including the nuber of walkers (<code class="docutils literal notranslate"><span class="pre">n_walkers</span></code>), the step size each walker is to take (<code class="docutils literal notranslate"><span class="pre">step_size</span></code>), and the maximum number of steps (<code class="docutils literal notranslate"><span class="pre">max_n_steps</span></code>).</p>
-<p>An image containing True at every voxel to calculate the throat area is first created and passed into <code class="docutils literal notranslate"><span class="pre">get_throat_area</span></code> as nodes. Those voxels at which to calculate the throat area are found by findg the voxels along each throat that has the smallest distance transform value.</p>
+<p>This argument controls whether or not to calculate the throat area. By default, <code class="docutils literal notranslate"><span class="pre">magnet</span></code> does not calculate the throat area because it is computationally expensive. However, it may be essential in order to obtain accurate geometric properties. If you want to calculate the throat area, set this argument to <code class="docutils literal notranslate"><span class="pre">True</span></code>. This involves passing some additional arguments including the number of walkers (<code class="docutils literal notranslate"><span class="pre">n_walkers</span></code>), the step size each walker is to take (<code class="docutils literal notranslate"><span class="pre">step_size</span></code>), and the maximum number of steps (<code class="docutils literal notranslate"><span class="pre">max_n_steps</span></code>).</p>
+<p>An image containing True at every voxel to calculate the throat area is first created and passed into <code class="docutils literal notranslate"><span class="pre">get_throat_area</span></code> as nodes. Those voxels at which to calculate the throat area are found by finding the voxels along each throat that has the smallest distance transform value.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dt_inv</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
@@ -1119,7 +1113,7 @@
 </div>
 </div>
 </div>
-<p>Finally, we can use the skeleton, junctions, and throat area we previoulsy calculated to compute all the important topological and geometric properties of the pore network. We calculate and combine all of these properties into one dictionary using the <code class="docutils literal notranslate"><span class="pre">ps.networks.junctions_to_network</span></code> method. Here, we use the junctions as merged without any throat junctions.</p>
+<p>Finally, we can use the skeleton, junctions, and throat area we previously calculated to compute all the important topological and geometric properties of the pore network. We calculate and combine all of these properties into one dictionary using the <code class="docutils literal notranslate"><span class="pre">ps.networks.junctions_to_network</span></code> method. Here, we use the junctions as merged without any throat junctions.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">junctions_to_network</span><span class="p">(</span><span class="n">sk</span><span class="p">,</span> <span class="n">juncs_m</span><span class="p">,</span> <span class="n">throats</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">throat_area</span><span class="p">)</span>
@@ -1140,7 +1134,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/b3215b7884e8ea8cfe40f143f357641b4273c52c3d06c01d89a179214eddfa86.png" src="../../../_images/b3215b7884e8ea8cfe40f143f357641b4273c52c3d06c01d89a179214eddfa86.png" />
+<img alt="../../../_images/975e3be22752b8d87abd664a8fc8f2466d4a4cfbf7bc9c4820640971e69dda72.png" src="../../../_images/975e3be22752b8d87abd664a8fc8f2466d4a4cfbf7bc9c4820640971e69dda72.png" />
 </div>
 </div>
 </section>

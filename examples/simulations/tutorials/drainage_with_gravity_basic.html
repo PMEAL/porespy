@@ -406,10 +406,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/generators/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l3"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -506,7 +503,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../_examples/metrics/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -661,10 +658,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">shape</span></code></a></li>
-
-
-
+<li class="toctree-l1"><a class="reference internal" href="../../generators/reference/conical_capillary.html"><code class="docutils literal notranslate"><span class="pre">conical_capillary</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_array.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_array</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../generators/reference/cylindrical_pillars_mesh.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_pillars_mesh</span></code></a></li>
@@ -752,7 +746,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../metrics/tutorials/regionprops_3d.html">Using regionprops_3D to analyze properties of each pore</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../metrics/reference/bond_number.html"><code class="docutils literal notranslate"><span class="pre">bond_number</span></code></a></li>
@@ -929,7 +923,7 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="basics-of-peforming-drainage-simulations-with-and-without-gravity">
 <h1>Basics of Peforming Drainage Simulations with and without Gravity<a class="headerlink" href="#basics-of-peforming-drainage-simulations-with-and-without-gravity" title="Link to this heading">#</a></h1>
-<p>The PMEAL team recently developed a way to add gravitational effects to the standard drainage simulation algorithm based on sphere insertion, also sometimes called <em>morphological image opening</em> or <em>full morphology</em>. The paper is available in Water Resources Research. This post will give a brief overview of how to use this new algorithm, which is included in a new function called <code class="docutils literal notranslate"><span class="pre">drainage</span></code> located in the <code class="docutils literal notranslate"><span class="pre">porespy.filters</span></code> module.  The new <code class="docutils literal notranslate"><span class="pre">drainage</span></code> function can produce results with or without gravity effects, creating a more powerful yet flexible function for performing such simulations.</p>
+<p>The PMEAL team recently developed a way to add gravitational effects to the standard drainage simulation algorithm based on sphere insertion, also sometimes called <em>morphological image opening</em> or <em>full morphology</em>. The paper is available in Water Resources Research. This post will give a brief overview of how to use this new algorithm, which is included in a new function called <code class="docutils literal notranslate"><span class="pre">drainage</span></code> located in the <code class="docutils literal notranslate"><span class="pre">porespy.simulations</span></code> module.  The new <code class="docutils literal notranslate"><span class="pre">drainage</span></code> function can produce results with or without gravity effects, creating a more powerful yet flexible function for performing such simulations.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -956,10 +950,10 @@
 <img alt="../../../_images/e83a6a99be45fc5810cc6be1dcff34601d13afd1f72aa7b7c2ba274315132632.png" src="../../../_images/e83a6a99be45fc5810cc6be1dcff34601d13afd1f72aa7b7c2ba274315132632.png" />
 </div>
 </div>
-<p>First we’ll compute a reference capillary pressure curve with no gravity effects using the <code class="docutils literal notranslate"><span class="pre">drainage</span></code> function. This function requires us to supply an image of capillary pressure values associated with each voxel.  Typicall one would use the Washburn equation:</p>
+<p>First we’ll compute a reference capillary pressure curve with no gravity effects using the <code class="docutils literal notranslate"><span class="pre">drainage</span></code> function. This function requires us to supply an image of capillary pressure values associated with each voxel.  Typically one would use the Washburn equation:</p>
 <div class="math notranslate nohighlight">
 \[ P_C = -2\sigma \cos (\theta) \bigg(\frac{1}{r}\bigg) \]</div>
-<p>where <code class="docutils literal notranslate"><span class="pre">r</span></code> is conveniently provided by the distance transfer.  This can be computed as follows:</p>
+<p>where <code class="docutils literal notranslate"><span class="pre">r</span></code> is conveniently provided by the distance transform.  This can be computed as follows:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">voxel_size</span> <span class="o">=</span> <span class="mf">1e-4</span>  <span class="c1"># m/voxel side, a large value is used illustrate the gravity effect</span>
@@ -994,7 +988,7 @@
 <blockquote>
 <div><p>Note that we have divided the image of invasion pressures by <code class="docutils literal notranslate"><span class="pre">im</span></code> to trick matplotlib into showing the solid as white, since <code class="docutils literal notranslate"><span class="pre">value/False</span></code> returns <code class="docutils literal notranslate"><span class="pre">nan</span></code> while <code class="docutils literal notranslate"><span class="pre">value/True</span></code> leaves <code class="docutils literal notranslate"><span class="pre">value</span></code> untouched.</p>
 </div></blockquote>
-<p>Next let’s produce a capillary pressure curve.  There are some functions available in <code class="docutils literal notranslate"><span class="pre">porespy.metrics</span></code> for this, but the <code class="docutils literal notranslate"><span class="pre">drainage</span></code> function takes care of this for us and the needed values are attached to the returned object as attributes:</p>
+<p>Next let’s produce a capillary pressure curve from the invasion-pressure map <code class="docutils literal notranslate"><span class="pre">drn.im_pc</span></code>.  The following call to <code class="docutils literal notranslate"><span class="pre">porespy.metrics.pc_map_to_pc_curve</span></code> returns the capillary pressures and corresponding non-wetting phase saturations, which we unpack as <code class="docutils literal notranslate"><span class="pre">Pc</span></code> and <code class="docutils literal notranslate"><span class="pre">Snwp</span></code> for plotting:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Pc</span><span class="p">,</span> <span class="n">Snwp</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pc_map_to_pc_curve</span><span class="p">(</span>

@@ -570,6 +570,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_conv.html">porespy.simulations.drainage_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt.html">porespy.simulations.drainage_dt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/drainage_dt_conv.html">porespy.simulations.drainage_dt_conv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/hg_porosimetry.html">porespy.simulations.hg_porosimetry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/ibip.html">porespy.simulations.ibip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition.html">porespy.simulations.imbibition</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simulations/imbibition_bf.html">porespy.simulations.imbibition_bf</a></li>
@@ -751,7 +752,8 @@ considered connected.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>im</strong> – A copy of <cite>im</cite> with surface pores set to <cite>False</cite>.</p>
+<dd class="field-even"><p><strong>im</strong> – The supplied <cite>im</cite> array, modified in place with surface pores set to
+<cite>False</cite>. Pass <cite>im.copy()</cite> to preserve the original image.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>

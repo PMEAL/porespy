@@ -1,36 +1,46 @@
 porespy.generators.spheres_from_coords
 ======================================
 
-.. py:function:: porespy.generators.spheres_from_coords(df, mode='contained', smooth=False)
+.. py:function:: porespy.generators.spheres_from_coords(df, mode='contained', smooth=False, shape=None)
 
    Generates a sphere packing given a list of centers and radii
 
    :param df: The X, Y, Z center coordinates, and radius R of each sphere in the packing
               should be stored in their own column or key. The units should be in voxels.
               See ``Notes`` for more detail on how this should be formatted. If one of
-              the dimensions has all 0's then a 2D image is generated.
-   :type df: DataFrame or dict
-   :param smooth: Indicates if spheres should be smooth or have the single pixel bump on
-                  each face.
-   :type smooth: bool
-   :param mode: How edges are handled. Options are:
+              the dimensions has all 0's (and a 3D ``shape`` is not explicitly given),
+              then a 2D image is generated.
+   :type df: DataFrame, dict, or ndarray
+   :param mode: How edges are handled when ``shape`` is not specified. Options are:
 
                 ============= ==============================================================
                 mode          description
                 ============= ==============================================================
-                'contained'   (default) All spheres are fully contained within the image,
-                              meaning the image is padded beyond extents of the given
-                              coordinates by the maximum radius of the given sphere radii
-                              to ensure they all fit.
-                'extended'    Spheres extend beyond the edge of the image. In this mode
-                              the image is only as large enough to hold the given coordinates
-                              so the spheres may extend beyond the image boundary.
+                'contained'   (default) All spheres are fully contained within the image.
+                              Coordinates are preserved as long as all spheres fit within
+                              non-negative indices; if any sphere extends below 0 along an
+                              axis, that axis is shifted by the minimum amount required so
+                              no sphere is clipped.
+                'extended'    Spheres may extend beyond the edges of the image. The image
+                              spans from 0 up to the maximum coordinate along each axis
+                              (inclusive). Coordinates are preserved as long as they are
+                              non-negative; if any coordinate is negative along an axis,
+                              that axis is shifted so the minimum coordinate sits at 0.
                 ============= ==============================================================
+
+                Ignored if ``shape`` is provided.
    :type mode: str
+   :param smooth: Indicates if spheres should be smooth or have the single pixel bump on
+                  each face.
+   :type smooth: bool
+   :param shape: The exact shape of the output image. If provided, spheres are inserted
+                 directly at the given coordinates with no shifting or cropping, and any
+                 portions extending outside ``[0, shape)`` are clipped. If ``None``
+                 (default), the image shape is inferred from ``df`` according to ``mode``.
+   :type shape: array_like, optional
 
    :returns: **spheres** -- A numpy ndarray of ``True`` values indicating the spheres and
-             ``False`` elsewhere. The size of the returned image will be large enough
-             to fit all the spheres plus the radius of the largest sphere.
+             ``False`` elsewhere.
    :rtype: ndarray
 
    .. rubric:: Examples
@@ -70,5 +80,11 @@ porespy.generators.spheres_from_coords
               [20, 20, 10, 6]])
 
    Note that in all cases if the radius is not given that it is assumed to be
-   a single pixel
+   a single pixel.
+
+   Coordinates are preserved whenever possible rather than cropped to a tight
+   bounding box. If your input coordinates have a large positive offset and you
+   want a tightly cropped image, shift the coordinates beforehand (e.g.,
+   ``df['X'] -= df['X'].min()``) or crop the result with
+   ``im[ps.tools.find_bbox(im)]``.
 
